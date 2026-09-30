@@ -56,7 +56,7 @@ const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
     const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray();
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(interactions?.some(interaction => interaction.get("type") === "dragBox")).to.be.true;
   });
   cy.get('[data-cy="labeling-panel"]')
@@ -69,7 +69,7 @@ const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
     const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray();
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(interactions?.some(interaction => interaction.get("type") === "dragBox")).to.be.false;
   });
 };
@@ -84,13 +84,13 @@ const waitForLabelingImageLoaded = () => {
   // Wait for the map element to exist in the DOM
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(labelingWindow["labeling-map"]).to.exist;
   });
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
     const layers = labelingWindow["labeling-map"]?.getLayers().getArray();
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(layers?.some(layer => layer.get("type") === "image")).to.be.true;
   });
 };
@@ -196,7 +196,7 @@ function waitForMapAnimations() {
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
     const view = labelingWindow["labeling-map"]?.getView();
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(view?.getAnimating()).to.be.false;
   });
 }
@@ -304,7 +304,7 @@ describe("Test labeling tool", () => {
     cy.window().should(win => {
       const labelingWindow = win as WindowWithMaps;
       const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray() || [];
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(interactions.some(interaction => interaction.get("type") === "dragBox")).to.be.false;
     });
     stopBoreholeEditing();

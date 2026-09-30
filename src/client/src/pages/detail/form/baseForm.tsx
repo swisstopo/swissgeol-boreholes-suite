@@ -13,7 +13,7 @@ import { TabName } from "./workflow/workflow.ts";
 
 interface BaseFormProps<T extends FieldValues> {
   formMethods: UseFormReturn<T>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line @typescript-eslint/no-explicit-any
   prepareDataForSubmit: (data: T) => Record<string, any>;
   onReset?: () => void;
   tabStatusToReset: TabName;

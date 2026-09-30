@@ -12,7 +12,7 @@ interface UseFormDirtyProps<T extends FieldValues> {
  */
 export const useFormDirty = <T extends FieldValues>({ formState }: UseFormDirtyProps<T>) => {
   // formState.isDirty is needed to trigger the effect even though it is not used in the code
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // oxlint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(() => Object.keys(formState.dirtyFields).length > 0, [formState.dirtyFields, formState.isDirty]);
 };
 

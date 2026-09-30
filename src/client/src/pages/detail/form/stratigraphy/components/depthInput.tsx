@@ -89,7 +89,7 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
       slotProps={{
         htmlInput: { "data-cy": dataCy },
         input: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
           inputComponent: NumericFormatWithThousandSeparator as any,
         },
       }}

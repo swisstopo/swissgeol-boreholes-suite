@@ -35,8 +35,31 @@ jobs:
           git diff --exit-code src/api/generated \
             || (echo "Generated types are out of date. Run 'npm run openapi:gen' and commit the result." && exit 1)
 
-      - working-directory: ./src/client
-        run: npm run lint
+      - name: Lint with oxlint
+        working-directory: ./src/client
+        run: npm run lint:oxlint -- --format github
+
+      - name: Verify oxlint warning cap matches warning count
+        working-directory: ./src/client
+        run: |
+          npm run --silent lint:oxlint -- --format json > "$RUNNER_TEMP/oxlint.json"
+          node -e '
+            const { diagnostics } = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+            const warnings = diagnostics.filter(d => d.severity === "warning").length;
+            const cap = Number(require("./package.json").scripts["lint:oxlint"].match(/--max-warnings (\d+)/)[1]);
+            if (warnings < cap) {
+              console.log(`::error::oxlint warnings dropped to ${warnings}. Lower --max-warnings in the lint:oxlint script of src/client/package.json from ${cap} to ${warnings}.`);
+              process.exit(1);
+            }
+          ' "$RUNNER_TEMP/oxlint.json"
+
+      - name: Lint with ESLint
+        working-directory: ./src/client
+        run: npm run lint:eslint
+
+      - name: Check formatting
+        working-directory: ./src/client
+        run: npm run format:check
 
       - working-directory: ./src/client
         run: npm run knip

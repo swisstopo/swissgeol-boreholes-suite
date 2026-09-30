@@ -69,7 +69,7 @@ export const FormInput: FC<FormInputProps> = ({
     if (isNumberInput && value != null && getValues(fieldName) === undefined) {
       setValue(fieldName, toFormatterValue(value));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // What the input shows: the form value if it has one, otherwise the prop.
@@ -116,7 +116,7 @@ export const FormInput: FC<FormInputProps> = ({
   // "1123" straight into the input and erases NumericFormat's formatted "1'123" — the
   // formatting only comes back the next time the user clicks into the field. Editable
   // fields still need the ref so the form can validate user input.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // oxlint-disable-next-line @typescript-eslint/no-unused-vars
   const { ref: _ref, ...registerPropsWithoutRef } = registerProps;
   const fieldProps = isReadOnlyNumberInput ? registerPropsWithoutRef : registerProps;
 
@@ -143,7 +143,7 @@ export const FormInput: FC<FormInputProps> = ({
       data-cy={fieldName + "-formInput"}
       slotProps={{
         input: {
-          ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
+          ...inputProps /* oxlint-disable  @typescript-eslint/no-explicit-any */,
           ...(isNumberInput && { inputComponent: NumericFormatWithThousandSeparator as any }),
           ...(isDateTimeInput && { max: "9999-01-01T00:00" }),
           ...(isDateInput && { max: "9999-01-01" }),
