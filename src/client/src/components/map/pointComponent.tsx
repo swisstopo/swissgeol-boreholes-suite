@@ -89,10 +89,10 @@ export const PointComponent: FC<PointComponentProps> = ({
       lhRef.current = null;
     }
     const lookUpAddress = async () => {
-      const location = (await fetchApiV2Legacy(
+      const location = await fetchApiV2Legacy<LocationLookupResult>(
         `location/identify?east=${coordinates[0]}&north=${coordinates[1]}`,
         "GET",
-      )) as LocationLookupResult;
+      );
       setAddress(false);
       setCountry(location.country ?? null);
       setCanton(location.canton ?? null);

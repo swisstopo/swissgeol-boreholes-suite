@@ -172,8 +172,7 @@ export const MapComponent: FC<MapComponentProps> = ({
     updateBasemap(map, currentBasemapName);
 
     // Attach map to globalThis for Cypress E2E tests.
-    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
-    (globalThis as any).olMap = map;
+    (globalThis as typeof globalThis & { olMap?: Map }).olMap = map;
 
     // ── Feature layers ──
     const points = new VectorSource();
@@ -183,7 +182,8 @@ export const MapComponent: FC<MapComponentProps> = ({
     // Use z-index to ensure points/clusters are always on top of WMS/WMTS overlay layers
     const featureLayerZIndex = 1000;
 
-    const clusterStyle: StyleFunction = (feature: FeatureLike) => clusterStyleFunction(feature.get("features").length);
+    const clusterStyle: StyleFunction = (feature: FeatureLike) =>
+      clusterStyleFunction((feature.get("features") as Feature[]).length);
 
     map.addLayer(
       new VectorLayer({
@@ -262,8 +262,8 @@ export const MapComponent: FC<MapComponentProps> = ({
 
       // Ignore clusters
       if (features.length === 1) {
-        const clusterFeatures = features[0].get("features");
-        if (clusterFeatures?.length > 0) return;
+        const clusterFeatures = features[0].get("features") as Feature[] | undefined;
+        if ((clusterFeatures?.length ?? 0) > 0) return;
       }
 
       // Show popup for non-cluster features
@@ -287,7 +287,7 @@ export const MapComponent: FC<MapComponentProps> = ({
     });
     selectClick.on("select", e => {
       if (e.selected.length > 0) {
-        callbacksRef.current.selected(e.selected[0].get("id"));
+        callbacksRef.current.selected(e.selected[0].get("id") as number);
       } else {
         callbacksRef.current.selected(null);
       }
@@ -328,10 +328,10 @@ export const MapComponent: FC<MapComponentProps> = ({
           layerFilter: layer => layer.get("name") === "clusters",
         });
         if (clickFeatures?.length > 0) {
-          const clusterMembers = clickFeatures[0].get("features");
+          const clusterMembers = clickFeatures[0].get("features") as Feature[];
           if (clusterMembers.length > 1) {
             const extent = createEmpty();
-            clusterMembers.forEach((feature: Feature) => {
+            clusterMembers.forEach(feature => {
               if (feature.getGeometry()) {
                 extend(extent, feature.getGeometry()!.getExtent());
               }

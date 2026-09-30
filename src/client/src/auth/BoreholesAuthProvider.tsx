@@ -70,7 +70,7 @@ export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderPro
     const userManager = new CognitoUserManager(oidcClientSettings);
 
     const onSigninCallback = (user: User | undefined) => {
-      const preLoginState = JSON.parse(atob(user?.url_state ?? ""));
+      const preLoginState = JSON.parse(atob(user?.url_state ?? "")) as { path: string };
       // restore location after login. Not awaited: the OIDC callback returns void and there is no
       // meaningful recovery if the navigation fails.
       void router.navigate(preLoginState.path, { replace: true });

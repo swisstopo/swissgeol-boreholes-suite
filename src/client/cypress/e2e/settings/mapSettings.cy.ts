@@ -17,14 +17,14 @@ describe("map settings", () => {
   it("Adds wms and wmts to user maps", () => {
     // Stub geo.admin.ch GetCapabilities so the test does not depend on the live service,
     // which is intermittently broken (MapServer "Unable to access file" errors).
-    cy.fixture("wmsCapabilities.xml").then(wmsXml => {
+    cy.fixture<string>("wmsCapabilities.xml").then(wmsXml => {
       cy.intercept(/^https:\/\/wms\.geo\.admin\.ch/, {
         statusCode: 200,
         headers: { "Content-Type": "application/xml" },
         body: wmsXml,
       }).as("wmsCapabilities");
     });
-    cy.fixture("wmtsCapabilities.xml").then(wmtsXml => {
+    cy.fixture<string>("wmtsCapabilities.xml").then(wmtsXml => {
       cy.intercept(/^https:\/\/wmts\.geo\.admin\.ch/, {
         statusCode: 200,
         headers: { "Content-Type": "application/xml" },

@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC, HTMLAttributes, useContext } from "react";
 import { Controller, RegisterOptions, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
@@ -57,10 +57,12 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { labelWithTooltip } = useLabelOverflow(label);
 
   // Synchronize Autocomplete with react hook form state
+  // useWatch is untyped because the form itself is, so the assertion states the shape this
+  // component is written for.
   const fieldValue = useWatch({
     control,
     name: fieldName,
-  });
+  }) as number | null | undefined;
 
   const menuItems: FormSelectMenuItem[] = [];
 
@@ -150,7 +152,7 @@ export const FormSelect: FC<FormSelectProps> = ({
                 />
               );
             }}
-            renderOption={(props, option) => {
+            renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
               const { key, ...rest } = props;
               return (
                 <li key={key} {...rest}>

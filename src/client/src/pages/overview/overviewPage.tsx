@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation } from "react-router";
+import { ErrorResponse } from "../../api/errorClasses.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
 import { LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
@@ -9,7 +10,6 @@ import MainSideNav from "./layout/mainSideNav.tsx";
 import { MapView } from "./layout/mapView.tsx";
 import { SideDrawer } from "./layout/sideDrawer.tsx";
 import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
-import { ErrorResponse } from "./sidePanelContent/commons/actionsInterfaces.ts";
 import { CustomLayersPanel } from "./sidePanelContent/customLayers/customLayersPanel.tsx";
 import { FilterComponent } from "./sidePanelContent/filter/filterComponent.tsx";
 import { ImportPanel } from "./sidePanelContent/importer/importPanel.tsx";

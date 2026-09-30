@@ -14,6 +14,7 @@ import {
   SidebarMenuItem,
 } from "../helpers/navigationHelpers.js";
 import {
+  CombinedStratigraphyResult,
   createBorehole,
   createStratigraphy,
   goToDetailRouteAndAcceptTerms,
@@ -51,7 +52,7 @@ describe("Tests for stratigraphy", () => {
         cy.wait("@stratigraphy_by_borehole_GET");
 
         // The combined create returns an array of { stratigraphy, lithology } results.
-        const firstStratigraphy = interception.response!.body[0].stratigraphy;
+        const firstStratigraphy = (interception.response!.body as CombinedStratigraphyResult[])[0].stratigraphy;
         // Should redirect to the newly created stratigraphy after saving
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${firstStratigraphy.id}`);
@@ -189,7 +190,7 @@ describe("Tests for stratigraphy", () => {
         cy.dataCy("duplicate-button").click();
         cy.wait("@stratigraphy_COPY").then(interception => {
           cy.wait(["@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
-          const copiedStratigraphyId = interception.response!.body;
+          const copiedStratigraphyId = interception.response!.body as number;
           // Should redirect to the copied stratigraphy
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${copiedStratigraphyId}`);

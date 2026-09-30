@@ -1,12 +1,12 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Dialog, Stack, Typography } from "@mui/material";
+import { ErrorResponse } from "../../../../api/errorClasses.ts";
 import {
   DialogFooterContainer,
   DialogHeaderContainer,
   DialogMainContent,
 } from "../../../../components/styledComponents.ts";
-import { ErrorResponse } from "../commons/actionsInterfaces.ts";
 
 interface ImportErrorDialogProps {
   open: boolean;
@@ -47,7 +47,7 @@ export const ImportErrorDialog = ({ open, setOpen, errorResponse }: ImportErrorD
                   .map(([key, value], index) => (
                     <Box key={key + index + 1}>
                       <Typography variant={"h6"}>{key}</Typography>
-                      {value.map((item: string, i: string) => (
+                      {value.map((item, i) => (
                         <li key={item + i}>{item}</li>
                       ))}
                     </Box>

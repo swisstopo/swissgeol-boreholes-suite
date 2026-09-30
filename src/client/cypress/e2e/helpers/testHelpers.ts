@@ -4,6 +4,34 @@ import { buildConsentCookieValue, CONSENT_COOKIE_NAME } from "../../../src/term/
 import adminUser from "../../fixtures/adminUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
+/**
+ * The response bodies these helpers read.
+ */
+interface TokenResponse {
+  access_token: string;
+}
+
+interface StoredOidcUser {
+  profile?: { sub?: string };
+}
+
+interface CreatedBorehole {
+  id: number;
+  hrsId: number;
+}
+
+interface FilteredBoreholes {
+  filteredBoreholeIds: number[];
+}
+
+interface CreatedEntity {
+  id: number;
+}
+
+export interface CombinedStratigraphyResult {
+  stratigraphy: CreatedEntity;
+}
+
 export const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
@@ -215,7 +243,7 @@ export const login = (user: string) => {
         cy.contains("button", "Login").click({ force: true });
       });
       cy.wait("@token")
-        .then(interception => interception.response!.body.access_token)
+        .then(interception => (interception.response!.body as TokenResponse).access_token)
         .then(token => globalThis.localStorage.setItem("access_token", token));
     },
     {
@@ -246,7 +274,8 @@ const readRestoredSubject = (win: Window): string | undefined => {
   const key = Object.keys(win.localStorage).find(k => k.startsWith("oidc.user:"));
   if (!key) return undefined;
   try {
-    return JSON.parse(win.localStorage.getItem(key) ?? "{}").profile?.sub;
+    const storedUser = JSON.parse(win.localStorage.getItem(key) ?? "{}") as StoredOidcUser;
+    return storedUser.profile?.sub;
   } catch {
     return undefined;
   }
@@ -349,9 +378,10 @@ const defaultHrsId = 20106001;
 
 const waitForCreation = () => {
   return cy.wait("@post-borehole").then(interception => {
-    cy.task("log", "Created new borehole with id:" + interception.response!.body.id);
-    cy.wrap(interception.response!.body.hrsId).should("eq", defaultHrsId);
-    return cy.wrap(interception.response!.body.id);
+    const borehole = interception.response!.body as CreatedBorehole;
+    cy.task("log", "Created new borehole with id:" + borehole.id);
+    cy.wrap(borehole.hrsId).should("eq", defaultHrsId);
+    return cy.wrap(borehole.id);
   });
 };
 
@@ -374,7 +404,7 @@ export const createBorehole = (borehole: Record<string, unknown>) => {
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body.id as number);
+        return cy.wrap((res.body as CreatedEntity).id);
       });
   });
 };
@@ -530,9 +560,9 @@ export const loginAndResetState = () => {
       body: {},
       auth: bearerAuth(token),
     }).then(response => {
-      response.body.filteredBoreholeIds
-        .filter((id: number) => id > 1000099) // max id in seed data.
-        .forEach((id: number) => {
+      (response.body as FilteredBoreholes).filteredBoreholeIds
+        .filter(id => id > 1000099) // max id in seed data.
+        .forEach(id => {
           deleteBorehole(id);
         });
     });
@@ -603,7 +633,7 @@ export const getImportFileFromFixtures = (fileName: string, encoding: string | n
     }
   }
 
-  return encoding ? cy.fixture(filePath, encoding as Cypress.Encodings) : cy.fixture(filePath);
+  return encoding ? cy.fixture<string>(filePath, encoding as Cypress.Encodings) : cy.fixture<string>(filePath);
 };
 
 interface StratigraphyInput {
@@ -638,7 +668,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body[0].stratigraphy.id);
+        return cy.wrap((res.body as CombinedStratigraphyResult[])[0].stratigraphy.id);
       });
   });
 };
@@ -667,7 +697,7 @@ export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: Comple
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body.id);
+        return cy.wrap((res.body as CreatedEntity).id);
       });
   });
 };
@@ -707,7 +737,7 @@ export const createCasing = ({
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body.id);
+        return cy.wrap((res.body as CreatedEntity).id);
       });
   });
 };

@@ -230,9 +230,9 @@ describe("Test for importing boreholes.", () => {
     cy.dataCy("boreholes-number-preview").should("have.text", "0");
 
     // reimport the exported zip file
-    cy.get("@exportedZipFileName").then(zipFileName => {
+    cy.get<string>("@exportedZipFileName").then(zipFileName => {
       const downloadPath = prepareDownloadPath(zipFileName);
-      cy.readFile(downloadPath, "binary").then(fileContent => {
+      cy.readFile<string>(downloadPath, "binary").then(fileContent => {
         const blob = Cypress.Blob.binaryStringToBlob(fileContent, "application/zip");
         const fileToReupload = new File([blob], zipFileName, { type: "application/zip" });
         const dataTransfer = new DataTransfer();

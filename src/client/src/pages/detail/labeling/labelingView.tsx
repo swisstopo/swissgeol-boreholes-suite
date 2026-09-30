@@ -85,7 +85,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
         .getLayers()
         .getArray()
         .find(layer => layer instanceof ImageLayer);
-      const currentFileName = imageLayer?.get("name");
+      const currentFileName = imageLayer?.get("name") as string | undefined;
       if (currentFileName === fileName) {
         return;
       }

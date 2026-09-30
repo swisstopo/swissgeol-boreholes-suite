@@ -72,3 +72,12 @@ export interface Location {
   canton: string;
   municipality: string;
 }
+
+/**
+ * The fields the coordinate transformation reads from the swisstopo REFRAME service.
+ * It reports the transformed coordinates as strings, so callers parse them before use.
+ */
+export interface ReframeTransformation {
+  easting: string;
+  northing: string;
+}

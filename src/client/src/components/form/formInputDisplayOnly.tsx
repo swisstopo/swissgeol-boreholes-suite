@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { TextField, TextFieldProps } from "@mui/material";
+import { ElementType, FC } from "react";
+import { InputBaseComponentProps, TextField, TextFieldProps } from "@mui/material";
 import { FormValueType } from "./form";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
@@ -31,8 +31,9 @@ export const FormInputDisplayOnly: FC<FormInputDisplayOnlyProps> = ({
       className="readonly"
       slotProps={{
         input: {
-          /* oxlint-disable  @typescript-eslint/no-explicit-any */
-          ...(isNumberInput && { inputComponent: NumericFormatWithThousandSeparator as any }),
+          ...(isNumberInput && {
+            inputComponent: NumericFormatWithThousandSeparator as ElementType<InputBaseComponentProps>,
+          }),
           readOnly: true,
           disabled: disabled,
         },

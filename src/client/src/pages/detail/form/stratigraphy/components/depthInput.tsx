@@ -1,6 +1,6 @@
-import { ChangeEvent, FC, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
+import { ChangeEvent, ElementType, FC, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TextField } from "@mui/material";
+import { InputBaseComponentProps, TextField } from "@mui/material";
 import { theme } from "../../../../../AppTheme.ts";
 import { FormValueType } from "../../../../../components/form/form.ts";
 import { getFieldBorderColor, parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
@@ -89,8 +89,7 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
       slotProps={{
         htmlInput: { "data-cy": dataCy },
         input: {
-          // oxlint-disable-next-line @typescript-eslint/no-explicit-any
-          inputComponent: NumericFormatWithThousandSeparator as any,
+          inputComponent: NumericFormatWithThousandSeparator as ElementType<InputBaseComponentProps>,
         },
       }}
     />
