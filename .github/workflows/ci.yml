@@ -42,7 +42,7 @@ jobs:
       - name: Verify oxlint warning cap matches warning count
         working-directory: ./src/client
         run: |
-          npx oxlint --format json > "$RUNNER_TEMP/oxlint.json"
+          npm run --silent lint:oxlint -- --format json > "$RUNNER_TEMP/oxlint.json"
           node -e '
             const { diagnostics } = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
             const warnings = diagnostics.filter(d => d.severity === "warning").length;
