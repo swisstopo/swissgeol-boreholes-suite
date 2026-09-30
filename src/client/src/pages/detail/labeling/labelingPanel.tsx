@@ -180,7 +180,7 @@ const LabelingPanel: FC = () => {
         </Box>
         <ToggleButtonGroup
           value={panelPosition}
-          onChange={(event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
+          onChange={(_event: MouseEvent<HTMLElement>, nextPosition: PanelPosition) => {
             if (nextPosition) {
               setPanelPosition(nextPosition);
             }

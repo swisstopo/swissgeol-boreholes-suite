@@ -79,7 +79,7 @@ export const LabelingHeader: FC<{
       data-cy="labeling-header">
       <ToggleButtonGroup
         value={panelTab}
-        onChange={(event, nextTab: PanelTab) => {
+        onChange={(_event, nextTab: PanelTab) => {
           if (nextTab) {
             setSelectedAttachment(undefined);
             setPanelTab(nextTab);

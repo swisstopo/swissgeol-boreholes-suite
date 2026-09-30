@@ -155,7 +155,7 @@ export const useLogRunMutations = () => {
 
 export class LogImportValidationError extends ApiError {
   constructor(
-    public readonly messageKey: string,
+    public override readonly messageKey: string,
     public readonly values?: Record<string, string>,
   ) {
     super("Log import validation failed", 400);

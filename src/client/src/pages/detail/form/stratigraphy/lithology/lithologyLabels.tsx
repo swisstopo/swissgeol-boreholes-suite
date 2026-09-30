@@ -17,7 +17,7 @@ const getBeddingShare = (lithology: Lithology, index: number) => {
 };
 
 const buildUnconsolidatedPrimaryString = (
-  t: TFunction,
+  _t: TFunction,
   description: LithologyDescription,
   getCodelistDisplayValues: (id: number) => { text: string; code: string },
   share?: number,
@@ -139,7 +139,7 @@ const buildUnconsolidatedDetails2String = (
 };
 
 const buildConsolidatedPrimaryString = (
-  t: TFunction,
+  _t: TFunction,
   description: LithologyDescription,
   getCodelistDisplayValues: (id: number) => { text: string; code: string },
   share?: number,
@@ -174,7 +174,7 @@ const buildConsolidatedPrimaryString = (
 };
 
 const buildConsolidatedSecondaryString = (
-  t: TFunction,
+  _t: TFunction,
   description: LithologyDescription,
   getCodelistDisplayValues: (id: number) => { text: string; code: string },
 ) => {

@@ -86,7 +86,7 @@ export const SettingsHeader: FC = () => {
       <ToggleButtonGroup
         value={selectedEntity.isDisabled}
         exclusive
-        onChange={(event: MouseEvent<HTMLElement>, isDisabled: boolean) => {
+        onChange={(_event: MouseEvent<HTMLElement>, isDisabled: boolean) => {
           handleInactiveToggleChange(isDisabled);
         }}
         sx={{ boxShadow: "none", backgroundColor: theme.palette.background.header }}>
