@@ -49,39 +49,45 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
     return "";
   };
 
+  const handleValidationErrorBody = (responseBody: unknown) => {
+    if (!isErrorResponse(responseBody)) {
+      showAlert(t("boreholesImportError"), "error");
+    } else if (responseBody.errors) {
+      setErrorsResponse(responseBody);
+      setErrorDialogOpen(true);
+    } else if (responseBody.messageKey) {
+      const translatedMessage = t(responseBody.messageKey, { defaultValue: responseBody.detail });
+      showAlert(translatedMessage, "error");
+    } else if (responseBody.detail) {
+      showAlert(responseBody.detail, "error");
+    } else {
+      showAlert(t("boreholesImportError"), "error");
+    }
+  };
+
+  const handleFailedImportResponse = async (response: Response) => {
+    const isJson = isJsonContentType(response.headers.get("content-type"));
+    if (response.status === 400 && isJson) {
+      handleValidationErrorBody(await response.json());
+    } else if (response.status === 504) {
+      showAlert(t("boreholesImportLongRunning"), "error");
+    } else if (isJson) {
+      const responseBody: unknown = await response.json();
+      const detail = isErrorResponse(responseBody) ? responseBody.detail : undefined;
+      showAlert(detail || t("boreholesImportError"), "error");
+    } else {
+      const errorText = await response.text();
+      showAlert(errorText || t("boreholesImportError"), "error");
+    }
+  };
+
   const handleImportResponse = async (response: Response) => {
     if (response.ok) {
       showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
       setFile(null);
       refresh();
     } else {
-      const contentType = response.headers.get("content-type");
-      const isJson = isJsonContentType(contentType);
-      if (response.status === 400 && isJson) {
-        const responseBody: unknown = await response.json();
-        if (!isErrorResponse(responseBody)) {
-          showAlert(t("boreholesImportError"), "error");
-        } else if (responseBody.errors) {
-          setErrorsResponse(responseBody);
-          setErrorDialogOpen(true);
-        } else if (responseBody.messageKey) {
-          const translatedMessage = t(responseBody.messageKey, { defaultValue: responseBody.detail });
-          showAlert(translatedMessage, "error");
-        } else if (responseBody.detail) {
-          showAlert(responseBody.detail, "error");
-        } else {
-          showAlert(t("boreholesImportError"), "error");
-        }
-      } else if (response.status === 504) {
-        showAlert(t("boreholesImportLongRunning"), "error");
-      } else if (isJson) {
-        const responseBody: unknown = await response.json();
-        const detail = isErrorResponse(responseBody) ? responseBody.detail : undefined;
-        showAlert(detail || t("boreholesImportError"), "error");
-      } else {
-        const errorText = await response.text();
-        showAlert(errorText || t("boreholesImportError"), "error");
-      }
+      await handleFailedImportResponse(response);
     }
   };
 
