@@ -100,6 +100,41 @@ public class SyncBoreholesTaskTest
     }
 
     [TestMethod]
+    public async Task SyncBoreholesShouldSkipDuplicatesInOtherWorkgroups()
+    {
+        // Synced boreholes can be moved to another workgroup at the target. Moving all target boreholes away from the
+        // workgroup the sync task assigns ('Default') ensures that duplicates are detected across all workgroups.
+        using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: true, seedTestDataInTargetContext: true);
+        using var syncTask = new SyncBoreholesTask(syncContext, new Mock<ILogger<SyncBoreholesTask>>().Object, GetDefaultConfiguration());
+
+        var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_022, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_099, WorkflowStatus.Published, cancellationToken);
+
+        await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
+
+        var otherWorkgroup = new Workgroup { Name = "IRONHARBOR" };
+        await syncContext.Target.Workgroups.AddAsync(otherWorkgroup, cancellationToken);
+        await syncContext.Target.SaveChangesAsync(cancellationToken);
+
+        var targetBoreholes = await syncContext.Target.Boreholes.ToListAsync(cancellationToken);
+        foreach (var borehole in targetBoreholes)
+        {
+            borehole.WorkgroupId = otherWorkgroup.Id;
+        }
+
+        await syncContext.Target.SaveChangesAsync(cancellationToken);
+
+        var targetBoreholeCount = await syncContext.Target.Boreholes.CountAsync(cancellationToken);
+
+        await syncTask.ExecuteAndValidateAsync(cancellationToken);
+
+        // Expect no boreholes to be synced to the target context, because they are already present in another workgroup.
+        Assert.AreEqual(targetBoreholeCount, await syncContext.Target.Boreholes.CountAsync(cancellationToken));
+        Assert.IsTrue(await syncContext.Target.Boreholes.AllAsync(b => b.WorkgroupId == otherWorkgroup.Id, cancellationToken));
+    }
+
+    [TestMethod]
     public async Task SyncBoreholesForEmpty()
     {
         using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: false);
