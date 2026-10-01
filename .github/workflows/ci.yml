@@ -247,3 +247,10 @@ jobs:
       - name: Run extern-sync
         working-directory: src/extern-sync
         run: docker compose -f docker-compose.yml up extern-sync --build --exit-code-from extern-sync
+
+      - name: Verify synced boreholes
+        working-directory: src/extern-sync
+        run: |
+          test "$(docker compose -f docker-compose.services.yml exec -T target-db \
+            sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "SELECT count(*) FROM bdms.borehole"')" \
+            -gt 0
