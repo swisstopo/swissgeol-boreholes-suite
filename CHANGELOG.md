@@ -32,6 +32,7 @@
 - Uploading a large LOG file no longer fails after 60 seconds.
 - Accented characters such as é, è and à are no longer garbled when exporting boreholes, codelists or LOG data to CSV, or when importing CSV files. Exported CSV files now begin with a UTF-8 byte order mark so that Excel opens them with the correct character set, and imported CSV files are accepted both as UTF-8 and in the ANSI (Windows-1252) encoding that Excel produces with "Save As -> CSV".
 - The labeling panel now shows an error when a profile page cannot be loaded, instead of staying empty.
+- Extern-sync no longer stops syncing when a synced borehole was moved to another workgroup in the target database. Boreholes that already exist in any workgroup of the target database are skipped again.
 
 ## v2.1.1748 - 2026-07-28
 

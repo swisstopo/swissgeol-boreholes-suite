@@ -55,23 +55,26 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             targetDefaultUser.Name,
             targetDefaultUser.SubjectId);
 
+        // Synced boreholes can be moved to another workgroup at the target,
+        // so duplicates are searched in all workgroups.
+        var boreholesAtDestination = await Target.Boreholes.AsNoTracking().ToListAsync(cancellationToken).ConfigureAwait(false);
+
         // Process published boreholes.
         // Operate on a copy of the list, so that we can remove items from it if needed.
         foreach (var publishedBorehole in publishedBoreholes.ToList())
         {
-            // Search for a matching workgroup name
-            var matchingWorkgroup = await Target.Workgroups.AsNoTracking().SingleOrDefaultAsync(w => w.Name == publishedBorehole.Workgroup.Name, cancellationToken).ConfigureAwait(false);
-            var targetWorkgroup = matchingWorkgroup ?? targetDefaultWorkgroup;
-
             // Skip duplicated boreholes by comparing the depth and coordinates of each borehole
-            // in the target workgroup if they are within a pre-defined radius.
-            var boreholesAtDestination = await Target.Boreholes.AsNoTracking().Where(x => x.WorkgroupId == targetWorkgroup.Id).ToListAsync(cancellationToken).ConfigureAwait(false);
+            // in the target database if they are within a pre-defined radius.
             if (publishedBorehole.IsWithinPredefinedTolerance(boreholesAtDestination))
             {
                 publishedBoreholes.Remove(publishedBorehole);
                 Logger.LogInformation("Borehole <{BoreholeName}> already exists at target database. Skipping...", publishedBorehole.Name);
                 continue;
             }
+
+            // Search for a matching workgroup name
+            var matchingWorkgroup = await Target.Workgroups.AsNoTracking().SingleOrDefaultAsync(w => w.Name == publishedBorehole.Workgroup.Name, cancellationToken).ConfigureAwait(false);
+            var targetWorkgroup = matchingWorkgroup ?? targetDefaultWorkgroup;
 
             // Set workgroup
             publishedBorehole.Workgroup = null;
