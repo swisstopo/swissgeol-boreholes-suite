@@ -73,32 +73,42 @@ Die Applikation benötigt für die Authentifizierung und Autorisierung eine gül
 
 Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten öffentlich zugänglich zu machen. In diesem Modus ist die Applikation nur im read-only Modus verfügbar. Die Konfiguration erfolgt über OIDC-Konfiguration (siehe oben). Die Applikation wird im anonymen Modus gestartet, wenn `Auth:AnonymousModeEnabled` auf `true` gesetzt ist.
 
-## Release-Prozess
+## Release- und Deployment-Prozess
 
-### Publish
+| Umgebung | Auslöser | Quelle der App-Version |
+| --- | --- | --- |
+| DEV | Merge in `main` (automatisch) | Version aus dem Publish-Lauf |
+| INT | Release als **Pre-release** markieren, die erstellte PR mergen, _Deploy Int_ starten | `environments/int/version.values.yaml` |
+| PROD | Release als **Latest** markieren, die erstellte PR mergen, Helm Chart Action abwarten, _Deploy Prod_ starten | `app.version` in `charts/*/values.yaml` |
+
+### Publish und DEV
 
 Jede Änderung, die in den `main`-Branch gemerged wird, löst automatisch den
 [Publish-Workflow](./.github/workflows/publish.yml) aus. Dieser vergibt eine neue Versionsnummer, baut die Docker-Images mit derselben Version, taggt sie zusätzlich mit `:edge`, erstellt ein neues GitHub-Release und deployt die Version auf DEV.
 
 Das Release wird bewusst weder als **Pre-release** noch als **Latest** markiert. Diese beiden Promotions sind die Auslöser für die weiteren Umgebungen (siehe unten).
 
+### INT-Deployment
+
+1. Im GitHub [Release-Bereich](https://github.com/swisstopo/swissgeol-boreholes-suite/releases) das Release öffnen und als **„Set as a pre-release"** markieren.
+2. Der Workflow [Bump INT version](./.github/workflows/bump-int.yml) erstellt einen PR. Dieser setzt `app.version` in `environments/int/version.values.yaml` auf die neue Version.
+3. Den PR reviewen und mergen.
+4. Den Workflow [Deploy Int](./.github/workflows/deploy-int.yml) manuell starten.
+
+Alle INT-Releases (App, extern-sync, view-sync) lesen die Version aus `version.values.yaml`. So laufen sie immer mit derselben Version.
+
+Wenn kein PR entsteht, den Workflow _Bump INT version_ manuell mit der Version starten (z.B. `2.2.50`).
+
 ### PROD-Release
 
-Ein PROD-Release entsteht, indem ein beliebiges Release im GitHub Release-Bereich
-als **„Set as the latest release"** markiert wird. Das entsprechende Docker-Image bekommt dabei zusätzlich den `latest`-Tag.
-
-### Release Candidate (RC)
-
-Um eine bestimmte Version als Release Candidate zu kennzeichnen, kann der GitHub-Workflow
-[Release Candidate](./.github/workflows/release-candidate.yml) manuell gestartet werden. Er ergänzt den _Release Candidate_ Docker-Image-Tag für eine bestehende Version.
-
-**So geht's:**
-
-1. Im GitHub Repository unter _Actions_ den Workflow _Release Candidate_ auswählen.
-2. Auf _Run workflow_ klicken.
-3. Die Quellversion eingeben (z.B. `2.1.1427` ohne `v`).
-
-Der Workflow erstellt dann für alle Docker-Images (Client, API, etc.) einen neuen Tag (z.B. `:v2.1.1427-rc`).
+1. Im GitHub Release-Bereich das Release als **„Set as the latest release"** markieren.
+2. Der Workflow [Release](./.github/workflows/release.yml) startet automatisch. Er:
+   - taggt die Docker-Images zusätzlich mit `:latest` und `:v<major>`.
+   - übernimmt den Eintrag aus `CHANGELOG.md` in die Release Notes.
+   - erstellt einen PR _Mark version … as released_. Dieser aktualisiert `CHANGELOG.md`, `app.version` und die Chart-Versionen in `charts/*/`.
+3. Den PR reviewen und mergen. Der Workflow [Release Helm Charts](./.github/workflows/charts-release.yml) publiziert danach die neuen Charts.
+4. Warten, bis _Release Helm Charts_ erfolgreich ist. Sonst deployt der nächste Schritt das alte Chart.
+5. Den Workflow [Deploy Prod](./.github/workflows/deploy-prod.yml) manuell starten. Ohne Angabe nimmt er die neueste Chart-Version.
 
 ### Hotfix-Release erstellen
 
@@ -110,15 +120,14 @@ Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Br
 | --- | ----------- |
 | `:edge` | Neuester Stand aus `main` (letzter Publish-Lauf) |
 | `:v<version>` | Bestimmte Version, z.B. `:v2.1.1427` |
-| `:v<version>-rc` | Release Candidate einer bestimmten Version, z.B. `:v2.1.1427-rc` |
 | `:v<major>` | Stabile Major-Version, z.B. `:v2` (wird beim PROD-Release aktualisiert) |
 | `:latest` | Aktuelle produktive Version (PROD-Release) |
 
 ### Helm Chart Versionen
 
-`app.version` wird automatisch durch `release.yml` bei jedem GitHub Release aktualisiert.
+`app.version` in `charts/*/values.yaml` ist die Version für PROD. Der PROD-Release-PR aktualisiert sie (siehe oben).
 
-`dataextraction.version` und `ocr.version` müssen manuell in `charts/swissgeol-boreholes/values.yaml` aktualisiert werden, wenn diese Sub-Projekte ein neues Release erhalten.
+Für `dataextraction.version` und `ocr.version` den Workflow [Bump service version](./.github/workflows/bump-service.yml) manuell starten. Er erstellt einen PR, der die Version in `charts/swissgeol-boreholes/values.yaml` und `docker-compose.yml` setzt.
 
 ## Developer best practices
 
