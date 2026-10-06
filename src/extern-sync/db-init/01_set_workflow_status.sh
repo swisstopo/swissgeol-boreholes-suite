@@ -3,9 +3,8 @@
 # ------------------------------------------------------------------------------
 # DESCRIPTION: As part of the docker-entrypoint initialization, this script
 #              sets the workflow status for some boreholes to 'reviewed'.
-#              Only lightweight boreholes, with an id greater than 1000100, are
-#              used, because the full blown do not meet the requirements
-#              regarding the use of casings.
+#              The ids must exist in the seeded source database, see
+#              SeedData() in src/api/BdmsContextExtensions.cs.
 # ------------------------------------------------------------------------------
 
 set -e
@@ -21,7 +20,7 @@ psql \
   --command="
       DO \$\$
       DECLARE
-        bho_ids INTEGER[] := ARRAY[1000299, 1000300, 1000301, 1000302, 1000999, 1002008, 1002999];
+        bho_ids INTEGER[] := ARRAY[1000000, 1000001, 1000002, 1000003, 1000004, 1000005, 1000006, 1000007, 1000008, 1000009];
         tabs_id INTEGER;
       BEGIN
           -- Update workflow status
