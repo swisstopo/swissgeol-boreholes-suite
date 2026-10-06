@@ -3,6 +3,7 @@ import { createElement, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getAuthToken } from "../auth/authTokenStore.ts";
 import { mapExtractionResponse, useExtractStratigraphies, useFileInfo } from "./dataextraction.ts";
 import { ExtractionBoundingBox, StratigraphyExtractionResponse } from "./dataextractionInterfaces.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
@@ -13,7 +14,7 @@ vi.mock("./authentication.ts", () => ({
 }));
 
 vi.mock("../auth/authTokenStore.ts", () => ({
-  getAuthToken: () => "token",
+  getAuthToken: vi.fn(() => "token"),
 }));
 
 // The extraction query only runs once the file info query resolved, so it is stubbed out here.
@@ -115,5 +116,17 @@ describe("useFileInfo", () => {
       .mocked(fetch)
       .mock.calls.filter(([url]) => typeof url === "string" && url.includes("create_pngs"));
     expect(createPngsCalls.length).toBeGreaterThan(1);
+  });
+
+  it("sends no Authorization header in anonymous mode", async () => {
+    vi.mocked(getAuthToken).mockReturnValueOnce(null);
+    const { result } = renderHook(() => useFileInfo(1, 1), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    const createPngsCall = vi
+      .mocked(fetch)
+      .mock.calls.find(([url]) => typeof url === "string" && url.includes("create_pngs"));
+    expect(createPngsCall?.[1]?.headers).not.toHaveProperty("Authorization");
   });
 });

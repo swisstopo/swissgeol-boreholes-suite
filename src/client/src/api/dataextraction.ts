@@ -13,12 +13,18 @@ import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
+// No header in anonymous mode: a basic auth proxy in front of the app rejects any other value.
+function getAuthorizationHeaders(): Record<string, string> {
+  const authentication = getAuthToken();
+  return authentication === null ? {} : { Authorization: getAuthorizationHeader(authentication) };
+}
+
 async function fetchCreatePngs(fileName: string): Promise<Response> {
   return await fetch("/dataextraction/api/V1/create_pngs", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: getAuthorizationHeader(getAuthToken()),
+      ...getAuthorizationHeaders(),
     },
     body: JSON.stringify({ filename: fileName }),
   });
@@ -29,7 +35,7 @@ async function fetchPageBoundingBoxes(fileName: string, pageNumber: number): Pro
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: getAuthorizationHeader(getAuthToken()),
+      ...getAuthorizationHeaders(),
     },
     body: JSON.stringify({ filename: fileName, page_number: pageNumber }),
   });
@@ -41,7 +47,7 @@ async function fetchExtractData(request: unknown, abortSignal: AbortSignal): Pro
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: getAuthorizationHeader(getAuthToken()),
+      ...getAuthorizationHeaders(),
     },
     body: JSON.stringify(request),
     signal: abortSignal,
@@ -54,7 +60,7 @@ async function fetchExtractStratigraphy(fileName: string, abortSignal: AbortSign
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: getAuthorizationHeader(getAuthToken()),
+      ...getAuthorizationHeaders(),
     },
     body: JSON.stringify({ filename: fileName }),
     signal: abortSignal,
