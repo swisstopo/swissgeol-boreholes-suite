@@ -2,4 +2,4 @@
 # Layered under all other INT values files so the main app and the sync jobs
 # always run the same version.
 app:
-  version: v2.1.1748
+  version: v2.2.50
