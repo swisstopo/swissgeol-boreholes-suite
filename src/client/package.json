@@ -43,7 +43,7 @@
     "express-rate-limit": "^7.4.1",
     "i18next": "^23.7.7",
     "i18next-browser-languagedetector": "^7.2.0",
-    "i18next-http-backend": "^3.0.5",
+    "i18next-http-backend": "^4.0.2",
     "lucide-react": "^0.438.0",
     "markdown-to-jsx": "^7.0.1",
     "nuqs": "^2.9.2",
