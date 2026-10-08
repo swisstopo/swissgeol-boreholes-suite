@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAuthToken } from "../auth/authTokenStore.ts";
 import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
-import { getAuthorizationHeader } from "./authentication.ts";
+import { getAuthorizationHeaders } from "./authentication.ts";
 import {
   BoundingBoxResponse,
   DataExtractionResponse,
@@ -18,7 +17,7 @@ async function fetchCreatePngs(fileName: string): Promise<Response> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: getAuthorizationHeader(getAuthToken()),
+      ...getAuthorizationHeaders(),
     },
     body: JSON.stringify({ filename: fileName }),
   });
@@ -29,7 +28,7 @@ async function fetchPageBoundingBoxes(fileName: string, pageNumber: number): Pro
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: getAuthorizationHeader(getAuthToken()),
+      ...getAuthorizationHeaders(),
     },
     body: JSON.stringify({ filename: fileName, page_number: pageNumber }),
   });
@@ -41,7 +40,7 @@ async function fetchExtractData(request: unknown, abortSignal: AbortSignal): Pro
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: getAuthorizationHeader(getAuthToken()),
+      ...getAuthorizationHeaders(),
     },
     body: JSON.stringify(request),
     signal: abortSignal,
@@ -54,7 +53,7 @@ async function fetchExtractStratigraphy(fileName: string, abortSignal: AbortSign
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: getAuthorizationHeader(getAuthToken()),
+      ...getAuthorizationHeaders(),
     },
     body: JSON.stringify({ filename: fileName }),
     signal: abortSignal,

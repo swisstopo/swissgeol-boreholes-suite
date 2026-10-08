@@ -28,6 +28,7 @@
 - Exporting LOG runs with large attachments no longer fails. LOG file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
 - LOG runs are now always displayed on VIEW, even without any files or without public files.
 - Exporting boreholes with attachments, exporting photos, and downloading photos and profiles are now streamed instead of being assembled in memory. The download starts as soon as the first bytes are ready.
+- Opening a profile in the side panel on a VIEW instance behind a password prompt no longer asks for the password again and again without accepting it.
 - Uploading a LOG file under a name the LOG run already holds now says so, instead of reporting an unexpected error.
 - Uploading a large LOG file no longer fails after 60 seconds.
 - Accented characters such as é, è and à are no longer garbled when exporting boreholes, codelists or LOG data to CSV, or when importing CSV files. Exported CSV files now begin with a UTF-8 byte order mark so that Excel opens them with the correct character set, and imported CSV files are accepted both as UTF-8 and in the ANSI (Windows-1252) encoding that Excel produces with "Save As -> CSV".
