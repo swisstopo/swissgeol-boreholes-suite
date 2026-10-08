@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.2.57 - 2026-10-08
+
 ### Added
 - The overlay shown while saving LOG runs now names the file being uploaded, its position in the save, and how much of it has been transferred.
 - The export overlay now shows how much of the export has been downloaded.
