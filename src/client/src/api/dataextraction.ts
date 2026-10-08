@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAuthToken } from "../auth/authTokenStore.ts";
 import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
-import { getAuthorizationHeader } from "./authentication.ts";
+import { getAuthorizationHeaders } from "./authentication.ts";
 import {
   BoundingBoxResponse,
   DataExtractionResponse,
@@ -12,12 +11,6 @@ import {
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
-
-// No header in anonymous mode: a basic auth proxy in front of the app rejects any other value.
-function getAuthorizationHeaders(): Record<string, string> {
-  const authentication = getAuthToken();
-  return authentication === null ? {} : { Authorization: getAuthorizationHeader(authentication) };
-}
 
 async function fetchCreatePngs(fileName: string): Promise<Response> {
   return await fetch("/dataextraction/api/V1/create_pngs", {

@@ -9,12 +9,8 @@ import { ExtractionBoundingBox, StratigraphyExtractionResponse } from "./dataext
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
-vi.mock("./authentication.ts", () => ({
-  getAuthorizationHeader: () => "Bearer token",
-}));
-
 vi.mock("../auth/authTokenStore.ts", () => ({
-  getAuthToken: vi.fn(() => "token"),
+  getAuthToken: vi.fn(() => ({ token_type: "Bearer", access_token: "token" })),
 }));
 
 // The extraction query only runs once the file info query resolved, so it is stubbed out here.

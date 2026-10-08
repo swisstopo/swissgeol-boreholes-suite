@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAuthToken } from "../auth/authTokenStore.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
-import { getAuthorizationHeader } from "./authentication.ts";
+import { getAuthorizationHeaders } from "./authentication.ts";
 import { ApiError, isUserErrorProblem, toErrorMessage, toUserError } from "./errorClasses.ts";
 import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation, Section } from "./generated";
 
@@ -22,12 +21,7 @@ export async function fetchApiV2Base(
   signal?: AbortSignal,
 ): Promise<Response> {
   const baseUrl = "/api/v2/";
-  const authentication = getAuthToken();
-  let headers: Record<string, string> = {};
-  // Only add Authorization header if user is authenticated (not in anonymous mode)
-  if (authentication !== null) {
-    headers.Authorization = getAuthorizationHeader(authentication);
-  }
+  let headers = getAuthorizationHeaders();
   if (contentType) headers = { ...headers, "Content-Type": contentType };
   return await fetch(baseUrl + url, {
     method: method,
