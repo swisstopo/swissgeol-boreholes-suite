@@ -74,7 +74,7 @@ jobs:
           VITE_APP_VERSION: 0.0.99+dev
 
       - name: Upload client dist
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: client-dist
           path: src/client/dist
@@ -113,7 +113,7 @@ jobs:
         run: docker save bdms-api | gzip > /tmp/bdms-images.tar.gz
 
       - name: Upload images
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: bdms-images
           path: /tmp/bdms-images.tar.gz
@@ -156,7 +156,7 @@ jobs:
         run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning --logger trx
 
       - name: Upload test results
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: dotnet-test-results
