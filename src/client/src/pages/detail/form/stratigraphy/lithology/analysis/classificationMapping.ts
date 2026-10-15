@@ -81,129 +81,84 @@ const descriptionTarget = (field: string, labelKey: string): AttributeTarget => 
   labelKey,
 });
 
+type ModeAttributeEntry = Omit<AttributeRegistryEntry, "isUnconsolidated">;
+
+/** A description field named `<labelKey>Id` that takes one codelist id, matched by english text. */
+const textSingle = (apiKey: keyof ClassifyResponse, labelKey: string, schema: string): ModeAttributeEntry => ({
+  apiKey,
+  targets: [descriptionTarget(`${labelKey}Id`, labelKey)],
+  schema,
+  match: "text",
+  kind: "single",
+});
+
+/** A description field named `<labelKey>CodelistIds` that takes several codelist ids, matched by english text. */
+const textList = (apiKey: keyof ClassifyResponse, labelKey: string, schema: string): ModeAttributeEntry => ({
+  apiKey,
+  targets: [descriptionTarget(`${labelKey}CodelistIds`, labelKey)],
+  schema,
+  match: "text",
+  kind: "list",
+});
+
+const inMode = (isUnconsolidated: boolean, entries: ModeAttributeEntry[]): AttributeRegistryEntry[] =>
+  entries.map(entry => ({ ...entry, isUnconsolidated }));
+
+const color = textSingle("color", "colorPrimary", "color");
+
 /**
  * The whole contract between the classification response and the lithology form, in one table.
  * Adding an attribute the service starts to return is one row.
  */
 export const attributeRegistry: AttributeRegistryEntry[] = [
-  {
-    apiKey: "en_main",
-    targets: [descriptionTarget("lithologyUnconMainId", "lithologyUnconMain")],
-    schema: "lithology_uncon_main",
-    match: "code",
-    kind: "single",
-    isUnconsolidated: true,
-  },
-  {
-    apiKey: "en_secondary",
-    targets: [
-      descriptionTarget("lithologyUncon2Id", "lithologyUnconSecondary"),
-      descriptionTarget("lithologyUncon3Id", "componentUncon"),
-      descriptionTarget("lithologyUncon4Id", "componentUncon"),
-      descriptionTarget("lithologyUncon5Id", "componentUncon"),
-      descriptionTarget("lithologyUncon6Id", "componentUncon"),
-    ],
-    schema: "lithology_uncon_secondary",
-    match: "code",
-    kind: "fanOut",
-    isUnconsolidated: true,
-  },
-  {
-    apiKey: "uscs",
-    targets: [{ path: "uscsTypeCodelistIds", labelKey: "uscsType" }],
-    schema: "uscs_type",
-    match: "code",
-    kind: "singleIntoList",
-    isUnconsolidated: true,
-  },
-  {
-    apiKey: "color",
-    targets: [descriptionTarget("colorPrimaryId", "colorPrimary")],
-    schema: "color",
-    match: "text",
-    kind: "single",
-    isUnconsolidated: true,
-  },
-  {
-    apiKey: "organic_components",
-    targets: [descriptionTarget("componentUnconOrganicCodelistIds", "componentUnconOrganic")],
-    schema: "component_uncon_organic",
-    match: "text",
-    kind: "list",
-    isUnconsolidated: true,
-  },
-  {
-    apiKey: "debris",
-    targets: [descriptionTarget("componentUnconDebrisCodelistIds", "componentUnconDebris")],
-    schema: "component_uncon_debris",
-    match: "text",
-    kind: "list",
-    isUnconsolidated: true,
-  },
-  {
-    apiKey: "grain_angularity",
-    targets: [descriptionTarget("grainAngularityCodelistIds", "grainAngularity")],
-    schema: "grain_angularity",
-    match: "text",
-    kind: "list",
-    isUnconsolidated: true,
-  },
-  {
-    apiKey: "grain_shape",
-    targets: [descriptionTarget("grainShapeCodelistIds", "grainShape")],
-    schema: "grain_shape",
-    match: "text",
-    kind: "list",
-    isUnconsolidated: true,
-  },
-  {
-    apiKey: "lithology",
-    targets: [descriptionTarget("lithologyConId", "lithologyCon")],
-    schema: "lithology_con",
-    match: "text",
-    kind: "single",
-    isUnconsolidated: false,
-  },
-  {
-    apiKey: "color",
-    targets: [descriptionTarget("colorPrimaryId", "colorPrimary")],
-    schema: "color",
-    match: "text",
-    kind: "single",
-    isUnconsolidated: false,
-  },
-  {
-    apiKey: "cementation",
-    targets: [descriptionTarget("cementationId", "cementation")],
-    schema: "cementation",
-    match: "text",
-    kind: "single",
-    isUnconsolidated: false,
-  },
-  {
-    apiKey: "mineral_components",
-    targets: [descriptionTarget("componentConMineralCodelistIds", "componentConMineral")],
-    schema: "component_con_mineral",
-    match: "text",
-    kind: "list",
-    isUnconsolidated: false,
-  },
-  {
-    apiKey: "accessory_components",
-    targets: [descriptionTarget("componentConParticleCodelistIds", "componentConParticle")],
-    schema: "component_con_particle",
-    match: "text",
-    kind: "list",
-    isUnconsolidated: false,
-  },
-  {
-    apiKey: "alteration_degree_consolidated",
-    targets: [{ path: "alterationDegreeId", labelKey: "alterationDegree" }],
-    schema: "alteration_degree",
-    match: "text",
-    kind: "single",
-    isUnconsolidated: false,
-  },
+  ...inMode(true, [
+    {
+      apiKey: "en_main",
+      targets: [descriptionTarget("lithologyUnconMainId", "lithologyUnconMain")],
+      schema: "lithology_uncon_main",
+      match: "code",
+      kind: "single",
+    },
+    {
+      apiKey: "en_secondary",
+      targets: [
+        descriptionTarget("lithologyUncon2Id", "lithologyUnconSecondary"),
+        descriptionTarget("lithologyUncon3Id", "componentUncon"),
+        descriptionTarget("lithologyUncon4Id", "componentUncon"),
+        descriptionTarget("lithologyUncon5Id", "componentUncon"),
+        descriptionTarget("lithologyUncon6Id", "componentUncon"),
+      ],
+      schema: "lithology_uncon_secondary",
+      match: "code",
+      kind: "fanOut",
+    },
+    {
+      apiKey: "uscs",
+      targets: [{ path: "uscsTypeCodelistIds", labelKey: "uscsType" }],
+      schema: "uscs_type",
+      match: "code",
+      kind: "singleIntoList",
+    },
+    color,
+    textList("organic_components", "componentUnconOrganic", "component_uncon_organic"),
+    textList("debris", "componentUnconDebris", "component_uncon_debris"),
+    textList("grain_angularity", "grainAngularity", "grain_angularity"),
+    textList("grain_shape", "grainShape", "grain_shape"),
+  ]),
+  ...inMode(false, [
+    textSingle("lithology", "lithologyCon", "lithology_con"),
+    color,
+    textSingle("cementation", "cementation", "cementation"),
+    textList("mineral_components", "componentConMineral", "component_con_mineral"),
+    textList("accessory_components", "componentConParticle", "component_con_particle"),
+    {
+      apiKey: "alteration_degree_consolidated",
+      targets: [{ path: "alterationDegreeId", labelKey: "alterationDegree" }],
+      schema: "alteration_degree",
+      match: "text",
+      kind: "single",
+    },
+  ]),
 ];
 
 const modeForConsolidation = (consolidation: ClassificationConsolidation | undefined): boolean | null => {
