@@ -347,8 +347,7 @@
         "react/immutability": "error",
         "react/globals": "error",
         "react/refs": "error",
-        // Downgraded, will be fixed step by step. Counted in the lint:oxlint warning cap.
-        "react/set-state-in-effect": "warn",
+        "react/set-state-in-effect": "error",
         "react/error-boundaries": "error",
         "react/purity": "error",
         "react/set-state-in-render": "error",

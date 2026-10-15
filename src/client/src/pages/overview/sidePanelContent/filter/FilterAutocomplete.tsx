@@ -1,4 +1,4 @@
-import { FC, KeyboardEvent, SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { FC, KeyboardEvent, SyntheticEvent, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, CircularProgress, TextField, Typography } from "@mui/material";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -20,10 +20,12 @@ interface FilterAutocompleteProps {
 export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterValue, onUpdate, filterRequest }) => {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState<string>(filterValue ?? "");
+  const [syncedFilterValue, setSyncedFilterValue] = useState(filterValue);
 
-  useEffect(() => {
+  if (filterValue !== syncedFilterValue) {
+    setSyncedFilterValue(filterValue);
     setInputValue(filterValue ?? "");
-  }, [filterValue]);
+  }
 
   const debouncedForFetch = useDebounce(inputValue, 300);
 

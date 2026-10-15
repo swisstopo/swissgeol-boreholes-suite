@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { ProfileFilePicker } from "./profileFilePicker.tsx";
 import { StratigraphyExtractionDialog } from "./stratigraphyExtractionDialog.tsx";
@@ -17,12 +17,16 @@ export const StratigraphyExtraction: FC<StratigraphyExtractionProps> = ({
   const [extractionOpen, setExtractionOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<BoreholeAttachment>();
 
-  useEffect(() => {
-    if (selectedFile) {
-      setFilePickerOpen(false);
-      setExtractionOpen(true);
-    }
-  }, [selectedFile, setFilePickerOpen]);
+  const selectFileForExtraction = useCallback(
+    (file: BoreholeAttachment | undefined) => {
+      setSelectedFile(file);
+      if (file) {
+        setFilePickerOpen(false);
+        setExtractionOpen(true);
+      }
+    },
+    [setFilePickerOpen],
+  );
 
   return (
     <>
@@ -30,7 +34,7 @@ export const StratigraphyExtraction: FC<StratigraphyExtractionProps> = ({
         boreholeId={boreholeId}
         open={filePickerOpen}
         setOpen={setFilePickerOpen}
-        setSelectedFile={setSelectedFile}
+        setSelectedFile={selectFileForExtraction}
       />
       {selectedFile && (
         <StratigraphyExtractionDialog

@@ -10,11 +10,12 @@ import { useEffect, useState } from "react";
 export const useDelayedFlag = (active: boolean, delayMs: number): boolean => {
   const [elapsed, setElapsed] = useState(false);
 
+  if (!active && elapsed) {
+    setElapsed(false);
+  }
+
   useEffect(() => {
-    if (!active) {
-      setElapsed(false);
-      return;
-    }
+    if (!active) return;
     const timeout = setTimeout(() => setElapsed(true), delayMs);
     return () => clearTimeout(timeout);
   }, [active, delayMs]);
