@@ -189,15 +189,20 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
         sx={
           isAnalysisTarget
             ? {
-                border: `2px solid ${theme.palette.ai.secondary} !important`,
-                backgroundColor: theme.palette.ai.highlightBackground,
+                position: "relative",
+                overflow: "visible",
+                border: `3px solid ${theme.palette.ai.secondary} !important`,
+                pl: "18px",  // Keeps the label clear of the badge, which straddles the left border.
               }
             : undefined
         }>
-        <Stack direction="row" gap={0.5} alignItems="center">
-          {isAnalysisTarget && <AnalysisBadge data-cy="analysis-mode-badge" />}
-          <Typography>{ct(label)}</Typography>
-        </Stack>
+        {isAnalysisTarget && (
+          <AnalysisBadge
+            data-cy="analysis-mode-badge"
+            style={{ position: "absolute", left: "-1.5px", top: "50%", transform: "translate(-50%, -50%)" }}
+          />
+        )}
+        <Typography>{ct(label)}</Typography>
       </ToggleButton>
     );
   };
