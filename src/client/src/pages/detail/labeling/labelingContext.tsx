@@ -38,7 +38,7 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
     () => (localStorage.getItem(panelPositionStorageName) as PanelPosition | null) || "right",
   );
   const [panelOpen, setPanelOpen] = useState(false);
-  const [extractionObject, setExtractionObjectState] = useState<ExtractionObject>();
+  const [extractionObject, setExtractionObject] = useState<ExtractionObject>();
   const [extractionState, setExtractionState] = useState<ExtractionState>();
   const [abortController, setAbortController] = useState<AbortController>();
   const [panelTab, setPanelTab] = useState<PanelTab>(PanelTab.profile);
@@ -49,7 +49,7 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
       const nextPanelOpen = isOpen ?? !panelOpen;
       setPanelOpen(nextPanelOpen);
       if (!nextPanelOpen) {
-        setExtractionObjectState(undefined);
+        setExtractionObject(undefined);
         setExtractionState(undefined);
       }
     },
@@ -57,8 +57,8 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 
   // An extraction is shown in the panel, so starting one opens it.
-  const setExtractionObject = useCallback((newExtractionObject: ExtractionObject | undefined) => {
-    setExtractionObjectState(newExtractionObject);
+  const setExtractionObjectAndOpenPanel = useCallback((newExtractionObject: ExtractionObject | undefined) => {
+    setExtractionObject(newExtractionObject);
     if (newExtractionObject) {
       setPanelOpen(true);
     }
@@ -69,9 +69,9 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
       abortController.abort();
       setAbortController(undefined);
     }
-    setExtractionObject({ type: "coordinates" });
+    setExtractionObjectAndOpenPanel({ type: "coordinates" });
     setExtractionState(ExtractionState.start);
-  }, [abortController, setExtractionObject]);
+  }, [abortController, setExtractionObjectAndOpenPanel]);
 
   useEffect(() => {
     localStorage.setItem(panelPositionStorageName, panelPosition);
@@ -85,7 +85,7 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
         panelOpen,
         togglePanel,
         extractionObject,
-        setExtractionObject,
+        setExtractionObject: setExtractionObjectAndOpenPanel,
         extractionState,
         setExtractionState,
         setAbortController,

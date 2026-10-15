@@ -89,7 +89,7 @@ const LayerCard = ({
       // make selection array the same length as header array
       return coloredSelections
         .slice(0, header.length)
-        .concat(Array(Math.max(0, header.length - selections.length)).fill(null));
+        .concat(new Array(Math.max(0, header.length - selections.length)).fill(null));
     }
     return null;
   }, [dataProperty, header.length, layer, options]);
