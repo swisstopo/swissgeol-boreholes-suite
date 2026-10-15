@@ -23,7 +23,7 @@ const enableDevMode = () => {
 
 const analyze = (description: string) => {
   descriptionField().clear();
-  descriptionField().type(description);
+  descriptionField().type(description, { delay: 0 });
   cy.dataCy("analyze-button").click();
   cy.dataCy("analysis-result-card").should("be.visible");
 };
@@ -40,7 +40,7 @@ describe("Lithology automatic classification", () => {
 
     evaluateSelect("lithologyDescriptions.0.lithologyUnconMainId", "medium gravel (MGr)");
     cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-formSelect").should("have.class", "analysis-highlight");
-    cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-analysis-reset").should("be.visible");
+    cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-analysis-reset").scrollIntoView().should("be.visible");
     cy.dataCy("analysis-result-card").contains("Major component");
     cy.dataCy("analysis-result-card").contains("[empty]");
   });
@@ -93,7 +93,7 @@ describe("Lithology automatic classification", () => {
 
   it("reports a description it cannot classify", () => {
     descriptionField().clear();
-    descriptionField().type("keine Angabe");
+    descriptionField().type("keine Angabe", { delay: 0 });
     cy.dataCy("analyze-button").click();
 
     isUnconsolidatedForm(null);

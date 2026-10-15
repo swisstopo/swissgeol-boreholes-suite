@@ -1,13 +1,12 @@
 import { FC, useContext, useEffect, useMemo } from "react";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { CircularProgress, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { Info, Sparkles } from "lucide-react";
+import { Info } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import { BoreholesButton } from "../../../../../../components/buttons/buttons.tsx";
 import { AnalysisBadge } from "../../../../../../components/form/fieldAnalysis/analysisBadge.tsx";
 import { FieldAnalysisProvider } from "../../../../../../components/form/fieldAnalysis/fieldAnalysisContext.tsx";
 import { FormErrors, FormValueType } from "../../../../../../components/form/form.ts";
@@ -19,6 +18,7 @@ import { useCapitalizedTranslation } from "../../../../../../hooks/useCapitalize
 import { useDevMode } from "../../../../../../hooks/useDevMode.tsx";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
 import { AnalysisResultCard } from "../analysis/analysisResultCard.tsx";
+import { AnalyzeButton } from "../analysis/analyzeButton.tsx";
 import { useLithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
@@ -166,11 +166,9 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
 
   const applyDialog = buildApplyHandler(analysis, applyLithology, showPrompt);
 
-  const description = useWatch({ control: formMethods.control, name: "lithologicalDescription.description" });
-
-  const runAnalysis = async () => {
+  const runAnalysis = async (description: string) => {
     try {
-      const pending = await analysis.run((description ?? "").trim());
+      const pending = await analysis.run(description);
       if (pending === 0) showAlert(t("lithologyClassificationNoResult"), "info");
     } catch {
       showAlert(t("errorLithologyClassification"), "error");
@@ -283,14 +281,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
               // Gated on dev mode while the classification is served from the client side mock.
               // Drop the gate together with useClassificationMock once the endpoint ships.
               runsDevMode && (
-                <BoreholesButton
-                  variant="contained"
-                  color="primary"
-                  label="runAnalysis"
-                  dataCy="analyze-button"
-                  icon={analysis.isPending ? <CircularProgress size={16} color="inherit" /> : <Sparkles />}
-                  disabled={analysis.isPending || (description ?? "").trim().length === 0}
-                  onClick={() => void runAnalysis()}
+                <AnalyzeButton
+                  control={formMethods.control}
+                  isPending={analysis.isPending}
+                  onAnalyze={description => void runAnalysis(description)}
                 />
               )
             }>
