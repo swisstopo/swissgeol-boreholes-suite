@@ -24,8 +24,13 @@ export const FilterTextField: FC<FilterTextFieldProps> = ({ item, filterValue, o
     onUpdateRef.current = onUpdate;
   });
 
-  useEffect(() => {
+  const [syncedFilterValue, setSyncedFilterValue] = useState(filterValue);
+  if (filterValue !== syncedFilterValue) {
+    setSyncedFilterValue(filterValue);
     setLocalValue(filterValue ?? "");
+  }
+
+  useEffect(() => {
     lastCommittedRef.current = filterValue || null;
   }, [filterValue]);
 

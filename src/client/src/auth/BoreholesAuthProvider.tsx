@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useEffect, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useMemo } from "react";
 import { AuthProviderProps, AuthProvider as OidcAuthProvider } from "react-oidc-context";
 import { DataRouter } from "react-router";
 import { CircularProgress } from "@mui/material";
@@ -50,11 +50,10 @@ const PrefetchBoreholes: FC = () => {
 };
 
 export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderProps>> = ({ router, children }) => {
-  const [oidcConfig, setOidcConfig] = useState<OidcConfig | undefined>(undefined);
   const settings = useSettings();
 
-  useEffect(() => {
-    if (!settings?.authSettings) return;
+  const oidcConfig = useMemo((): OidcConfig | undefined => {
+    if (!settings?.authSettings) return undefined;
 
     const serverConfig = settings.authSettings;
 
@@ -76,13 +75,13 @@ export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderPro
       void router.navigate(preLoginState.path, { replace: true });
     };
 
-    setOidcConfig({
+    return {
       onSigninCallback,
       userManager,
       customSettings: {
         anonymousModeEnabled: serverConfig.anonymousModeEnabled,
       },
-    });
+    };
   }, [router, settings]);
 
   if (!oidcConfig) {

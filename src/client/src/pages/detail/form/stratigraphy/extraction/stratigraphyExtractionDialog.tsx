@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import {
@@ -77,12 +77,10 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     });
   }, []);
 
-  useEffect(() => {
-    // Auto-check the only stratigraphy when there is exactly one
-    if (allExtractedStratigraphies.length === 1 && !checkedIndices.has(0)) {
-      setCheckedIndices(new Set([0]));
-    }
-  }, [allExtractedStratigraphies.length, checkedIndices]);
+  // Auto-check the only stratigraphy when there is exactly one
+  if (allExtractedStratigraphies.length === 1 && !checkedIndices.has(0)) {
+    setCheckedIndices(new Set([0]));
+  }
 
   // The displayed name per stratigraphy: the default derived from the file name, overridden by any edit.
   const names = useMemo(() => {

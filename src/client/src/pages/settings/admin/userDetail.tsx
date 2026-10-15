@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
+﻿import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
@@ -17,10 +17,30 @@ import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
 type WorkgroupWithRoles = Workgroup & { roles: Role[] };
 
+const getUniqueWorkgroups = (user: User): WorkgroupWithRoles[] => {
+  const { workgroupRoles } = user;
+  if (!workgroupRoles || workgroupRoles.length < 1) return [];
+  const workgroupsMap = new Map<number, WorkgroupWithRoles>();
+  workgroupRoles.forEach((r: UserWorkgroupRole) => {
+    // An entry without a role renders a chip with no label, and one without a workgroup carries
+    // no id for the row to be found by, so neither can be shown.
+    if (!r.role || !r.workgroup) return;
+    const workgroup = workgroupsMap.get(r.workgroupId);
+    if (workgroup) {
+      workgroup.roles.push(r.role);
+    } else {
+      workgroupsMap.set(r.workgroupId, {
+        ...r.workgroup,
+        roles: [r.role],
+      });
+    }
+  });
+  return Array.from(workgroupsMap.values());
+};
+
 export const UserDetail: FC = () => {
   const id = useRequiredId();
   const { t } = useTranslation();
-  const [userWorkgroups, setUserWorkgroups] = useState<WorkgroupWithRoles[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const { workgroupNameColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
@@ -34,33 +54,8 @@ export const UserDetail: FC = () => {
     removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
   } = useWorkgroupMutations();
 
-  const getUniqueWorkgroups = (user: User): WorkgroupWithRoles[] => {
-    const { workgroupRoles } = user;
-    if (!workgroupRoles || workgroupRoles.length < 1) return [];
-    const workgroupsMap = new Map<number, WorkgroupWithRoles>();
-    workgroupRoles.forEach((r: UserWorkgroupRole) => {
-      // An entry without a role renders a chip with no label, and one without a workgroup carries
-      // no id for the row to be found by, so neither can be shown.
-      if (!r.role || !r.workgroup) return;
-      const workgroup = workgroupsMap.get(r.workgroupId);
-      if (workgroup) {
-        workgroup.roles.push(r.role);
-      } else {
-        workgroupsMap.set(r.workgroupId, {
-          ...r.workgroup,
-          roles: [r.role],
-        });
-      }
-    });
-    return Array.from(workgroupsMap.values());
-  };
-
-  useEffect(() => {
-    // Get the transformed array of unique workgroups with roles
-    if (selectedUser) {
-      setUserWorkgroups(getUniqueWorkgroups(selectedUser));
-    }
-  }, [selectedUser]);
+  // Get the transformed array of unique workgroups with roles
+  const userWorkgroups = useMemo(() => (selectedUser ? getUniqueWorkgroups(selectedUser) : undefined), [selectedUser]);
 
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
 

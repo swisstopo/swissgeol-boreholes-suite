@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box } from "@mui/material";
 import {
@@ -7,7 +7,12 @@ import {
   useExtractionBoundingBoxes,
   useFileInfo,
 } from "../../../api/dataextraction.ts";
-import { ExtractionRequest, ExtractionState } from "../../../api/dataextractionInterfaces.ts";
+import {
+  ExtractionObject,
+  ExtractionRequest,
+  ExtractionState,
+  ExtractionType,
+} from "../../../api/dataextractionInterfaces.ts";
 import { useProfileImage } from "../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -24,6 +29,20 @@ interface LabelingExtractionProps {
   closeAlert: () => void;
 }
 
+const drawTooltipLabels: Partial<Record<ExtractionType, string>> = {
+  coordinates: "drawCoordinateBox",
+  text: "drawTextBox",
+};
+
+const getDrawTooltipLabel = (
+  extractionState: ExtractionState | undefined,
+  extractionObject: ExtractionObject | undefined,
+): string | undefined => {
+  const isDrawing = extractionState === ExtractionState.start || extractionState === ExtractionState.drawing;
+  if (!isDrawing || !extractionObject?.type) return undefined;
+  return drawTooltipLabels[extractionObject.type];
+};
+
 export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   selectedFile,
   activePage,
@@ -33,8 +52,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   const { t } = useTranslation();
   const { extractionObject, setExtractionObject, setExtractionState, extractionState, setAbortController } =
     useLabelingContext();
-  const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
-  const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
+  const drawTooltipLabel = getDrawTooltipLabel(extractionState, extractionObject);
   const { data: fileInfo, isError: isFileInfoError, error: fileInfoError } = useFileInfo(selectedFile?.id, activePage);
   const { data: image, isError: isProfileInfoError, error: profileError } = useProfileImage(fileInfo?.fileName);
   const {
@@ -77,7 +95,6 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
           x1: Math.max(extent[0], extent[2]),
           y1: Math.max(extent[1], extent[3]),
         };
-        setExtractionExtent([]);
         const request: ExtractionRequest = {
           filename: fileInfo.fileName.substring(0, fileInfo.fileName.lastIndexOf("-")) + ".pdf",
           page_number: activePage,
@@ -85,7 +102,6 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
           format: extractionObject.type,
         };
         setExtractionState(ExtractionState.loading);
-        setDrawTooltipLabel(undefined);
         const abortController = new AbortController();
         setAbortController(abortController);
         const extractFunction = extractionObject.type === "coordinates" ? extractCoordinates : extractText;
@@ -127,19 +143,18 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
     ],
   );
 
+  // The draw container registers its draw end listener once per map, so it gets a stable callback
+  // that always runs the latest extraction.
+  const triggerDataExtractionRef = useRef(triggerDataExtraction);
   useEffect(() => {
-    if (extractionExtent?.length > 0) {
-      triggerDataExtraction(extractionExtent);
-    }
-  }, [extractionExtent, triggerDataExtraction]);
+    triggerDataExtractionRef.current = triggerDataExtraction;
+  });
+  const handleDrawEnd = useCallback((extent: number[]) => triggerDataExtractionRef.current(extent), []);
 
   useEffect(() => {
     if (extractionState === ExtractionState.start) {
       closeAlert();
       setExtractionState(ExtractionState.drawing);
-      if (extractionObject?.type === "coordinates") {
-        setDrawTooltipLabel("drawCoordinateBox");
-      }
     }
   }, [closeAlert, extractionObject, extractionState, setExtractionObject, setExtractionState]);
 
@@ -161,13 +176,12 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
           onClick={() => {
             setExtractionObject({ type: "text" });
             setExtractionState(ExtractionState.start);
-            setDrawTooltipLabel("drawTextBox");
           }}
         />
       </Box>
       <LabelingDrawContainer
         fileInfo={fileInfo}
-        onDrawEnd={setExtractionExtent}
+        onDrawEnd={handleDrawEnd}
         drawTooltipLabel={drawTooltipLabel}
         boundingBoxes={pageBoundingBoxes?.bounding_boxes}
         extractionType={extractionObject?.type}

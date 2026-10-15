@@ -100,18 +100,12 @@ export const Table = <T extends GridValidRowModel>({
     }
   }, [apiRef, columnWidths, effectiveApiRef]);
 
-  // Sync internal pagination model with maxRowsPerPage changes.
-  useEffect(() => {
-    setInternalPaginationModel(prev => {
-      if (prev.pageSize === maxRowsPerPage) {
-        return prev;
-      }
-      return {
-        pageSize: maxRowsPerPage,
-        page: 0,
-      };
-    });
-  }, [maxRowsPerPage]);
+  // Sync internal pagination model with maxRowsPerPage changes: a page chosen for another page size
+  // no longer applies, so the table starts over on the first page.
+  const syncedInternalPaginationModel =
+    internalPaginationModel.pageSize === maxRowsPerPage
+      ? internalPaginationModel
+      : { pageSize: maxRowsPerPage, page: 0 };
 
   const handleColumnResize = useCallback(
     (params: GridColumnResizeParams) => {
@@ -214,7 +208,7 @@ export const Table = <T extends GridValidRowModel>({
         onFilterModelChange={onFilterModelChange}
         sortModel={sortModel}
         onSortModelChange={onSortModelChange}
-        paginationModel={paginationModel ?? internalPaginationModel}
+        paginationModel={paginationModel ?? syncedInternalPaginationModel}
         onPaginationModelChange={onPaginationModelChange ?? setInternalPaginationModel}
         onColumnResize={handleColumnResize}
         apiRef={apiRef}
