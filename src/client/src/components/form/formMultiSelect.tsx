@@ -132,33 +132,33 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                   });
                 }}
                 renderInput={({ InputProps, ...params }) => (
-                <TextField
-                  {...params}
-                  label={
-                    analysis ? (
-                      <FieldAnalysisLabel label={labelWithTooltip} change={analysis.change} />
-                    ) : (
-                      labelWithTooltip
-                    )
-                  }
+                  <TextField
+                    {...params}
+                    label={
+                      analysis ? (
+                        <FieldAnalysisLabel label={labelWithTooltip} change={analysis.change} />
+                      ) : (
+                        labelWithTooltip
+                      )
+                    }
                     required={required}
                     error={!!formFieldError}
                     helperText={formFieldError?.message ? t(formFieldError.message) : ""}
                     sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
                     className={`${className ?? ""}${analysis ? " analysis-highlight" : ""}`}
-                  data-cy={fieldName + "-formMultiSelect"}
-                  disabled={disabled}
-                  slotProps={{
-                    input: {
-                      ...InputProps,
-                      endAdornment: (
-                        <>
-                          {analysis && <FieldAnalysisResetButton fieldName={fieldName} onReset={analysis.reset} />}
-                          {InputProps.endAdornment}
-                        </>
-                      ),
-                    },
-                  }}
+                    data-cy={fieldName + "-formMultiSelect"}
+                    disabled={disabled}
+                    slotProps={{
+                      input: {
+                        ...InputProps,
+                        endAdornment: (
+                          <>
+                            {analysis && <FieldAnalysisResetButton fieldName={fieldName} onReset={analysis.reset} />}
+                            {InputProps.endAdornment}
+                          </>
+                        ),
+                      },
+                    }}
                   />
                 )}
                 renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
