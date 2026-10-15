@@ -40,7 +40,8 @@ describe("Lithology automatic classification", () => {
 
     evaluateSelect("lithologyDescriptions.0.lithologyUnconMainId", "medium gravel (MGr)");
     cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-formSelect").should("have.class", "analysis-highlight");
-    cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-analysis-reset").scrollIntoView().should("be.visible");
+    cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-analysis-reset").scrollIntoView();
+    cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-analysis-reset").should("be.visible");
     cy.dataCy("analysis-result-card").contains("Major component");
     cy.dataCy("analysis-result-card").contains("[empty]");
   });
