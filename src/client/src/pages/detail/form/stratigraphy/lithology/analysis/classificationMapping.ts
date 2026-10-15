@@ -20,13 +20,20 @@ export const normaliseText = (value: string): string =>
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 
+/** Strips trailing underscores. */
+const withoutTrailingUnderscores = (value: string): string => {
+  let end = value.length;
+  while (end > 0 && value[end - 1] === "_") end--;
+  return value.slice(0, end);
+};
+
 /**
  * Normalises a codelist code for comparison. The service enum is lowercase throughout, escapes the
  * member that would collide with a python keyword (`or_` for the code `Or`), and joins compound
  * codes with an underscore where the codelist uses a hyphen (`GP_GC` for `GP-GC`).
  */
 export const normaliseCode = (value: string): string =>
-  value.trim().toLowerCase().replace(/_+$/, "").replace(/_/g, "-");
+  withoutTrailingUnderscores(value.trim().toLowerCase()).replaceAll("_", "-");
 
 /**
  * Resolves a value the classification returned to a codelist id within one schema.
@@ -195,6 +202,33 @@ const resolveIds = (entry: AttributeRegistryEntry, raw: unknown, codelists: Code
     })
     .filter((id): id is number => id !== undefined);
 
+/** Pairs the resolved ids with the form fields they are written into. */
+const pairIdsWithTargets = (entry: AttributeRegistryEntry, ids: number[]): [AttributeTarget, FieldValue][] => {
+  if (entry.kind !== "fanOut") return [[entry.targets[0], entry.kind === "single" ? ids[0] : ids]];
+
+  if (ids.length > entry.targets.length) {
+    console.warn(
+      `Classification returned ${ids.length} values for ${entry.apiKey}, only the first ${entry.targets.length} fit the form.`,
+    );
+  }
+  return ids.slice(0, entry.targets.length).map((id, index) => [entry.targets[index], id]);
+};
+
+const changesForEntry = (
+  entry: AttributeRegistryEntry,
+  ids: number[],
+  previousValueAt: (path: string) => FieldValue,
+): FieldChange[] => {
+  if (ids.length === 0) return [];
+
+  return pairIdsWithTargets(entry, ids).flatMap(([target, next]) => {
+    const previous = previousValueAt(target.path);
+    return areFieldValuesEqual(previous, next)
+      ? []
+      : [{ path: target.path, labelKey: target.labelKey, previous, next }];
+  });
+};
+
 /**
  * Turns a classification response into the mode change and the field changes it implies.
  *
@@ -214,31 +248,11 @@ export const mapClassificationToChanges = (
   const currentMode = currentValues.isUnconsolidated ?? null;
   const modeChange = nextMode === currentMode ? undefined : { previous: currentMode, next: nextMode };
 
-  const changes: FieldChange[] = [];
+  const previousValueAt = (path: string): FieldValue => (modeChange ? null : valueAtPath(currentValues, path));
 
-  for (const entry of attributeRegistry) {
-    if (nextMode === null || entry.isUnconsolidated !== nextMode) continue;
-
-    const ids = resolveIds(entry, response[entry.apiKey], codelists);
-    if (ids.length === 0) continue;
-
-    const nextByTarget: [AttributeTarget, FieldValue][] =
-      entry.kind === "fanOut"
-        ? ids.slice(0, entry.targets.length).map((id, index) => [entry.targets[index], id])
-        : [[entry.targets[0], entry.kind === "single" ? ids[0] : ids]];
-
-    if (entry.kind === "fanOut" && ids.length > entry.targets.length) {
-      console.warn(
-        `Classification returned ${ids.length} values for ${entry.apiKey}, only the first ${entry.targets.length} fit the form.`,
-      );
-    }
-
-    for (const [target, next] of nextByTarget) {
-      const previous = modeChange ? null : valueAtPath(currentValues, target.path);
-      if (areFieldValuesEqual(previous, next)) continue;
-      changes.push({ path: target.path, labelKey: target.labelKey, previous, next });
-    }
-  }
+  const changes = attributeRegistry
+    .filter(entry => nextMode !== null && entry.isUnconsolidated === nextMode)
+    .flatMap(entry => changesForEntry(entry, resolveIds(entry, response[entry.apiKey], codelists), previousValueAt));
 
   return modeChange ? { changes, modeChange } : { changes };
 };
