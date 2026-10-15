@@ -2,6 +2,7 @@ import { FC, HTMLAttributes, useContext } from "react";
 import { Controller, RegisterOptions, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
+import { ChevronDownIcon } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
@@ -182,6 +183,8 @@ export const FormSelect: FC<FormSelectProps> = ({
               );
             }}
             disabled={disabled}
+            popupIcon={<ChevronDownIcon />}
+            slotProps={{ popupIndicator: { sx: { color: "primary.main" } } }}
             // Typescript quirk: By asserting "true as boolean", MUI's Autocomplete component allows null for the value type.
             // A boolean-typed constant does not work here, because TypeScript narrows it back to the literal true.
             // oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- the assertion widens the literal type

@@ -61,6 +61,7 @@ export const FieldAnalysisResetButton: FC<FieldAnalysisResetButtonProps> = ({ fi
     <Tooltip title={t("reset")}>
       <IconButton
         size="small"
+        sx={{ color: "primary.main" }}
         data-cy={`${fieldName}-analysis-reset`}
         onClick={event => {
           // The button sits inside the Autocomplete's adornment, which would otherwise open the list.

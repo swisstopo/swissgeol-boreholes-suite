@@ -62,13 +62,18 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
         renderCell: ({ row }) => (
           <Stack direction="row" gap={0.5}>
             <Tooltip title={t("reset")}>
-              <IconButton size="small" data-cy={`${row.path}-analysis-row-reset`} onClick={() => resetField(row.path)}>
+              <IconButton
+                size="small"
+                sx={{ color: "primary.main" }}
+                data-cy={`${row.path}-analysis-row-reset`}
+                onClick={() => resetField(row.path)}>
                 <RotateCcw size={16} />
               </IconButton>
             </Tooltip>
             <Tooltip title={t("accept")}>
               <IconButton
                 size="small"
+                sx={{ color: "primary.main" }}
                 data-cy={`${row.path}-analysis-row-accept`}
                 onClick={() => acceptField(row.path)}>
                 <Check size={16} />
@@ -129,7 +134,7 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
           data-cy="analysis-mode-change"
           sx={{
             mb: 1,
-            p: 2,
+            p: 3,
             borderRadius: 1,
             backgroundColor: theme.palette.ai.highlightBackground,
             border: `1px solid ${theme.palette.ai.highlightBorder}`,

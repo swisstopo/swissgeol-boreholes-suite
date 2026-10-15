@@ -3,7 +3,7 @@ import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Chip, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
-import { CircleX } from "lucide-react";
+import { ChevronDownIcon, CircleX } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
 import { useFieldAnalysis } from "./fieldAnalysis/fieldAnalysisContext.tsx";
@@ -170,6 +170,13 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                   );
                 }}
                 disabled={disabled}
+                popupIcon={<ChevronDownIcon />}
+                slotProps={{
+                  popupIndicator: { sx: { color: "primary.main" } },
+                  clearIndicator: { sx: { color: "primary.main" } },
+                }}
+                // The analysis reset button takes the place of the clear button.
+                disableClearable={!!analysis}
               />
             ) : (
               <TextField
