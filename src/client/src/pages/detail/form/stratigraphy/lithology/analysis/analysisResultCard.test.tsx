@@ -72,7 +72,7 @@ describe("AnalysisResultCard", () => {
     expect(screen.getByText("code-100")).toBeInTheDocument();
   });
 
-  it("keeps the order of the analysis and reverses it when sorted by attribute", () => {
+  it("sorts the rows alphabetically by attribute and reverses them on a header click", () => {
     const changeByPath = new Map([
       ["b", change("b", null, 1)],
       ["a", change("a", null, 2)],
@@ -83,11 +83,11 @@ describe("AnalysisResultCard", () => {
         .filter(cell => cell.dataset.field === "labelKey")
         .map(cell => cell.textContent);
     render(<AnalysisResultCard analysis={analysis({ changeByPath })} />);
-    expect(attributeOrder()).toEqual(["b", "a"]);
+    expect(attributeOrder()).toEqual(["a", "b"]);
 
     fireEvent.click(screen.getByText("attribute"));
 
-    expect(attributeOrder()).toEqual(["a", "b"]);
+    expect(attributeOrder()).toEqual(["b", "a"]);
   });
 
   it("shows the mode change card only when the mode changed", () => {

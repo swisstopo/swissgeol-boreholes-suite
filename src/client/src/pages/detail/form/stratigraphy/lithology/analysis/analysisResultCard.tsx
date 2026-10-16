@@ -1,7 +1,7 @@
 ﻿import { FC, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
-import { GridColDef, GridRowId, GridSortModel } from "@mui/x-data-grid";
+import { GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { Check, Info, RotateCcw } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { FieldChange } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
@@ -41,17 +41,12 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
     [acceptField, confirmModeChange],
   );
 
-  const columns = useMemo<GridColDef<FieldChange>[]>(() => {
-    const analysisPosition = (id: GridRowId) => rows.findIndex(change => change.path === id);
-
-    return [
+  const columns = useMemo<GridColDef<FieldChange>[]>(
+    () => [
       {
         field: "labelKey",
         headerName: t("attribute"),
         valueGetter: (_, change) => t(change.labelKey),
-        // The rows keep the order the analysis reported them in, sorting only reverses it.
-        sortComparator: (_first, _second, firstCell, secondCell) =>
-          analysisPosition(firstCell.id) - analysisPosition(secondCell.id),
       },
       {
         field: "change",
@@ -89,8 +84,9 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
           </Stack>
         ),
       },
-    ];
-  }, [confirmAcceptField, resetField, rows, t]);
+    ],
+    [confirmAcceptField, resetField, t],
+  );
 
   if (!analysis.hasPendingChanges) return null;
 
