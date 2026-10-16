@@ -40,11 +40,9 @@ interface FieldAnalysisLabelProps {
 export const FieldAnalysisLabel: FC<FieldAnalysisLabelProps> = ({ label, change }) => (
   <Stack direction="row" gap={0.5} alignItems="center" component="span">
     {label}
-    {label && (
-      <Tooltip title={<FieldChangeSummary change={change} />} placement="top">
-        <AnalysisBadge data-cy="field-analysis-info" />
-      </Tooltip>
-    )}
+    <Tooltip title={<FieldChangeSummary change={change} />} placement="top">
+      <AnalysisBadge data-cy="field-analysis-info" />
+    </Tooltip>
   </Stack>
 );
 
