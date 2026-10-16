@@ -192,7 +192,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
                 position: "relative",
                 overflow: "visible",
                 border: `3px solid ${theme.palette.ai.secondary} !important`,
-                pl: "18px",  // Keeps the label clear of the badge, which straddles the left border.
+                pl: "18px", // Keeps the label clear of the badge, which straddles the left border.
               }
             : undefined
         }>

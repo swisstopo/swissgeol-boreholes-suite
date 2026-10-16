@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 
 export interface PromptAction {
   label: string;
@@ -8,10 +8,13 @@ export interface PromptAction {
   icon?: ReactNode;
 }
 
-export type ShowPrompt = (message: string, actions: PromptAction[], dialogContent?: ReactNode) => void;
+/** A translation key, or an element for a message that needs markup the key cannot carry. */
+export type PromptMessage = string | ReactElement;
+
+export type ShowPrompt = (message: PromptMessage, actions: PromptAction[], dialogContent?: ReactNode) => void;
 
 export interface PromptContextInterface {
-  message?: string;
+  message?: PromptMessage;
   dialogContent?: ReactNode;
   actions?: PromptAction[];
   promptIsOpen: boolean;
@@ -20,7 +23,7 @@ export interface PromptContextInterface {
 }
 
 export interface PromptOptions {
-  message: string;
+  message: PromptMessage;
   actions: PromptAction[];
   dialogContent: ReactNode;
 }

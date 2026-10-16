@@ -1,6 +1,7 @@
 {
   "about": "A propos",
   "accept": "Accepter",
+  "acceptChange": "Appliquer la modification",
   "acceptValues": "Appliquer les valeurs",
   "active": "Actif",
   "add": "Ajouter",
@@ -42,6 +43,7 @@
   "analysisAcceptAll": "Tout appliquer",
   "analysisAcceptAllConfirm": "Voulez-vous vraiment appliquer toutes les valeurs extraites automatiquement? Cette action est irréversible.",
   "analysisAcceptAllOnCloseConfirm": "Certaines valeurs extraites automatiquement n'ont pas encore été acceptées. Appliquer toutes les valeurs extraites automatiquement? Cette action est irréversible.",
+  "analysisModeChangeConfirm": "L'analyse automatique propose un changement de mode (<strike>{{previous}}</strike> → {{next}}). Dès que vous acceptez des modifications, le changement devient définitif. Toutes les données saisies dans le mode précédent seront perdues. Cette action est irréversible.",
   "analysisResetAll": "Tout réinitialiser",
   "analyze": "Analyser",
   "apply": "Appliquer",

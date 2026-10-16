@@ -1,6 +1,7 @@
 {
   "about": "About",
   "accept": "Accept",
+  "acceptChange": "Apply change",
   "acceptValues": "Apply values",
   "active": "Active",
   "add": "Add",
@@ -42,6 +43,7 @@
   "analysisAcceptAll": "Accept all",
   "analysisAcceptAllConfirm": "Do you really want to apply all automatically extracted values? This cannot be undone.",
   "analysisAcceptAllOnCloseConfirm": "Some automatically extracted values have not been accepted yet. Apply all automatically extracted values? This cannot be undone.",
+  "analysisModeChangeConfirm": "The automatic analysis suggests a mode change (<strike>{{previous}}</strike> → {{next}}). As soon as you accept changes, the mode change becomes final. All data you entered in the previous mode will be lost. This cannot be undone.",
   "analysisResetAll": "Reset all",
   "analyze": "Analyzing",
   "apply": "Apply",

@@ -146,7 +146,40 @@ describe("useLithologyAnalysis", () => {
     expect(result.current.analysis.hasPendingChanges).toBe(true);
   });
 
-  it("keeps the analysis alive for the mode change after every row is accepted", async () => {
+  it("keeps the analysis alive for the mode change after every row is reset", async () => {
+    classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone" });
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.analysis.run("Sandstein");
+    });
+    act(() => {
+      result.current.analysis.resetField("lithologyDescriptions.0.lithologyConId");
+    });
+
+    expect(result.current.analysis.changeByPath.size).toBe(0);
+    expect(result.current.analysis.modeChange).toBeDefined();
+    expect(result.current.analysis.isModeChangeFixed).toBe(false);
+    expect(result.current.analysis.hasPendingChanges).toBe(true);
+  });
+
+  it("fixes the mode change when a row is accepted", async () => {
+    classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone", color: "grey" });
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.analysis.run("Sandstein, grau");
+    });
+    act(() => {
+      result.current.analysis.acceptField("lithologyDescriptions.0.lithologyConId");
+    });
+
+    expect(result.current.analysis.isModeChangeFixed).toBe(true);
+    expect(result.current.analysis.modeChange).toEqual({ previous: true, next: false });
+    expect([...result.current.analysis.changeByPath.keys()]).toEqual(["lithologyDescriptions.0.colorPrimaryId"]);
+  });
+
+  it("ends the analysis with the last row once the mode change is fixed", async () => {
     classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone" });
     const { result } = setup();
 
@@ -157,9 +190,30 @@ describe("useLithologyAnalysis", () => {
       result.current.analysis.acceptField("lithologyDescriptions.0.lithologyConId");
     });
 
-    expect(result.current.analysis.changeByPath.size).toBe(0);
-    expect(result.current.analysis.modeChange).toBeDefined();
-    expect(result.current.analysis.hasPendingChanges).toBe(true);
+    expect(result.current.analysis.modeChange).toBeUndefined();
+    expect(result.current.analysis.hasPendingChanges).toBe(false);
+    expect(result.current.formMethods.getValues().isUnconsolidated).toBe(false);
+  });
+
+  it("keeps the fixed mode and empties only the listed fields on resetAll", async () => {
+    classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone", color: "grey" });
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.analysis.run("Sandstein, grau");
+    });
+    act(() => {
+      result.current.analysis.acceptField("lithologyDescriptions.0.lithologyConId");
+    });
+    act(() => {
+      result.current.analysis.resetAll();
+    });
+
+    const values = result.current.formMethods.getValues();
+    expect(values.isUnconsolidated).toBe(false);
+    expect(values.lithologyDescriptions?.[0].lithologyConId).toBe(700);
+    expect(values.lithologyDescriptions?.[0].colorPrimaryId).toBeNull();
+    expect(result.current.analysis.hasPendingChanges).toBe(false);
   });
 
   it("restores every value of the previous mode on resetAll", async () => {

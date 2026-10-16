@@ -1,5 +1,5 @@
-﻿import { FC, useContext, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
+﻿import { FC, useCallback, useContext, useMemo, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, GridRowId, GridSortModel } from "@mui/x-data-grid";
 import { Check, Info, RotateCcw } from "lucide-react";
@@ -24,15 +24,36 @@ const modeLabelKey = (mode: boolean | null): string => {
 /**
  * Documents what the automatic classification changed and lets the user take it back, per field or
  * as a whole. The card stays visible while a mode change is pending even after every field row is
- * resolved, because it is the only way back to the values of the mode that was left.
+ * resolved, because it is the only way back to the values of the mode that was left. Once a row is
+ * accepted that way is closed, and the card ends with the last row.
  */
 export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
-  const { acceptField, resetField } = analysis;
+  const { acceptField, resetField, modeChange, isModeChangeFixed } = analysis;
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: "labelKey", sort: "asc" }]);
 
   const rows = useMemo(() => [...analysis.changeByPath.values()], [analysis.changeByPath]);
+
+  // The first accepted row makes the mode change final, so the user confirms losing the values of
+  // the mode that was left before it happens.
+  const confirmAcceptField = useCallback(
+    (path: string) => {
+      if (!modeChange || isModeChangeFixed) {
+        acceptField(path);
+        return;
+      }
+      showPrompt(
+        <Trans
+          i18nKey="analysisModeChangeConfirm"
+          values={{ previous: t(modeLabelKey(modeChange.previous)), next: t(modeLabelKey(modeChange.next)) }}
+          components={{ strike: <s /> }}
+        />,
+        [{ label: "cancel" }, { label: "acceptChange", variant: "contained", action: () => acceptField(path) }],
+      );
+    },
+    [acceptField, isModeChangeFixed, modeChange, showPrompt, t],
+  );
 
   const columns = useMemo<GridColDef<FieldChange>[]>(() => {
     const analysisPosition = (id: GridRowId) => rows.findIndex(change => change.path === id);
@@ -75,7 +96,7 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
                 size="small"
                 sx={{ color: "primary.main" }}
                 data-cy={`${row.path}-analysis-row-accept`}
-                onClick={() => acceptField(row.path)}>
+                onClick={() => confirmAcceptField(row.path)}>
                 <Check size={16} />
               </IconButton>
             </Tooltip>
@@ -83,7 +104,7 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
         ),
       },
     ];
-  }, [acceptField, resetField, rows, t]);
+  }, [confirmAcceptField, resetField, rows, t]);
 
   if (!analysis.hasPendingChanges) return null;
 

@@ -1,6 +1,7 @@
 {
   "about": "Über",
   "accept": "Akzeptieren",
+  "acceptChange": "Änderung übernehmen",
   "acceptValues": "Werte übernehmen",
   "active": "Aktiv",
   "add": "Hinzufügen",
@@ -42,6 +43,7 @@
   "analysisAcceptAll": "Alle übernehmen",
   "analysisAcceptAllConfirm": "Wollen sie wirklich alle automatisch extrahierten Werte übernehmen? Dies kann nicht rückgängig gemacht werden.",
   "analysisAcceptAllOnCloseConfirm": "Einige automatisch extrahierte Werte wurden noch nicht akzeptiert. Sollen alle automatisch extrahierten Werte übernommen werden? Dies kann nicht rückgängig gemacht werden.",
+  "analysisModeChangeConfirm": "Die automatische Analyse schlägt einen Moduswechsel (<strike>{{previous}}</strike> → {{next}}) vor. Sobald Sie Änderungen annehmen, wird der Wechsel definitiv. Dabei gehen alle Daten verloren, die Sie im bisherigen Modus erfasst haben. Dies kann nicht rückgängig gemacht werden.",
   "analysisResetAll": "Alle zurücksetzen",
   "analyze": "Analysieren",
   "apply": "Übernehmen",

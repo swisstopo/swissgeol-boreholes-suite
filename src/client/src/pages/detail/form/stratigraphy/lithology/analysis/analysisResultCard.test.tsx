@@ -3,6 +3,8 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { FieldChange } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
+import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
+import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
 import { AnalysisResultCard } from "./analysisResultCard.tsx";
 import { LithologyAnalysis } from "./useLithologyAnalysis.ts";
 
@@ -12,7 +14,19 @@ vi.mock("../../../../../../components/codelist.ts", () => ({
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
+  Trans: ({ i18nKey }: { i18nKey: string }) => i18nKey,
 }));
+
+const renderWithPrompt = (current: LithologyAnalysis) => {
+  const showPrompt = vi.fn<ShowPrompt>();
+  render(
+    <PromptContext.Provider
+      value={{ showPrompt, closePrompt: vi.fn(), promptIsOpen: false, message: "", actions: [], dialogContent: null }}>
+      <AnalysisResultCard analysis={current} />
+    </PromptContext.Provider>,
+  );
+  return showPrompt;
+};
 
 const byDataCy = (value: string) => document.querySelector(`[data-cy="${value}"]`);
 
@@ -33,6 +47,7 @@ const analysis = (overrides: Partial<LithologyAnalysis> = {}): LithologyAnalysis
   acceptAll: vi.fn(),
   resetAll: vi.fn(),
   discard: vi.fn(),
+  isModeChangeFixed: false,
   ...overrides,
 });
 
@@ -103,6 +118,32 @@ describe("AnalysisResultCard", () => {
     fireEvent.click(byDataCy("a-analysis-row-accept")!);
 
     expect(current.resetField).toHaveBeenCalledWith("a");
+    expect(current.acceptField).toHaveBeenCalledWith("a");
+  });
+
+  it("asks before the first accepted row makes the mode change final", () => {
+    const current = analysis({ modeChange: { previous: true, next: false } });
+    const showPrompt = renderWithPrompt(current);
+
+    fireEvent.click(byDataCy("a-analysis-row-accept")!);
+
+    expect(current.acceptField).not.toHaveBeenCalled();
+    expect(showPrompt).toHaveBeenCalledOnce();
+    const [, actions] = showPrompt.mock.calls[0];
+    expect(actions.map(action => action.label)).toEqual(["cancel", "acceptChange"]);
+
+    actions[1].action?.();
+
+    expect(current.acceptField).toHaveBeenCalledWith("a");
+  });
+
+  it("accepts a row without asking once the mode change is fixed", () => {
+    const current = analysis({ modeChange: { previous: true, next: false }, isModeChangeFixed: true });
+    const showPrompt = renderWithPrompt(current);
+
+    fireEvent.click(byDataCy("a-analysis-row-accept")!);
+
+    expect(showPrompt).not.toHaveBeenCalled();
     expect(current.acceptField).toHaveBeenCalledWith("a");
   });
 

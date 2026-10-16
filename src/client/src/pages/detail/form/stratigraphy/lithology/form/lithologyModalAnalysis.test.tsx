@@ -45,6 +45,7 @@ const analysis = (overrides: Partial<LithologyAnalysis> = {}): LithologyAnalysis
   acceptAll: vi.fn(),
   resetAll: vi.fn(),
   discard: vi.fn(),
+  isModeChangeFixed: false,
   ...overrides,
 });
 

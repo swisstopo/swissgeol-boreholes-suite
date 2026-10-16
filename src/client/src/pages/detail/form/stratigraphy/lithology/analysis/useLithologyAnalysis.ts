@@ -24,16 +24,23 @@ export interface LithologyAnalysis {
   resetAll: () => void;
   /** Drops the analysis and cancels a running classification, leaving the form values as they are. */
   discard: () => void;
+  /** True once a field row was accepted after a mode change.*/
+  isModeChangeFixed: boolean;
   modeChange?: ModeChange;
 }
 
 interface AnalysisState {
   changes: FieldChange[];
+  isModeChangeFixed: boolean;
   snapshot?: LithologyFormValues;
   modeChange?: ModeChange;
 }
 
-const emptyState: AnalysisState = { changes: [] };
+const emptyState: AnalysisState = { changes: [], isModeChangeFixed: false };
+
+/** The analysis ends once no row is left and the mode change, if any, no longer waits for a decision. */
+const isResolved = ({ changes, modeChange, isModeChangeFixed }: AnalysisState): boolean =>
+  changes.length === 0 && (!modeChange || isModeChangeFixed);
 
 /**
  * The classification of a run, or undefined once the run was discarded. The request then either
@@ -88,28 +95,31 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
       }
       changes.forEach(change => writeValue(change.path, change.next));
 
-      setState({ changes, snapshot, modeChange });
+      setState({ changes, snapshot, modeChange, isModeChangeFixed: false });
       return changes.length + (modeChange ? 1 : 0);
     },
     [classify, codelists, formMethods, writeValue],
   );
 
-  const dropChange = useCallback((path: string) => {
+  const dropChange = useCallback((path: string, fixesModeChange: boolean) => {
     setState(current => {
-      const changes = current.changes.filter(change => change.path !== path);
-      if (changes.length === 0 && !current.modeChange) return emptyState;
-      return { ...current, changes };
+      const next = {
+        ...current,
+        changes: current.changes.filter(change => change.path !== path),
+        isModeChangeFixed: current.isModeChangeFixed || (fixesModeChange && current.modeChange !== undefined),
+      };
+      return isResolved(next) ? emptyState : next;
     });
   }, []);
 
-  const acceptField = useCallback((path: string) => dropChange(path), [dropChange]);
+  const acceptField = useCallback((path: string) => dropChange(path, true), [dropChange]);
 
   const resetField = useCallback(
     (path: string) => {
       const change = state.changes.find(candidate => candidate.path === path);
       if (!change) return;
       writeValue(path, change.previous);
-      dropChange(path);
+      dropChange(path, false);
     },
     [dropChange, state.changes, writeValue],
   );
@@ -117,14 +127,14 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
   const acceptAll = useCallback(() => setState(emptyState), []);
 
   const resetAll = useCallback(() => {
-    if (state.modeChange && state.snapshot) {
-      // Only a full reset brings back the values of the mode that was left.
+    if (state.modeChange && !state.isModeChangeFixed && state.snapshot) {
+      // Only a full reset before anything was accepted brings back the values of the mode that was left.
       formMethods.reset(state.snapshot);
     } else {
       state.changes.forEach(change => writeValue(change.path, change.previous));
     }
     setState(emptyState);
-  }, [formMethods, state.changes, state.modeChange, state.snapshot, writeValue]);
+  }, [formMethods, state.changes, state.isModeChangeFixed, state.modeChange, state.snapshot, writeValue]);
 
   const discard = useCallback(() => {
     runningClassification.current?.abort();
@@ -138,8 +148,9 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
   return {
     changeByPath,
     modeChange: state.modeChange,
+    isModeChangeFixed: state.isModeChangeFixed,
     isPending,
-    hasPendingChanges: state.changes.length > 0 || state.modeChange !== undefined,
+    hasPendingChanges: !isResolved(state),
     run,
     acceptField,
     resetField,
