@@ -20,6 +20,8 @@ export interface LithologyAnalysis {
   run: (description: string) => Promise<number | undefined>;
   acceptField: (path: string) => void;
   resetField: (path: string) => void;
+  /** Writes the analysis's value back into a field the user edited by hand, keeping its row. */
+  restoreAnalysisValue: (path: string) => void;
   acceptAll: () => void;
   resetAll: () => void;
   /** Drops the analysis and cancels a running classification, leaving the form values as they are. */
@@ -124,6 +126,14 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
     [dropChange, state.changes, writeValue],
   );
 
+  const restoreAnalysisValue = useCallback(
+    (path: string) => {
+      const change = state.changes.find(candidate => candidate.path === path);
+      if (change) writeValue(path, change.next);
+    },
+    [state.changes, writeValue],
+  );
+
   const acceptAll = useCallback(() => setState(emptyState), []);
 
   const resetAll = useCallback(() => {
@@ -157,6 +167,7 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
     run,
     acceptField,
     resetField,
+    restoreAnalysisValue,
     acceptAll,
     resetAll,
     discard,

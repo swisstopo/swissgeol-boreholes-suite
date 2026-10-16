@@ -1,5 +1,5 @@
 ﻿import { FC, useCallback, useContext, useMemo, useState } from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, GridRowId, GridSortModel } from "@mui/x-data-grid";
 import { Check, Info, RotateCcw } from "lucide-react";
@@ -9,17 +9,13 @@ import { FieldChangeSummary } from "../../../../../../components/form/fieldAnaly
 import { ValueChange } from "../../../../../../components/form/fieldAnalysis/valueChange.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../../../../components/table/table.tsx";
+import { modeLabelKey } from "./classificationMapping.ts";
+import { useConfirmModeChange } from "./useConfirmModeChange.tsx";
 import { LithologyAnalysis } from "./useLithologyAnalysis.ts";
 
 interface AnalysisResultCardProps {
   analysis: LithologyAnalysis;
 }
-
-const modeLabelKey = (mode: boolean | null): string => {
-  if (mode === true) return "unconsolidated";
-  if (mode === false) return "consolidated";
-  return "unspecified";
-};
 
 /**
  * Lists what the automatic classification changed and lets the user undo it, per field or all at once.
@@ -39,22 +35,10 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
 
   // The first accepted row makes the mode change final, so the user confirms losing the values of
   // the mode that was left before it happens.
+  const confirmModeChange = useConfirmModeChange(modeChange, isModeChangeFixed);
   const confirmAcceptField = useCallback(
-    (path: string) => {
-      if (!modeChange || isModeChangeFixed) {
-        acceptField(path);
-        return;
-      }
-      showPrompt(
-        <Trans
-          i18nKey="analysisModeChangeConfirm"
-          values={{ previous: t(modeLabelKey(modeChange.previous)), next: t(modeLabelKey(modeChange.next)) }}
-          components={{ strike: <s /> }}
-        />,
-        [{ label: "cancel" }, { label: "acceptChange", variant: "contained", action: () => acceptField(path) }],
-      );
-    },
-    [acceptField, isModeChangeFixed, modeChange, showPrompt, t],
+    (path: string) => confirmModeChange(() => acceptField(path)),
+    [acceptField, confirmModeChange],
   );
 
   const columns = useMemo<GridColDef<FieldChange>[]>(() => {

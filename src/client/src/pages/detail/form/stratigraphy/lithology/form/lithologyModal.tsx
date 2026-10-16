@@ -20,6 +20,7 @@ import { LithologicalDescription, Lithology, LithologyFormValues } from "../../s
 import { AnalysisResultCard } from "../analysis/analysisResultCard.tsx";
 import { AnalyzeButton } from "../analysis/analyzeButton.tsx";
 import { useLithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
+import { useManualEditResolution } from "../analysis/useManualEditResolution.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
 import {
@@ -65,7 +66,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
       return { values, errors: {} };
     },
   });
-  const { formState, getValues, subscribe } = formMethods;
+  const { formState, getValues } = formMethods;
   const { showPrompt } = useContext(PromptContext);
   const { showAlert } = useContext(AlertContext);
   const { runsDevMode } = useDevMode();
@@ -74,16 +75,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
   const sharedLithologyCount = lithologicalDescription?.depthIds?.length ?? 0;
 
   // A field the user edits by hand is their value, not the analysis's, so its row is resolved.
-  useEffect(() => {
-    return subscribe({
-      formState: { values: true },
-      callback: ({ name, type }) => {
-        if (type === "change" && name && analysis.changeByPath.has(name)) {
-          analysis.acceptField(name);
-        }
-      },
-    });
-  }, [analysis, subscribe]);
+  useManualEditResolution(formMethods, analysis);
 
   // The form needs the optional flags resolved and at least one description row. Deriving a copy
   // keeps the prop untouched while the change detection below still compares against this shape.

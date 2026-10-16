@@ -78,6 +78,13 @@ export interface ModeChange {
   next: boolean | null;
 }
 
+/** The translation key of a consolidation mode, where null is the unspecified one. */
+export const modeLabelKey = (mode: boolean | null): string => {
+  if (mode === true) return "unconsolidated";
+  if (mode === false) return "consolidated";
+  return "unspecified";
+};
+
 interface ClassificationChanges {
   changes: FieldChange[];
   modeChange?: ModeChange;
