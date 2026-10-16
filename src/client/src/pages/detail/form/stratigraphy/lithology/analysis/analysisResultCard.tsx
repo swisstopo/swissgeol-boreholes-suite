@@ -22,10 +22,12 @@ const modeLabelKey = (mode: boolean | null): string => {
 };
 
 /**
- * Documents what the automatic classification changed and lets the user take it back, per field or
- * as a whole. The card stays visible while a mode change is pending even after every field row is
- * resolved, because it is the only way back to the values of the mode that was left. Once a row is
- * accepted that way is closed, and the card ends with the last row.
+ * Lists what the automatic classification changed and lets the user undo it, per field or all at once.
+ *
+ * When the classification switched the mode, the card stays open after the last field row is gone,
+ * as long as no row was accepted: "Reset all" is then the only way to get back the values of the
+ * previous mode, which the switch cleared. Accepting a row makes the switch final, so from then on
+ * the card closes with its last row.
  */
 export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) => {
   const { t } = useTranslation();
