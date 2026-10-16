@@ -94,6 +94,8 @@ declare module "@mui/material/styles" {
       contrastText: string;
       secondary: string;
       secondaryTextHighlights: string;
+      highlightBackground: string;
+      highlightBorder: string;
     };
     border: {
       light: string;
