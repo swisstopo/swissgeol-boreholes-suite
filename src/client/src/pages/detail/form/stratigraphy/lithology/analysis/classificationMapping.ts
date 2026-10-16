@@ -1,5 +1,6 @@
-﻿import { ClassificationConsolidation, ClassifyResponse } from "../../../../../../api/dataextractionInterfaces.ts";
-import { Codelist } from "../../../../../../api/generated";
+﻿import { Path } from "react-hook-form";
+import { ClassificationConsolidation, ClassifyResponse } from "../../../../../../api/dataextractionInterfaces.ts";
+import { Codelist, LithologyDescription } from "../../../../../../api/generated";
 import {
   areFieldValuesEqual,
   FieldChange,
@@ -58,8 +59,25 @@ export const findCodelistId = (
 /** How many values of the response the registry writes into how many form fields. */
 type AttributeKind = "single" | "list" | "singleIntoList" | "fanOut";
 
+type DescriptionField = Extract<keyof LithologyDescription, string>;
+
+/**
+ * A react-hook-form path the analysis writes to: a field of the layer or of its first description.
+ * Narrower than `Path<LithologyFormValues>`, whose tens of thousands of members are too complex for
+ * the compiler to carry through the mapping.
+ */
+export type LithologyFieldPath = Extract<
+  `lithologyDescriptions.0.${DescriptionField}` | Extract<keyof LithologyFormValues, string>,
+  Path<LithologyFormValues>
+>;
+
+/** The `<labelKey>` of every field named `<labelKey><suffix>`. */
+type LabelKeyOf<TField extends string, TSuffix extends string> = TField extends `${infer TLabelKey}${TSuffix}`
+  ? TLabelKey
+  : never;
+
 interface AttributeTarget {
-  path: string;
+  path: LithologyFieldPath;
   labelKey: string;
 }
 
@@ -86,11 +104,11 @@ export const modeLabelKey = (mode: boolean | null): string => {
 };
 
 interface ClassificationChanges {
-  changes: FieldChange[];
+  changes: FieldChange<LithologyFieldPath>[];
   modeChange?: ModeChange;
 }
 
-const descriptionTarget = (field: string, labelKey: string): AttributeTarget => ({
+const descriptionTarget = (field: DescriptionField, labelKey: string): AttributeTarget => ({
   path: `lithologyDescriptions.0.${field}`,
   labelKey,
 });
@@ -98,7 +116,11 @@ const descriptionTarget = (field: string, labelKey: string): AttributeTarget => 
 type ModeAttributeEntry = Omit<AttributeRegistryEntry, "isUnconsolidated">;
 
 /** A description field named `<labelKey>Id` that takes one codelist id, matched by english text. */
-const textSingle = (apiKey: keyof ClassifyResponse, labelKey: string, schema: string): ModeAttributeEntry => ({
+const textSingle = (
+  apiKey: keyof ClassifyResponse,
+  labelKey: LabelKeyOf<DescriptionField, "Id">,
+  schema: string,
+): ModeAttributeEntry => ({
   apiKey,
   targets: [descriptionTarget(`${labelKey}Id`, labelKey)],
   schema,
@@ -107,7 +129,11 @@ const textSingle = (apiKey: keyof ClassifyResponse, labelKey: string, schema: st
 });
 
 /** A description field named `<labelKey>CodelistIds` that takes several codelist ids, matched by english text. */
-const textList = (apiKey: keyof ClassifyResponse, labelKey: string, schema: string): ModeAttributeEntry => ({
+const textList = (
+  apiKey: keyof ClassifyResponse,
+  labelKey: LabelKeyOf<DescriptionField, "CodelistIds">,
+  schema: string,
+): ModeAttributeEntry => ({
   apiKey,
   targets: [descriptionTarget(`${labelKey}CodelistIds`, labelKey)],
   schema,
@@ -231,7 +257,7 @@ const changesForEntry = (
   entry: AttributeRegistryEntry,
   ids: number[],
   previousValueAt: (path: string) => FieldValue,
-): FieldChange[] => {
+): FieldChange<LithologyFieldPath>[] => {
   if (ids.length === 0) return [];
 
   return pairIdsWithTargets(entry, ids).flatMap(([target, next]) => {

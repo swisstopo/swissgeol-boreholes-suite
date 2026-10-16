@@ -1,9 +1,13 @@
 ﻿/** The value of a form field an analysis can write: a codelist id, a list of them, or nothing. */
 export type FieldValue = number | number[] | null;
 
-/** One field an analysis changed, addressed by its react-hook-form path. */
-export interface FieldChange {
-  path: string;
+/**
+ * One field an analysis changed, addressed by its react-hook-form path. The form that owns the
+ * analysis can narrow the path to the paths of its own values; the shared components only need it as
+ * a string.
+ */
+export interface FieldChange<TPath extends string = string> {
+  path: TPath;
   labelKey: string;
   previous: FieldValue;
   next: FieldValue;

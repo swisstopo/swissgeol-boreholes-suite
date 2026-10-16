@@ -6,7 +6,7 @@ import { useCodelists } from "../../../../../../components/codelist.ts";
 import { FieldChange, FieldValue } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
 import { LithologyFormValues } from "../../stratigraphy.ts";
 import { buildLithologyValuesForMode } from "../form/lithologyUtils.ts";
-import { mapClassificationToChanges, ModeChange } from "./classificationMapping.ts";
+import { LithologyFieldPath, mapClassificationToChanges, ModeChange } from "./classificationMapping.ts";
 
 export interface LithologyAnalysis {
   changeByPath: Map<string, FieldChange>;
@@ -32,7 +32,7 @@ export interface LithologyAnalysis {
 }
 
 interface AnalysisState {
-  changes: FieldChange[];
+  changes: FieldChange<LithologyFieldPath>[];
   isModeChangeFixed: boolean;
   snapshot?: LithologyFormValues;
   modeChange?: ModeChange;
@@ -77,8 +77,8 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
   const runningClassification = useRef<AbortController | null>(null);
 
   const writeValue = useCallback(
-    (path: string, value: FieldValue) => {
-      formMethods.setValue(path as never, value as never, { shouldDirty: true, shouldValidate: true });
+    (path: LithologyFieldPath, value: FieldValue) => {
+      formMethods.setValue(path, value, { shouldDirty: true, shouldValidate: true });
     },
     [formMethods],
   );
@@ -120,7 +120,7 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
     (path: string) => {
       const change = state.changes.find(candidate => candidate.path === path);
       if (!change) return;
-      writeValue(path, change.previous);
+      writeValue(change.path, change.previous);
       dropChange(path, false);
     },
     [dropChange, state.changes, writeValue],
@@ -129,7 +129,7 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
   const restoreAnalysisValue = useCallback(
     (path: string) => {
       const change = state.changes.find(candidate => candidate.path === path);
-      if (change) writeValue(path, change.next);
+      if (change) writeValue(change.path, change.next);
     },
     [state.changes, writeValue],
   );
