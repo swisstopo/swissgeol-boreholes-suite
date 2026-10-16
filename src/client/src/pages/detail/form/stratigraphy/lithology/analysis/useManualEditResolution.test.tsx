@@ -1,5 +1,5 @@
 ﻿// @vitest-environment jsdom
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Path, useForm, UseFormReturn } from "react-hook-form";
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -11,10 +11,14 @@ import { LithologyFormValues } from "../../stratigraphy.ts";
 import { useLithologyAnalysis } from "./useLithologyAnalysis.ts";
 import { useManualEditResolution } from "./useManualEditResolution.ts";
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
-  Trans: ({ i18nKey }: { i18nKey: string }) => i18nKey,
-}));
+// Like the real hook, the mock hands out the same t on every render.
+vi.mock("react-i18next", () => {
+  const t = (key: string) => key;
+  return {
+    useTranslation: () => ({ t, i18n: { language: "en" } }),
+    Trans: ({ i18nKey }: { i18nKey: string }) => i18nKey,
+  };
+});
 
 const codelists: Codelist[] = [
   { id: 102, schema: "lithology_uncon_main", code: "Si", en: "silt" },
@@ -89,6 +93,22 @@ beforeEach(() => {
 });
 
 describe("useManualEditResolution", () => {
+  it("keeps its subscription while the analysis state stays the same", () => {
+    const { result, rerender } = renderHook(
+      () => {
+        const formMethods = useForm<LithologyFormValues>({ defaultValues: initialValues });
+        const [subscribe] = useState(() => vi.fn(formMethods.subscribe));
+        useManualEditResolution({ ...formMethods, subscribe }, useLithologyAnalysis(formMethods));
+        return subscribe;
+      },
+      { wrapper: withPrompt },
+    );
+
+    rerender();
+
+    expect(result.current).toHaveBeenCalledOnce();
+  });
+
   it("resolves the row of a field the user edits by hand", async () => {
     classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
     const { result } = setup();

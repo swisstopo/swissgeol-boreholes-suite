@@ -16,20 +16,23 @@ export const useManualEditResolution = (
   analysis: LithologyAnalysis,
 ) => {
   const { subscribe } = formMethods;
-  const confirmModeChange = useConfirmModeChange(analysis.modeChange, analysis.isModeChangeFixed);
+  // The analysis object is new on every render, so the subscription depends on its parts, which only
+  // change with the analysis's state.
+  const { changeByPath, acceptField, restoreAnalysisValue, modeChange, isModeChangeFixed } = analysis;
+  const confirmModeChange = useConfirmModeChange(modeChange, isModeChangeFixed);
 
   useEffect(() => {
     return subscribe({
       formState: { values: true },
       callback: ({ name, type }) => {
         // Only an input event carries a type. The analysis's own writes and resets come without one.
-        if (type === "change" && name && analysis.changeByPath.has(name)) {
+        if (type === "change" && name && changeByPath.has(name)) {
           confirmModeChange(
-            () => analysis.acceptField(name),
-            () => analysis.restoreAnalysisValue(name),
+            () => acceptField(name),
+            () => restoreAnalysisValue(name),
           );
         }
       },
     });
-  }, [analysis, confirmModeChange, subscribe]);
+  }, [acceptField, changeByPath, confirmModeChange, restoreAnalysisValue, subscribe]);
 };
