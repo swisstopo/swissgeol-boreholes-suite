@@ -102,7 +102,7 @@ describe("useLithologyAnalysis", () => {
     expect(result.current.analysis.hasPendingChanges).toBe(false);
   });
 
-  it("treats an unsaved manual edit as the value a reset restores", async () => {
+  it("lists no row for a field whose unsaved manual edit already matches the classification", async () => {
     classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
     const { result } = setup();
 
@@ -133,7 +133,7 @@ describe("useLithologyAnalysis", () => {
     expect(result.current.analysis.changeByPath.size).toBe(0);
   });
 
-  it("switches the mode, clears the previous mode and stays revertible", async () => {
+  it("switches the mode and keeps the mode change pending", async () => {
     classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone" });
     const { result } = setup();
 
