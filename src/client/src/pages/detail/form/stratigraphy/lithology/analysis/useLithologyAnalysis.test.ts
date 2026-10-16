@@ -235,6 +235,26 @@ describe("useLithologyAnalysis", () => {
     expect(result.current.analysis.hasPendingChanges).toBe(false);
   });
 
+  it("keeps the description and remarks typed after a mode change on resetAll", async () => {
+    classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone" });
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.analysis.run("Sandstein");
+    });
+    act(() => {
+      result.current.formMethods.setValue("lithologicalDescription.description", "Sandstein, grau");
+      result.current.formMethods.setValue("notes", "typed after the analysis");
+      result.current.analysis.resetAll();
+    });
+
+    const values = result.current.formMethods.getValues();
+    expect(values.isUnconsolidated).toBe(true);
+    expect(values.lithologyDescriptions?.[0].lithologyUnconMainId).toBe(103);
+    expect(values.lithologicalDescription?.description).toBe("Sandstein, grau");
+    expect(values.notes).toBe("typed after the analysis");
+  });
+
   it("leaves a later manual edit alone on resetAll without a mode change", async () => {
     classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
     const { result } = setup();

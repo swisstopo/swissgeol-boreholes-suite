@@ -129,7 +129,10 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
   const resetAll = useCallback(() => {
     if (state.modeChange && !state.isModeChangeFixed && state.snapshot) {
       // Only a full reset before anything was accepted brings back the values of the mode that was left.
-      formMethods.reset(state.snapshot);
+      // The description and the remarks are not mode scoped and the analysis never writes them, so
+      // what the user typed there since the analysis stays.
+      const { lithologicalDescription, notes } = formMethods.getValues();
+      formMethods.reset({ ...state.snapshot, lithologicalDescription, notes });
     } else {
       state.changes.forEach(change => writeValue(change.path, change.previous));
     }
