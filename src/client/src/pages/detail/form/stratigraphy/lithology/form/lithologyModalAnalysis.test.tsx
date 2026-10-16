@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { act, cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
-import { ClassifyResponse } from "../../../../../../api/dataextractionInterfaces.ts";
+import { ClassifyResponse, ClassifyVariables } from "../../../../../../api/dataextractionInterfaces.ts";
 import { Codelist } from "../../../../../../api/generated";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
@@ -16,7 +16,7 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
 }));
 
-const classify = vi.fn();
+const classify = vi.fn<(variables: ClassifyVariables) => Promise<ClassifyResponse>>();
 
 // The one codelist entry that "Silt" classifies to.
 const codelists: Codelist[] = [{ id: 102, schema: "lithology_uncon_main", code: "Si", en: "silt" }];
@@ -153,6 +153,26 @@ describe("LithologyModal", () => {
     rerender(modalFor(lithology(2)));
 
     expect(byDataCy("analysis-result-card")).not.toBeInTheDocument();
+  });
+
+  it("cancels a classification still running when the modal closes", async () => {
+    let finishClassification: (response: ClassifyResponse) => void = () => {};
+    classify.mockReturnValue(
+      new Promise<ClassifyResponse>(resolve => {
+        finishClassification = resolve;
+      }),
+    );
+    const { rerender } = render(modalFor(lithology(1)), { wrapper: withAlerts });
+
+    fireEvent.click(byDataCy("analyze-button")!);
+    rerender(modalFor(undefined));
+
+    expect(classify.mock.lastCall?.[0].signal.aborted).toBe(true);
+    await act(async () => {
+      finishClassification({ consolidation: "unconsolidated", en_main: "si" });
+      await flushPromises();
+    });
+    expect(showAlert).not.toHaveBeenCalled();
   });
 
   it("ignores a classification still running when another lithology opens", async () => {

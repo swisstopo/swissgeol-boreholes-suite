@@ -98,9 +98,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
   }, [lithology]);
 
   useEffect(() => {
+    // The table keeps this modal mounted for every row, so the analysis of the previous one ends here,
+    // whether the modal closes or another row opens.
+    discardAnalysis();
     if (normalizedLithology) {
-      // The table keeps this modal mounted for every row, so the analysis of the previous one ends here.
-      discardAnalysis();
       formMethods.reset({
         ...normalizedLithology,
         lithologicalDescription: { description: lithologicalDescription?.description ?? "" },
