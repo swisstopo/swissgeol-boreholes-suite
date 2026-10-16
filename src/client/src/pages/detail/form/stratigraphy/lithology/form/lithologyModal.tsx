@@ -286,8 +286,8 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
             data-cy="lithology-lithological-description"
             title={t("lithologyLayerDescription")}
             action={
-              // Gated on dev mode while the classification is served from the client side mock.
-              // Drop the gate together with useClassificationMock once the endpoint ships.
+              // Gated on dev mode while the deployed data extraction service runs without POST /classify.
+              // Drop the gate once the deployments run a version that classifies.
               runsDevMode && (
                 <AnalyzeButton
                   control={formMethods.control}

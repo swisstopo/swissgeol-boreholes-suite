@@ -1,16 +1,50 @@
-﻿import { evaluateSelect } from "../helpers/formHelpers";
+﻿import { ClassifyResponse } from "../../../src/api/dataextractionInterfaces.ts";
+import { evaluateSelect } from "../helpers/formHelpers";
 import { createStratigraphyWith3Lithologies, handlePrompt } from "../helpers/testHelpers";
 import { isUnconsolidatedForm } from "./lithologyHelpers";
 import { LayerType, openLayer } from "./stratigraphyHelpers";
 
-// The classification is served from a client side mock until the data extraction service releases
-// POST /api/V1/classify, and the mock picks its fixture from the description text. Once the
-// endpoint ships, add cy.intercept("POST", "dataextraction/api/V1/classify", ...) in beforeEach and
-// keep every assertion below.
+// The classification response is stubbed, because the model's answer for a description can change
+// with every release of the data extraction service while the assertions below test the dialog.
+
+/**
+ * Written for the unconsolidated description the design uses, and chosen so that it exercises every
+ * awkward part of the mapping: the lowercase `mgr` against the code `MGr`, the escaping underscore
+ * of `or_` against `Or`, the compound `GP_GC` against `GP-GC`, `light_grey` against the text
+ * `light grey`, and `fragments_splitters` against the text `fragments, splitters`. The four
+ * secondaries reproduce the litho code `MGr-fsa-si-co-or` shown in the design.
+ */
+const unconsolidatedResponse: ClassifyResponse = {
+  consolidation: "unconsolidated",
+  en_main: "mgr",
+  en_secondary: ["fsa", "si", "co", "or_"],
+  uscs: "GP_GC",
+  color: "light_grey",
+  organic_components: ["remains_of_wood"],
+  grain_angularity: ["well_rounded"],
+  grain_shape: ["platy"],
+  debris: ["rubble", "fragments_splitters"],
+};
+
+/** Written for the consolidated description the design uses. */
+const consolidatedResponse: ClassifyResponse = {
+  consolidation: "consolidated",
+  lithology: "sandstone",
+  color: "light_grey",
+  cementation: "well_cemented",
+  alteration_degree_consolidated: "moderately_weathered",
+  mineral_components: ["biotite"],
+  accessory_components: ["biodetritus"],
+};
+
+const stubClassification = (response: ClassifyResponse) => {
+  cy.intercept("POST", "dataextraction/api/V1/classify", { statusCode: 200, body: response }).as("classify");
+};
+
 const descriptionField = () => cy.dataCy("lithology-lithological-description").find("textarea").first();
 
-// The Analysieren action is gated on dev mode for as long as the mock stands in for the service.
-// The flag is added to the open page rather than visited, so the editing session the helper started
+// The Analysieren action is gated on dev mode for as long as the deployed data extraction service
+// cannot classify. The flag is added to the open page rather than visited, so the editing session the helper started
 // survives; useDevMode re-reads the location on popstate.
 const enableDevMode = () => {
   cy.location().then(location => {
@@ -30,6 +64,7 @@ const analyze = (description: string) => {
 
 describe("Lithology automatic classification", () => {
   beforeEach(() => {
+    stubClassification(unconsolidatedResponse);
     createStratigraphyWith3Lithologies();
     enableDevMode();
     openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
@@ -57,6 +92,7 @@ describe("Lithology automatic classification", () => {
   });
 
   it("switches the mode, marks the tab and takes the switch back", () => {
+    stubClassification(consolidatedResponse);
     analyze("Sandstein, siltig, mit Biotit, hellgrau, gut zementiert");
 
     isUnconsolidatedForm(false);
@@ -93,6 +129,7 @@ describe("Lithology automatic classification", () => {
   });
 
   it("reports a description it cannot classify", () => {
+    stubClassification({});
     descriptionField().clear();
     descriptionField().type("keine Angabe", { delay: 0 });
     cy.dataCy("analyze-button").click();
