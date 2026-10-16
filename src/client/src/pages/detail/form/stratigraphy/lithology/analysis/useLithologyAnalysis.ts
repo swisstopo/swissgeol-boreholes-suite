@@ -6,7 +6,18 @@ import { useCodelists } from "../../../../../../components/codelist.ts";
 import { FieldChange, FieldValue } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
 import { LithologyFormValues } from "../../stratigraphy.ts";
 import { buildLithologyValuesForMode } from "../form/lithologyUtils.ts";
-import { LithologyFieldPath, mapClassificationToChanges, ModeChange } from "./classificationMapping.ts";
+import {
+  ClassificationChanges,
+  LithologyFieldPath,
+  mapClassificationToChanges,
+  ModeChange,
+} from "./classificationMapping.ts";
+
+/**
+ * Why a finished classification left nothing to review: the description carried nothing the form
+ * can hold, or everything it carried is in the form already.
+ */
+export type EmptyAnalysisResult = "nothingRecognized" | "nothingNew";
 
 export interface LithologyAnalysis {
   changeByPath: Map<string, FieldChange>;
@@ -26,9 +37,13 @@ export interface LithologyAnalysis {
   resetAll: () => void;
   /** Drops the analysis and cancels a running classification, leaving the form values as they are. */
   discard: () => void;
+  /** Closes the notice of an analysis that left nothing to review. */
+  dismissEmptyResult: () => void;
   /** True once a field row was accepted after a mode change.*/
   isModeChangeFixed: boolean;
   modeChange?: ModeChange;
+  /** Set when the last classification changed nothing, until the user closes its notice. */
+  emptyResult?: EmptyAnalysisResult;
 }
 
 interface AnalysisState {
@@ -36,9 +51,19 @@ interface AnalysisState {
   isModeChangeFixed: boolean;
   snapshot?: LithologyFormValues;
   modeChange?: ModeChange;
+  emptyResult?: EmptyAnalysisResult;
 }
 
 const emptyState: AnalysisState = { changes: [], isModeChangeFixed: false };
+
+const emptyResultOf = ({
+  changes,
+  modeChange,
+  hasRecognizedValues,
+}: ClassificationChanges): EmptyAnalysisResult | undefined => {
+  if (changes.length > 0 || modeChange) return undefined;
+  return hasRecognizedValues ? "nothingNew" : "nothingRecognized";
+};
 
 /** The analysis ends once no row is left and the mode change, if any, no longer waits for a decision. */
 const isResolved = ({ changes, modeChange, isModeChangeFixed }: AnalysisState): boolean =>
@@ -90,14 +115,21 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
       const snapshot = formMethods.getValues();
       const response = await classifyUnlessDiscarded(classify, { description, signal: controller.signal });
       if (!response) return undefined;
-      const { changes, modeChange } = mapClassificationToChanges(response, codelists ?? [], snapshot);
+      const classificationChanges = mapClassificationToChanges(response, codelists ?? [], snapshot);
+      const { changes, modeChange } = classificationChanges;
 
       if (modeChange) {
         formMethods.reset(buildLithologyValuesForMode(snapshot, modeChange.next));
       }
       changes.forEach(change => writeValue(change.path, change.next));
 
-      setState({ changes, snapshot, modeChange, isModeChangeFixed: false });
+      setState({
+        changes,
+        snapshot,
+        modeChange,
+        isModeChangeFixed: false,
+        emptyResult: emptyResultOf(classificationChanges),
+      });
       return changes.length + (modeChange ? 1 : 0);
     },
     [classify, codelists, formMethods, writeValue],
@@ -154,6 +186,8 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
     setState(emptyState);
   }, []);
 
+  const dismissEmptyResult = useCallback(() => setState(current => ({ ...current, emptyResult: undefined })), []);
+
   useEffect(() => () => runningClassification.current?.abort(), []);
 
   const changeByPath = useMemo(() => new Map(state.changes.map(change => [change.path, change])), [state.changes]);
@@ -161,6 +195,7 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
   return {
     changeByPath,
     modeChange: state.modeChange,
+    emptyResult: state.emptyResult,
     isModeChangeFixed: state.isModeChangeFixed,
     isPending,
     hasPendingChanges: !isResolved(state),
@@ -171,5 +206,6 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
     acceptAll,
     resetAll,
     discard,
+    dismissEmptyResult,
   };
 };

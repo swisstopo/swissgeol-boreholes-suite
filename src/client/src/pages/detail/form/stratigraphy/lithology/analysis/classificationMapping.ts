@@ -103,8 +103,14 @@ export const modeLabelKey = (mode: boolean | null): string => {
   return "unspecified";
 };
 
-interface ClassificationChanges {
+export interface ClassificationChanges {
   changes: FieldChange<LithologyFieldPath>[];
+  /**
+   * Whether the response carried anything the form can hold: a consolidation, or a value that
+   * matches a codelist entry of the mode. Tells a description the service could not read from one
+   * the form already matches.
+   */
+  hasRecognizedValues: boolean;
   modeChange?: ModeChange;
 }
 
@@ -289,9 +295,11 @@ export const mapClassificationToChanges = (
 
   const previousValueAt = (path: string): FieldValue => (modeChange ? null : valueAtPath(currentValues, path));
 
-  const changes = attributeRegistry
+  const resolvedEntries = attributeRegistry
     .filter(entry => nextMode !== null && entry.isUnconsolidated === nextMode)
-    .flatMap(entry => changesForEntry(entry, resolveIds(entry, response[entry.apiKey], codelists), previousValueAt));
+    .map(entry => ({ entry, ids: resolveIds(entry, response[entry.apiKey], codelists) }));
+  const changes = resolvedEntries.flatMap(({ entry, ids }) => changesForEntry(entry, ids, previousValueAt));
+  const hasRecognizedValues = response.consolidation !== undefined || resolvedEntries.some(({ ids }) => ids.length > 0);
 
-  return modeChange ? { changes, modeChange } : { changes };
+  return modeChange ? { changes, hasRecognizedValues, modeChange } : { changes, hasRecognizedValues };
 };

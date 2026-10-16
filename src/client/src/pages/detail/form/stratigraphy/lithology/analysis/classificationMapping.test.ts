@@ -224,6 +224,36 @@ describe("mapClassificationToChanges", () => {
     ]);
   });
 
+  it("recognizes nothing in an empty response or in values no codelist entry matches", () => {
+    expect(mapClassificationToChanges({}, mappingCodelists, formValues()).hasRecognizedValues).toBe(false);
+    expect(
+      mapClassificationToChanges({ en_main: "not-a-code" }, mappingCodelists, formValues()).hasRecognizedValues,
+    ).toBe(false);
+  });
+
+  it("recognizes a value the form already holds, without reporting a change", () => {
+    const { changes, hasRecognizedValues } = mapClassificationToChanges(
+      { en_main: "mgr" },
+      mappingCodelists,
+      formValues({ lithologyDescriptions: [{ id: 0, lithologyId: 7, isFirst: true, lithologyUnconMainId: 100 }] }),
+    );
+
+    expect(changes).toEqual([]);
+    expect(hasRecognizedValues).toBe(true);
+  });
+
+  it("recognizes a consolidation on its own", () => {
+    const { changes, modeChange, hasRecognizedValues } = mapClassificationToChanges(
+      { consolidation: "unconsolidated" },
+      mappingCodelists,
+      formValues(),
+    );
+
+    expect(changes).toEqual([]);
+    expect(modeChange).toBeUndefined();
+    expect(hasRecognizedValues).toBe(true);
+  });
+
   it("reports nothing at all when the layer is already unspecified", () => {
     const { changes, modeChange } = mapClassificationToChanges(
       {},

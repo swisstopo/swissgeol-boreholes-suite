@@ -2,7 +2,7 @@
 import { useTranslation } from "react-i18next";
 import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, GridSortModel } from "@mui/x-data-grid";
-import { Check, Info, RotateCcw } from "lucide-react";
+import { Check, Info, RotateCcw, X } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { FieldChange } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
 import { FieldChangeSummary } from "../../../../../../components/form/fieldAnalysis/fieldAnalysisAdornments.tsx";
@@ -11,11 +11,24 @@ import { PromptContext } from "../../../../../../components/prompt/promptContext
 import { Table } from "../../../../../../components/table/table.tsx";
 import { modeLabelKey } from "./classificationMapping.ts";
 import { useConfirmModeChange } from "./useConfirmModeChange.tsx";
-import { LithologyAnalysis } from "./useLithologyAnalysis.ts";
+import { EmptyAnalysisResult, LithologyAnalysis } from "./useLithologyAnalysis.ts";
 
 interface AnalysisResultCardProps {
   analysis: LithologyAnalysis;
 }
+
+const cardFrameSx = {
+  mt: 2,
+  p: 3,
+  backgroundColor: theme.palette.background.fileDropzoneSelected,
+  border: `1px solid ${theme.palette.border.fileDropzoneSelected}`,
+  borderRadius: theme.spacing(0.5),
+};
+
+const emptyResultMessageKey: Record<EmptyAnalysisResult, string> = {
+  nothingRecognized: "analysisNothingRecognized",
+  nothingNew: "analysisNothingNew",
+};
 
 /**
  * Lists what the automatic classification changed and lets the user undo it, per field or all at once.
@@ -24,6 +37,8 @@ interface AnalysisResultCardProps {
  * as long as no row was accepted: "Reset all" is then the only way to get back the values of the
  * previous mode, which the switch cleared. Accepting a row makes the switch final, so from then on
  * the card closes with its last row.
+ *
+ * A classification that changed nothing gets the card too, saying why, until the user closes it.
  */
 export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) => {
   const { t } = useTranslation();
@@ -88,6 +103,25 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
     [confirmAcceptField, resetField, t],
   );
 
+  if (analysis.emptyResult) {
+    return (
+      <Stack data-cy="analysis-empty-result" gap={2} sx={cardFrameSx}>
+        <Stack direction="row" gap={2} justifyContent="space-between" alignItems="center">
+          <Typography variant="h5">{t("analysis")}</Typography>
+          <IconButton
+            size="small"
+            sx={{ color: "primary.main" }}
+            aria-label={t("close")}
+            data-cy="analysis-empty-result-close"
+            onClick={analysis.dismissEmptyResult}>
+            <X size={16} />
+          </IconButton>
+        </Stack>
+        <Typography>{t(emptyResultMessageKey[analysis.emptyResult])}</Typography>
+      </Stack>
+    );
+  }
+
   if (!analysis.hasPendingChanges) return null;
 
   const confirmAcceptAll = () => {
@@ -98,16 +132,7 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
   };
 
   return (
-    <Stack
-      data-cy="analysis-result-card"
-      gap={2}
-      sx={{
-        mt: 2,
-        p: 3,
-        backgroundColor: theme.palette.background.fileDropzoneSelected,
-        border: `1px solid ${theme.palette.border.fileDropzoneSelected}`,
-        borderRadius: theme.spacing(0.5),
-      }}>
+    <Stack data-cy="analysis-result-card" gap={2} sx={cardFrameSx}>
       <Stack direction="row" gap={2} justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
         <Typography variant="h5">{t("analysis")}</Typography>
         <Stack direction="row" gap={1}>

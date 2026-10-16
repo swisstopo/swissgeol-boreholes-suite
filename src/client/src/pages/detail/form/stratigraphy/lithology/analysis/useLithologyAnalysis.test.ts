@@ -344,7 +344,53 @@ describe("useLithologyAnalysis", () => {
 
     expect(pending).toBe(0);
     expect(result.current.analysis.modeChange).toBeUndefined();
+    expect(result.current.analysis.emptyResult).toBe("nothingRecognized");
+    expect(result.current.analysis.hasPendingChanges).toBe(false);
     expect(result.current.formMethods.getValues().isUnconsolidated).toBe(true);
+  });
+
+  it("reports nothing new when the form already holds every classified value", async () => {
+    classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "sa", color: "grey" });
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.analysis.run("Sand, grau");
+    });
+
+    expect(result.current.analysis.changeByPath.size).toBe(0);
+    expect(result.current.analysis.emptyResult).toBe("nothingNew");
+  });
+
+  it("reports no empty result once the classification changed something", async () => {
+    classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.analysis.run("Silt");
+    });
+
+    expect(result.current.analysis.emptyResult).toBeUndefined();
+  });
+
+  it("closes the empty result notice on dismiss and on discard", async () => {
+    classify.mockResolvedValue({});
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.analysis.run("keine Angabe");
+    });
+    act(() => {
+      result.current.analysis.dismissEmptyResult();
+    });
+    expect(result.current.analysis.emptyResult).toBeUndefined();
+
+    await act(async () => {
+      await result.current.analysis.run("keine Angabe");
+    });
+    act(() => {
+      result.current.analysis.discard();
+    });
+    expect(result.current.analysis.emptyResult).toBeUndefined();
   });
 
   it("cancels a running classification on discard", async () => {

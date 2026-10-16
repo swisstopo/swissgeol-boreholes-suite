@@ -161,8 +161,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
 
   const runAnalysis = async (description: string) => {
     try {
-      const pending = await analysis.run(description);
-      if (pending === 0) showAlert(t("lithologyClassificationNoResult"), "info");
+      await analysis.run(description);
     } catch {
       showAlert(t("errorLithologyClassification"), "error");
     }

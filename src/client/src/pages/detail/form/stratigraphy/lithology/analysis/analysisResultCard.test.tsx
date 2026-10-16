@@ -48,6 +48,7 @@ const analysis = (overrides: Partial<LithologyAnalysis> = {}): LithologyAnalysis
   acceptAll: vi.fn(),
   resetAll: vi.fn(),
   discard: vi.fn(),
+  dismissEmptyResult: vi.fn(),
   isModeChangeFixed: false,
   ...overrides,
 });
@@ -146,6 +147,21 @@ describe("AnalysisResultCard", () => {
 
     expect(showPrompt).not.toHaveBeenCalled();
     expect(current.acceptField).toHaveBeenCalledWith("a");
+  });
+
+  it.each([
+    ["nothingRecognized", "analysisNothingRecognized"],
+    ["nothingNew", "analysisNothingNew"],
+  ] as const)("explains an empty result of kind %s until it is closed", (emptyResult, messageKey) => {
+    const current = analysis({ changeByPath: new Map(), hasPendingChanges: false, emptyResult });
+    render(<AnalysisResultCard analysis={current} />);
+
+    expect(screen.getByText(messageKey)).toBeInTheDocument();
+    expect(byDataCy("analysis-result-card")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "close" }));
+
+    expect(current.dismissEmptyResult).toHaveBeenCalled();
   });
 
   it("resets everything without a prompt", () => {
