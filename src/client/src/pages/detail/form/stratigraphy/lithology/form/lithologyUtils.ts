@@ -3,7 +3,6 @@ import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
 import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
-import { LithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
 
 export const prepareLithologyForSubmit = (values: LithologyFormValues) => {
   values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;
@@ -152,27 +151,22 @@ export const buildLithologyValuesForMode = (
 
 /**
  * The modal's apply, gated on the analysis. Closing the modal with automatically extracted values
- * still unaccepted asks first, because applying them cannot be undone afterwards.
- * @param analysis The running analysis.
+ * still unaccepted asks first, because applying them cannot be undone afterwards. The analysis is
+ * not accepted here: it ends when the modal closes, so an apply that keeps the modal open, such as
+ * one that fails validation, leaves it open as well.
+ * @param hasPendingChanges Whether the analysis still waits for the user.
  * @param apply What the modal does when there is nothing to ask about.
  * @param showPrompt The prompt to ask with.
  */
 export const buildApplyHandler =
-  (analysis: LithologyAnalysis, apply: () => Promise<void> | void, showPrompt: ShowPrompt) => async () => {
-    if (!analysis.hasPendingChanges) {
+  (hasPendingChanges: boolean, apply: () => Promise<void> | void, showPrompt: ShowPrompt) => async () => {
+    if (!hasPendingChanges) {
       await apply();
       return;
     }
 
     showPrompt("analysisAcceptAllOnCloseConfirm", [
       { label: "cancel", action: () => {} },
-      {
-        label: "acceptValues",
-        variant: "contained",
-        action: () => {
-          analysis.acceptAll();
-          void apply();
-        },
-      },
+      { label: "acceptValues", variant: "contained", action: () => void apply() },
     ]);
   };

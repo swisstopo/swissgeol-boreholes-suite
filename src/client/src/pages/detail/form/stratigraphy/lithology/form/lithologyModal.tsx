@@ -157,7 +157,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
     }
   };
 
-  const applyDialog = buildApplyHandler(analysis, applyLithology, showPrompt);
+  const applyDialog = buildApplyHandler(analysis.hasPendingChanges, applyLithology, showPrompt);
 
   const runAnalysis = async (description: string) => {
     try {

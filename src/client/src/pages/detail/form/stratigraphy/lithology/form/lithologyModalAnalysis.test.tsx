@@ -6,9 +6,9 @@ import "@testing-library/jest-dom/vitest";
 import { ClassifyResponse, ClassifyVariables } from "../../../../../../api/dataextractionInterfaces.ts";
 import { Codelist } from "../../../../../../api/generated";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
+import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
 import { LithologicalDescription, Lithology } from "../../stratigraphy.ts";
-import { LithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
 import { LithologyModal } from "./lithologyModal.tsx";
 import { buildApplyHandler } from "./lithologyUtils.ts";
 
@@ -35,27 +35,12 @@ vi.mock("./lithologyUnconsolidatedForm.tsx", () => ({ LithologyUnconsolidatedFor
 vi.mock("./lithologyConsolidatedForm.tsx", () => ({ LithologyConsolidatedForm: () => null }));
 vi.mock("./remarksFormSection.tsx", () => ({ RemarksFormSection: () => null }));
 
-const analysis = (overrides: Partial<LithologyAnalysis> = {}): LithologyAnalysis => ({
-  changeByPath: new Map(),
-  isPending: false,
-  hasPendingChanges: false,
-  run: vi.fn(),
-  acceptField: vi.fn(),
-  resetField: vi.fn(),
-  restoreAnalysisValue: vi.fn(),
-  acceptAll: vi.fn(),
-  resetAll: vi.fn(),
-  discard: vi.fn(),
-  isModeChangeFixed: false,
-  ...overrides,
-});
-
 describe("buildApplyHandler", () => {
   it("applies straight away when nothing is pending", async () => {
     const apply = vi.fn();
     const showPrompt = vi.fn<ShowPrompt>();
 
-    await buildApplyHandler(analysis(), apply, showPrompt)();
+    await buildApplyHandler(false, apply, showPrompt)();
 
     expect(apply).toHaveBeenCalled();
     expect(showPrompt).not.toHaveBeenCalled();
@@ -64,9 +49,8 @@ describe("buildApplyHandler", () => {
   it("asks first when a change is still pending, and applies only on confirmation", async () => {
     const apply = vi.fn();
     const showPrompt = vi.fn<ShowPrompt>();
-    const current = analysis({ hasPendingChanges: true });
 
-    await buildApplyHandler(current, apply, showPrompt)();
+    await buildApplyHandler(true, apply, showPrompt)();
 
     expect(apply).not.toHaveBeenCalled();
     expect(showPrompt).toHaveBeenCalledWith(
@@ -77,7 +61,6 @@ describe("buildApplyHandler", () => {
     const actions = showPrompt.mock.calls[0][1];
     actions.find(action => action.label === "acceptValues")?.action?.();
 
-    expect(current.acceptAll).toHaveBeenCalled();
     expect(apply).toHaveBeenCalled();
   });
 });
@@ -153,6 +136,50 @@ describe("LithologyModal", () => {
     rerender(modalFor(lithology(2)));
 
     expect(byDataCy("analysis-result-card")).not.toBeInTheDocument();
+  });
+
+  it("keeps the analysis open when the apply leaves the modal open", async () => {
+    classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
+    const showPrompt = vi.fn<ShowPrompt>();
+    const updateLithology = vi.fn();
+    const layer = lithology(1);
+    render(
+      <PromptContext.Provider
+        value={{
+          showPrompt,
+          closePrompt: vi.fn(),
+          promptIsOpen: false,
+          message: "",
+          actions: [],
+          dialogContent: null,
+        }}>
+        <LithologyModal
+          lithology={layer}
+          lithologicalDescription={{ ...describedAsSilt(layer), depthIds: ["first", "second"] }}
+          updateLithology={updateLithology}
+          updateLithologicalDescription={vi.fn()}
+        />
+      </PromptContext.Provider>,
+      { wrapper: withAlerts },
+    );
+
+    fireEvent.click(byDataCy("analyze-button")!);
+    await waitFor(() => expect(byDataCy("analysis-result-card")).toBeInTheDocument());
+    // A changed description that other layers share asks once more before it is saved.
+    fireEvent.change(byDataCy("lithologicalDescription.description-formInput")!.querySelector("textarea")!, {
+      target: { value: "Silt, grau" },
+    });
+    fireEvent.click(byDataCy("apply-button")!);
+    const [, closeActions] = showPrompt.mock.calls[0];
+    await act(async () => {
+      closeActions.find(action => action.label === "acceptValues")?.action?.();
+      await flushPromises();
+    });
+    const [, sharedDescriptionActions] = showPrompt.mock.calls[1];
+    act(() => sharedDescriptionActions.find(action => action.label === "cancel")?.action?.());
+
+    expect(updateLithology).not.toHaveBeenCalled();
+    expect(byDataCy("analysis-result-card")).toBeInTheDocument();
   });
 
   it("cancels a classification still running when the modal closes", async () => {
