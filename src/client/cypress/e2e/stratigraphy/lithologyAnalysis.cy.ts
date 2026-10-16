@@ -97,8 +97,9 @@ describe("Lithology automatic classification", () => {
     descriptionField().type("keine Angabe", { delay: 0 });
     cy.dataCy("analyze-button").click();
 
-    isUnconsolidatedForm(null);
-    cy.dataCy("analysis-mode-change").should("be.visible");
+    cy.get(".MuiAlert-message").contains("No values could be derived from the description.");
+    isUnconsolidatedForm(true);
+    cy.dataCy("analysis-result-card").should("not.exist");
   });
 
   it("keeps the button disabled without a description", () => {

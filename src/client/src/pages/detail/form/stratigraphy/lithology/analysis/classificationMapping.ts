@@ -175,10 +175,16 @@ export const attributeRegistry: AttributeRegistryEntry[] = [
   ]),
 ];
 
-const modeForConsolidation = (consolidation: ClassificationConsolidation | undefined): boolean | null => {
-  if (consolidation === "unconsolidated") return true;
-  if (consolidation === "consolidated") return false;
-  return null;
+/**
+ * The mode the classification implies. Without a consolidation the service makes no claim about the
+ * mode, so the layer keeps its own and the attributes are matched against that.
+ */
+const modeForConsolidation = (
+  consolidation: ClassificationConsolidation | undefined,
+  currentMode: boolean | null,
+): boolean | null => {
+  if (consolidation === undefined) return currentMode;
+  return consolidation === "unconsolidated";
 };
 
 const valueAtPath = (values: LithologyFormValues, path: string): FieldValue => {
@@ -251,8 +257,8 @@ export const mapClassificationToChanges = (
   codelists: Codelist[],
   currentValues: LithologyFormValues,
 ): ClassificationChanges => {
-  const nextMode = modeForConsolidation(response.consolidation);
   const currentMode = currentValues.isUnconsolidated ?? null;
+  const nextMode = modeForConsolidation(response.consolidation, currentMode);
   const modeChange = nextMode === currentMode ? undefined : { previous: currentMode, next: nextMode };
 
   const previousValueAt = (path: string): FieldValue => (modeChange ? null : valueAtPath(currentValues, path));

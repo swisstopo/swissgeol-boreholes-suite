@@ -204,11 +204,24 @@ describe("mapClassificationToChanges", () => {
     expect(changes.every(change => change.previous === null)).toBe(true);
   });
 
-  it("switches to the unspecified mode when consolidation is absent", () => {
+  it("keeps the current mode when consolidation is absent", () => {
     const { changes, modeChange } = mapClassificationToChanges({}, mappingCodelists, formValues());
 
-    expect(modeChange).toEqual({ previous: true, next: null });
+    expect(modeChange).toBeUndefined();
     expect(changes).toEqual([]);
+  });
+
+  it("matches the attributes of the current mode when consolidation is absent", () => {
+    const { changes, modeChange } = mapClassificationToChanges(
+      { en_main: "mgr", lithology: "sandstone" },
+      mappingCodelists,
+      formValues(),
+    );
+
+    expect(modeChange).toBeUndefined();
+    expect(changes.map(change => [change.path, change.next])).toEqual([
+      ["lithologyDescriptions.0.lithologyUnconMainId", 100],
+    ]);
   });
 
   it("reports nothing at all when the layer is already unspecified", () => {

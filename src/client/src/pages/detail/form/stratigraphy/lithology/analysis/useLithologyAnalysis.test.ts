@@ -342,8 +342,9 @@ describe("useLithologyAnalysis", () => {
       pending = await result.current.analysis.run("keine Angabe");
     });
 
-    // The layer leaves the unconsolidated mode for the unspecified one, which is the single item.
-    expect(pending).toBe(1);
+    expect(pending).toBe(0);
+    expect(result.current.analysis.modeChange).toBeUndefined();
+    expect(result.current.formMethods.getValues().isUnconsolidated).toBe(true);
   });
 
   it("cancels a running classification on discard", async () => {
