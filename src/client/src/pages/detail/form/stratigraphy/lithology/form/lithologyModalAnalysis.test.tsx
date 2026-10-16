@@ -132,6 +132,16 @@ describe("LithologyModal", () => {
     cleanup();
   });
 
+  it("blocks another analysis until the open one is resolved", async () => {
+    classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
+    render(modalFor(lithology(1)), { wrapper: withAlerts });
+
+    fireEvent.click(byDataCy("analyze-button")!);
+    await waitFor(() => expect(byDataCy("analysis-result-card")).toBeInTheDocument());
+
+    expect(byDataCy("analyze-button")).toBeDisabled();
+  });
+
   it("drops the analysis of the previous lithology when another one opens", async () => {
     classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
     const { rerender } = render(modalFor(lithology(1)), { wrapper: withAlerts });

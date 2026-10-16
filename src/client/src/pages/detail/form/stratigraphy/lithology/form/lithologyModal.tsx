@@ -289,6 +289,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
                 <AnalyzeButton
                   control={formMethods.control}
                   isPending={analysis.isPending}
+                  hasPendingChanges={analysis.hasPendingChanges}
                   onAnalyze={description => void runAnalysis(description)}
                 />
               )
