@@ -9,15 +9,18 @@ export interface FieldChange {
   next: FieldValue;
 }
 
+const sortedIds = (ids: number[]): number[] => ids.toSorted((a, b) => a - b);
+
 /**
- * Whether two field values are the same. Lists are compared element by element in order, because
- * the order a multi select holds is the order the user sees.
+ * Whether two field values are the same. Lists are compared regardless of order, because the API
+ * stores them without one. A list never equals a value that is not a list.
  */
 export const areFieldValuesEqual = (left: FieldValue, right: FieldValue): boolean => {
-  if (Array.isArray(left) || Array.isArray(right)) {
-    const leftList = Array.isArray(left) ? left : [];
-    const rightList = Array.isArray(right) ? right : [];
-    return leftList.length === rightList.length && leftList.every((value, index) => value === rightList[index]);
+  if (Array.isArray(left) !== Array.isArray(right)) return false;
+  if (Array.isArray(left) && Array.isArray(right)) {
+    const sortedLeft = sortedIds(left);
+    const sortedRight = sortedIds(right);
+    return sortedLeft.length === sortedRight.length && sortedLeft.every((id, index) => id === sortedRight[index]);
   }
   return left === right;
 };
