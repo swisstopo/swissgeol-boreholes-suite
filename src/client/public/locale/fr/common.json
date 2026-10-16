@@ -539,6 +539,7 @@
   "selectedCount": "{{count}} sélectionnés",
   "serviceCo": "Service Co",
   "serviceOrTool": "Type de service ou d'outil",
+  "setByAutomaticAnalysis": "Défini par l'analyse automatique",
   "settingsErrorMessage": "Une erreur s'est produite lors de l'accès à la page des paramètres.",
   "share": "Part (%)",
   "sharedLithologicalDescriptionNotice": "Cette description est partagée par {{count}} couches lithologiques. Les modifications affecteront toutes ces couches.",

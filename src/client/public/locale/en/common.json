@@ -538,6 +538,7 @@
   "selectedCount": "{{count}} selected",
   "serviceCo": "Service Co",
   "serviceOrTool": "Service or tool",
+  "setByAutomaticAnalysis": "Set by the automatic analysis",
   "settingsErrorMessage": "Something went wrong while accessing the settings page on Swissgeol Boreholes",
   "share": "Share (%)",
   "sharedLithologicalDescriptionNotice": "This description is shared by {{count}} lithology layers. Changes will affect all of them.",

@@ -539,6 +539,7 @@
   "selectedCount": "{{count}} selezionati",
   "serviceCo": "Service Co",
   "serviceOrTool": "Tipo di servizio o strumento",
+  "setByAutomaticAnalysis": "Impostato dall'analisi automatica",
   "settingsErrorMessage": "Si è verificato un errore durante l'accesso alla pagina delle impostazioni.",
   "share": "Quota (%)",
   "sharedLithologicalDescriptionNotice": "Questa descrizione è condivisa da {{count}} strati litologici. Le modifiche interesseranno tutti gli strati.",

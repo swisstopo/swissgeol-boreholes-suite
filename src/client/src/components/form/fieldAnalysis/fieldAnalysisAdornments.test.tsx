@@ -48,6 +48,12 @@ describe("FieldChangeSummary", () => {
 });
 
 describe("FieldAnalysisLabel", () => {
+  it("names the badge for assistive technology", () => {
+    render(<FieldAnalysisLabel label="label" change={change()} />);
+
+    expect(screen.getByRole("img", { name: "setByAutomaticAnalysis" })).toBeInTheDocument();
+  });
+
   it("shows the change in a tooltip when hovering the badge", async () => {
     render(<FieldAnalysisLabel label="label" change={change()} />);
 
