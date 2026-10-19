@@ -10,6 +10,9 @@
 - Uploads and exports can be cancelled by clicking the overlay or its cancel button. A cancelled export stops the download and the work it triggers on the server; a cancelled upload keeps the files that already reached the server, and the remaining changes stay unsaved so the save can be repeated.
 - Both CSV files of the LOG import are now optional, so LOG files can be imported for LOG runs that already exist. At least one of the two files is still required.
 
+### Fixed
+- The entries in the workflow history now display the correct date.
+
 ### Removed
 - The terms of service editor in the settings. The disclaimer shown on first visit now always uses the texts shipped with the application, and the stored terms and acceptance records are deleted from the database.
 
