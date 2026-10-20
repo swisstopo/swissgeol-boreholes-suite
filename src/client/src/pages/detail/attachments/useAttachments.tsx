@@ -41,7 +41,6 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
 
   const [rows, setRows] = useState<T[]>();
   const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, T>>(new Map());
-  // Starts as loading because the attachments are fetched right after mounting.
   const [isLoading, setIsLoading] = useState(true);
 
   const { getPublicColumnHeader, getPublicColumnCell } = usePublicColumn({
