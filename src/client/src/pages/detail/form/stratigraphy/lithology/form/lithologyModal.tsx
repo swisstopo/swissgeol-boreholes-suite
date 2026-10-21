@@ -19,6 +19,7 @@ import { useDevMode } from "../../../../../../hooks/useDevMode.tsx";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
 import { AnalysisResultCard } from "../analysis/analysisResultCard.tsx";
 import { AnalyzeButton } from "../analysis/analyzeButton.tsx";
+import { useConfirmAcceptAll } from "../analysis/useConfirmModeChange.tsx";
 import { useLithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
 import { useManualEditResolution } from "../analysis/useManualEditResolution.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
@@ -76,6 +77,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
 
   // A field the user edits by hand is their value, not the analysis's, so its row is resolved.
   useManualEditResolution(formMethods, analysis);
+  const confirmAcceptAll = useConfirmAcceptAll(analysis.modeChange, analysis.isModeChangeFixed);
 
   // The form needs the optional flags resolved and at least one description row. Deriving a copy
   // keeps the prop untouched while the change detection below still compares against this shape.
@@ -157,7 +159,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
     }
   };
 
-  const applyDialog = buildApplyHandler(analysis.hasPendingChanges, applyLithology, showPrompt);
+  const applyDialog = buildApplyHandler(analysis.hasPendingChanges, applyLithology, confirmAcceptAll);
 
   const runAnalysis = async (description: string) => {
     try {

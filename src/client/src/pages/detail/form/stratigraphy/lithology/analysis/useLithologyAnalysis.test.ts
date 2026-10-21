@@ -329,6 +329,22 @@ describe("useLithologyAnalysis", () => {
     expect(result.current.formMethods.getValues().uscsTypeCodelistIds).toEqual([502]);
   });
 
+  it("fixes the mode change without touching a row on fixModeChange", async () => {
+    classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone" });
+    const { result } = setup();
+
+    await act(async () => {
+      await result.current.analysis.run("Sandstein");
+    });
+    act(() => {
+      result.current.analysis.fixModeChange();
+    });
+
+    expect(result.current.analysis.isModeChangeFixed).toBe(true);
+    expect([...result.current.analysis.changeByPath.keys()]).toEqual(["lithologyDescriptions.0.lithologyConId"]);
+    expect(result.current.analysis.hasPendingChanges).toBe(true);
+  });
+
   it("clears everything pending on acceptAll", async () => {
     classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone" });
     const { result } = setup();

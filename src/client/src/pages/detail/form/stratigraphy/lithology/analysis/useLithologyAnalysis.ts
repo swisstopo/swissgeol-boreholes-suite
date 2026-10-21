@@ -39,6 +39,8 @@ export interface LithologyAnalysis {
   discard: () => void;
   /** Closes the notice of an analysis that left nothing to review. */
   dismissEmptyResult: () => void;
+  /** Makes the mode change final without resolving a row, for an edit in a field the analysis left alone. */
+  fixModeChange: () => void;
   /** True once a field row was accepted after a mode change.*/
   isModeChangeFixed: boolean;
   modeChange?: ModeChange;
@@ -68,6 +70,8 @@ const emptyResultOf = ({
 /** The analysis ends once no row is left and the mode change, if any, no longer waits for a decision. */
 const isResolved = ({ changes, modeChange, isModeChangeFixed }: AnalysisState): boolean =>
   changes.length === 0 && (!modeChange || isModeChangeFixed);
+
+const endIfResolved = (state: AnalysisState): AnalysisState => (isResolved(state) ? emptyState : state);
 
 /**
  * The classification of a run, or undefined once the run was discarded. The request then either
@@ -137,14 +141,17 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
   );
 
   const dropChange = useCallback((path: string, fixesModeChange: boolean) => {
-    setState(current => {
-      const next = {
+    setState(current =>
+      endIfResolved({
         ...current,
         changes: current.changes.filter(change => change.path !== path),
         isModeChangeFixed: current.isModeChangeFixed || (fixesModeChange && current.modeChange !== undefined),
-      };
-      return isResolved(next) ? emptyState : next;
-    });
+      }),
+    );
+  }, []);
+
+  const fixModeChange = useCallback(() => {
+    setState(current => endIfResolved({ ...current, isModeChangeFixed: current.modeChange !== undefined }));
   }, []);
 
   const acceptField = useCallback((path: string) => dropChange(path, true), [dropChange]);
@@ -208,5 +215,6 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
     resetAll,
     discard,
     dismissEmptyResult,
+    fixModeChange,
   };
 };

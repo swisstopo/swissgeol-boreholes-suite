@@ -9,6 +9,7 @@ import { AlertContext } from "../../../../../../components/alert/alertContext.ts
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
 import { LithologicalDescription, Lithology } from "../../stratigraphy.ts";
+import { ConfirmAcceptAll } from "../analysis/useConfirmModeChange.tsx";
 import { LithologyModal } from "./lithologyModal.tsx";
 import { buildApplyHandler } from "./lithologyUtils.ts";
 
@@ -38,28 +39,25 @@ vi.mock("./remarksFormSection.tsx", () => ({ RemarksFormSection: () => null }));
 describe("buildApplyHandler", () => {
   it("applies straight away when nothing is pending", async () => {
     const apply = vi.fn();
-    const showPrompt = vi.fn<ShowPrompt>();
+    const confirmAcceptAll = vi.fn<ConfirmAcceptAll>();
 
-    await buildApplyHandler(false, apply, showPrompt)();
+    await buildApplyHandler(false, apply, confirmAcceptAll)();
 
     expect(apply).toHaveBeenCalled();
-    expect(showPrompt).not.toHaveBeenCalled();
+    expect(confirmAcceptAll).not.toHaveBeenCalled();
   });
 
   it("asks first when a change is still pending, and applies only on confirmation", async () => {
     const apply = vi.fn();
-    const showPrompt = vi.fn<ShowPrompt>();
+    const confirmAcceptAll = vi.fn<ConfirmAcceptAll>();
 
-    await buildApplyHandler(true, apply, showPrompt)();
+    await buildApplyHandler(true, apply, confirmAcceptAll)();
 
     expect(apply).not.toHaveBeenCalled();
-    expect(showPrompt).toHaveBeenCalledWith(
-      "analysisAcceptAllOnCloseConfirm",
-      expect.arrayContaining([expect.objectContaining({ label: "cancel" })]),
-    );
+    const [messageKey, onConfirm] = confirmAcceptAll.mock.calls[0];
+    expect(messageKey).toBe("analysisAcceptAllOnCloseConfirm");
 
-    const actions = showPrompt.mock.calls[0][1];
-    actions.find(action => action.label === "acceptValues")?.action?.();
+    onConfirm();
 
     expect(apply).toHaveBeenCalled();
   });

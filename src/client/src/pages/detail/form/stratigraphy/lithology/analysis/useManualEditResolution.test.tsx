@@ -156,6 +156,41 @@ describe("useManualEditResolution", () => {
     expect(showPrompt).not.toHaveBeenCalled();
   });
 
+  it("asks before an edit in a field without a row makes the mode change final", async () => {
+    const { result } = setup();
+    await runConsolidatedAnalysis(result.current);
+
+    editByHand(result.current.formMethods, "lithologyDescriptions.0.cementationId", 701);
+    const [, actions] = showPrompt.mock.calls[0];
+    act(() => actions[1].action?.());
+
+    expect(result.current.analysis.isModeChangeFixed).toBe(true);
+    expect(result.current.analysis.changeByPath.has(lithologyConPath)).toBe(true);
+    expect(result.current.formMethods.getValues().lithologyDescriptions?.[0].cementationId).toBe(701);
+  });
+
+  it("puts back the value of the switch when the user declines an edit in a field without a row", async () => {
+    const { result } = setup();
+    await runConsolidatedAnalysis(result.current);
+
+    editByHand(result.current.formMethods, "lithologyDescriptions.0.cementationId", 701);
+    const [, actions] = showPrompt.mock.calls[0];
+    act(() => actions[0].action?.());
+
+    expect(result.current.analysis.isModeChangeFixed).toBe(false);
+    expect(result.current.formMethods.getValues().lithologyDescriptions?.[0].cementationId).toBeUndefined();
+  });
+
+  it("does not ask for an edit outside the mode while the mode change is open", async () => {
+    const { result } = setup();
+    await runConsolidatedAnalysis(result.current);
+
+    editByHand(result.current.formMethods, "toDepth", 0.8);
+
+    expect(showPrompt).not.toHaveBeenCalled();
+    expect(result.current.analysis.isModeChangeFixed).toBe(false);
+  });
+
   it("puts the analysis's value back when the user declines", async () => {
     const { result } = setup();
     await runConsolidatedAnalysis(result.current);

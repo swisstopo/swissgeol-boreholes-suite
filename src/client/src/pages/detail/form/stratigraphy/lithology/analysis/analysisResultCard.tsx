@@ -1,4 +1,4 @@
-﻿import { FC, useCallback, useContext, useMemo, useState } from "react";
+﻿import { FC, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, GridSortModel } from "@mui/x-data-grid";
@@ -8,10 +8,9 @@ import { BoreholesButton } from "../../../../../../components/buttons/buttons.ts
 import { FieldChange } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
 import { FieldChangeSummary } from "../../../../../../components/form/fieldAnalysis/fieldAnalysisAdornments.tsx";
 import { ValueChange } from "../../../../../../components/form/fieldAnalysis/valueChange.tsx";
-import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../../../../components/table/table.tsx";
 import { modeLabelKey } from "./classificationMapping.ts";
-import { useConfirmModeChange } from "./useConfirmModeChange.tsx";
+import { useConfirmAcceptAll, useConfirmModeChange } from "./useConfirmModeChange.tsx";
 import { EmptyAnalysisResult, LithologyAnalysis } from "./useLithologyAnalysis.ts";
 
 interface AnalysisResultCardProps {
@@ -43,7 +42,6 @@ const emptyResultMessageKey: Record<EmptyAnalysisResult, string> = {
  */
 export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) => {
   const { t } = useTranslation();
-  const { showPrompt } = useContext(PromptContext);
   const { acceptField, resetField, modeChange, isModeChangeFixed } = analysis;
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: "labelKey", sort: "asc" }]);
 
@@ -56,6 +54,7 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
     (path: string) => confirmModeChange(() => acceptField(path)),
     [acceptField, confirmModeChange],
   );
+  const confirmAcceptAll = useConfirmAcceptAll(modeChange, isModeChangeFixed);
 
   const columns = useMemo<GridColDef<FieldChange>[]>(
     () => [
@@ -125,13 +124,6 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
 
   if (!analysis.hasPendingChanges) return null;
 
-  const confirmAcceptAll = () => {
-    showPrompt("analysisAcceptAllConfirm", [
-      { label: "cancel", action: () => {} },
-      { label: "acceptValues", variant: "contained", action: analysis.acceptAll },
-    ]);
-  };
-
   return (
     <Stack data-cy="analysis-result-card" gap={2} sx={cardFrameSx}>
       <Stack direction="row" gap={2} justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
@@ -152,7 +144,7 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
             variant="outlined"
             dataCy="analysis-accept-all"
             startIcon={<Check size={16} />}
-            onClick={confirmAcceptAll}
+            onClick={() => confirmAcceptAll("analysisAcceptAllConfirm", analysis.acceptAll)}
             label={t("analysisAcceptAll")}
           />
         </Stack>

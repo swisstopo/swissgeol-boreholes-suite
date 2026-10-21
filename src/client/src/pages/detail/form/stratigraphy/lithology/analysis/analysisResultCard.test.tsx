@@ -49,6 +49,7 @@ const analysis = (overrides: Partial<LithologyAnalysis> = {}): LithologyAnalysis
   resetAll: vi.fn(),
   discard: vi.fn(),
   dismissEmptyResult: vi.fn(),
+  fixModeChange: vi.fn(),
   isModeChangeFixed: false,
   ...overrides,
 });
@@ -171,6 +172,37 @@ describe("AnalysisResultCard", () => {
     fireEvent.click(byDataCy("analysis-reset-all")!);
 
     expect(current.resetAll).toHaveBeenCalled();
+  });
+
+  it.each([
+    ["no mode change", {}, "analysisAcceptAllConfirm", "acceptValues"],
+    [
+      "an open mode change",
+      { modeChange: { previous: true, next: false } },
+      "analysisModeChangeConfirm",
+      "acceptChange",
+    ],
+    [
+      "a fixed mode change",
+      { modeChange: { previous: true, next: false }, isModeChangeFixed: true },
+      "analysisAcceptAllConfirm",
+      "acceptValues",
+    ],
+  ] as const)("asks about %s before accepting all", (_, overrides, messageKey, confirmLabel) => {
+    const current = analysis(overrides);
+    const showPrompt = renderWithPrompt(current);
+
+    fireEvent.click(byDataCy("analysis-accept-all")!);
+
+    const [message, actions] = showPrompt.mock.calls[0];
+    render(<>{message}</>);
+    expect(screen.getByText(messageKey)).toBeInTheDocument();
+    expect(actions.map(action => action.label)).toEqual(["cancel", confirmLabel]);
+    expect(current.acceptAll).not.toHaveBeenCalled();
+
+    actions[1].action?.();
+
+    expect(current.acceptAll).toHaveBeenCalled();
   });
 
   it("offers reset all for a pending mode change but not once it is fixed", () => {

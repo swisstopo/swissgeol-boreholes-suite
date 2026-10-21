@@ -1,8 +1,8 @@
 import { LithologyDescription } from "../../../../../../api/generated";
 import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
-import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
+import { ConfirmAcceptAll } from "../analysis/useConfirmModeChange.tsx";
 
 export const prepareLithologyForSubmit = (values: LithologyFormValues) => {
   values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;
@@ -156,17 +156,14 @@ export const buildLithologyValuesForMode = (
  * one that fails validation, leaves it open as well.
  * @param hasPendingChanges Whether the analysis still waits for the user.
  * @param apply What the modal does when there is nothing to ask about.
- * @param showPrompt The prompt to ask with.
+ * @param confirmAcceptAll Asks before the pending values are taken over, about the mode change while it is open.
  */
 export const buildApplyHandler =
-  (hasPendingChanges: boolean, apply: () => Promise<void> | void, showPrompt: ShowPrompt) => async () => {
+  (hasPendingChanges: boolean, apply: () => Promise<void> | void, confirmAcceptAll: ConfirmAcceptAll) => async () => {
     if (!hasPendingChanges) {
       await apply();
       return;
     }
 
-    showPrompt("analysisAcceptAllOnCloseConfirm", [
-      { label: "cancel", action: () => {} },
-      { label: "acceptValues", variant: "contained", action: () => void apply() },
-    ]);
+    confirmAcceptAll("analysisAcceptAllOnCloseConfirm", () => void apply());
   };
