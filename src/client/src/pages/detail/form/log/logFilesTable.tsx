@@ -44,7 +44,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
   const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, LogFile>>(new Map());
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [filterVisible, setFilterVisible] = useState(false);
-  const [extensionsFilters] = useState<FormMultiSelectValue[]>(() => getExtensionsFilters(files));
+  const extensionsFilters = useMemo(() => getExtensionsFilters(files), [files]);
   const { data: codelists } = useCodelists();
   const { isExporting, setIsExporting, startExport, exportItems } = useLogExport(exportLogFiles, selectionModel, files);
 
