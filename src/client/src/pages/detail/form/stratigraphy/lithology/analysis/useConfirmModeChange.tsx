@@ -4,8 +4,10 @@ import { PromptContext } from "../../../../../../components/prompt/promptContext
 import { ModeChange, modeLabelKey } from "./classificationMapping.ts";
 
 /** Whether the analysis switched the mode and nothing the user took over has made the switch final yet. */
-export const isModeChangeOpen = (modeChange: ModeChange | undefined, isModeChangeFixed: boolean): boolean =>
-  modeChange !== undefined && !isModeChangeFixed;
+export const isModeChangeOpen = (
+  modeChange: ModeChange | undefined,
+  isModeChangeFixed: boolean,
+): modeChange is ModeChange => modeChange !== undefined && !isModeChangeFixed;
 
 /** Asks before every analysed value is taken over at once, then runs `onConfirm`. */
 export type ConfirmAcceptAll = (messageKey: string, onConfirm: () => void) => void;
@@ -25,7 +27,7 @@ export const useConfirmModeChange = (modeChange: ModeChange | undefined, isModeC
 
   return useCallback(
     (onConfirm: () => void, onCancel?: () => void) => {
-      if (!modeChange || !isModeChangeOpen(modeChange, isModeChangeFixed)) {
+      if (!isModeChangeOpen(modeChange, isModeChangeFixed)) {
         onConfirm();
         return;
       }
