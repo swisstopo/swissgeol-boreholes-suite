@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+﻿import { afterEach, describe, expect, it, vi } from "vitest";
 import { Codelist } from "../../../../../../api/generated";
 import { LithologyFormValues } from "../../stratigraphy.ts";
 import { findCodelistId, mapClassificationToChanges, normaliseCode, normaliseText } from "./classificationMapping.ts";
@@ -308,5 +308,32 @@ describe("mapClassificationToChanges", () => {
       ["lithologyDescriptions.0.componentConParticleCodelistIds", [703]],
       ["alterationDegreeId", 702],
     ]);
+  });
+
+  describe("unmapped response keys", () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("warns about a key no attribute registry entry maps", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const response = { consolidation: "consolidated", assessory_components: ["pyrite"] } as const;
+
+      const { changes } = mapClassificationToChanges(response, mappingCodelists, formValues());
+
+      expect(changes).toEqual([]);
+      expect(warn).toHaveBeenCalledOnce();
+      expect(warn).toHaveBeenCalledWith(
+        "Classification returned assessory_components, which no attribute registry entry maps.",
+      );
+    });
+
+    it("stays silent when every key is mapped", () => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      mapClassificationToChanges({ consolidation: "unconsolidated", en_main: "mgr" }, mappingCodelists, formValues());
+
+      expect(warn).not.toHaveBeenCalled();
+    });
   });
 });

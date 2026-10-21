@@ -247,6 +247,18 @@ const resolveIds = (entry: AttributeRegistryEntry, raw: unknown, codelists: Code
     })
     .filter((id): id is number => id !== undefined);
 
+const mappedResponseKeys = new Set<string>(["consolidation", ...attributeRegistry.map(entry => entry.apiKey)]);
+
+/**
+ * Warns about response keys the mapping drops. A key the service renamed would otherwise leave its
+ * fields empty without a trace.
+ */
+const warnAboutUnmappedKeys = (response: ClassifyResponse) => {
+  Object.keys(response)
+    .filter(key => !mappedResponseKeys.has(key))
+    .forEach(key => console.warn(`Classification returned ${key}, which no attribute registry entry maps.`));
+};
+
 /** Pairs the resolved ids with the form fields they are written into. */
 const pairIdsWithTargets = (entry: AttributeRegistryEntry, ids: number[]): [AttributeTarget, FieldValue][] => {
   if (entry.kind !== "fanOut") return [[entry.targets[0], entry.kind === "single" ? ids[0] : ids]];
@@ -289,6 +301,7 @@ export const mapClassificationToChanges = (
   codelists: Codelist[],
   currentValues: LithologyFormValues,
 ): ClassificationChanges => {
+  warnAboutUnmappedKeys(response);
   const currentMode = currentValues.isUnconsolidated ?? null;
   const nextMode = modeForConsolidation(response.consolidation, currentMode);
   const modeChange = nextMode === currentMode ? undefined : { previous: currentMode, next: nextMode };
