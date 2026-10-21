@@ -1,9 +1,10 @@
 ﻿import { FC, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, GridSortModel } from "@mui/x-data-grid";
 import { Check, Info, RotateCcw, X } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
+import { BoreholesButton } from "../../../../../../components/buttons/buttons.tsx";
 import { FieldChange } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
 import { FieldChangeSummary } from "../../../../../../components/form/fieldAnalysis/fieldAnalysisAdornments.tsx";
 import { ValueChange } from "../../../../../../components/form/fieldAnalysis/valueChange.tsx";
@@ -136,21 +137,19 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
       <Stack direction="row" gap={2} justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
         <Typography variant="h5">{t("analysis")}</Typography>
         <Stack direction="row" gap={1}>
-          <Button
+          <BoreholesButton
             variant="text"
             sx={{ backgroundColor: theme.palette.background.fileDropzoneSelected }}
             data-cy="analysis-reset-all"
             startIcon={<RotateCcw size={16} />}
-            onClick={analysis.resetAll}>
-            {t("analysisResetAll")}
-          </Button>
-          <Button
+            onClick={analysis.resetAll}
+            label={t("analysisResetAll")}/>
+          <BoreholesButton
             variant="outlined"
             data-cy="analysis-accept-all"
             startIcon={<Check size={16} />}
-            onClick={confirmAcceptAll}>
-            {t("analysisAcceptAll")}
-          </Button>
+            onClick={confirmAcceptAll}
+            label={t("analysisAcceptAll")}/>
         </Stack>
       </Stack>
 
