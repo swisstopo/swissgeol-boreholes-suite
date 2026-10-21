@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   mockClassify,
-  useClassificationMock,
+  isClassificationMocked,
 } from "../pages/detail/form/stratigraphy/lithology/analysis/classificationMock.ts";
 import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
 import { getAuthorizationHeaders } from "./authentication.ts";
@@ -269,7 +269,7 @@ async function classifyLithologicalDescription(
   description: string,
   abortSignal: AbortSignal,
 ): Promise<ClassifyResponse> {
-  if (useClassificationMock) return await mockClassify(description);
+  if (isClassificationMocked) return await mockClassify(description);
 
   const response = await fetchClassify(description, abortSignal);
   if (!response.ok) {
