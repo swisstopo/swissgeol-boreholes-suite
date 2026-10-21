@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useLocation } from "react-router";
 import { ErrorResponse } from "../../api/errorClasses.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
@@ -16,10 +15,7 @@ import { ImportPanel } from "./sidePanelContent/importer/importPanel.tsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
 export const OverviewPage = () => {
-  const location = useLocation();
-  const [sideDrawerPathname, setSideDrawerPathname] = useState<string | null>(null);
-  // Close the side drawer when the route changes: it stays open only on the route it was opened on.
-  const sideDrawerOpen = sideDrawerPathname === location.pathname;
+  const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
@@ -29,7 +25,7 @@ export const OverviewPage = () => {
   const formMethods = useForm({ mode: "all", shouldUnregister: false });
 
   const toggleSideDrawer = (open: boolean) => {
-    setSideDrawerPathname(open ? location.pathname : null);
+    setSideDrawerOpen(open);
   };
 
   const sideDrawerComponentMap = {
