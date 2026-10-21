@@ -22,6 +22,14 @@ interface MapViewProps {
   displayErrorMessage: (message: string) => void;
 }
 
+const containSameIds = (ids: number[], otherIds: number[]) => {
+  const otherIdSet = new Set(otherIds);
+  return new Set(ids).size === otherIdSet.size && ids.every(id => otherIdSet.has(id));
+};
+
+// A stable empty array, so the fallback response does not count as new data on every render.
+const noSelectableBoreholeIds: number[] = [];
+
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
   const [rowsToHighlight, setRowsToHighlight] = useState<number[]>([]);
@@ -52,10 +60,12 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   } = useBoreholeUrlParams();
 
   useEffect(() => {
-    restoreTableParamsFromSession();
-    restoreFilterParamsFromSession();
-    restoreMapParamsFromSession();
-    setSessionRestored(true);
+    // Not awaited: the effect returns its cleanup synchronously, the flag follows once the URL holds the restored params.
+    void Promise.all([
+      restoreTableParamsFromSession(),
+      restoreFilterParamsFromSession(),
+      restoreMapParamsFromSession(),
+    ]).finally(() => setSessionRestored(true));
 
     return () => {
       // On unmount: persist current state to sessionStorage.
@@ -114,9 +124,19 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     boreholes: [],
     geoJson: null,
     filteredBoreholeIds: [],
-    selectableBoreholeIds: [],
+    selectableBoreholeIds: noSelectableBoreholeIds,
   };
   const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
+
+  // The selection is cleared only when the selectable boreholes change and not whenever the boreholes
+  // change, which also happens on every pagination and order event (server side pagination/ordering).
+  // The ids are compared only when a new response arrives, not on every render (e.g. on hover).
+  const [selectionScope, setSelectionScope] = useState(noSelectableBoreholeIds);
+  const { selectableBoreholeIds } = filterResponse;
+  if (selectableBoreholeIds !== selectionScope) {
+    setSelectionScope(selectableBoreholeIds);
+    if (!containSameIds(selectableBoreholeIds, selectionScope)) setSelectionModel([]);
+  }
 
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>

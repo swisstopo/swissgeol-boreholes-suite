@@ -32,7 +32,10 @@ interface TabPanelProps {
 export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card", supportFullscreen, title }) => {
   const { navigateTo } = useBoreholesNavigate();
   const { hash } = useLocation();
-  const [activeIndex, setActiveIndex] = useState(0);
+  const indexForHash = tabs.findIndex(tab => hash.includes(tab.hash));
+  const firstTabHash = tabs[0].hash;
+  // The URL hash selects the active tab. An invalid hash shows the first tab until the redirect below lands.
+  const activeIndex = Math.max(indexForHash, 0);
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);
 
@@ -44,14 +47,8 @@ export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card", supportFul
     [variant],
   );
 
-  const indexForHash = tabs.findIndex(tab => hash.includes(tab.hash));
-  const firstTabHash = tabs[0].hash;
-
-  // Initialize and update activeIndex based on the current URL hash.
   useEffect(() => {
-    if (indexForHash > -1) {
-      setActiveIndex(indexForHash);
-    } else {
+    if (indexForHash === -1) {
       // Redirect to the first tab if hash is not valid
       navigateTo({
         hash: firstTabHash,
@@ -103,7 +100,7 @@ export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card", supportFul
         title={title || ""}
         tabs={tabs}
         activeIndex={activeIndex}
-        setActiveIndex={setActiveIndex}
+        setActiveIndex={index => handleIndexChange(null, index)}
       />
     </>
   );

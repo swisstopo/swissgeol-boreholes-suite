@@ -1,14 +1,4 @@
-import {
-  createContext,
-  Dispatch,
-  FC,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useMemo, useState } from "react";
 import { Workgroup } from "../../api/generated";
 import { getEditableWorkgroups, useCurrentUser } from "../../api/user.ts";
 
@@ -27,12 +17,15 @@ interface UserWorkgroupsProviderProps {
 export const UserWorkgroupsProvider: FC<UserWorkgroupsProviderProps> = ({ children }) => {
   const { data: user } = useCurrentUser();
   const editableWorkgroups = useMemo(() => getEditableWorkgroups(user), [user]);
-  const [currentWorkgroupId, setCurrentWorkgroupId] = useState<number | null>(null);
+  const firstEditableWorkgroupId = editableWorkgroups.length > 0 ? editableWorkgroups[0].id : null;
+  const [currentWorkgroupId, setCurrentWorkgroupId] = useState<number | null>(firstEditableWorkgroupId);
+  const [syncedEditableWorkgroups, setSyncedEditableWorkgroups] = useState(editableWorkgroups);
 
   // Default the selected workgroup to the first editable one whenever the user changes.
-  useEffect(() => {
-    setCurrentWorkgroupId(editableWorkgroups.length > 0 ? editableWorkgroups[0].id : null);
-  }, [editableWorkgroups]);
+  if (editableWorkgroups !== syncedEditableWorkgroups) {
+    setSyncedEditableWorkgroups(editableWorkgroups);
+    setCurrentWorkgroupId(firstEditableWorkgroupId);
+  }
 
   return (
     <UserWorkgroupsContext.Provider

@@ -41,7 +41,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
 
   const [rows, setRows] = useState<T[]>();
   const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, T>>(new Map());
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { getPublicColumnHeader, getPublicColumnCell } = usePublicColumn({
     apiRef,
@@ -50,13 +50,19 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     rows,
   });
 
+  const showLoadedAttachments = useCallback(
+    (attachments: T[]) => {
+      if (invalidateQueries) invalidateQueries();
+      setRows(attachments);
+      setIsLoading(false);
+    },
+    [invalidateQueries],
+  );
+
   const onLoad = useCallback(async () => {
     setIsLoading(true);
-    const attachments = await loadAttachments();
-    if (invalidateQueries) invalidateQueries();
-    setRows(attachments);
-    setIsLoading(false);
-  }, [invalidateQueries, loadAttachments]);
+    showLoadedAttachments(await loadAttachments());
+  }, [loadAttachments, showLoadedAttachments]);
 
   const onAdd = useCallback(
     async (file?: File) => {
@@ -120,9 +126,9 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   }, [apiRef, rows]);
 
   useEffect(() => {
-    // Not awaited: effects cannot be async, and onLoad drives the grid through state.
-    void onLoad();
-  }, [onLoad]);
+    // Not awaited: effects cannot be async, and the loaded attachments drive the grid through state.
+    void loadAttachments().then(showLoadedAttachments);
+  }, [loadAttachments, showLoadedAttachments]);
 
   useEffect(() => {
     setHasChanges(updatedRows.size > 0);
