@@ -6,7 +6,8 @@ import "@testing-library/jest-dom/vitest";
 import { ClassifyResponse, ClassifyVariables } from "../../../../../../api/dataextractionInterfaces.ts";
 import { Codelist } from "../../../../../../api/generated";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
-import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
+import { Prompt } from "../../../../../../components/prompt/prompt.tsx";
+import { PromptContext, PromptProvider } from "../../../../../../components/prompt/promptContext.tsx";
 import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
 import { LithologicalDescription, Lithology } from "../../stratigraphy.ts";
 import { ConfirmAcceptAll } from "../analysis/useConfirmModeChange.tsx";
@@ -178,6 +179,35 @@ describe("LithologyModal", () => {
 
     expect(updateLithology).not.toHaveBeenCalled();
     expect(byDataCy("analysis-result-card")).toBeInTheDocument();
+  });
+
+  it("shows the shared description prompt after the close prompt is confirmed", async () => {
+    classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
+    const layer = lithology(1);
+    render(
+      <PromptProvider>
+        <Prompt />
+        <LithologyModal
+          lithology={layer}
+          lithologicalDescription={{ ...describedAsSilt(layer), depthIds: ["first", "second"] }}
+          updateLithology={vi.fn()}
+          updateLithologicalDescription={vi.fn()}
+        />
+      </PromptProvider>,
+      { wrapper: withAlerts },
+    );
+
+    fireEvent.click(byDataCy("analyze-button")!);
+    await waitFor(() => expect(byDataCy("analysis-result-card")).toBeInTheDocument());
+    fireEvent.change(byDataCy("lithologicalDescription.description-formInput")!.querySelector("textarea")!, {
+      target: { value: "Silt, grau" },
+    });
+    fireEvent.click(byDataCy("apply-button")!);
+    await waitFor(() => expect(byDataCy("acceptvalues-button")).toBeInTheDocument());
+    fireEvent.click(byDataCy("acceptvalues-button")!);
+
+    // The real prompt closes after its action, so the second prompt must survive that close.
+    await waitFor(() => expect(byDataCy("prompt")).toHaveTextContent("confirmEditSharedLithologicalDescription"));
   });
 
   it("cancels a classification still running when the modal closes", async () => {

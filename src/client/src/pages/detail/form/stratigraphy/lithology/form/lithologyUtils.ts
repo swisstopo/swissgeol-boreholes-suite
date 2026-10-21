@@ -154,6 +154,9 @@ export const buildLithologyValuesForMode = (
  * still unaccepted asks first, because applying them cannot be undone afterwards. The analysis is
  * not accepted here: it ends when the modal closes, so an apply that keeps the modal open, such as
  * one that fails validation, leaves it open as well.
+ *
+ * A prompt closes right after its action returns, so a prompt the apply shows synchronously would be
+ * closed at once. The apply may only ask again after an await, as the modal's does after validating.
  * @param hasPendingChanges Whether the analysis still waits for the user.
  * @param apply What the modal does when there is nothing to ask about.
  * @param confirmAcceptAll Asks before the pending values are taken over, about the mode change while it is open.
