@@ -6,7 +6,7 @@ import { theme } from "../../../AppTheme.ts";
 
 /**
  * Marks something an automatic analysis wrote, and names it for assistive technology, which cannot
- * see the colour. The props go to the marker element, so a Tooltip can wrap the badge directly.
+ * see the color. The props go to the marker element, so a Tooltip can wrap the badge directly.
  */
 export const AnalysisBadge: FC<ComponentPropsWithRef<"span">> = props => {
   const { t } = useTranslation();
