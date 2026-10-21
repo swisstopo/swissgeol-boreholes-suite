@@ -140,16 +140,18 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
           <BoreholesButton
             variant="text"
             sx={{ backgroundColor: theme.palette.background.fileDropzoneSelected }}
-            data-cy="analysis-reset-all"
+            dataCy="analysis-reset-all"
             startIcon={<RotateCcw size={16} />}
             onClick={analysis.resetAll}
-            label={t("analysisResetAll")}/>
+            label={t("analysisResetAll")}
+          />
           <BoreholesButton
             variant="outlined"
-            data-cy="analysis-accept-all"
+            dataCy="analysis-accept-all"
             startIcon={<Check size={16} />}
             onClick={confirmAcceptAll}
-            label={t("analysisAcceptAll")}/>
+            label={t("analysisAcceptAll")}
+          />
         </Stack>
       </Stack>
 
