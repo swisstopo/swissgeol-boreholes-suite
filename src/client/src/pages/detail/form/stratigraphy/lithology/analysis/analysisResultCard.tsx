@@ -137,14 +137,17 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
       <Stack direction="row" gap={2} justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
         <Typography variant="h5">{t("analysis")}</Typography>
         <Stack direction="row" gap={1}>
-          <BoreholesButton
-            variant="text"
-            sx={{ backgroundColor: theme.palette.background.fileDropzoneSelected }}
-            dataCy="analysis-reset-all"
-            startIcon={<RotateCcw size={16} />}
-            onClick={analysis.resetAll}
-            label={t("analysisResetAll")}
-          />
+          {/* Once the mode change is fixed, a reset could only empty the fields, not restore the previous mode. */}
+          {!isModeChangeFixed && (
+            <BoreholesButton
+              variant="text"
+              sx={{ backgroundColor: theme.palette.background.fileDropzoneSelected }}
+              dataCy="analysis-reset-all"
+              startIcon={<RotateCcw size={16} />}
+              onClick={analysis.resetAll}
+              label={t("analysisResetAll")}
+            />
+          )}
           <BoreholesButton
             variant="outlined"
             dataCy="analysis-accept-all"

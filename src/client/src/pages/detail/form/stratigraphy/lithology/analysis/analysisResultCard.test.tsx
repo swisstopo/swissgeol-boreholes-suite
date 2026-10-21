@@ -172,4 +172,18 @@ describe("AnalysisResultCard", () => {
 
     expect(current.resetAll).toHaveBeenCalled();
   });
+
+  it("offers reset all for a pending mode change but not once it is fixed", () => {
+    render(<AnalysisResultCard analysis={analysis({ modeChange: { previous: true, next: false } })} />);
+    expect(byDataCy("analysis-reset-all")).toBeInTheDocument();
+
+    cleanup();
+    render(
+      <AnalysisResultCard
+        analysis={analysis({ modeChange: { previous: true, next: false }, isModeChangeFixed: true })}
+      />,
+    );
+    expect(byDataCy("analysis-reset-all")).not.toBeInTheDocument();
+    expect(byDataCy("analysis-accept-all")).toBeInTheDocument();
+  });
 });
