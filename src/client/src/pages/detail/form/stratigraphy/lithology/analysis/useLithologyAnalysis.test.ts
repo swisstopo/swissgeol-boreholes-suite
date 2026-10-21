@@ -17,6 +17,8 @@ const codelists: Codelist[] = [
   codelist("component_uncon_organic", "", "roots", 403),
   codelist("color", "", "grey", 301),
   codelist("lithology_con", "", "sandstone", 700),
+  codelist("uscs_type", "ML", "silt", 501),
+  codelist("uscs_type", "SM", "silty sand", 502),
 ];
 
 const classify = vi.fn<(variables: ClassifyVariables) => Promise<ClassifyResponse>>();
@@ -57,6 +59,17 @@ const setup = () =>
     const formMethods = useForm<LithologyFormValues>({ defaultValues: initialValues });
     return { formMethods, analysis: useLithologyAnalysis(formMethods) };
   });
+
+/** Holds the classification open, so a test can edit the form while the request runs. */
+const holdClassification = () => {
+  let finish: (response: ClassifyResponse) => void = () => {};
+  classify.mockReturnValue(
+    new Promise<ClassifyResponse>(resolve => {
+      finish = resolve;
+    }),
+  );
+  return (response: ClassifyResponse) => finish(response);
+};
 
 beforeEach(() => {
   classify.mockReset();
@@ -269,6 +282,51 @@ describe("useLithologyAnalysis", () => {
 
     expect(result.current.formMethods.getValues().notes).toBe("typed after the analysis");
     expect(result.current.formMethods.getValues().lithologyDescriptions?.[0].lithologyUnconMainId).toBe(103);
+  });
+
+  it("keeps the remarks and depths typed while the request ran when the mode changes", async () => {
+    const finishClassification = holdClassification();
+    const { result } = setup();
+
+    let running: Promise<number | undefined> = Promise.resolve(undefined);
+    act(() => {
+      running = result.current.analysis.run("Sandstein");
+    });
+    act(() => {
+      result.current.formMethods.setValue("notes", "typed while the request ran");
+      result.current.formMethods.setValue("toDepth", 0.8);
+    });
+    await act(async () => {
+      finishClassification({ consolidation: "consolidated", lithology: "sandstone" });
+      await running;
+    });
+
+    const values = result.current.formMethods.getValues();
+    expect(values.isUnconsolidated).toBe(false);
+    expect(values.notes).toBe("typed while the request ran");
+    expect(values.toDepth).toBe(0.8);
+  });
+
+  it("restores a value typed while the request ran when its row is reset", async () => {
+    const finishClassification = holdClassification();
+    const { result } = setup();
+
+    let running: Promise<number | undefined> = Promise.resolve(undefined);
+    act(() => {
+      running = result.current.analysis.run("Silt");
+    });
+    act(() => {
+      result.current.formMethods.setValue("uscsTypeCodelistIds", [502]);
+    });
+    await act(async () => {
+      finishClassification({ consolidation: "unconsolidated", uscs: "ML" });
+      await running;
+    });
+    act(() => {
+      result.current.analysis.resetField("uscsTypeCodelistIds");
+    });
+
+    expect(result.current.formMethods.getValues().uscsTypeCodelistIds).toEqual([502]);
   });
 
   it("clears everything pending on acceptAll", async () => {

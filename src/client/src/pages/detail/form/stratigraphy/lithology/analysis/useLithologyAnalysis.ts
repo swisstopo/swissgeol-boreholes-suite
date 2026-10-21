@@ -112,9 +112,10 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
     async (description: string) => {
       const controller = new AbortController();
       runningClassification.current = controller;
-      const snapshot = formMethods.getValues();
       const response = await classifyUnlessDiscarded(classify, { description, signal: controller.signal });
       if (!response) return undefined;
+      // Taken after the response, so edits made while the request ran are part of the undo baseline.
+      const snapshot = formMethods.getValues();
       const classificationChanges = mapClassificationToChanges(response, codelists ?? [], snapshot);
       const { changes, modeChange } = classificationChanges;
 
