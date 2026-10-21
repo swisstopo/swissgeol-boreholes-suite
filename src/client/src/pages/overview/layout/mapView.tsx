@@ -27,6 +27,9 @@ const containSameIds = (ids: number[], otherIds: number[]) => {
   return new Set(ids).size === otherIdSet.size && ids.every(id => otherIdSet.has(id));
 };
 
+// A stable empty array, so the fallback response does not count as new data on every render.
+const noSelectableBoreholeIds: number[] = [];
+
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
   const [rowsToHighlight, setRowsToHighlight] = useState<number[]>([]);
@@ -121,16 +124,18 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     boreholes: [],
     geoJson: null,
     filteredBoreholeIds: [],
-    selectableBoreholeIds: [],
+    selectableBoreholeIds: noSelectableBoreholeIds,
   };
   const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
 
   // The selection is cleared only when the selectable boreholes change and not whenever the boreholes
   // change, which also happens on every pagination and order event (server side pagination/ordering).
-  const [selectionScope, setSelectionScope] = useState<number[]>([]);
-  if (!containSameIds(filterResponse.selectableBoreholeIds, selectionScope)) {
-    setSelectionScope(filterResponse.selectableBoreholeIds);
-    setSelectionModel([]);
+  // The ids are compared only when a new response arrives, not on every render (e.g. on hover).
+  const [selectionScope, setSelectionScope] = useState(noSelectableBoreholeIds);
+  const { selectableBoreholeIds } = filterResponse;
+  if (selectableBoreholeIds !== selectionScope) {
+    setSelectionScope(selectableBoreholeIds);
+    if (!containSameIds(selectableBoreholeIds, selectionScope)) setSelectionModel([]);
   }
 
   return (
