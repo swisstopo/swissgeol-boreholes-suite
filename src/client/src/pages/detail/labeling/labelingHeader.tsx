@@ -1,4 +1,4 @@
-import { FC, ReactNode, RefObject, useContext, useEffect, useMemo, useState } from "react";
+import { FC, ReactNode, RefObject, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -44,6 +44,7 @@ export const LabelingHeader: FC<{
   const { editingEnabled } = useContext(EditStateContext);
   const { panelTab, setPanelTab } = useContext(LabelingContext);
   const [search, setSearch] = useState("");
+  const [syncedSearchSources, setSyncedSearchSources] = useState({ files, selectedAttachment });
 
   const handleFileInputClick = () => {
     fileInputRef.current?.click();
@@ -65,9 +66,10 @@ export const LabelingHeader: FC<{
     return items;
   }, [files, editingEnabled, search, panelTab, t]);
 
-  useEffect(() => {
+  if (files !== syncedSearchSources.files || selectedAttachment !== syncedSearchSources.selectedAttachment) {
+    setSyncedSearchSources({ files, selectedAttachment });
     setSearch("");
-  }, [files, selectedAttachment]);
+  }
 
   return (
     <Stack

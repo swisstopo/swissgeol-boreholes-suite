@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
 import { restrictionUntilCode } from "../../../../components/codelist.ts";
@@ -19,23 +19,18 @@ interface RestrictionSegmentProps extends LocationBaseProps {
 }
 
 const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) => {
-  const [restrictionUntilEnabled, setRestrictionUntilEnabled] = useState<boolean>(
-    borehole.restrictionId === restrictionUntilCode,
-  );
   const { editingEnabled } = useContext(EditStateContext);
-  const { dirtyFields } = formMethods.formState;
   const restriction = formMethods.watch("restrictionId");
+  const restrictionUntilEnabled = restriction === restrictionUntilCode;
 
   useEffect(() => {
     formMethods.setValue("restrictionUntil", borehole.restrictionUntil?.toString() ?? "");
   }, [borehole.restrictionUntil, formMethods]);
 
-  useEffect(() => {
-    if (dirtyFields.restrictionId) {
-      setRestrictionUntilEnabled(restriction === restrictionUntilCode);
-      formMethods.setValue("restrictionUntil", null);
-    }
-  }, [dirtyFields.restrictionId, formMethods, restriction]);
+  // A date only applies to the restriction it was entered for.
+  const clearRestrictionUntil = () => {
+    formMethods.setValue("restrictionUntil", null);
+  };
 
   return (
     <Card>
@@ -46,6 +41,7 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
             label={"restriction"}
             schemaName={"restriction"}
             selected={borehole.restrictionId}
+            onUpdate={clearRestrictionUntil}
           />
           <FormInput
             fieldName={"restrictionUntil"}

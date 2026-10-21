@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
@@ -20,7 +20,6 @@ import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext
 export const WorkgroupDetail: FC = () => {
   const id = useRequiredId();
   const { t } = useTranslation();
-  const [workgroupUsers, setWorkgroupUsers] = useState<User[]>();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { data: users } = useUsers();
   const [userDialogOpen, setUserDialogOpen] = useState(false);
@@ -62,14 +61,10 @@ export const WorkgroupDetail: FC = () => {
     [changeName],
   );
 
-  useEffect(() => {
-    if (users) {
-      const usersInWorkgroup = users.filter((user: User) =>
-        user.workgroupRoles?.some((wgr: UserWorkgroupRole) => wgr.workgroupId === id),
-      );
-      setWorkgroupUsers(usersInWorkgroup);
-    }
-  }, [id, users]);
+  const workgroupUsers = useMemo(
+    () => users?.filter((user: User) => user.workgroupRoles?.some((wgr: UserWorkgroupRole) => wgr.workgroupId === id)),
+    [id, users],
+  );
 
   if (!selectedWorkgroup) return;
 

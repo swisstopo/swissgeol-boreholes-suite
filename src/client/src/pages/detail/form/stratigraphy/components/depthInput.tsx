@@ -1,4 +1,4 @@
-import { ChangeEvent, ElementType, FC, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
+import { ChangeEvent, ElementType, FC, KeyboardEvent, MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { InputBaseComponentProps, TextField } from "@mui/material";
 import { theme } from "../../../../../AppTheme.ts";
@@ -19,10 +19,12 @@ const toText = (value: number | null) => (value === null ? "" : String(value));
 export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, position = "default", dataCy }) => {
   const { t } = useTranslation();
   const [textValue, setTextValue] = useState<string>(toText(value));
+  const [syncedValue, setSyncedValue] = useState(value);
 
-  useEffect(() => {
+  if (value !== syncedValue) {
+    setSyncedValue(value);
     setTextValue(toText(value));
-  }, [value]);
+  }
 
   const tryCommit = (text: string): boolean => {
     if (text.trim() === "") {

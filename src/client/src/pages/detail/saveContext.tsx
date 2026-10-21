@@ -65,7 +65,9 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const location = useLocation();
   const [hasChanges, setHasChanges] = useState(false);
   const [hasErrors, setHasErrors] = useState(false);
-  const [showSaveFeedback, setShowSaveFeedback] = useState(false);
+  // The save feedback is shown only on the route that was saved and disappears on navigation.
+  const [saveFeedbackPathname, setSaveFeedbackPathname] = useState<string | null>(null);
+  const showSaveFeedback = saveFeedbackPathname === location.pathname;
   const [isSaving, setIsSaving] = useState(false);
   const [saveProgress, setSaveProgress] = useState<SaveProgress | null>(null);
   const saveHandlerRef = useRef<SaveHandler | null>(null);
@@ -96,8 +98,8 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
       try {
         const success = await saveHandlerRef.current();
         if (success) {
-          setShowSaveFeedback(true);
-          setTimeout(() => setShowSaveFeedback(false), 4000);
+          setSaveFeedbackPathname(location.pathname);
+          setTimeout(() => setSaveFeedbackPathname(null), 4000);
           setHasChanges(false);
         }
       } finally {
@@ -105,7 +107,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
         setSaveProgress(null);
       }
     }
-  }, [hasErrors, isSaving]);
+  }, [hasErrors, isSaving, location.pathname]);
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
     resetHandlerRef.current = handler;
@@ -145,10 +147,6 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [hasChanges, showSaveBar, triggerSave]);
-
-  useEffect(() => {
-    setShowSaveFeedback(false);
-  }, [location.pathname]);
 
   const contextValue = useMemo(() => {
     return {

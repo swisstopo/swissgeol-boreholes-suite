@@ -18,18 +18,18 @@ const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
 
   const defaultNamesEqual = defaultValues?.originalName === defaultValues?.name;
   const syncInitialValue = defaultNamesEqual || defaultValues?.name === "";
-  const [shouldSyncNames, setShouldSyncNames] = useState(syncInitialValue);
+  const alternateNameDiverges = alternateName !== "" && alternateName !== originalName;
+  const [shouldSyncNames, setShouldSyncNames] = useState(syncInitialValue && !alternateNameDiverges);
+  const [previous, setPrevious] = useState({ defaultValues, syncInitialValue, alternateName });
 
-  useEffect(() => {
+  const defaultsChanged = previous.defaultValues !== defaultValues || previous.syncInitialValue !== syncInitialValue;
+  const alternateNameChanged = previous.alternateName !== alternateName;
+  if (defaultsChanged || alternateNameChanged) {
+    setPrevious({ defaultValues, syncInitialValue, alternateName });
     // reload initial state when the default values change on submit
-    setShouldSyncNames(syncInitialValue);
-  }, [defaultValues, syncInitialValue]);
-
-  useEffect(() => {
-    if (alternateName !== "" && alternateName !== formMethods.getValues("originalName")) {
-      setShouldSyncNames(false);
-    }
-  }, [alternateName, formMethods]);
+    const reloadedShouldSyncNames = defaultsChanged ? syncInitialValue : shouldSyncNames;
+    setShouldSyncNames(reloadedShouldSyncNames && !(alternateNameChanged && alternateNameDiverges));
+  }
 
   useEffect(() => {
     if (shouldSyncNames) {

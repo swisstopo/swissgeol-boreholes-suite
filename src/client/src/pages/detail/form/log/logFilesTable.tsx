@@ -30,6 +30,13 @@ interface LogFileTableProps {
   files: LogFile[];
 }
 
+const getExtensionsFilters = (files: LogFile[]): FormMultiSelectValue[] => {
+  const extensions = Array.from(new Set(files.map(file => getFileExtension(file.name)).filter(v => v.length > 0))).sort(
+    (a, b) => a.localeCompare(b),
+  );
+  return extensions.map((ext, index) => ({ key: index, name: ext }));
+};
+
 export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
   const { t } = useTranslation();
   const getCodelistLabel = useCodelistLocalizedLabel();
@@ -37,7 +44,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
   const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, LogFile>>(new Map());
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [filterVisible, setFilterVisible] = useState(false);
-  const [extensionsFilters, setExtensionsFilters] = useState<FormMultiSelectValue[]>();
+  const extensionsFilters = useMemo(() => getExtensionsFilters(files), [files]);
   const { data: codelists } = useCodelists();
   const { isExporting, setIsExporting, startExport, exportItems } = useLogExport(exportLogFiles, selectionModel, files);
 
@@ -71,7 +78,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         toolTypeFilter.some(filterValue => file.toolTypeCodelistIds.includes(filterValue)),
       );
     }
-    if (extensionsFilters && extensionsFilter && extensionsFilter.length > 0) {
+    if (extensionsFilter && extensionsFilter.length > 0) {
       const extensionNames = new Set(
         extensionsFilter
           .map(filterValue => extensionsFilters.find(ext => ext.key === filterValue)?.name?.toLowerCase())
@@ -90,15 +97,6 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
     }
     return filtered;
   }, [dataPackagesFilter, extensionsFilter, extensionsFilters, files, passTypesFilter, publicFilter, toolTypeFilter]);
-
-  useEffect(() => {
-    if (!extensionsFilters) {
-      const extensions = Array.from(
-        new Set(files.map(file => getFileExtension(file.name)).filter(v => v.length > 0)),
-      ).sort((a, b) => a.localeCompare(b));
-      setExtensionsFilters(extensions.map((ext, index) => ({ key: index, name: ext })));
-    }
-  }, [extensionsFilters, files]);
 
   useEffect(() => {
     if (!filterVisible) {

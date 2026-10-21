@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import {
@@ -42,9 +42,16 @@ const LayerCard = ({
   const [toDepthErrorMessage, setToDepthErrorMessage] = useState("");
   const [fromDepth, setFromDepth] = useState(null);
   const [toDepth, setToDepth] = useState(null);
-  const [selection, setSelection] = useState(null);
-  const [cardState, setCardState] = useState(null);
   const { editingEnabled } = useContext(EditStateContext);
+  const defaultCardState = editingEnabled ? State.EDITABLE : State.DISPLAY;
+  const [cardState, setCardState] = useState(defaultCardState);
+  const [syncedEditingEnabled, setSyncedEditingEnabled] = useState(editingEnabled);
+
+  if (editingEnabled !== syncedEditingEnabled) {
+    setSyncedEditingEnabled(editingEnabled);
+    // do not resurrect deleted layers
+    setCardState(prevState => (prevState === State.DELETED ? prevState : defaultCardState));
+  }
 
   // Show the from/to depth labels only once the cell is tall enough that the center label and the
   // two depth labels do not overlap. Below the center-label threshold, even the center text hides
@@ -53,20 +60,9 @@ const LayerCard = ({
   const minPixelHeightForCenterLabel = 24;
   const showCenterLabel = height >= minPixelHeightForCenterLabel;
 
-  useEffect(() => {
-    setCardState(prevState => {
-      // do not resurrect deleted layers
-      if (prevState === State.DELETED) {
-        return prevState;
-      } else {
-        return editingEnabled ? State.EDITABLE : State.DISPLAY;
-      }
-    });
-  }, [editingEnabled]);
-
   // create selection array from the path of the selected codelist
   // one element for each header
-  useEffect(() => {
+  const selection = useMemo(() => {
     if (layer && options) {
       let selectedOption;
       search: for (const optionsAtLevel of options) {
@@ -82,20 +78,20 @@ const LayerCard = ({
 
       // set color of empty path elements to the closest defined parent
       let currentColor = selections[0]?.color ?? null;
-      for (let i = 1; i < selections.length; i++) {
-        const selection = selections[i];
-        if (selection.color) {
-          currentColor = selection.color;
-        } else {
-          selection.color = currentColor;
+      const coloredSelections = selections.map((selection, index) => {
+        if (index === 0 || selection.color) {
+          currentColor = selection.color ?? currentColor;
+          return selection;
         }
-      }
+        return { ...selection, color: currentColor };
+      });
 
       // make selection array the same length as header array
-      setSelection(
-        selections.slice(0, header.length).concat(Array(Math.max(0, header.length - selections.length)).fill(null)),
-      );
+      return coloredSelections
+        .slice(0, header.length)
+        .concat(new Array(Math.max(0, header.length - selections.length)).fill(null));
     }
+    return null;
   }, [dataProperty, header.length, layer, options]);
 
   const handleFromDepth = useCallback(

@@ -96,23 +96,24 @@ export function useHierarchicalDataEditProfile({
 }: UseHierarchicalDataEditProfileArgs): HierarchicalDataEditProfileParts {
   const { t, i18n } = useTranslation();
   const id = useId();
-  const [options, setOptions] = useState<CodelistOption[][] | null>(null);
   const [header, setHeader] = useState<HeaderColumn[]>(() => headerLabels.map(h => ({ title: h, isVisible: true })));
+  const [syncedHeaderLabels, setSyncedHeaderLabels] = useState(headerLabels);
 
   // Sync header state with headerLabelProps. Purely deriving state is not possible, since the
   // header state provides an additional isVisible property.
-  useEffect(() => {
+  if (headerLabels !== syncedHeaderLabels) {
+    setSyncedHeaderLabels(headerLabels);
     setHeader(headerLabels.map(h => ({ title: h, isVisible: true })));
-  }, [headerLabels]);
+  }
 
   const { data: schemaData } = useCodelistSchema(codelistSchemaName);
 
   // create options array from codelist schema
   // The options are the same for all layers
-  useEffect(() => {
-    if (!schemaData) return;
+  const options = useMemo(() => {
+    if (!schemaData) return null;
     const sorted = [...schemaData].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-    const grouped = sorted.reduce<CodelistOption[][]>((accu, d) => {
+    return sorted.reduce<CodelistOption[][]>((accu, d) => {
       // Path is delivered by the API as an ltree string ("1.2.3"), but the generated TS type
       // represents it as a record. Treat it as a string at runtime to match the actual payload.
       const pathString = (d.path as unknown as string | undefined) ?? "";
@@ -128,7 +129,6 @@ export function useHierarchicalDataEditProfile({
       });
       return accu;
     }, []);
-    setOptions(grouped);
   }, [i18n.language, schemaData]);
 
   useEffect(() => {
