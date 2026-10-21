@@ -1,13 +1,13 @@
-import { FC, HTMLAttributes, useContext } from "react";
+import { FC, HTMLAttributes, useContext, useState } from "react";
 import { Controller, RegisterOptions, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
-import { ChevronDownIcon } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
 import { useFieldAnalysis } from "./fieldAnalysis/fieldAnalysisContext.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
+import { SelectPopupIcon } from "./selectPopupIcon.tsx";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 export interface FormSelectProps {
@@ -67,6 +67,11 @@ export const FormSelect: FC<FormSelectProps> = ({
     control,
     name: fieldName,
   }) as number | null | undefined;
+  const autocompleteKey = `${fieldName}-${fieldValue ?? "empty"}`;
+
+  // A value change remounts the Autocomplete through its key, which can close the popup without calling
+  // onClose. Remembering which instance was opened keeps the popup icon's tooltip in sync after that.
+  const [openPopupKey, setOpenPopupKey] = useState<string | null>(null);
 
   const menuItems: FormSelectMenuItem[] = [];
 
@@ -120,7 +125,7 @@ export const FormSelect: FC<FormSelectProps> = ({
         // Display FormSelect as Autocomplete when editable
         return (
           <Autocomplete
-            key={`${fieldName}-${fieldValue ?? "empty"}`}
+            key={autocompleteKey}
             sx={{ flex: "1", ...sx }}
             options={menuItems}
             getOptionLabel={option => option.label}
@@ -183,8 +188,12 @@ export const FormSelect: FC<FormSelectProps> = ({
               );
             }}
             disabled={disabled}
-            popupIcon={<ChevronDownIcon />}
-            slotProps={{ popupIndicator: { sx: { color: "primary.main" } } }}
+            onOpen={() => setOpenPopupKey(autocompleteKey)}
+            onClose={() => setOpenPopupKey(null)}
+            openText={t("open")}
+            closeText={t("close")}
+            popupIcon={<SelectPopupIcon open={openPopupKey === autocompleteKey} />}
+            slotProps={{ popupIndicator: { title: undefined, sx: { color: "primary.main" } } }}
             // Typescript quirk: By asserting "true as boolean", MUI's Autocomplete component allows null for the value type.
             // A boolean-typed constant does not work here, because TypeScript narrows it back to the literal true.
             // oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- the assertion widens the literal type

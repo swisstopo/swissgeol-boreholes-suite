@@ -1,15 +1,16 @@
-import { FC, HTMLAttributes, useContext } from "react";
+import { FC, HTMLAttributes, useContext, useState } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Chip, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
-import { ChevronDownIcon, CircleX } from "lucide-react";
+import { CircleX } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
 import { useFieldAnalysis } from "./fieldAnalysis/fieldAnalysisContext.tsx";
 import { getFormFieldError } from "./form";
 import { FormSelectMenuItem } from "./formSelect.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
+import { SelectPopupIcon } from "./selectPopupIcon.tsx";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 export interface FormMultiSelectProps {
@@ -57,6 +58,11 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
     control,
     name: fieldName,
   }) as number[] | undefined;
+  const autocompleteKey = `${fieldName}-${fieldValue ? fieldValue.join("-") : "empty"}`;
+
+  // Selecting a value remounts the Autocomplete through its key, which closes the popup without calling
+  // onClose. Remembering which instance was opened keeps the popup icon's tooltip in sync after that.
+  const [openPopupKey, setOpenPopupKey] = useState<string | null>(null);
 
   const formFieldError = getFormFieldError(fieldName, formState.errors);
 
@@ -93,7 +99,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
             {Array.isArray(values) && values.length > 0 ? (
               <Autocomplete
                 sx={{ ...(isReadOnly ? readonlyStyles : {}), flex: "1" }}
-                key={`${fieldName}-${fieldValue ? fieldValue.join("-") : "empty"}`}
+                key={autocompleteKey}
                 multiple
                 options={menuItems}
                 disableCloseOnSelect
@@ -170,9 +176,13 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                   );
                 }}
                 disabled={disabled}
-                popupIcon={<ChevronDownIcon />}
+                onOpen={() => setOpenPopupKey(autocompleteKey)}
+                onClose={() => setOpenPopupKey(null)}
+                openText={t("open")}
+                closeText={t("close")}
+                popupIcon={<SelectPopupIcon open={openPopupKey === autocompleteKey} />}
                 slotProps={{
-                  popupIndicator: { sx: { color: "primary.main" } },
+                  popupIndicator: { title: undefined, sx: { color: "primary.main" } },
                   clearIndicator: { sx: { color: "primary.main" } },
                 }}
                 // The analysis reset button takes the place of the clear button.

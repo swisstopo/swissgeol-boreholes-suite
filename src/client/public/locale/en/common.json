@@ -466,6 +466,7 @@
   "onlyMissing": "Only missing",
   "onlyMissingExplanation": "When enabled, only boreholes with missing values will be processed. When disabled, all boreholes will be reprocessed. Warning: processing all boreholes may take a long time and upstream APIs may return errors due to the high number of requests.",
   "onlyWmsAndWmtsSupported": "Only WMS (Web Map Services) and WMTS (Web Map Tile Services) are supported.",
+  "open": "Open",
   "openBorehole": "open hole",
   "openSidepanel": "Open side panel",
   "originalName": "Original name",
