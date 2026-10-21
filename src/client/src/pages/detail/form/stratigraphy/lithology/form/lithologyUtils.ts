@@ -128,7 +128,7 @@ export const buildLithologicalDescription = (
 };
 
 /**
- * The form values for a change of the consolidation mode. Only identity, depths, remarks and the
+ * The form values for a change of the consolidation mode. Only identity, depths, notes and the
  * lithological description text survive: every attribute is scoped to one mode, so nothing is
  * carried across even where the label is the same.
  * @param values The current form values.
