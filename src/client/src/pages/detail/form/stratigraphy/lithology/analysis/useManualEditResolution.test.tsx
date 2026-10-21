@@ -80,7 +80,9 @@ const editByHand = (
 
 const lithologyConPath = "lithologyDescriptions.0.lithologyConId";
 
-const runConsolidatedAnalysis = async (current: ReturnType<typeof setup>["result"]["current"]) => {
+type Rendered = ReturnType<typeof setup>["result"]["current"];
+
+const runConsolidatedAnalysis = async (current: Rendered) => {
   classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone", color: "grey" });
   await act(async () => {
     await current.analysis.run("Sandstein, grau");
@@ -97,9 +99,9 @@ describe("useManualEditResolution", () => {
     const { result, rerender } = renderHook(
       () => {
         const formMethods = useForm<LithologyFormValues>({ defaultValues: initialValues });
-        const [subscribe] = useState(() => vi.fn(formMethods.subscribe));
-        useManualEditResolution({ ...formMethods, subscribe }, useLithologyAnalysis(formMethods));
-        return subscribe;
+        const [watch] = useState(() => vi.spyOn(formMethods, "watch"));
+        useManualEditResolution(formMethods, useLithologyAnalysis(formMethods));
+        return watch;
       },
       { wrapper: withPrompt },
     );
@@ -139,6 +141,19 @@ describe("useManualEditResolution", () => {
     expect(result.current.analysis.isModeChangeFixed).toBe(true);
     expect(result.current.analysis.changeByPath.has(lithologyConPath)).toBe(false);
     expect(result.current.formMethods.getValues().lithologyDescriptions?.[0].lithologyConId).toBe(701);
+  });
+
+  it.each([
+    ["resetAll", (current: Rendered) => current.analysis.resetAll()],
+    ["resetField", (current: Rendered) => current.analysis.resetField(lithologyConPath)],
+  ])("does not ask on %s after the user typed elsewhere", async (_, reset) => {
+    const { result } = setup();
+    editByHand(result.current.formMethods, "notes", 1);
+    await runConsolidatedAnalysis(result.current);
+
+    act(() => reset(result.current));
+
+    expect(showPrompt).not.toHaveBeenCalled();
   });
 
   it("puts the analysis's value back when the user declines", async () => {

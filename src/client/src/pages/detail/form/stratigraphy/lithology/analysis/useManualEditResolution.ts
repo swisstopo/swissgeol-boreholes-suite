@@ -15,24 +15,25 @@ export const useManualEditResolution = (
   formMethods: UseFormReturn<LithologyFormValues>,
   analysis: LithologyAnalysis,
 ) => {
-  const { subscribe } = formMethods;
+  const { watch } = formMethods;
   // The analysis object is new on every render, so the subscription depends on its parts, which only
   // change with the analysis's state.
   const { changeByPath, acceptField, restoreAnalysisValue, modeChange, isModeChangeFixed } = analysis;
   const confirmModeChange = useConfirmModeChange(modeChange, isModeChangeFixed);
 
   useEffect(() => {
-    return subscribe({
-      formState: { values: true },
-      callback: ({ name, type }) => {
-        // Only an input event carries a type. The analysis's own writes and resets come without one.
-        if (type === "change" && name && changeByPath.has(name)) {
-          confirmModeChange(
-            () => acceptField(name),
-            () => restoreAnalysisValue(name),
-          );
-        }
-      },
+    // A watch callback receives each update as it was emitted. A subscribe callback does not: it
+    // merges the form state in, which keeps the name and type of the last input event, so a later
+    // setValue or reset would look like a hand edit.
+    const { unsubscribe } = watch((_, { name, type }) => {
+      // Only an input event carries a type. The analysis's own writes and resets come without one.
+      if (type === "change" && name && changeByPath.has(name)) {
+        confirmModeChange(
+          () => acceptField(name),
+          () => restoreAnalysisValue(name),
+        );
+      }
     });
-  }, [acceptField, changeByPath, confirmModeChange, restoreAnalysisValue, subscribe]);
+    return unsubscribe;
+  }, [acceptField, changeByPath, confirmModeChange, restoreAnalysisValue, watch]);
 };
