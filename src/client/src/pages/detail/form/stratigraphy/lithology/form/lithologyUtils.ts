@@ -158,7 +158,8 @@ export const buildLithologyValuesForMode = (
  * A prompt closes right after its action returns, so a prompt the apply shows synchronously would be
  * closed at once. The apply may only ask again after an await, as the modal's does after validating.
  * @param hasPendingChanges Whether the analysis still waits for the user.
- * @param apply What the modal does when there is nothing to ask about.
+ * @param apply What the modal does when there is nothing to ask about. Nothing awaits it after a
+ * confirmation, so it reports its own failures.
  * @param confirmAcceptAll Asks before the pending values are taken over, about the mode change while it is open.
  */
 export const buildApplyHandler =

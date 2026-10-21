@@ -159,7 +159,16 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
     }
   };
 
-  const applyDialog = buildApplyHandler(analysis.hasPendingChanges, applyLithology, confirmAcceptAll);
+  // Neither the dialog nor a prompt awaits the apply, so its failure is reported here.
+  const applyReportingFailure = async () => {
+    try {
+      await applyLithology();
+    } catch {
+      showAlert(t("errorMutationNotSuccessfull"), "error");
+    }
+  };
+
+  const applyDialog = buildApplyHandler(analysis.hasPendingChanges, applyReportingFailure, confirmAcceptAll);
 
   const runAnalysis = async (description: string) => {
     try {
