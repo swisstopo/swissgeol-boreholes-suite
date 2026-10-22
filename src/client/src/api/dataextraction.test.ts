@@ -4,8 +4,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getAuthToken } from "../auth/authTokenStore.ts";
-import { mapExtractionResponse, useExtractStratigraphies, useFileInfo } from "./dataextraction.ts";
-import { ExtractionBoundingBox, StratigraphyExtractionResponse } from "./dataextractionInterfaces.ts";
+import {
+  mapExtractionResponse,
+  useClassifyLithologicalDescription,
+  useExtractStratigraphies,
+  useFileInfo,
+} from "./dataextraction.ts";
+import { ClassifyResponse, ExtractionBoundingBox, StratigraphyExtractionResponse } from "./dataextractionInterfaces.ts";
+import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
@@ -124,5 +130,52 @@ describe("useFileInfo", () => {
       .mocked(fetch)
       .mock.calls.find(([url]) => typeof url === "string" && url.includes("create_pngs"));
     expect(createPngsCall?.[1]?.headers).not.toHaveProperty("Authorization");
+  });
+});
+
+describe("useClassifyLithologicalDescription", () => {
+  const classifyWith = async (response: Response) => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(response)),
+    );
+    const { result } = renderHook(() => useClassifyLithologicalDescription(), { wrapper: createWrapper() });
+    return await result.current.mutateAsync({ description: "Silt, grau", signal: new AbortController().signal });
+  };
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.clearAllMocks();
+  });
+
+  it("posts the description to the classify endpoint with the auth header and the abort signal", async () => {
+    const controller = new AbortController();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.resolve(Response.json({}))),
+    );
+    const { result } = renderHook(() => useClassifyLithologicalDescription(), { wrapper: createWrapper() });
+
+    await result.current.mutateAsync({ description: "Silt, grau", signal: controller.signal });
+
+    const [url, init] = vi.mocked(fetch).mock.calls[0];
+    expect(url).toBe("/dataextraction/api/V1/classify");
+    expect(init?.method).toBe("POST");
+    expect(init?.body).toBe(JSON.stringify({ description: "Silt, grau" }));
+    expect(init?.headers).toHaveProperty("Authorization", "Bearer token");
+    expect(init?.signal).toBe(controller.signal);
+  });
+
+  it("resolves with the classification the service returns", async () => {
+    const classification: ClassifyResponse = { consolidation: "unconsolidated", en_main: "si", color: "grey" };
+
+    await expect(classifyWith(Response.json(classification))).resolves.toEqual(classification);
+  });
+
+  it("rejects with the classification error and the status when the service fails", async () => {
+    const failure = classifyWith(new Response("model not loaded", { status: 503 }));
+
+    await expect(failure).rejects.toBeInstanceOf(ApiError);
+    await expect(failure).rejects.toMatchObject({ message: "errorLithologyClassification", status: 503 });
   });
 });
