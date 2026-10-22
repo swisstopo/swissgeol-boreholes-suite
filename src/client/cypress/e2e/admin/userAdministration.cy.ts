@@ -20,7 +20,7 @@ describe("User administration settings tests", () => {
     verifyRowWithContentAlsoContains("Admin", "Active");
     verifyRowWithContentAlsoContains("Admin", "admin.user@local.dev");
     hasPagination(false);
-    verifyTableLength(8);
+    verifyTableLength(7);
 
     // sort
     sortBy("First name");

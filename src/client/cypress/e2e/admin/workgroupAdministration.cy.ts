@@ -19,7 +19,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Active", 2);
     verifyRowContains("View (1)", 2);
     verifyRowContains("Editor (1)", 2);
-    verifyRowContains("Controller (2)", 2);
+    verifyRowContains("Controller (1)", 2);
     verifyRowContains("Publisher (4)", 2);
     verifyRowContains("Reggae", 3);
     verifyRowContains("Inactive", 3);

@@ -44,7 +44,7 @@ public class UserControllerTest
     public async Task GetAll()
     {
         var users = await userController.GetAll();
-        Assert.AreEqual(8, users.Count());
+        Assert.AreEqual(7, users.Count());
 
         foreach (var user in users)
         {
@@ -94,7 +94,7 @@ public class UserControllerTest
     [TestMethod]
     public async Task EditUser()
     {
-        var user = await context.UsersWithIncludes.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == "sub_validator");
+        var user = await context.UsersWithIncludes.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == "sub_controller");
         Assert.IsNotNull(user);
         Assert.IsFalse(user.IsAdmin);
         Assert.IsFalse(user.IsDisabled);

@@ -72,7 +72,8 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"UPDATE bdms.users SET email = LOWER(firstname) || '@example.com'");
 
         // ranges for existing tables
-        var userRange = Enumerable.Range(1, 5);
+        // Five entries keep the seeded random picks stable; user 3 is listed twice because there is no user 4.
+        int[] userRange = [1, 2, 3, 3, 5];
 
         // local codelists, ordered by id because the order after migrations is not guaranteed
         List<Codelist> codelists = context.Codelists.OrderBy(c => c.Id).ToList();
@@ -340,7 +341,7 @@ public static class BdmsContextExtensions
         context.BulkInsert(workflowChangeRange.Select(SeededWorkflowChanges).ToList(), bulkConfig);
 
         // Seed profiles (replaces the previous BoreholeFiles + Files seeders).
-        var profilesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has profiles
+        int[] profilesUserRange = [.. userRange, 6]; // Include dedicated user that only has profiles
         var profile_ids = 5_000_000;
         var profileRange = Enumerable.Range(profile_ids, boreholeRange.Count);
         var fakeProfiles = new Faker<Profile>()
