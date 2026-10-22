@@ -2487,7 +2487,7 @@ namespace BDMS.Migrations
                         .HasColumnType("int")
                         .HasColumnName("role_id");
 
-                    b.HasKey("UserId", "WorkgroupId", "Role");
+                    b.HasKey("UserId", "WorkgroupId");
 
                     b.HasIndex("WorkgroupId");
 
