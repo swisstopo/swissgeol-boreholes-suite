@@ -15,7 +15,6 @@ import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { useCapitalizedTranslation } from "../../../../../../hooks/useCapitalizedTranslation.ts";
-import { useDevMode } from "../../../../../../hooks/useDevMode.tsx";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
 import { AnalysisResultCard } from "../analysis/analysisResultCard.tsx";
 import { AnalyzeButton } from "../analysis/analyzeButton.tsx";
@@ -70,7 +69,6 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
   const { formState, getValues } = formMethods;
   const { showPrompt } = useContext(PromptContext);
   const { showAlert } = useContext(AlertContext);
-  const { runsDevMode } = useDevMode();
   const analysis = useLithologyAnalysis(formMethods);
   const { discard: discardAnalysis } = analysis;
   const sharedLithologyCount = lithologicalDescription?.depthIds?.length ?? 0;
@@ -286,16 +284,12 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
             data-cy="lithology-lithological-description"
             title={t("lithologyLayerDescription")}
             action={
-              // Gated on dev mode while the deployed data extraction service runs without POST /classify.
-              // Drop the gate once the deployments run a version that classifies.
-              runsDevMode && (
-                <AnalyzeButton
-                  control={formMethods.control}
-                  isPending={analysis.isPending}
-                  hasPendingChanges={analysis.hasPendingChanges}
-                  onAnalyze={description => void runAnalysis(description)}
-                />
-              )
+              <AnalyzeButton
+                control={formMethods.control}
+                isPending={analysis.isPending}
+                hasPendingChanges={analysis.hasPendingChanges}
+                onAnalyze={description => void runAnalysis(description)}
+              />
             }>
             <FormContainer>
               <Stack gap={1}>

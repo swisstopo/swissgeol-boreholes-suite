@@ -156,7 +156,7 @@ const color = textSingle("color", "colorPrimary", "color");
  * The whole contract between the classification response and the lithology form, in one table.
  * Adding an attribute the service starts to return is one row.
  */
-export const attributeRegistry: AttributeRegistryEntry[] = [
+const attributeRegistry: AttributeRegistryEntry[] = [
   ...inMode(true, [
     {
       apiKey: "en_main",

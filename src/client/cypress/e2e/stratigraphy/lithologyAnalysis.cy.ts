@@ -43,18 +43,6 @@ const stubClassification = (response: ClassifyResponse) => {
 
 const descriptionField = () => cy.dataCy("lithology-lithological-description").find("textarea").first();
 
-// The Analysieren action is gated on dev mode for as long as the deployed data extraction service
-// cannot classify. The flag is added to the open page rather than visited, so the editing session the helper started
-// survives; useDevMode re-reads the location on popstate.
-const enableDevMode = () => {
-  cy.location().then(location => {
-    cy.window().then(window => {
-      window.history.replaceState(null, "", `${location.pathname}?dev=true`);
-      window.dispatchEvent(new PopStateEvent("popstate"));
-    });
-  });
-};
-
 const analyze = (description: string) => {
   descriptionField().clear();
   descriptionField().type(description, { delay: 0 });
@@ -66,7 +54,6 @@ describe("Lithology automatic classification", () => {
   beforeEach(() => {
     stubClassification(unconsolidatedResponse);
     createStratigraphyWith3Lithologies();
-    enableDevMode();
     openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
   });
 
@@ -145,15 +132,5 @@ describe("Lithology automatic classification", () => {
   it("keeps the button disabled without a description", () => {
     descriptionField().clear();
     cy.dataCy("analyze-button").should("be.disabled");
-  });
-});
-
-describe("Lithology automatic classification outside dev mode", () => {
-  it("does not offer the action at all", () => {
-    createStratigraphyWith3Lithologies();
-    openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-
-    cy.dataCy("lithology-lithological-description").should("be.visible");
-    cy.dataCy("analyze-button").should("not.exist");
   });
 });

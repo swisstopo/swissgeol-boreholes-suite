@@ -3,8 +3,7 @@
 ## [Unreleased]
 
 ### Added
-- Lithological layer descriptions can be analyzed automatically. The lithology dialog offers an "Analyze" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein. The action is currently only shown with `?dev=true` and needs a data extraction service version that offers the classification.
-
+- Lithological layer descriptions can be analyzed automatically. The lithology dialog offers an "Analyze" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein.
 ## v2.2.57 - 2026-10-08
 
 ### Added
