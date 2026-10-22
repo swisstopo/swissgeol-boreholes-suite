@@ -12,7 +12,7 @@ import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { useRequiredId } from "../../../hooks/useRequiredId.ts";
 import { AddWorkgroupRoleDialog } from "./dialogs/addWorkgroupRoleDialog.tsx";
-import { RoleChip } from "./roleChip.tsx";
+import { RoleSelect } from "./roleSelect.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { getWorkgroupsWithRole, WorkgroupWithRole } from "./workgroupRoles.ts";
@@ -57,8 +57,16 @@ export const UserDetail: FC = () => {
     setWorkgroupDialogOpen(true);
   };
 
-  const renderRoleChip = (params: GridRenderCellParams<WorkgroupWithRole, Role>) =>
-    params.value && <RoleChip role={params.value} />;
+  const renderRoleSelect = (params: GridRenderCellParams<WorkgroupWithRole, Role>) =>
+    params.value && (
+      <RoleSelect
+        value={params.value}
+        disabled={isDisabled}
+        onChange={role =>
+          setWorkgroupRole({ userId: selectedUser.id, workgroupId: params.row.id, role, isActive: true })
+        }
+      />
+    );
 
   const handleRemoveWorkgroupRole = (event: MouseEvent<HTMLButtonElement>, id: number) => {
     event.stopPropagation();
@@ -92,8 +100,9 @@ export const UserDetail: FC = () => {
     {
       field: "role",
       headerName: t("role"),
-      renderCell: renderRoleChip,
+      renderCell: renderRoleSelect,
       flex: 1,
+      minWidth: 200,
     },
     statusColumn,
     getDeleteColumn(handleRemoveWorkgroupRole, isDisabled),

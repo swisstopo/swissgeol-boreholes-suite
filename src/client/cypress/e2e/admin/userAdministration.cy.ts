@@ -58,7 +58,7 @@ describe("User administration settings tests", () => {
     verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
     // Editor user should have role editor
-    cy.dataCy("Editor-chip").should("be.visible");
+    cy.dataCy("Editor-role-select").should("be.visible");
 
     cy.dataCy("backButton").click();
     waitForTableData();
@@ -72,9 +72,9 @@ describe("User administration settings tests", () => {
     verifyRowContains("Default", 0); // Workgroup
 
     // Admin user should have role publisher only
-    cy.dataCy("Publisher-chip").should("be.visible");
-    cy.dataCy("View-chip").should("not.exist");
-    cy.dataCy("Editor-chip").should("not.exist");
+    cy.dataCy("Publisher-role-select").should("be.visible");
+    cy.dataCy("View-role-select").should("not.exist");
+    cy.dataCy("Editor-role-select").should("not.exist");
 
     cy.dataCy("backButton").click();
     waitForTableData();
@@ -202,8 +202,8 @@ describe("User administration settings tests", () => {
     verifyTableLength(3);
 
     // The second role for Reggae replaced the first one
-    verifyRowWithContentAlsoContains("Reggae", "CONTROLLER");
-    cy.dataCy("Editor-chip").should("not.exist");
+    verifyRowWithContentAlsoContains("Reggae", "Controller");
+    cy.dataCy("Editor-role-select").should("not.exist");
 
     // sort
     sortBy("Workgroup");

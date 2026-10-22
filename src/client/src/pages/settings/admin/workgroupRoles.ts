@@ -1,5 +1,7 @@
 ﻿import { Role, User, Workgroup } from "../../../api/generated";
 
+export const allRoles: Role[] = ["View", "Editor", "Controller", "Validator", "Publisher"];
+
 export type WorkgroupWithRole = Workgroup & { role: Role };
 
 export const getWorkgroupsWithRole = (user: User): WorkgroupWithRole[] =>

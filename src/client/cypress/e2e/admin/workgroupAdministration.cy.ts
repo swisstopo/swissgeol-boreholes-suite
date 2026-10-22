@@ -97,7 +97,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Active", 0);
 
     // Admin user should have role editor in workgroup World
-    cy.dataCy("Publisher-chip").should("be.visible");
+    cy.dataCy("Publisher-role-select").should("be.visible");
     cy.contains("World");
 
     // Set workgroup World active
@@ -167,9 +167,9 @@ describe("User administration settings tests", () => {
     setSelect("role", 0); // "View";
     cy.dataCy("add-button").click();
 
-    verifyRowWithContentAlsoContains("editor", "VIEW");
-    verifyRowWithContentAlsoContains("publisher", "VIEW");
-    cy.dataCy("Controller-chip").should("not.exist");
+    verifyRowWithContentAlsoContains("editor", "View");
+    verifyRowWithContentAlsoContains("publisher", "View");
+    cy.dataCy("Controller-role-select").should("not.exist");
 
     hasPagination(false);
     verifyTableLength(2);
