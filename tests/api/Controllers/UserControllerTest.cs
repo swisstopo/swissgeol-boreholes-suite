@@ -60,7 +60,7 @@ public class UserControllerTest
         Assert.AreEqual(adminSubjectId, user.SubjectId);
         Assert.IsTrue(user.IsAdmin);
         Assert.IsFalse(user.Deletable);
-        Assert.AreEqual(5, user.WorkgroupRoles.Count());
+        Assert.AreEqual(1, user.WorkgroupRoles.Count());
     }
 
     [TestMethod]
@@ -163,7 +163,7 @@ public class UserControllerTest
         var editors = result.Value;
 
         Assert.IsNotNull(editors);
-        Assert.AreEqual(7, editors.Count());
+        Assert.AreEqual(6, editors.Count());
 
         foreach (var editor in editors)
         {

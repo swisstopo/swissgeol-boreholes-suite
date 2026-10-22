@@ -67,7 +67,7 @@ describe("User administration settings tests", () => {
     clickOnRowWithText("publisher");
     cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 2); // Workgroup called "World";
-    setSelect("role", 4); // "Publisher";
+    setSelect("role", 3); // "Publisher";
     cy.dataCy("add-button").click();
     cy.wait("@set_workgroup_roles");
     cy.dataCy("backButton").click();
