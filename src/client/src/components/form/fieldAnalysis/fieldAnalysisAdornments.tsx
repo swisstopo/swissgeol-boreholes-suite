@@ -2,6 +2,7 @@
 import { useTranslation } from "react-i18next";
 import { IconButton, Stack, Tooltip } from "@mui/material";
 import { RotateCcw } from "lucide-react";
+import { theme } from "../../../AppTheme.ts";
 import { useCodelistDisplayValues } from "../../codelist.ts";
 import { AnalysisBadge } from "./analysisBadge.tsx";
 import { FieldChange, FieldValue } from "./fieldAnalysis.ts";
@@ -40,7 +41,20 @@ interface FieldAnalysisLabelProps {
 export const FieldAnalysisLabel: FC<FieldAnalysisLabelProps> = ({ label, change }) => (
   <Stack direction="row" gap={0.5} alignItems="center" component="span">
     {label}
-    <Tooltip title={<FieldChangeSummary change={change} />} placement="top">
+    <Tooltip
+      title={<FieldChangeSummary change={change} />}
+      placement="top"
+      slotProps={{
+        tooltip: {
+          sx: {
+            backgroundColor: theme.palette.ai.highlightBackground,
+            border: `1px solid ${theme.palette.ai.highlightBorder}`,
+            borderRadius: "4px",
+            color: theme.palette.secondary.main,
+            p: 2,
+          },
+        },
+      }}>
       <AnalysisBadge data-cy="field-analysis-info" />
     </Tooltip>
   </Stack>
