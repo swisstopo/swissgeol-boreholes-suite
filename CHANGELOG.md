@@ -12,6 +12,7 @@
 
 ### Fixed
 - Inactive users are no longer offered when adding users to a workgroup.
+- The workflow now judges each possible assignee by their role in the borehole's workgroup instead of their highest role in any workgroup.
 
 ## v2.2.57 - 2026-10-08
 

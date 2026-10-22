@@ -4,7 +4,6 @@ import { Box, CircularProgress } from "@mui/material";
 import {
   GenericWorkflowSelection,
   LocalDate,
-  Role,
   SgcWorkflowChangeEventDetail,
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
@@ -13,7 +12,6 @@ import {
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
 import { useBorehole, useBoreholeManageable } from "../../../../api/borehole.ts";
-import { Role as LegacyRole } from "../../../../api/generated/types.gen";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";
@@ -30,6 +28,7 @@ import {
   WorkflowChange,
   WorkflowChangeRequest,
 } from "./workflow.ts";
+import { getWorkflowRoleInWorkgroup } from "./workflowRole.ts";
 
 export const WorkflowView = () => {
   const boreholeId = useRequiredId();
@@ -39,7 +38,8 @@ export const WorkflowView = () => {
   const { t } = useTranslation();
   const { data: canManage } = useBoreholeManageable(boreholeId);
   const { setEditingEnabled } = useContext(EditStateContext);
-  const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole?.workgroup?.id ?? 0);
+  const workgroupId = borehole?.workgroup?.id ?? 0;
+  const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(workgroupId);
   const { navigateTo } = useBoreholesNavigate();
   const { showAlert } = useContext(AlertContext);
   const {
@@ -136,14 +136,6 @@ export const WorkflowView = () => {
     ];
   };
 
-  const mapMaxRole = (roles?: LegacyRole[]): Role => {
-    if (!roles || roles.length === 0) return Role.Reader;
-    if (roles.includes("Publisher")) return Role.Publisher;
-    if (roles.includes("Controller")) return Role.Reviewer;
-    if (roles.includes("Editor")) return Role.Editor;
-    return Role.Reader;
-  };
-
   if (isLoading || isCurrentUserLoading)
     return (
       <FullPageCentered>
@@ -155,7 +147,7 @@ export const WorkflowView = () => {
     ...user,
     firstName: user.firstName ?? "",
     lastName: user.lastName ?? "",
-    role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role).filter((r): r is LegacyRole => r !== undefined)),
+    role: getWorkflowRoleInWorkgroup(user.workgroupRoles, workgroupId),
   }));
 
   if (!workflow || !currentUser || !availableAssignees) return null;
