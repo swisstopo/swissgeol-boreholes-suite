@@ -5,6 +5,10 @@ namespace BDMS.Models;
 /// <summary>
 /// Represents a role entity in the database.
 /// </summary>
+/// <remarks>
+/// Role values are stored as ids in the database and must match the ids in <c>bdms.roles</c>.
+/// Changing a value requires a migration that moves the existing rows.
+/// </remarks>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Role
 {
@@ -26,8 +30,5 @@ public enum Role
     /// <summary>
     /// Publisher permissions/ Published.
     /// </summary>
-    /// <remarks>
-    /// Role values are stored as ids in the database and must not be renumbered.
-    /// </remarks>
     Publisher = 3,
 }
