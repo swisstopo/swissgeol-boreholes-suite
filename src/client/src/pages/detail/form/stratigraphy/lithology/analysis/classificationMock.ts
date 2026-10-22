@@ -1,7 +1,6 @@
 ﻿import { ClassifyResponse } from "../../../../../../api/dataextractionInterfaces.ts";
 import { ApiError } from "../../../../../../api/errorClasses.ts";
 
-
 /**
  * Whether the classification is served from the fixtures below instead of the data extraction
  * service. The service version carrying POST /api/V1/classify is not released, so the real call

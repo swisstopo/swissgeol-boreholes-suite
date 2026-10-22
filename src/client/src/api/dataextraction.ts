@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  mockClassify,
   isClassificationMocked,
+  mockClassify,
 } from "../pages/detail/form/stratigraphy/lithology/analysis/classificationMock.ts";
 import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
 import { getAuthorizationHeaders } from "./authentication.ts";
