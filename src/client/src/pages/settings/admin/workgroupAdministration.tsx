@@ -2,7 +2,7 @@ import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "reac
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams, GridRowParams } from "@mui/x-data-grid";
-import { Role, Workgroup } from "../../../api/generated";
+import { Workgroup } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
 import { useWorkgroups } from "../../../api/workgroup.ts";
 import { Table } from "../../../components/table/table.tsx";
@@ -11,8 +11,7 @@ import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts
 import { AdministrationTableWrapper } from "./administrationTableWrapper.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
-
-const allRoles: Role[] = ["View", "Editor", "Controller", "Validator", "Publisher"];
+import { allRoles } from "./workgroupRoles.ts";
 
 export const WorkgroupAdministration: FC = () => {
   const { t } = useTranslation();

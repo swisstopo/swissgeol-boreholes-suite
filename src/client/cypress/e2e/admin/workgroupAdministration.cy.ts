@@ -17,10 +17,9 @@ describe("User administration settings tests", () => {
     verifyRowContains("Default", 2);
     verifyRowContains("100", 2);
     verifyRowContains("Active", 2);
-    verifyRowContains("View (2)", 2);
-    verifyRowContains("Editor (2)", 2);
-    verifyRowContains("Controller (2)", 2);
-    verifyRowContains("Validator (2)", 2);
+    verifyRowContains("View (1)", 2);
+    verifyRowContains("Editor (1)", 2);
+    verifyRowContains("Controller (1)", 2);
     verifyRowContains("Publisher (4)", 2);
     verifyRowContains("Reggae", 3);
     verifyRowContains("Inactive", 3);
@@ -68,7 +67,7 @@ describe("User administration settings tests", () => {
     clickOnRowWithText("publisher");
     cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 2); // Workgroup called "World";
-    setSelect("role", 4); // "Publisher";
+    setSelect("role", 3); // "Publisher";
     cy.dataCy("add-button").click();
     cy.wait("@set_workgroup_roles");
     cy.dataCy("backButton").click();
@@ -97,7 +96,7 @@ describe("User administration settings tests", () => {
     verifyRowContains("Active", 0);
 
     // Admin user should have role editor in workgroup World
-    cy.dataCy("Publisher-chip").should("be.visible");
+    cy.dataCy("Publisher-role-select").should("be.visible");
     cy.contains("World");
 
     // Set workgroup World active
@@ -161,15 +160,15 @@ describe("User administration settings tests", () => {
     setSelect("role", 2); // "Controller";
     cy.dataCy("add-button").click();
 
-    // Add one another role to user publisher
+    // Assigning another role to user publisher replaces Controller
     cy.dataCy("adduser-button").click();
     setSelect("user", 3); // "publisher user";
     setSelect("role", 0); // "View";
     cy.dataCy("add-button").click();
 
-    verifyRowWithContentAlsoContains("editor", "VIEW");
-    verifyRowWithContentAlsoContains("publisher", "CONTROLLER");
-    verifyRowWithContentAlsoContains("publisher", "VIEW");
+    verifyRowWithContentAlsoContains("editor", "View");
+    verifyRowWithContentAlsoContains("publisher", "View");
+    cy.dataCy("Controller-role-select").should("not.exist");
 
     hasPagination(false);
     verifyTableLength(2);
@@ -181,20 +180,20 @@ describe("User administration settings tests", () => {
     verifyRowContains("publisher", 0);
     verifyRowContains("editor", 1);
 
-    // delete all roles for publisher
+    // delete the role for publisher
     cy.dataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "p. user" in the workgroup "Blues"?', "delete");
+    handlePrompt('Do you want to remove the role of the user "p. user" in the workgroup "Blues"?', "delete");
     verifyTableLength(1);
     verifyRowContains("editor", 0);
 
-    // cancel delete all roles for editor
+    // cancel delete the role for editor
     cy.dataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "E. User" in the workgroup "Blues"?', "cancel");
+    handlePrompt('Do you want to remove the role of the user "E. User" in the workgroup "Blues"?', "cancel");
     verifyTableLength(1);
     verifyRowContains("editor", 0);
 
     cy.dataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "E. User" in the workgroup "Blues"?', "delete");
+    handlePrompt('Do you want to remove the role of the user "E. User" in the workgroup "Blues"?', "delete");
     verifyTableLength(0);
   });
 

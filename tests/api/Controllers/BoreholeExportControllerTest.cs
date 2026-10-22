@@ -935,8 +935,8 @@ public class BoreholeExportControllerTest
     {
         return new Borehole
         {
-            CreatedById = 4,
-            UpdatedById = 4,
+            CreatedById = 3,
+            UpdatedById = 3,
             Locked = null,
             LockedById = null,
             WorkgroupId = 1,

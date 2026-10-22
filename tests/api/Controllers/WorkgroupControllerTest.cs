@@ -214,28 +214,45 @@ public class WorkgroupControllerTest
         Assert.AreEqual(1, userWorkgroupRoles.Count);
         Assert.AreEqual(Role.Editor, userWorkgroupRoles[0].Role);
 
-        // Set another role for user
+        // Setting another role replaces the existing one
+        setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Publisher, true)]);
+        ActionResultAssert.IsOk(setRoleResult);
+        userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
+        Assert.AreEqual(1, userWorkgroupRoles.Count);
+        Assert.AreEqual(Role.Publisher, userWorkgroupRoles[0].Role);
+
+        // Setting a lower role replaces the existing one as well
         setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.View, true)]);
         ActionResultAssert.IsOk(setRoleResult);
         userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
-        Assert.AreEqual(2, userWorkgroupRoles.Count);
-        Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Role.Editor));
-        Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Role.View));
+        Assert.AreEqual(1, userWorkgroupRoles.Count);
+        Assert.AreEqual(Role.View, userWorkgroupRoles[0].Role);
 
-        // Cannot remove a role that does not exist
-        setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Publisher, false)]);
-        ActionResultAssert.IsOk(setRoleResult);
-        userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
-        Assert.AreEqual(2, userWorkgroupRoles.Count);
-        Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Role.Editor));
-        Assert.IsTrue(userWorkgroupRoles.Any(r => r.Role == Role.View));
-
-        // Remove a role
+        // Cannot remove a role the user does not have in the workgroup
         setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.Editor, false)]);
         ActionResultAssert.IsOk(setRoleResult);
         userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
         Assert.AreEqual(1, userWorkgroupRoles.Count);
         Assert.AreEqual(Role.View, userWorkgroupRoles[0].Role);
+
+        // Remove the role
+        setRoleResult = await workgroupController.SetRolesAsync([CreateUserWorkgroupRole(user, createdWorkgroup, Role.View, false)]);
+        ActionResultAssert.IsOk(setRoleResult);
+        userWorkgroupRoles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user.Id).ToListAsync();
+        Assert.AreEqual(0, userWorkgroupRoles.Count);
+    }
+
+    [TestMethod]
+    public async Task SecondRoleInSameWorkgroupIsRejectedByDatabase()
+    {
+        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == "editor");
+        await context.Database.ExecuteSqlRawAsync("SAVEPOINT second_role");
+
+        var insert = () => context.Database.ExecuteSqlRawAsync(
+            "INSERT INTO bdms.users_roles (user_id, workgroup_id, role_id) VALUES ({0}, 1, {1})", user.Id, (int)Role.Publisher);
+
+        await Assert.ThrowsExactlyAsync<Npgsql.PostgresException>(insert);
+        await context.Database.ExecuteSqlRawAsync("ROLLBACK TO SAVEPOINT second_role");
     }
 
     [TestMethod]
@@ -263,15 +280,19 @@ public class WorkgroupControllerTest
         Assert.IsTrue(roles.Any(r => r.UserId == user1.Id && r.Role == Role.Editor));
         Assert.IsTrue(roles.Any(r => r.UserId == user2.Id && r.Role == Role.View));
 
-        // Add an additional role for one user and remove for another
-        userWorkgroupRoles[0].Role = Role.Publisher;
-        userWorkgroupRoles[1].IsActive = false;
+        // Replace the role of one user and remove the role of another.
+        // New instances like in a real request, because the context still tracks the ones added above.
+        userWorkgroupRoles =
+        [
+            CreateUserWorkgroupRole(user1, createdWorkgroup, Role.Publisher, true),
+            CreateUserWorkgroupRole(user2, createdWorkgroup, Role.View, false),
+        ];
         setRolesResult = await workgroupController.SetRolesAsync(userWorkgroupRoles);
         ActionResultAssert.IsOk(setRolesResult);
 
         // Verify roles are updated
         roles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id).ToListAsync();
-        Assert.AreEqual(2, roles.Count); // First user now has 2 roles
+        Assert.AreEqual(1, roles.Count); // First user's role was replaced
         Assert.IsTrue(roles.Any(r => r.UserId == user1.Id && r.Role == Role.Publisher));
         Assert.IsFalse(roles.Any(r => r.UserId == user2.Id)); // Role removed for user2
 
@@ -290,7 +311,7 @@ public class WorkgroupControllerTest
             Times.Exactly(2));
 
         roles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.WorkgroupId == createdWorkgroup.Id && r.UserId == user1.Id).ToListAsync();
-        Assert.AreEqual(2, roles.Count); // No duplicate roles should be added
+        Assert.AreEqual(1, roles.Count); // No duplicate roles should be added
     }
 
     [TestMethod]
@@ -305,7 +326,7 @@ public class WorkgroupControllerTest
         // Set roles for multiple users
         var userWorkgroupRoles = new UserWorkgroupRole[]
         {
-            CreateUserWorkgroupRole(user2, createdWorkgroup, Role.Validator, null),
+            CreateUserWorkgroupRole(user2, createdWorkgroup, Role.Controller, null),
         };
 
         var setRolesResult = await workgroupController.SetRolesAsync(userWorkgroupRoles);

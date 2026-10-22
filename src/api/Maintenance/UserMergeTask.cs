@@ -135,6 +135,11 @@ public sealed class UserMergeTask : IMaintenanceTask
     {
         foreach (var (tableName, columnName, entityType) in foreignKeys)
         {
+            if (entityType == typeof(UserWorkgroupRole))
+            {
+                await KeepHighestWorkgroupRolesAsync(context, targetId, sourceIds, cancellationToken).ConfigureAwait(false);
+            }
+
             if (CompositeKeyEntityTypes.Contains(entityType))
             {
                 // For composite-key tables where the User FK is part of the PK:
@@ -174,6 +179,27 @@ public sealed class UserMergeTask : IMaintenanceTask
         }
     }
 #pragma warning restore EF1003
+
+    /// <summary>
+    /// Roles are hierarchical and a user holds one role per workgroup, so of all roles the merged
+    /// users have in a workgroup only the highest survives. On equal roles the target (highest id) wins.
+    /// </summary>
+    private static async Task KeepHighestWorkgroupRolesAsync(BdmsContext context, int targetId, int[] sourceIds, CancellationToken cancellationToken)
+    {
+        const string sql = """
+            DELETE FROM bdms.users_roles AS candidate
+            WHERE candidate.user_id = ANY(@p0)
+              AND EXISTS (
+                SELECT 1 FROM bdms.users_roles AS other
+                WHERE other.user_id = ANY(@p0)
+                  AND other.workgroup_id = candidate.workgroup_id
+                  AND (other.role_id > candidate.role_id
+                    OR (other.role_id = candidate.role_id AND other.user_id > candidate.user_id)))
+            """;
+
+        int[] mergedUserIds = [.. sourceIds, targetId];
+        await context.Database.ExecuteSqlRawAsync(sql, [new NpgsqlParameter("p0", mergedUserIds)], cancellationToken).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Gets the non-User primary key column names for a composite-key entity.

@@ -69,14 +69,35 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     }
 
     [TestMethod]
-    public async Task MergesUserWorkgroupRoleWithOverlappingRoles()
+    public async Task MergesUserWorkgroupRoleKeepsHigherRoleOfSourceUser()
     {
         var oldUser = CreateUser("STORMQUILL", "FROST", DateTime.UtcNow.AddDays(-10));
         var newUser = CreateUser("STORMQUILL", "FLARE", DateTime.UtcNow);
 
         var workgroup = await Context.Workgroups.FirstAsync();
+        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = oldUser.Id, WorkgroupId = workgroup.Id, Role = Role.Controller });
+        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = newUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
+        await Context.SaveChangesAsync().ConfigureAwait(false);
+
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
+        await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
+
+        var roles = await Context.UserWorkgroupRoles.AsNoTracking().Where(r => r.UserId == newUser.Id && r.WorkgroupId == workgroup.Id).ToListAsync();
+        Assert.HasCount(1, roles);
+        Assert.AreEqual(Role.Controller, roles[0].Role);
+
+        var oldRoles = await Context.UserWorkgroupRoles.AsNoTracking().Where(r => r.UserId == oldUser.Id).ToListAsync();
+        Assert.HasCount(0, oldRoles);
+    }
+
+    [TestMethod]
+    public async Task MergesUserWorkgroupRoleKeepsHigherRoleOfTargetUser()
+    {
+        var oldUser = CreateUser("EMBERLOOM", "FROST", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("EMBERLOOM", "FLARE", DateTime.UtcNow);
+
+        var workgroup = await Context.Workgroups.FirstAsync();
         Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = oldUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
-        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = oldUser.Id, WorkgroupId = workgroup.Id, Role = Role.Validator });
         Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = newUser.Id, WorkgroupId = workgroup.Id, Role = Role.Publisher });
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
@@ -84,13 +105,29 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
 
         var roles = await Context.UserWorkgroupRoles.AsNoTracking().Where(r => r.UserId == newUser.Id && r.WorkgroupId == workgroup.Id).ToListAsync();
-        Assert.HasCount(3, roles);
-        Assert.IsTrue(roles.Any(r => r.Role == Role.Editor));
-        Assert.IsTrue(roles.Any(r => r.Role == Role.Validator));
-        Assert.IsTrue(roles.Any(r => r.Role == Role.Publisher));
+        Assert.HasCount(1, roles);
+        Assert.AreEqual(Role.Publisher, roles[0].Role);
+    }
 
-        var oldRoles = await Context.UserWorkgroupRoles.AsNoTracking().Where(r => r.UserId == oldUser.Id).ToListAsync();
-        Assert.HasCount(0, oldRoles);
+    [TestMethod]
+    public async Task MergesUserWorkgroupRoleKeepsHighestRoleAcrossSeveralSourceUsers()
+    {
+        var oldestUser = CreateUser("QUARTZWING", "ASH", DateTime.UtcNow.AddDays(-20));
+        var olderUser = CreateUser("QUARTZWING", "SLATE", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("QUARTZWING", "FLINT", DateTime.UtcNow);
+
+        var workgroup = await Context.Workgroups.FirstAsync();
+        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = oldestUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
+        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = olderUser.Id, WorkgroupId = workgroup.Id, Role = Role.Controller });
+        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = newUser.Id, WorkgroupId = workgroup.Id, Role = Role.View });
+        await Context.SaveChangesAsync().ConfigureAwait(false);
+
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
+        await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
+
+        var roles = await Context.UserWorkgroupRoles.AsNoTracking().Where(r => r.UserId == newUser.Id && r.WorkgroupId == workgroup.Id).ToListAsync();
+        Assert.HasCount(1, roles);
+        Assert.AreEqual(Role.Controller, roles[0].Role);
     }
 
     [TestMethod]

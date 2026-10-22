@@ -6903,6 +6903,7 @@
         "tags": [
           "Workgroup"
         ],
+        "summary": "Sets or removes workgroup roles. A user holds one role per workgroup: an active role replaces the\r\nuser's current role in that workgroup, an inactive role removes it only if it is the current role.",
         "parameters": [
           {
             "name": "version",
@@ -12176,7 +12177,6 @@
           "View",
           "Editor",
           "Controller",
-          "Validator",
           "Publisher"
         ],
         "type": "string",

@@ -136,7 +136,7 @@ public class LithostratigraphyControllerTest
             StratigraphyId = 6_000_002,
             CreatedById = 3,
             Created = new DateTime(2022, 4, 29, 11, 37, 40).ToUniversalTime(),
-            UpdatedById = 4,
+            UpdatedById = 3,
             Updated = new DateTime(2022, 4, 30, 10, 34, 41).ToUniversalTime(),
             FromDepth = 30,
             ToDepth = 40,
