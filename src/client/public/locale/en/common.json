@@ -108,7 +108,7 @@
   "conditions": "Groundwater conditions",
   "confirm": "Confirm",
   "confirmEditSharedLithologicalDescription": "This description is shared by {{count}} lithology layers. Do you want to update the description for all of them?",
-  "confirmRemoveRoles": "Do you want to remove all roles of the user \"{{name}}\" in the workgroup \"{{workgroupName}}\"?",
+  "confirmRemoveRole": "Do you want to remove the role of the user \"{{name}}\" in the workgroup \"{{workgroupName}}\"?",
   "consistency": "Consistency",
   "consolidated": "consolidated rock",
   "continue": "Continue",

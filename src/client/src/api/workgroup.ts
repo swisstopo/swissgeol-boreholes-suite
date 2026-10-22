@@ -34,19 +34,6 @@ const setWorkgroupRole = async (userId: number, workgroupId: number, role: Role,
   return await fetchApiV2WithApiError("workgroup/setRoles", "POST", workgroupRole);
 };
 
-const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId: number, roles: Role[]): Promise<void> => {
-  const workgroupRoles: UserWorkgroupRole[] = [];
-  for (const role of roles) {
-    workgroupRoles.push({
-      workgroupId: workgroupId,
-      userId: userId,
-      role: role,
-      isActive: false,
-    });
-  }
-  return await fetchApiV2WithApiError("workgroup/setRoles", "POST", workgroupRoles);
-};
-
 export const workgroupQueryKey = "workgroups";
 
 export const useWorkgroups = () => {
@@ -93,18 +80,6 @@ export const useWorkgroupMutations = () => {
     },
   });
 
-  const useRemoveAllWorkgroupRoles = useMutation({
-    mutationFn: async ({ userId, workgroupId, roles }: { userId: number; workgroupId: number; roles: Role[] }) => {
-      return await removeAllWorkgroupRolesForUser(userId, workgroupId, roles);
-    },
-    onSettled: (_data, _error, variables) => {
-      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
-      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, variables.workgroupId] });
-      void queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
-      void queryClient.invalidateQueries({ queryKey: [usersQueryKey, variables.userId] });
-    },
-  });
-
   const useSetWorkgroupRole = useMutation({
     mutationFn: async ({
       userId,
@@ -142,7 +117,6 @@ export const useWorkgroupMutations = () => {
     add: useAddWorkgroup,
     update: useUpdateWorkgroup,
     setWorkgroupRole: useSetWorkgroupRole,
-    removeAllRoles: useRemoveAllWorkgroupRoles,
     delete: useDeleteWorkgroup,
   };
 };

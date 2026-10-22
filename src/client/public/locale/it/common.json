@@ -109,7 +109,7 @@
   "conditions": "Condizioni della falda acquifera",
   "confirm": "Confermare",
   "confirmEditSharedLithologicalDescription": "Questa descrizione è condivisa da {{count}} strati litologici. Vuoi aggiornare la descrizione per tutti?",
-  "confirmRemoveRoles": "Vuoi rimuovere tutti i ruoli dell'utente \"{{name}}\" nel gruppo di lavoro \"{{workgroupName}}\"?",
+  "confirmRemoveRole": "Vuoi rimuovere il ruolo dell'utente \"{{name}}\" nel gruppo di lavoro \"{{workgroupName}}\"?",
   "consistency": "Consistenza",
   "consolidated": "roccia consolidata",
   "continue": "Continuare",

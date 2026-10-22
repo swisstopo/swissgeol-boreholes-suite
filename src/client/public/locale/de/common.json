@@ -108,7 +108,7 @@
   "conditions": "Grundwasserverhältnisse",
   "confirm": "Bestätigen",
   "confirmEditSharedLithologicalDescription": "Diese Beschreibung wird von {{count}} Lithologie-Schichten verwendet. Möchten Sie die Beschreibung für alle Schichten ändern?",
-  "confirmRemoveRoles": "Wollen Sie alle Rollen des Nutzers \"{{name}}\" in der Arbeitsgruppe \"{{workgroupName}}\" entfernen?",
+  "confirmRemoveRole": "Wollen Sie die Rolle des Nutzers \"{{name}}\" in der Arbeitsgruppe \"{{workgroupName}}\" entfernen?",
   "consistency": "Konsistenz",
   "consolidated": "Festgestein",
   "continue": "Fortfahren",
