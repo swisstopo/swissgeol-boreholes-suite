@@ -89,7 +89,7 @@ function manuallyResetStatusToDraft() {
   cy.get(".select-option").contains(WorkflowStatus.Draft).click();
   cy.get(".select-trigger").eq(1).click();
   // all users with editor privileges should be selectable
-  cy.get(".select-option").should("have.length", 7);
+  cy.get(".select-option").should("have.length", 6);
   cy.get(".select-option").contains("viewer user").should("not.exist");
   cy.get(".select-option").contains("Editor User").should("exist");
   cy.get(".select-option").contains("Admin User").click();
@@ -194,7 +194,7 @@ describe("Tests the publication workflow.", () => {
 
       cy.get(".select-trigger").click();
 
-      cy.get(".select-option").should("have.length", 6);
+      cy.get(".select-option").should("have.length", 5);
       // 2 users without controller privileges should not exist
       cy.get(".select-option").contains("viewer user").should("not.exist");
       cy.get(".select-option").contains("Editor User").should("not.exist");
