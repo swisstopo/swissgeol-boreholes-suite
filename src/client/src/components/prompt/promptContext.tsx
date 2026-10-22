@@ -1,5 +1,5 @@
 import { createContext, FC, PropsWithChildren, ReactNode, useCallback, useState } from "react";
-import { PromptAction, PromptContextInterface, PromptOptions } from "./promptInterface";
+import { PromptAction, PromptContextInterface, PromptMessage, PromptOptions } from "./promptInterface";
 
 export const PromptContext = createContext<PromptContextInterface>({
   message: "",
@@ -13,7 +13,7 @@ export const PromptContext = createContext<PromptContextInterface>({
 export const PromptProvider: FC<PropsWithChildren> = ({ children }) => {
   const [prompt, setPrompt] = useState<PromptOptions>();
 
-  const showPrompt = useCallback((message: string, actions: PromptAction[], dialogContent: ReactNode = null) => {
+  const showPrompt = useCallback((message: PromptMessage, actions: PromptAction[], dialogContent: ReactNode = null) => {
     setPrompt({
       message: message,
       actions: actions,
