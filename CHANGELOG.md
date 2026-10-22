@@ -4,6 +4,7 @@
 
 ### Changed
 - A user now has exactly one role per workgroup. Assigning a role to a user who already has one in that workgroup replaces it. Users who had several roles in a workgroup keep only the highest one, so their permissions stay the same.
+- The role of a user in a workgroup is now shown as a dropdown in the user and workgroup administration and can be changed there directly.
 
 ### Fixed
 - Inactive users are no longer offered when adding users to a workgroup.
