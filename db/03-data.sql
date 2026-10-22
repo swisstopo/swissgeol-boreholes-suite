@@ -71,7 +71,7 @@ INSERT INTO bdms.users VALUES (
 
 INSERT INTO bdms.users_roles(
     id_usr_fk, id_rol_fk, id_wgp_fk)
-    VALUES (1, 0, 1),(1, 1, 1),(1, 2, 1),(1, 3, 1),(1, 4, 1);
+    VALUES (1, 4, 1);
 
 INSERT INTO bdms.users (id_usr, admin_usr, viewer_usr, username, password, firstname, lastname)
 VALUES
