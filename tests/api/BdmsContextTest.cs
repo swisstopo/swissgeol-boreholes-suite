@@ -37,11 +37,7 @@ public class BdmsContextTest
         Assert.AreEqual(1, admin.Id);
         Assert.AreEqual(true, admin.IsAdmin);
         Assert.AreEqual(false, admin.IsDisabled);
-        Assert.AreEqual(5, admin.WorkgroupRoles.Count());
-        AssertWorkgroupRole(DefaultWorkgroupId, Role.View, admin);
-        AssertWorkgroupRole(DefaultWorkgroupId, Role.Editor, admin);
-        AssertWorkgroupRole(DefaultWorkgroupId, Role.Controller, admin);
-        AssertWorkgroupRole(DefaultWorkgroupId, Role.Validator, admin);
+        Assert.AreEqual(1, admin.WorkgroupRoles.Count());
         AssertWorkgroupRole(DefaultWorkgroupId, Role.Publisher, admin);
 
         var editor = users.Single(u => u.SubjectId == "sub_editor");
@@ -66,7 +62,7 @@ public class BdmsContextTest
         Assert.AreEqual(false, validator.IsAdmin);
         Assert.AreEqual(false, validator.IsDisabled);
         Assert.AreEqual(1, validator.WorkgroupRoles.Count());
-        AssertWorkgroupRole(DefaultWorkgroupId, Role.Validator, validator);
+        AssertWorkgroupRole(DefaultWorkgroupId, Role.Controller, validator);
 
         var publisher = users.Single(u => u.SubjectId == "sub_publisher");
         Assert.AreEqual("sub_publisher", publisher.SubjectId);

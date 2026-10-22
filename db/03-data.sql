@@ -55,7 +55,6 @@ SELECT setval('bdms.codelist_id_cli_seq', 100000001, true);
 INSERT INTO bdms.roles VALUES (0, 'VIEW', '{}');
 INSERT INTO bdms.roles VALUES (1, 'EDIT', '{}');
 INSERT INTO bdms.roles VALUES (2, 'CONTROL', '{}');
-INSERT INTO bdms.roles VALUES (3, 'VALID', '{}');
 INSERT INTO bdms.roles VALUES (4, 'PUBLIC', '{}');
 SELECT pg_catalog.setval('bdms.roles_id_rol_seq', 4, false);
 
@@ -89,7 +88,7 @@ INSERT INTO bdms.users_roles(id_usr_fk, id_rol_fk, id_wgp_fk)
 VALUES
 (2, 1, 1),
 (3, 2, 1),
-(4, 3, 1),
+(4, 2, 1),
 (5, 4, 1),
 (6, 4, 1),
 (7, 4, 1),

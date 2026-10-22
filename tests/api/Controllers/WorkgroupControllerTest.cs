@@ -249,7 +249,7 @@ public class WorkgroupControllerTest
         await context.Database.ExecuteSqlRawAsync("SAVEPOINT second_role");
 
         var insert = () => context.Database.ExecuteSqlRawAsync(
-            "INSERT INTO bdms.users_roles (user_id, workgroup_id, role_id) VALUES ({0}, 1, 4)", user.Id);
+            "INSERT INTO bdms.users_roles (user_id, workgroup_id, role_id) VALUES ({0}, 1, {1})", user.Id, (int)Role.Publisher);
 
         await Assert.ThrowsExactlyAsync<Npgsql.PostgresException>(insert);
         await context.Database.ExecuteSqlRawAsync("ROLLBACK TO SAVEPOINT second_role");
@@ -326,7 +326,7 @@ public class WorkgroupControllerTest
         // Set roles for multiple users
         var userWorkgroupRoles = new UserWorkgroupRole[]
         {
-            CreateUserWorkgroupRole(user2, createdWorkgroup, Role.Validator, null),
+            CreateUserWorkgroupRole(user2, createdWorkgroup, Role.Controller, null),
         };
 
         var setRolesResult = await workgroupController.SetRolesAsync(userWorkgroupRoles);

@@ -139,7 +139,6 @@ export const WorkflowView = () => {
   const mapMaxRole = (roles?: LegacyRole[]): Role => {
     if (!roles || roles.length === 0) return Role.Reader;
     if (roles.includes("Publisher")) return Role.Publisher;
-    if (roles.includes("Validator")) return Role.Reviewer;
     if (roles.includes("Controller")) return Role.Reviewer;
     if (roles.includes("Editor")) return Role.Editor;
     return Role.Reader;

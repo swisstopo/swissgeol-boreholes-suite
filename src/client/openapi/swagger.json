@@ -12176,7 +12176,6 @@
           "View",
           "Editor",
           "Controller",
-          "Validator",
           "Publisher"
         ],
         "type": "string",

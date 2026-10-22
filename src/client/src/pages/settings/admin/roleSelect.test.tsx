@@ -16,7 +16,7 @@ describe("RoleSelect", () => {
 
     fireEvent.mouseDown(select);
     const options = screen.getAllByRole("option").map(option => option.textContent);
-    expect(options).toEqual(["View", "Editor", "Controller", "Validator", "Publisher"]);
+    expect(options).toEqual(["View", "Editor", "Controller", "Publisher"]);
   });
 
   it("reports the role picked from the list", () => {

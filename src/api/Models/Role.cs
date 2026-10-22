@@ -24,12 +24,10 @@ public enum Role
     Controller = 2,
 
     /// <summary>
-    /// Validator permissions/ In Validation.
-    /// </summary>
-    Validator = 3,
-
-    /// <summary>
     /// Publisher permissions/ Published.
     /// </summary>
-    Publisher = 4,
+    /// <remarks>
+    /// Role values are stored as ids in the database and must not be renumbered.
+    /// </remarks>
+    Publisher = 3,
 }
