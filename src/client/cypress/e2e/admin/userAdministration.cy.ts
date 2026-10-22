@@ -71,12 +71,10 @@ describe("User administration settings tests", () => {
     verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
 
-    // Admin user should have roles view, editor, controller, validator, publisher
-    cy.dataCy("View-chip").should("be.visible");
-    cy.dataCy("Editor-chip").should("be.visible");
-    cy.dataCy("Controller-chip").should("be.visible");
-    cy.dataCy("Validator-chip").should("be.visible");
+    // Admin user should have role publisher only
     cy.dataCy("Publisher-chip").should("be.visible");
+    cy.dataCy("View-chip").should("not.exist");
+    cy.dataCy("Editor-chip").should("not.exist");
 
     cy.dataCy("backButton").click();
     waitForTableData();
@@ -179,7 +177,7 @@ describe("User administration settings tests", () => {
     goToRouteAndAcceptTerms("/setting/user/7");
     waitForTableData();
 
-    // Add two workgroup roles to workgroup Reggae
+    // Add a role to workgroup Reggae, then replace it
     cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 1); // Workgroup called "Reggae";
     setSelect("role", 1); // "Editor";
@@ -203,28 +201,32 @@ describe("User administration settings tests", () => {
     hasPagination(false);
     verifyTableLength(3);
 
+    // The second role for Reggae replaced the first one
+    verifyRowWithContentAlsoContains("Reggae", "CONTROLLER");
+    cy.dataCy("Editor-chip").should("not.exist");
+
     // sort
     sortBy("Workgroup");
     verifyRowContains("Reggae", 0);
     verifyRowContains("Default", 1);
     verifyRowContains("Country", 2);
 
-    // delete all workgroup roles for Reggae Workgroup
+    // delete the workgroup role for Reggae Workgroup
     cy.dataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Reggae"?', "delete");
+    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Reggae"?', "delete");
     verifyTableLength(2);
     verifyRowContains("Default", 0);
     verifyRowContains("Country", 1);
 
-    // cancel delete all workgroup roles for Country Workgroup
+    // cancel delete the workgroup role for Country Workgroup
     cy.dataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "cancel");
+    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Country"?', "cancel");
     verifyTableLength(2);
     verifyRowContains("Default", 0);
     verifyRowContains("Country", 1);
 
     cy.dataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "delete");
+    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Country"?', "delete");
     verifyRowContains("Default", 0);
     verifyTableLength(1);
   });

@@ -161,15 +161,15 @@ describe("User administration settings tests", () => {
     setSelect("role", 2); // "Controller";
     cy.dataCy("add-button").click();
 
-    // Add one another role to user publisher
+    // Assigning another role to user publisher replaces Controller
     cy.dataCy("adduser-button").click();
     setSelect("user", 3); // "publisher user";
     setSelect("role", 0); // "View";
     cy.dataCy("add-button").click();
 
     verifyRowWithContentAlsoContains("editor", "VIEW");
-    verifyRowWithContentAlsoContains("publisher", "CONTROLLER");
     verifyRowWithContentAlsoContains("publisher", "VIEW");
+    cy.dataCy("Controller-chip").should("not.exist");
 
     hasPagination(false);
     verifyTableLength(2);
@@ -181,20 +181,20 @@ describe("User administration settings tests", () => {
     verifyRowContains("publisher", 0);
     verifyRowContains("editor", 1);
 
-    // delete all roles for publisher
+    // delete the role for publisher
     cy.dataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "p. user" in the workgroup "Blues"?', "delete");
+    handlePrompt('Do you want to remove the role of the user "p. user" in the workgroup "Blues"?', "delete");
     verifyTableLength(1);
     verifyRowContains("editor", 0);
 
-    // cancel delete all roles for editor
+    // cancel delete the role for editor
     cy.dataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "E. User" in the workgroup "Blues"?', "cancel");
+    handlePrompt('Do you want to remove the role of the user "E. User" in the workgroup "Blues"?', "cancel");
     verifyTableLength(1);
     verifyRowContains("editor", 0);
 
     cy.dataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "E. User" in the workgroup "Blues"?', "delete");
+    handlePrompt('Do you want to remove the role of the user "E. User" in the workgroup "Blues"?', "delete");
     verifyTableLength(0);
   });
 
