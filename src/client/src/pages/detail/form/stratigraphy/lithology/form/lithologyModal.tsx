@@ -287,7 +287,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
             title={t("lithologyLayerDescription")}
             action={
               // Gated on dev mode while the classification is served from the client side mock.
-              // Drop the gate together with useClassificationMock once the endpoint ships.
+              // Drop the gate together with isClassificationMocked once the endpoint ships.
               runsDevMode && (
                 <AnalyzeButton
                   control={formMethods.control}
