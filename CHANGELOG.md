@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Lithological layer descriptions can be analyzed automatically. The lithology dialog offers an "Analyze" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein. The action is currently only shown with `?dev=true` while the classification still runs against a stand-in response.
+
 ### Changed
 - A user now has exactly one role per workgroup. Assigning a role to a user who already has one in that workgroup replaces it. Users who had several roles in a workgroup keep only the highest one, so their permissions stay the same.
 - The Validator role is removed because it granted no permissions beyond Controller. Users who were Validators are now Controllers.
