@@ -88,7 +88,7 @@ public class StratigraphyControllerTest
 
         Assert.AreEqual("Guadalupe Schowalter (Clone)", copiedStratigraphy.Name);
         Assert.AreEqual("sub_editor", copiedStratigraphy.CreatedBy.SubjectId);
-        Assert.AreEqual("sub_controller", copiedStratigraphy.UpdatedBy.SubjectId);
+        Assert.AreEqual("sub_reviewer", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
         Assert.AreEqual(originalStratigraphy.Date, copiedStratigraphy.Date);

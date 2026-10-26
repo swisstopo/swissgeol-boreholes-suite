@@ -6,8 +6,8 @@ import { getWorkflowRoleInWorkgroup } from "./workflowRole.ts";
 const workgroupRoles: UserWorkgroupRole[] = [
   { userId: 7, workgroupId: 1, role: "Editor" },
   { userId: 7, workgroupId: 2, role: "Publisher" },
-  { userId: 7, workgroupId: 3, role: "Controller" },
-  { userId: 7, workgroupId: 4, role: "View" },
+  { userId: 7, workgroupId: 3, role: "Reviewer" },
+  { userId: 7, workgroupId: 4, role: "Reader" },
   { userId: 7, workgroupId: 5 },
 ];
 

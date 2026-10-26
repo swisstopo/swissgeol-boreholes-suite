@@ -79,7 +79,7 @@ public class BoreholeExportControllerTest
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_reader", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         boreholePermissionServiceMock

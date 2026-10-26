@@ -60,7 +60,7 @@ public class ProfileControllerTest
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_viewer", It.IsAny<int?>()))
+            .Setup(x => x.CanViewBoreholeAsync("sub_reader", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         boreholePermissionServiceMock
@@ -68,7 +68,7 @@ public class ProfileControllerTest
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_reader", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var profileControllerLoggerMock = new Mock<ILogger<ProfileController>>(MockBehavior.Strict);
@@ -431,7 +431,7 @@ public class ProfileControllerTest
         var profile = (Profile)((OkObjectResult)uploadResult).Value!;
 
         // Test
-        controller.HttpContext.SetClaimsPrincipal("sub_viewer", PolicyNames.Viewer);
+        controller.HttpContext.SetClaimsPrincipal("sub_reader", PolicyNames.Viewer);
         var result = await controller.GetDataExtractionFileInfo(profile.Id, 1, CancellationToken.None);
         ActionResultAssert.IsUnauthorized(result);
     }

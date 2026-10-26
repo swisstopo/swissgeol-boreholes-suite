@@ -232,15 +232,15 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     ///
     /// This mapping defines which role is needed to edit a borehole based on its current workflow status:
     /// - Draft: Requires at least Editor role
-    /// - InReview: Requires at least Controller role
-    /// - Reviewed: Requires at least Controller role
+    /// - InReview: Requires at least Reviewer role
+    /// - Reviewed: Requires at least Reviewer role
     /// - Published: Requires Publisher role.
     /// </summary>
     internal static readonly Dictionary<WorkflowStatus, Role?> EditPermissionsStatusRoleMap = new()
     {
         { WorkflowStatus.Draft, Role.Editor },
-        { WorkflowStatus.InReview, Role.Controller },
-        { WorkflowStatus.Reviewed, Role.Controller },
+        { WorkflowStatus.InReview, Role.Reviewer },
+        { WorkflowStatus.Reviewed, Role.Reviewer },
         { WorkflowStatus.Published, Role.Publisher },
     };
 }

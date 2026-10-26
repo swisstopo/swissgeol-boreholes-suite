@@ -12174,9 +12174,9 @@
       },
       "Role": {
         "enum": [
-          "View",
+          "Reader",
           "Editor",
-          "Controller",
+          "Reviewer",
           "Publisher"
         ],
         "type": "string",

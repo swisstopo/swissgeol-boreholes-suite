@@ -8,11 +8,11 @@ import {
   SidebarMenuItem,
   StratigraphyTab,
 } from "../helpers/navigationHelpers";
-import { loginAsViewer } from "../helpers/testHelpers";
+import { loginAsReader } from "../helpers/testHelpers";
 
-describe("Viewer tests", () => {
-  it("Assures viewer cannot add, edit or delete boreholes", () => {
-    loginAsViewer();
+describe("Reader tests", () => {
+  it("Assures reader cannot add, edit or delete boreholes", () => {
+    loginAsReader();
     showTableAndWaitForData();
 
     cy.dataCy("import-borehole-button").should("have.class", "Mui-disabled");
@@ -39,8 +39,8 @@ describe("Viewer tests", () => {
     cy.dataCy("edit-button").should("not.exist");
   });
 
-  it("Assures viewer can export boreholes as CSV and JSON including attachments", () => {
-    loginAsViewer();
+  it("Assures reader can export boreholes as CSV and JSON including attachments", () => {
+    loginAsReader();
     showTableAndWaitForData();
     checkRowWithText("Addie Blick");
     cy.dataCy("copy-button").should("not.exist");
@@ -59,8 +59,8 @@ describe("Viewer tests", () => {
     cy.dataCy("exportjsonprofile-button").should("exist");
   });
 
-  it("Assures viewer can click on all borehole menu items and see something", () => {
-    loginAsViewer();
+  it("Assures reader can click on all borehole menu items and see something", () => {
+    loginAsReader();
     showTableAndWaitForData();
     clickOnRowWithText("Aisha Thiel");
     navigateInSidebar(SidebarMenuItem.borehole);
@@ -90,6 +90,6 @@ describe("Viewer tests", () => {
     // cy.contains("No hydrotests available").should("exist");
     navigateInSidebar(SidebarMenuItem.attachments);
     cy.contains("ADP.pdf").should("exist");
-    cy.dataCy("status-menu-item").should("not.exist"); // viewer cannot see status menu item
+    cy.dataCy("status-menu-item").should("not.exist"); // reader cannot see status menu item
   });
 });

@@ -52,10 +52,10 @@ INSERT INTO bdms.codelist (
 
 SELECT setval('bdms.codelist_id_cli_seq', 100000001, true);
 
-INSERT INTO bdms.roles VALUES (0, 'VIEW', '{}');
-INSERT INTO bdms.roles VALUES (1, 'EDIT', '{}');
-INSERT INTO bdms.roles VALUES (2, 'CONTROL', '{}');
-INSERT INTO bdms.roles VALUES (4, 'PUBLIC', '{}');
+INSERT INTO bdms.roles VALUES (0, 'READER', '{}');
+INSERT INTO bdms.roles VALUES (1, 'EDITOR', '{}');
+INSERT INTO bdms.roles VALUES (2, 'REVIEWER', '{}');
+INSERT INTO bdms.roles VALUES (4, 'PUBLISHER', '{}');
 SELECT pg_catalog.setval('bdms.roles_id_rol_seq', 4, false);
 
 INSERT INTO bdms.workgroups (id_wgp, name_wgp, settings_wgp)
@@ -75,11 +75,11 @@ INSERT INTO bdms.users_roles(
 INSERT INTO bdms.users (id_usr, admin_usr, viewer_usr, username, password, firstname, lastname)
 VALUES
 (2, false, true, 'editor', crypt('swissforages', gen_salt('md5')),'editor', 'user'),
-(3, false, true, 'controller',crypt('swissforages', gen_salt('md5')), 'controller', 'user'),
+(3, false, true, 'reviewer', crypt('swissforages', gen_salt('md5')), 'reviewer', 'user'),
 (5, false, true, 'publisher', crypt('swissforages', gen_salt('md5')), 'publisher', 'user'),
 (6, false, true, 'filesUser', crypt('swissforages', gen_salt('md5')), 'user_that_only', 'has_files'),
 (7, false, true, 'deletableUser', crypt('swissforages', gen_salt('md5')), 'user_that_can', 'be_deleted'),
-(8, false, true, 'viewer', crypt('swissforages', gen_salt('md5')), 'viewer', 'user');
+(8, false, true, 'reader', crypt('swissforages', gen_salt('md5')), 'reader', 'user');
 
 SELECT pg_catalog.setval('bdms.users_id_usr_seq', 8, true);
 

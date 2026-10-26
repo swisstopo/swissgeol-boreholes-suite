@@ -13,9 +13,9 @@ namespace BDMS.Models;
 public enum Role
 {
     /// <summary>
-    /// View permissions.
+    /// Reader permissions.
     /// </summary>
-    View = 0,
+    Reader = 0,
 
     /// <summary>
     /// Editor permissions/ Change In Progress.
@@ -23,9 +23,9 @@ public enum Role
     Editor = 1,
 
     /// <summary>
-    /// Controller permissions/ In Review.
+    /// Reviewer permissions/ In Review.
     /// </summary>
-    Controller = 2,
+    Reviewer = 2,
 
     /// <summary>
     /// Publisher permissions/ Published.

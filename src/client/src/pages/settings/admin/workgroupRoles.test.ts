@@ -8,7 +8,7 @@ const user: User = {
     { userId: 7, workgroupId: 1, role: "Editor", workgroup: { id: 1, name: "Default" } },
     { userId: 7, workgroupId: 2, role: "Publisher", workgroup: { id: 2, name: "Reggae" } },
     { userId: 7, workgroupId: 3, workgroup: { id: 3, name: "Without role" } },
-    { userId: 7, workgroupId: 4, role: "View" },
+    { userId: 7, workgroupId: 4, role: "Reader" },
   ],
 };
 

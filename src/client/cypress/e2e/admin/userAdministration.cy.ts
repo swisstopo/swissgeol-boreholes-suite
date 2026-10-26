@@ -25,14 +25,14 @@ describe("User administration settings tests", () => {
     // sort
     sortBy("First name");
     sortBy("First name"); // clicking twice to sort descending
-    verifyRowContains("viewer", 0);
+    verifyRowContains("user_that_only", 0);
     verifyRowContains("Active", 0);
 
     // navigate away and check if sorting is still applied
     cy.dataCy("workgroups-tab").click();
     cy.contains("Blues");
     cy.dataCy("users-tab").click();
-    verifyRowContains("viewer", 0);
+    verifyRowContains("user_that_only", 0);
 
     // filter with quick filter
     cy.get(".MuiDataGrid-toolbarQuickFilter input").click();
@@ -73,7 +73,7 @@ describe("User administration settings tests", () => {
 
     // Admin user should have role publisher only
     cy.dataCy("Publisher-role-select").should("be.visible");
-    cy.dataCy("View-role-select").should("not.exist");
+    cy.dataCy("Reader-role-select").should("not.exist");
     cy.dataCy("Editor-role-select").should("not.exist");
 
     cy.dataCy("backButton").click();
@@ -111,23 +111,23 @@ describe("User administration settings tests", () => {
 
     const messageForInactiveDeletableUser = "Do you really want to delete this user? This cannot be undone.";
 
-    verifyRowContains("Active", 1); // controller
-    verifyRowWithTextCheckState("controller", false, "isAdmin");
+    verifyRowWithContentAlsoContains("reviewer", "Active");
+    verifyRowWithTextCheckState("reviewer", false, "isAdmin");
 
-    // try to delete controller from user table
+    // try to delete reviewer from user table
     cy.dataCy("delete-id-3").click();
     handlePrompt(messageForActiveNonDeletableUser, "cancel");
 
     // go to detail view and try to delete
-    clickOnRowWithText("controller");
-    cy.contains("C. user");
+    clickOnRowWithText("reviewer");
+    cy.contains("R. user");
     cy.dataCy("deleteuser-button").click();
     handlePrompt(messageForActiveNonDeletableUser, "cancel");
 
     // verify editing is enabled on active user
     cy.dataCy("is-user-admin-checkbox").children().first().should("not.have.attr", "disabled");
 
-    // inactivate controller
+    // inactivate reviewer
     cy.dataCy("inactivate-button").click();
     cy.wait("@update-user");
     cy.dataCy("is-user-admin-checkbox").children().first().should("have.attr", "disabled");
@@ -138,12 +138,12 @@ describe("User administration settings tests", () => {
     // go to users table
     cy.dataCy("backButton").click();
     waitForTableData();
-    verifyRowWithContentAlsoContains("controller", "Inactive");
-    cy.dataCy("delete-id-3").click(); // controller
+    verifyRowWithContentAlsoContains("reviewer", "Inactive");
+    cy.dataCy("delete-id-3").click(); // reviewer
     handlePrompt(messageForInactiveNonDeletableUser, "cancel");
 
-    // go to user detail and reactive controller
-    clickOnRowWithText("controller");
+    // go to user detail and reactive reviewer
+    clickOnRowWithText("reviewer");
     cy.wait("@get-user");
     cy.dataCy("activate-button").click();
 
@@ -185,13 +185,13 @@ describe("User administration settings tests", () => {
 
     cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 1); // Workgroup called "Reggae";
-    setSelect("role", 2); // "Controller";
+    setSelect("role", 2); // "Reviewer";
     cy.dataCy("add-button").click();
 
     // Add one workgroup roles to workgroup Country
     cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 4); // Workgroup called "Country";
-    setSelect("role", 0); // "View";
+    setSelect("role", 0); // "Reader";
     cy.dataCy("add-button").click();
 
     verifyRowContains("Country", 0);
@@ -202,7 +202,7 @@ describe("User administration settings tests", () => {
     verifyTableLength(3);
 
     // The second role for Reggae replaced the first one
-    verifyRowWithContentAlsoContains("Reggae", "Controller");
+    verifyRowWithContentAlsoContains("Reggae", "Reviewer");
     cy.dataCy("Editor-role-select").should("not.exist");
 
     // sort

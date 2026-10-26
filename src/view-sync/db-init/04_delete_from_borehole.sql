@@ -18,11 +18,11 @@ DELETE FROM bdms.workgroups WHERE id <> 1;
 INSERT INTO bdms.users(admin, username, firstname, lastname, subject_id)
 VALUES (false, 'Anonymous', 'Anonymous', 'Anonymous', 'sub_anonymous');
 
--- Setup VIEW permissions for anonymous user in the default workgroup and purge all other permissions.
+-- Setup READER permissions for anonymous user in the default workgroup and purge all other permissions.
 DELETE FROM bdms.users_roles WHERE true;
 INSERT INTO bdms.users_roles(user_id, role_id, workgroup_id)
 VALUES ((SELECT id FROM bdms.users WHERE subject_id = 'sub_anonymous'),
-        (SELECT id FROM bdms.roles WHERE name = 'VIEW'),
+        (SELECT id FROM bdms.roles WHERE name = 'READER'),
         (SELECT id FROM bdms.workgroups WHERE name = 'DEFAULT_VIEW'));
 
 -- Set default settings for anonymous user (e.g. "Maps displayed")

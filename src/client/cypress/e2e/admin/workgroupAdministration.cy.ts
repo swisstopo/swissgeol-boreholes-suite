@@ -17,9 +17,9 @@ describe("User administration settings tests", () => {
     verifyRowContains("Default", 2);
     verifyRowContains("100", 2);
     verifyRowContains("Active", 2);
-    verifyRowContains("View (1)", 2);
+    verifyRowContains("Reader (1)", 2);
     verifyRowContains("Editor (1)", 2);
-    verifyRowContains("Controller (1)", 2);
+    verifyRowContains("Reviewer (1)", 2);
     verifyRowContains("Publisher (4)", 2);
     verifyRowContains("Reggae", 3);
     verifyRowContains("Inactive", 3);
@@ -152,23 +152,23 @@ describe("User administration settings tests", () => {
     // Add  two users to workgroup
     cy.dataCy("adduser-button").click();
     setSelect("user", 1); // "editor user";
-    setSelect("role", 0); // "Viewer";
+    setSelect("role", 0); // "Reader";
     cy.dataCy("add-button").click();
 
     cy.dataCy("adduser-button").click();
     setSelect("user", 3); //  "publisher user";
-    setSelect("role", 2); // "Controller";
+    setSelect("role", 2); // "Reviewer";
     cy.dataCy("add-button").click();
 
-    // Assigning another role to user publisher replaces Controller
+    // Assigning another role to user publisher replaces Reviewer
     cy.dataCy("adduser-button").click();
     setSelect("user", 3); // "publisher user";
-    setSelect("role", 0); // "View";
+    setSelect("role", 0); // "Reader";
     cy.dataCy("add-button").click();
 
-    verifyRowWithContentAlsoContains("editor", "View");
-    verifyRowWithContentAlsoContains("publisher", "View");
-    cy.dataCy("Controller-role-select").should("not.exist");
+    verifyRowWithContentAlsoContains("editor", "Reader");
+    verifyRowWithContentAlsoContains("publisher", "Reader");
+    cy.dataCy("Reviewer-role-select").should("not.exist");
 
     hasPagination(false);
     verifyTableLength(2);

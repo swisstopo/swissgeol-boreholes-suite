@@ -7,7 +7,8 @@
 
 ### Changed
 - A user now has exactly one role per workgroup. Assigning a role to a user who already has one in that workgroup replaces it. Users who had several roles in a workgroup keep only the highest one, so their permissions stay the same.
-- The Validator role is removed because it granted no permissions beyond Controller. Users who were Validators are now Controllers.
+- The Validator role is removed because it granted no permissions beyond Reviewer. Users who were Validators are now Reviewers.
+- The workgroup roles View and Controller are renamed to Reader and Reviewer, so the roles are now Reader, Editor, Reviewer and Publisher. The role names stored in the database change accordingly to READER, EDITOR, REVIEWER and PUBLISHER.
 - The role of a user in a workgroup is now shown as a dropdown in the user and workgroup administration and can be changed there directly.
 
 ### Fixed

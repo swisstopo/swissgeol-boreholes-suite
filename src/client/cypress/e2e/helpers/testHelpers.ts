@@ -326,10 +326,10 @@ export const loginAsEditor = (route = "/") => {
 };
 
 /**
- * Login into the application as viewer.
+ * Login into the application as reader.
  */
-export const loginAsViewer = (route = "/") => {
-  login("viewer");
+export const loginAsReader = (route = "/") => {
+  login("reader");
   goToRouteAndAcceptTerms(route);
 };
 
