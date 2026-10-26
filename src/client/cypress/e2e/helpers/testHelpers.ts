@@ -245,6 +245,13 @@ export const login = (user: string) => {
       cy.wait("@token")
         .then(interception => (interception.response!.body as TokenResponse).access_token)
         .then(token => globalThis.localStorage.setItem("access_token", token));
+      // The consent cookie is seeded for the subject of the stored OIDC user, so the session must not
+      // be saved before the application has written that user.
+      cy.window()
+        .its("localStorage")
+        .should(storage => {
+          expect(Object.keys(storage).some(key => key.startsWith("oidc.user:"))).to.equal(true);
+        });
     },
     {
       validate() {
