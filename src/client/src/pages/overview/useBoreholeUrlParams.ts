@@ -11,6 +11,8 @@ import {
 import { SessionKeys } from "./SessionKey.ts";
 import { nullableBooleanFilterKeys } from "./sidePanelContent/filter/filterUtils.ts";
 
+const overviewPathname = "/";
+
 // Pagination & sort for borehole table
 const tableParsers = {
   page: parseAsInteger.withDefault(0),
@@ -82,6 +84,10 @@ export const useBoreholeUrlParamsState = () => {
   // No dependency array: both objects are rebuilt every render, so a dependency list would
   // never skip an update anyway.
   useEffect(() => {
+    // Navigating away makes nuqs drop its pending URL updates and re-render with the last flushed
+    // URL, before the overview unmounts. That render must not replace the state persisted on
+    // unmount. The router location still reads "/" during that render, so the browser URL decides.
+    if (globalThis.location.pathname !== overviewPathname) return;
     filterStateRef.current = filterState;
     tableStateRef.current = tableState;
   });
