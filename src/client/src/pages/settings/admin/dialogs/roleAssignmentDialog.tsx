@@ -99,14 +99,14 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
         <DialogTitle>
           <Typography variant="h4">{t(`add${entityType}Role`)}</Typography>
         </DialogTitle>
-        <DialogContent>
-          <Stack gap={2} sx={{ mt: 3 }}>
-            <FormControl data-cy={`${entityType.toLowerCase()}-formSelect`}>
-              <InputLabel id={selectLabelId}>{t(entityType)}</InputLabel>
+        <DialogContent sx={{ pb: 3 }}>
+          <Stack gap={2.5} sx={{ mt: 4 }}>
+            <FormControl size="small" sx={{ mt: 2 }} data-cy={`${entityType.toLowerCase()}-formSelect`}>
+              <InputLabel id={selectLabelId}>{t(entityType.toLowerCase())}</InputLabel>
               <Select<EntitySelectValue[]>
                 multiple
                 labelId={selectLabelId}
-                label={t(entityType)}
+                label={t(entityType.toLowerCase())}
                 name={entityType}
                 value={selectedIds}
                 onChange={handleEntityChange}
