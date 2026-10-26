@@ -156,13 +156,13 @@ describe("User administration settings tests", () => {
     cy.dataCy("add-button").click();
 
     cy.dataCy("adduser-button").click();
-    setSelect("user", 3); //  "publisher user";
+    setSelect("user", 2); //  "publisher user";
     setSelect("role", 2); // "Reviewer";
     cy.dataCy("add-button").click();
 
     // Assigning another role to user publisher replaces Reviewer
     cy.dataCy("adduser-button").click();
-    setSelect("user", 3); // "publisher user";
+    setSelect("user", 2); // "publisher user";
     setSelect("role", 0); // "Reader";
     cy.dataCy("add-button").click();
 
