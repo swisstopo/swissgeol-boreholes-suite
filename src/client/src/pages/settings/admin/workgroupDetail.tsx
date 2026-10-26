@@ -30,7 +30,7 @@ export const WorkgroupDetail: FC = () => {
     useContext(WorkgroupAdministrationContext);
   const { data: selectedWorkgroup } = useSelectedWorkgroup(id);
   const {
-    setWorkgroupRoles: { mutate: setWorkgroupRoles },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles, isPending: isSettingWorkgroupRoles },
     update: { mutate: updateWorkgroup },
   } = useWorkgroupMutations();
   const { showPrompt } = useContext(PromptContext);
@@ -109,7 +109,8 @@ export const WorkgroupDetail: FC = () => {
     params.value && (
       <RoleSelect
         value={params.value}
-        disabled={isDisabled ?? false}
+        label={`${t("role")} ${params.row.name}`}
+        disabled={(isDisabled ?? false) || isSettingWorkgroupRoles}
         onChange={role => setWorkgroupRoles([{ userId: params.row.id, workgroupId: id, role, isActive: true }])}
       />
     );

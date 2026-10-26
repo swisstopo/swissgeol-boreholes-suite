@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth/useBoreholesAuth.tsx";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { Role, Workgroup } from "./generated/types.gen";
-import { usersQueryKey } from "./user.ts";
+import { currentUserQueryKey, usersQueryKey } from "./user.ts";
 
 const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2WithApiError("workgroup", "GET");
 
@@ -83,10 +83,14 @@ export const useWorkgroupMutations = () => {
       return await setWorkgroupRoles(changes);
     },
     // Invalidating the list keys also invalidates every [key, id] query, since TanStack Query matches by prefix.
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
-      void queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
-    },
+    // The current user is refetched too, as an admin may change their own role. Returning the promise keeps
+    // the mutation pending until the refetch shows the new roles.
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] }),
+        queryClient.invalidateQueries({ queryKey: [usersQueryKey] }),
+        queryClient.invalidateQueries({ queryKey: [currentUserQueryKey] }),
+      ]),
   });
 
   const useDeleteWorkgroup = useMutation({
