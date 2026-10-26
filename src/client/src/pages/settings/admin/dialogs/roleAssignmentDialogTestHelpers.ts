@@ -7,7 +7,7 @@ export const openSelect = (dataCy: string) => {
   fireEvent.mouseDown(within(select).getByRole("combobox"));
 };
 
-export const closeMenu = () => {
+const closeMenu = () => {
   fireEvent.keyDown(screen.getByRole("listbox"), { key: "Escape" });
 };
 

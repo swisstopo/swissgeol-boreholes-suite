@@ -10,7 +10,8 @@
 - Several users can be added to a workgroup, or a user to several workgroups, in one step. The dialog lists them with checkboxes and a "Select all" option and gives all of them the chosen role.
 - A user now has exactly one role per workgroup. Assigning a role to a user who already has one in that workgroup replaces it. Users who had several roles in a workgroup keep only the highest one, so their permissions stay the same.
 - The Validator role is removed because it granted no permissions beyond Reviewer. Users who were Validators are now Reviewers.
-- The workgroup roles View and Controller are renamed to Reader and Reviewer, so the roles are now Reader, Editor, Reviewer and Publisher. The role names stored in the database change accordingly to READER, EDITOR, REVIEWER and PUBLISHER.
+- The workgroup roles View and Controller are renamed to Reader and Reviewer, so the roles are now Reader, Editor, Reviewer and Publisher. The role names stored in the database change accordingly to READER, EDITOR, REVIEWER and PUBLISHER. This is a breaking change for API clients: the role values `View`, `Controller` and `Validator` are no longer accepted or returned, so integrations must send and expect `Reader`, `Editor`, `Reviewer` and `Publisher`.
+- Setting workgroup roles through the API with an unknown role now returns 400 Bad Request, and with a user or workgroup that does not exist 404 Not Found, instead of a server error.
 - The role of a user in a workgroup is now shown as a dropdown in the user and workgroup administration and can be changed there directly.
 - The dialogs for adding users to a workgroup and workgroups to a user no longer offer users or workgroups that already have a role there. Their role is changed in the table instead.
 
