@@ -1,13 +1,14 @@
 import { ChangeEvent, FC, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, SxProps } from "@mui/material";
+import { Button, Theme } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { Plus } from "lucide-react";
 
 interface AddFileButtonProps {
   label: string;
   onFileSelect: (file: File) => Promise<void>;
   acceptedFileTypes?: string;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
 }
 
 export const AddFileButton: FC<AddFileButtonProps> = ({ label, onFileSelect, acceptedFileTypes, sx }) => {

@@ -136,7 +136,7 @@ export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps)
   const undoChange = (field: BulkEditFormField) => {
     const entryIndex = fieldsToUpdate.findIndex(([k]) => k === field.payloadKey);
     if (entryIndex !== -1) {
-      setFieldsToUpdate([...fieldsToUpdate.filter(([k]) => k !== field.payloadKey)]);
+      setFieldsToUpdate(fieldsToUpdate.filter(([k]) => k !== field.payloadKey));
       formMethods.resetField(field.fieldName);
     }
   };

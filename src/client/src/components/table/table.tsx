@@ -1,6 +1,7 @@
 import { RefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SxProps, Typography } from "@mui/material";
+import { Theme, Typography } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import {
   DataGrid,
   GridColDef,
@@ -49,7 +50,7 @@ interface TableProps<T extends GridValidRowModel> {
   showQuickFilter?: boolean;
   rowAutoHeight?: boolean;
   noRowsLabel?: string;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
 }
 
 export const Table = <T extends GridValidRowModel>({

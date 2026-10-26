@@ -1,8 +1,9 @@
 import { FC, HTMLAttributes, useContext, useState } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Autocomplete, Chip, SxProps } from "@mui/material";
+import { Autocomplete, Chip, Theme } from "@mui/material";
 import { TextField } from "@mui/material/";
+import { SystemStyleObject } from "@mui/system";
 import { CircleX } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
@@ -22,7 +23,7 @@ export interface FormMultiSelectProps {
   readonly?: boolean;
   selected?: number[];
   values?: FormMultiSelectValue[];
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   className?: string;
   renderTagLabel?: (option: FormSelectMenuItem) => string;
 }

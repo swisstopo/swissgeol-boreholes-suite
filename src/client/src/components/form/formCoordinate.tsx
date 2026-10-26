@@ -1,8 +1,9 @@
 import { ChangeEvent, ElementType, FC, useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { InputBaseComponentProps, SxProps } from "@mui/material";
+import { InputBaseComponentProps, Theme } from "@mui/material";
 import { TextField } from "@mui/material/";
+import { SystemStyleObject } from "@mui/system";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/coordinateSegmentInterfaces.ts";
@@ -43,7 +44,7 @@ interface FormCoordinateProps {
   value?: string;
   referenceSystem: ReferenceSystemKey;
   direction: Direction;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   className?: string;
   onUpdate: (referenceSystem: ReferenceSystemKey, direction: Direction, value: string) => void;
 }

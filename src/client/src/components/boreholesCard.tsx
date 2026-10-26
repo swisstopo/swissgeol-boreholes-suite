@@ -1,12 +1,13 @@
 import { FC, ReactNode } from "react";
-import { Card, CardContent, CardHeader, SxProps } from "@mui/material";
+import { Card, CardContent, CardHeader, Theme } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { theme } from "../AppTheme.ts";
 
 interface BoreholesCardProps {
   "data-cy"?: string;
   title?: string;
   action?: ReactNode;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   children?: ReactNode;
 }
 

@@ -1,7 +1,8 @@
 import { ChangeEvent, ElementType, FC, useContext, useEffect } from "react";
 import { useFormContext, useFormState, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { InputBaseComponentProps, InputProps, SxProps, TextField } from "@mui/material";
+import { InputBaseComponentProps, InputProps, TextField, Theme } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { isValid } from "date-fns";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FormInputValue, FormValueType, getFormFieldError } from "./form";
@@ -25,7 +26,7 @@ interface FormInputProps {
   multiline?: boolean;
   rows?: number;
   value?: FormInputValue;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   className?: string;
   inputProps?: InputProps;
   onUpdate?: (value: string) => void;

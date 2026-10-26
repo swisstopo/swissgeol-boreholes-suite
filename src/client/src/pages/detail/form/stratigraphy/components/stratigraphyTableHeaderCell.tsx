@@ -1,9 +1,10 @@
 import { FC } from "react";
-import { Stack, SxProps, Typography } from "@mui/material";
+import { Stack, Theme, Typography } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 
 interface HeaderCellProps {
   label: string;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
 }
 
 export const StratigraphyTableHeaderCell: FC<HeaderCellProps> = ({ label, sx }) => (

@@ -10,9 +10,10 @@ import {
   ListItemIcon,
   ListItemText,
   Popover,
-  SxProps,
   TextField,
+  Theme,
 } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { Check, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 
@@ -35,7 +36,7 @@ interface ButtonSelectProps {
   anchorOrigin?: { vertical: "top" | "center" | "bottom"; horizontal: "left" | "center" | "right" };
   transformOrigin?: { vertical: "top" | "center" | "bottom"; horizontal: "left" | "center" | "right" };
   textAlign?: "left" | "right";
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   className?: string;
   onBeforeOpen?: (proceed: () => void) => void;
 }

@@ -1,5 +1,6 @@
 import { FC, ReactNode, useRef, useState } from "react";
-import { Box, Stack, SxProps } from "@mui/material";
+import { Box, Stack, Theme } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { Trash2 } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../components/buttons/buttons.tsx";
@@ -14,7 +15,7 @@ interface StratigraphyTableLayerCellProps {
   onClick?: (index: number) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   isAutoCorrected?: boolean;
   dataCy?: string;
   resizeHandles?: ReactNode;

@@ -1,6 +1,7 @@
 import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState, WheelEvent } from "react";
 import { Stack } from "@mui/material";
-import { SxProps, Theme } from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
+import { SystemStyleObject } from "@mui/system";
 import { clamp } from "./clamp.ts";
 import { NavState } from "./navState.ts";
 import { useDragPan } from "./useDragPan.ts";
@@ -8,7 +9,7 @@ import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
 interface NavigationContainerProps {
   renderItems: (navState: NavState, setNavState: Dispatch<SetStateAction<NavState>>) => ReactNode;
-  sx?: SxProps<Theme>;
+  sx?: SystemStyleObject<Theme>;
   navState?: NavState;
   onNavStateChange?: Dispatch<SetStateAction<NavState>>;
   // Element observed for navState.height. The body row of the surrounding grid (1fr), NOT the
@@ -60,7 +61,7 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
       navState.maxContent - clampedLensSize,
     );
 
-    setNavState(prev => new NavState({ ...prev, rawLensSize: clampedLensSize, lensStart: clampedLensStart }));
+    setNavState(prev => prev.with({ rawLensSize: clampedLensSize, lensStart: clampedLensStart }));
   };
 
   useEffect(() => {
