@@ -30,7 +30,7 @@ export const UserDetail: FC = () => {
     update: { mutate: updateUser },
   } = useUserMutations();
   const {
-    setWorkgroupRoles: { mutate: setWorkgroupRoles },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles, isPending: isSettingWorkgroupRoles },
   } = useWorkgroupMutations();
 
   // Get the user's workgroups, each with the user's role in it
@@ -61,7 +61,8 @@ export const UserDetail: FC = () => {
     params.value && (
       <RoleSelect
         value={params.value}
-        disabled={isDisabled}
+        label={`${t("role")} ${params.row.name}`}
+        disabled={isDisabled || isSettingWorkgroupRoles}
         onChange={role =>
           setWorkgroupRoles([{ userId: selectedUser.id, workgroupId: params.row.id, role, isActive: true }])
         }

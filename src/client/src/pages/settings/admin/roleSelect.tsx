@@ -5,11 +5,12 @@ import { allRoles } from "./workgroupRoles.ts";
 
 interface RoleSelectProps {
   value: Role;
+  label: string;
   disabled: boolean;
   onChange: (role: Role) => void;
 }
 
-export const RoleSelect: FC<RoleSelectProps> = ({ value, disabled, onChange }) => {
+export const RoleSelect: FC<RoleSelectProps> = ({ value, label, disabled, onChange }) => {
   const handleChange = (event: SelectChangeEvent<Role>) => {
     const selectedRole = allRoles.find(option => option === event.target.value);
     if (selectedRole) onChange(selectedRole);
@@ -20,6 +21,7 @@ export const RoleSelect: FC<RoleSelectProps> = ({ value, disabled, onChange }) =
       value={value}
       size="small"
       disabled={disabled}
+      inputProps={{ "aria-label": label }}
       onChange={handleChange}
       data-cy={`${value}-role-select`}
       sx={{ minWidth: 160 }}>
