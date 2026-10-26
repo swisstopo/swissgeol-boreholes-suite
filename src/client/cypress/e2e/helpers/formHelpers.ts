@@ -157,6 +157,23 @@ export const setSelect = (fieldName: string, index: number, optionsLength?: numb
 };
 
 /**
+ * Checks options of a multiple select form element by their text and closes the dropdown.
+ * @param {string} fieldName The name of the select field.
+ * @param {string[]} optionTexts The texts of the options to check.
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const checkSelectOptions = (fieldName: string, optionTexts: string[], parent?: string) => {
+  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"]`;
+  scrollIntoView(selector);
+  openDropdown(selector);
+  optionTexts.forEach(text => {
+    cy.get('.MuiPaper-elevation [role="listbox"]').contains("li", text).click();
+  });
+  cy.focused().type("{esc}");
+  cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
+};
+
+/**
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {string?} option The option to select ("yes", "no", "not specified")
