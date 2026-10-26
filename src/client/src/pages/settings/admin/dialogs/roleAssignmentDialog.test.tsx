@@ -104,6 +104,29 @@ describe("RoleAssignmentDialog", () => {
     expect(addEntities).toHaveBeenCalledExactlyOnceWith([1, 3], "Editor");
   });
 
+  it("does not add a checked option that is no longer offered", () => {
+    const addEntities = vi.fn();
+    const { rerender } = render(dialog(true, addEntities));
+    checkOptions("user-formSelect", ["Ada Lovelace", "Grace Hopper"]);
+
+    rerender(dialog(true, addEntities, options.slice(0, 2)));
+    chooseRole("Editor");
+    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+
+    expect(addEntities).toHaveBeenCalledExactlyOnceWith([1], "Editor");
+  });
+
+  it("does not count a checked option that is no longer offered towards Select all", () => {
+    const { rerender } = render(dialog(true, vi.fn()));
+    checkOptions("user-formSelect", ["Ada Lovelace", "Grace Hopper"]);
+
+    rerender(dialog(true, vi.fn(), options.slice(0, 2)));
+    openSelect("user-formSelect");
+
+    expect(getCheckbox("selectAll").checked).toBe(false);
+    expect(getCheckbox("selectAll").dataset.indeterminate).toBe("true");
+  });
+
   it("shows no options and no Select all when there is nothing to add", () => {
     render(dialog(true, vi.fn(), []));
 
