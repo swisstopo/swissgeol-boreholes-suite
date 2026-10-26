@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, CardHeader } from "@mui/material";
 import { Check, X } from "lucide-react";
@@ -38,27 +38,11 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   const { extractionObject, setExtractionObject, setExtractionState, extractionState } = useLabelingContext();
 
   // --- State variables ---
-  const [boreholeId, setBoreholeId] = useState<number>();
   const currentReferenceSystem = formMethods.watch("originalReferenceSystemId");
 
   // --- UseCallback hooks ---
 
   // --- Utility functions ---
-  const updateFormValues = useCallback(
-    (
-      refSystem: string,
-      locationX: number | null | undefined,
-      locationY: number | null | undefined,
-      precisionX: number,
-      precisionY: number,
-    ) => {
-      const locationXString = (locationX && locationX?.toFixed(precisionX)) || "";
-      const locationYString = (locationY && locationY?.toFixed(precisionY)) || "";
-      setValuesForReferenceSystem(refSystem, locationXString, locationYString);
-    },
-    [setValuesForReferenceSystem],
-  );
-
   function getCoordinatesFromForm(referenceSystem: string, direction: Direction, value: number): Coordinates {
     const currentFieldName = referenceSystems[referenceSystem].fieldName[direction];
 
@@ -108,29 +92,6 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     // Not awaited: effects cannot be async, and the validation result is read from form state.
     void formMethods.trigger();
   }, [formMethods.trigger, currentReferenceSystem, formMethods]);
-
-  // reset form values when the borehole changes.
-  useEffect(() => {
-    const shouldUpdateCoordinates = borehole.id !== boreholeId;
-    if (shouldUpdateCoordinates) {
-      // Update form values for both reference systems
-      updateFormValues(
-        ReferenceSystemKey.LV95,
-        borehole.locationX,
-        borehole.locationY,
-        borehole.precisionLocationX ?? 0,
-        borehole.precisionLocationY ?? 0,
-      );
-      updateFormValues(
-        ReferenceSystemKey.LV03,
-        borehole.locationXLV03,
-        borehole.locationYLV03,
-        borehole.precisionLocationXLV03 ?? 0,
-        borehole.precisionLocationYLV03 ?? 0,
-      );
-      setBoreholeId(borehole.id);
-    }
-  }, [borehole, boreholeId, setValuesForReferenceSystem, editingEnabled, updateFormValues, formMethods]);
 
   useEffect(() => {
     if (extractionObject?.type === "coordinates" && extractionState === ExtractionState.success) {

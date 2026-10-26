@@ -1,4 +1,4 @@
-import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
+import { CSSProperties, FC, useCallback, useMemo, useState } from "react";
 import { Accept, FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
@@ -53,12 +53,14 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
   // Seeds the selection on mount only, so later changes to the prop are ignored. A parent that
   // has to change the selection must remount the dropzone, which the import wizard steps do.
   const [files, setFiles] = useState<File[]>(existingFiles ?? []);
-  const [error, setError] = useState<string | undefined>();
+  const translatedErrorMessage = errorMessageKey ? t(errorMessageKey) : undefined;
+  const [error, setError] = useState<string | undefined>(translatedErrorMessage);
+  const [syncedErrorMessage, setSyncedErrorMessage] = useState(translatedErrorMessage);
 
-  useEffect(() => {
-    if (!errorMessageKey) return;
-    setError(t(errorMessageKey));
-  }, [errorMessageKey, t]);
+  if (translatedErrorMessage !== syncedErrorMessage) {
+    setSyncedErrorMessage(translatedErrorMessage);
+    if (translatedErrorMessage) setError(translatedErrorMessage);
+  }
 
   const fileSizeLabel = useMemo(() => formatFileSize(maxFileSize), [maxFileSize]);
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
@@ -17,10 +17,15 @@ interface DetailSideNavProps {
 }
 
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
-  const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const id = useRequiredId();
   const { data: canManage } = useBoreholeManageable(id);
   const location = useLocation();
+  const isHydrogeologyPath = location.pathname.startsWith(`/${id}/hydrogeology`);
+  // A toggle of the hydrogeology menu applies to the location it was made on. After navigating,
+  // the menu is expanded again exactly when a hydrogeology page is shown.
+  const [hydrogeologyToggle, setHydrogeologyToggle] = useState<{ locationKey: string; isVisible: boolean }>();
+  const hydrogeologyIsVisible =
+    hydrogeologyToggle?.locationKey === location.key ? hydrogeologyToggle.isVisible : isHydrogeologyPath;
   const { t } = useTranslation();
   const ct = useCapitalizedTranslation();
   const auth = useAuth();
@@ -37,12 +42,6 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
     hasAttachments,
     hasLogRuns,
   } = useBoreholeDataAvailability(borehole);
-
-  useEffect(() => {
-    if (id !== undefined) {
-      setHydrogeologyIsVisible(location.pathname.startsWith(`/${id}/hydrogeology`));
-    }
-  }, [location, id]);
 
   if (!borehole.workflow) return null;
 
@@ -122,7 +121,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             }
             data-cy="hydrogeology-menu-item"
             onClick={() => {
-              setHydrogeologyIsVisible(!hydrogeologyIsVisible);
+              setHydrogeologyToggle({ locationKey: location.key, isVisible: !hydrogeologyIsVisible });
             }}>
             {ct("hydrogeology")}
           </SgcMenuItem>

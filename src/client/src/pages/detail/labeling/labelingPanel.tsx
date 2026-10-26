@@ -85,6 +85,18 @@ const LabelingPanel: FC = () => {
   }, [alertIsOpen, autoHideDuration, closeAlert]);
 
   const files = panelTab === PanelTab.profile ? profiles : photos;
+  // Starts as null, which no files value equals, so the first render applies the selection rules too.
+  const [syncedFiles, setSyncedFiles] = useState<typeof files | null>(null);
+
+  if (files !== syncedFiles) {
+    setSyncedFiles(files);
+    if (files?.length === 1) {
+      setSelectedAttachment(selected => selected ?? files[0]);
+    } else if (!files || files.length === 0) {
+      setSelectedAttachment(undefined);
+      setActivePage(1);
+    }
+  }
 
   const addFile = useCallback(
     async (file: File) => {
@@ -104,15 +116,6 @@ const LabelingPanel: FC = () => {
     },
     [boreholeId, reloadProfiles, panelTab, reloadPhotos, showAlert, t],
   );
-
-  useEffect(() => {
-    if (files?.length === 1) {
-      setSelectedAttachment(selected => selected ?? files[0]);
-    } else if (!files || files.length === 0) {
-      setSelectedAttachment(undefined);
-      setActivePage(1);
-    }
-  }, [files]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
   const isLoadingFiles = panelTab === PanelTab.profile ? isLoadingProfiles : isLoadingPhotos;

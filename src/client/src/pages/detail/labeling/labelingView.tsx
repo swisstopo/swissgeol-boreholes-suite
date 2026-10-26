@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import { View } from "ol";
 import { defaults as defaultControls } from "ol/control/defaults";
@@ -37,7 +37,6 @@ interface LabelingViewProps {
 }
 
 export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName, imageSize, onMapInitialized }) => {
-  const [map, setMap] = useState<Map>();
   const mapRef = useRef<Map>(null);
 
   const zoomIn = () => {
@@ -77,6 +76,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
   useEffect(() => {
     if (!image || !fileName) return;
 
+    const map = mapRef.current;
     if (map) {
       const imageLayer = map
         .getLayers()
@@ -90,7 +90,6 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
       // @ts-expect-error - Clear window reference when disposing
       window[mapDomId] = undefined;
       mapRef.current = null;
-      setMap(undefined);
     }
 
     const extent = imageSize ? [0, -imageSize.height, imageSize.width, 0] : undefined;
@@ -117,7 +116,6 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
           initMap.removeInteraction(interaction);
         }
       });
-    setMap(initMap);
 
     const imageExtent = extent ?? [0, -image.naturalHeight, image.naturalWidth, 0];
     initMap.setView(createView(imageExtent, initMap.getView()));
@@ -134,7 +132,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
     window[mapDomId] = initMap;
 
     onMapInitialized?.(initMap);
-  }, [fileName, image, imageSize, map, mapDomId, onMapInitialized]);
+  }, [fileName, image, imageSize, mapDomId, onMapInitialized]);
 
   return (
     <>

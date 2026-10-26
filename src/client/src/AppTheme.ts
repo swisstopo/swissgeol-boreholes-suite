@@ -78,8 +78,10 @@ const themePalette: AppThemePalette = {
     active: "#4F46E5",
     activeEnd: "#E53940",
     contrastText: "#ffffff",
-    secondary: "#FFD600",
+    secondary: "#FBBF24",
     secondaryTextHighlights: "rgba(255, 214, 0, 0.15)",
+    highlightBackground: "#FFFBEB",
+    highlightBorder: "#92400E",
   },
   border: {
     light: "#DFE4E9",
@@ -523,6 +525,16 @@ export const theme = createTheme({
           "&.ai .MuiOutlinedInput-notchedOutline": {
             borderColor: `${themePalette.ai.main} !important`,
             borderWidth: "3px",
+          },
+          "&.analysis-highlight .MuiInputBase-root": {
+            backgroundColor: themePalette.ai.highlightBackground,
+          },
+          "&.analysis-highlight .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${themePalette.ai.highlightBorder} !important`,
+            borderWidth: "1px",
+          },
+          "&.analysis-highlight .MuiInputLabel-root": {
+            color: `${themePalette.ai.highlightBorder} !important`,
           },
           "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline": {
             borderColor: `${themePalette.border.light} !important`,

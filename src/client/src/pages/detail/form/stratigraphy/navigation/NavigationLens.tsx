@@ -1,4 +1,4 @@
-import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useRef, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { NumericFormat } from "react-number-format";
 import { Box, Button } from "@mui/material";
@@ -44,7 +44,9 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
   const lensRef = useRef<HTMLDivElement>(null);
   useTypedResizeObserver(contentRef, entry => setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)));
 
-  useEffect(() => {
+  const [syncedContentHeights, setSyncedContentHeights] = useState(navState.contentHeights);
+  if (navState.contentHeights !== syncedContentHeights) {
+    setSyncedContentHeights(navState.contentHeights);
     setBackgroundNavState(
       prev =>
         new NavState({
@@ -52,7 +54,7 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
           contentHeights: { ...navState.contentHeights },
         }),
     );
-  }, [navState.contentHeights]);
+  }
 
   const handleDrag = (_e: DraggableEvent, data: DraggableData) => {
     const newValue = data.y / backgroundNavState.pixelPerMeter;

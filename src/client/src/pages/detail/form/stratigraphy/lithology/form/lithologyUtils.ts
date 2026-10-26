@@ -2,6 +2,7 @@ import { LithologyDescription } from "../../../../../../api/generated";
 import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
+import { ConfirmAcceptAll } from "../analysis/useConfirmModeChange.tsx";
 
 export const prepareLithologyForSubmit = (values: LithologyFormValues) => {
   values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;
@@ -125,3 +126,48 @@ export const buildLithologicalDescription = (
     description: text,
   };
 };
+
+/**
+ * The form values for a change of the consolidation mode. Only identity, depths, notes and the
+ * lithological description text survive: every attribute is scoped to one mode, so nothing is
+ * carried across even where the label is the same.
+ * @param values The current form values.
+ * @param isUnconsolidated The mode to switch to, null for "keine Angabe".
+ */
+export const buildLithologyValuesForMode = (
+  values: LithologyFormValues,
+  isUnconsolidated: boolean | null,
+): LithologyFormValues => ({
+  id: values.id,
+  stratigraphyId: values.stratigraphyId,
+  fromDepth: values.fromDepth,
+  toDepth: values.toDepth,
+  isUnconsolidated,
+  hasBedding: false,
+  lithologyDescriptions: isUnconsolidated === null ? [] : [{ id: 0, lithologyId: values.id, isFirst: true }],
+  notes: values.notes,
+  lithologicalDescription: { description: values.lithologicalDescription?.description ?? "" },
+});
+
+/**
+ * The modal's apply, gated on the analysis. Closing the modal with automatically extracted values
+ * still unaccepted asks first, because applying them cannot be undone afterwards. The analysis is
+ * not accepted here: it ends when the modal closes, so an apply that keeps the modal open, such as
+ * one that fails validation, leaves it open as well.
+ *
+ * A prompt closes right after its action returns, so a prompt the apply shows synchronously would be
+ * closed at once. The apply may only ask again after an await, as the modal's does after validating.
+ * @param hasPendingChanges Whether the analysis still waits for the user.
+ * @param apply What the modal does when there is nothing to ask about. Nothing awaits it after a
+ * confirmation, so it reports its own failures.
+ * @param confirmAcceptAll Asks before the pending values are taken over, about the mode change while it is open.
+ */
+export const buildApplyHandler =
+  (hasPendingChanges: boolean, apply: () => Promise<void> | void, confirmAcceptAll: ConfirmAcceptAll) => async () => {
+    if (!hasPendingChanges) {
+      await apply();
+      return;
+    }
+
+    confirmAcceptAll("analysisAcceptAllOnCloseConfirm", () => void apply());
+  };
