@@ -20,7 +20,7 @@ vi.mock("../../../../api/user.ts", () => ({
 }));
 
 vi.mock("../../../../api/workgroup.ts", () => ({
-  useWorkgroupMutations: () => ({ setWorkgroupRole: { mutate: vi.fn() } }),
+  useWorkgroupMutations: () => ({ setWorkgroupRoles: { mutate: vi.fn() } }),
 }));
 
 const openUserSelect = () => {
