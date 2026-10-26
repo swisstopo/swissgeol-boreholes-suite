@@ -22,7 +22,7 @@ const updateWorkgroup = async (workgroup: Workgroup) => {
 
 const deleteWorkgroup = async (id: number) => await fetchApiV2WithApiError(`workgroup/${id}`, "DELETE");
 
-export interface WorkgroupRoleChange {
+interface WorkgroupRoleChange {
   userId: number;
   workgroupId: number;
   role: Role;

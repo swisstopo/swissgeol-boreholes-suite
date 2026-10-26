@@ -227,7 +227,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
 
     /// <summary>
     /// Maps workflow statuses to the minimum role required to edit a borehole in that status.
-    /// Roles have a hierarchical relationship (Publisher > Controller > Editor > View),
+    /// Roles have a hierarchical relationship (Publisher > Reviewer > Editor > Reader),
     /// where a higher role includes all permissions of lower roles.
     ///
     /// This mapping defines which role is needed to edit a borehole based on its current workflow status:
