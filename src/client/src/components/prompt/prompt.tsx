@@ -21,7 +21,7 @@ export const Prompt = () => {
           },
         }}>
         <DialogContent sx={{ p: 0 }}>
-          <DialogContentText sx={{ p: 0 }}>{t(message)}</DialogContentText>
+          <DialogContentText sx={{ p: 0 }}>{typeof message === "string" ? t(message) : message}</DialogContentText>
           {dialogContent && <div style={{ marginBottom: "16px" }}>{dialogContent}</div>}
         </DialogContent>
         <DialogActions sx={{ pr: 0, pb: 0, pt: 2, border: "none" }}>
