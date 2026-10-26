@@ -167,7 +167,7 @@ export const checkSelectOptions = (fieldName: string, optionTexts: string[], par
   scrollIntoView(selector);
   openDropdown(selector);
   optionTexts.forEach(text => {
-    cy.get('.MuiPaper-elevation [role="listbox"]').contains("li", text).click();
+    cy.get('.MuiPaper-elevation [role="listbox"]').contains("li", text, { matchCase: false }).click();
   });
   cy.focused().type("{esc}");
   cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
