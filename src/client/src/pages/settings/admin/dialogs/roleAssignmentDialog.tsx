@@ -1,40 +1,54 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  InputLabel,
+  ListItemText,
   MenuItem,
+  Select,
+  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { Role, User, Workgroup } from "../../../../api/generated";
+import { Role } from "../../../../api/generated";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
 import { allRoles } from "../workgroupRoles.ts";
 import { EntityType } from "./entityType.ts";
 
-interface RoleAssignmentDialogProps<T> {
+export interface EntityOption {
+  id: number;
+  label: string;
+}
+
+const selectAllValue = "selectAll";
+type EntitySelectValue = number | typeof selectAllValue;
+
+interface RoleAssignmentDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  addEntity: (id: string, role: Role) => void;
+  addEntities: (ids: number[], role: Role) => void;
   entityType: EntityType;
-  entities: T[];
+  options: EntityOption[];
   entityQueryKey: string;
 }
 
-export const RoleAssignmentDialog = <T,>({
+export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
   open,
   setOpen,
-  addEntity,
+  addEntities,
   entityType,
-  entities,
+  options,
   entityQueryKey,
-}: RoleAssignmentDialogProps<T>) => {
+}) => {
   const { t } = useTranslation();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [role, setRole] = useState<Role | null>(null);
   const queryClient = useQueryClient();
 
@@ -45,34 +59,37 @@ export const RoleAssignmentDialog = <T,>({
     });
   }, [entityQueryKey, queryClient]);
 
+  const allSelected = options.length > 0 && selectedIds.length === options.length;
+  const someSelected = selectedIds.length > 0 && !allSelected;
+  const selectLabelId = `${entityType}-select-label`;
+
   const resetDialog = () => {
     setOpen(false);
-    setSelectedId(null);
+    setSelectedIds([]);
     setRole(null);
   };
 
-  const getEntityMenuItem = (entity: T) => {
-    if (entityType === EntityType.workgroup) {
-      const workgroup = entity as Workgroup;
-      return (
-        <MenuItem key={workgroup.id} value={workgroup.id}>
-          {workgroup.name}
-        </MenuItem>
-      );
-    } else {
-      const user = entity as User;
-      return (
-        <MenuItem key={user.id} value={user.id}>
-          {`${user.firstName} ${user.lastName}`}
-        </MenuItem>
-      );
+  const handleEntityChange = (event: SelectChangeEvent<EntitySelectValue[]>) => {
+    const { value } = event.target;
+    // A string value only comes from browser autofill, which this select does not offer.
+    if (typeof value === "string") return;
+    if (value.includes(selectAllValue)) {
+      setSelectedIds(allSelected ? [] : options.map(option => option.id));
+      return;
     }
+    setSelectedIds(value.filter((selected): selected is number => selected !== selectAllValue));
   };
 
+  const renderSelectedLabels = (selected: EntitySelectValue[]) =>
+    options
+      .filter(option => selected.includes(option.id))
+      .map(option => option.label)
+      .join(", ");
+
   const addRole = () => {
-    if (selectedId && role) {
+    if (selectedIds.length > 0 && role) {
       resetDialog();
-      addEntity(selectedId, role);
+      addEntities(selectedIds, role);
     }
   };
 
@@ -84,17 +101,30 @@ export const RoleAssignmentDialog = <T,>({
         </DialogTitle>
         <DialogContent>
           <Stack gap={2} sx={{ mt: 3 }}>
-            <TextField
-              select
-              label={t(entityType)}
-              name={entityType}
-              value={selectedId}
-              data-cy={`${entityType.toLowerCase()}-formSelect`}
-              onChange={event => {
-                setSelectedId(event.target.value);
-              }}>
-              {entities.map(entity => getEntityMenuItem(entity))}
-            </TextField>
+            <FormControl data-cy={`${entityType.toLowerCase()}-formSelect`}>
+              <InputLabel id={selectLabelId}>{t(entityType)}</InputLabel>
+              <Select<EntitySelectValue[]>
+                multiple
+                labelId={selectLabelId}
+                label={t(entityType)}
+                name={entityType}
+                value={selectedIds}
+                onChange={handleEntityChange}
+                renderValue={renderSelectedLabels}>
+                {options.length > 0 && (
+                  <MenuItem value={selectAllValue} data-cy="selectAll">
+                    <Checkbox checked={allSelected} indeterminate={someSelected} />
+                    <ListItemText primary={t("selectAll")} />
+                  </MenuItem>
+                )}
+                {options.map(option => (
+                  <MenuItem key={option.id} value={option.id}>
+                    <Checkbox checked={selectedIds.includes(option.id)} />
+                    <ListItemText primary={option.label} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               select
               label={t("role")}
@@ -115,7 +145,7 @@ export const RoleAssignmentDialog = <T,>({
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
             <CancelButton onClick={resetDialog} />
-            <AddButton disabled={!selectedId || !role} label="add" variant="contained" onClick={addRole} />
+            <AddButton disabled={selectedIds.length === 0 || !role} label="add" variant="contained" onClick={addRole} />
           </Stack>
         </DialogActions>
       </Stack>

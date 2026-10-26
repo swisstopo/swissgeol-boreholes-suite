@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Role, Workgroup } from "../../../../api/generated";
+import { Role } from "../../../../api/generated";
 import { useWorkgroupMutations, useWorkgroups, workgroupQueryKey } from "../../../../api/workgroup.ts";
 import { EntityType } from "./entityType.ts";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
@@ -16,19 +16,20 @@ export const AddWorkgroupRoleDialog: FC<AddWorkgroupRoleDialogProps> = ({ open, 
     setWorkgroupRoles: { mutate: setWorkgroupRoles },
   } = useWorkgroupMutations();
 
-  const addWorkgroup = (workgroupId: string, role: Role) => {
-    setWorkgroupRoles([{ userId: userId, workgroupId: Number(workgroupId), role: role, isActive: true }]);
+  const addWorkgroups = (workgroupIds: number[], role: Role) => {
+    setWorkgroupRoles(workgroupIds.map(workgroupId => ({ userId, workgroupId, role, isActive: true })));
   };
 
   if (!workgroups) return;
+  const workgroupOptions = workgroups.map(workgroup => ({ id: workgroup.id, label: workgroup.name }));
   return (
-    <RoleAssignmentDialog<Workgroup>
+    <RoleAssignmentDialog
       open={open}
       setOpen={setOpen}
       entityQueryKey={workgroupQueryKey}
-      addEntity={addWorkgroup}
+      addEntities={addWorkgroups}
       entityType={EntityType.workgroup}
-      entities={workgroups}
+      options={workgroupOptions}
     />
   );
 };
