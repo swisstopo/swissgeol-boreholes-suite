@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Checkbox,
@@ -59,8 +59,13 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
     });
   }, [entityQueryKey, queryClient]);
 
-  const allSelected = options.length > 0 && selectedIds.length === options.length;
-  const someSelected = selectedIds.length > 0 && !allSelected;
+  // A refetch can drop an option while it is selected; adding it anyway would overwrite a role assigned elsewhere.
+  const addableSelectedIds = useMemo(
+    () => selectedIds.filter(id => options.some(option => option.id === id)),
+    [selectedIds, options],
+  );
+  const allSelected = options.length > 0 && addableSelectedIds.length === options.length;
+  const someSelected = addableSelectedIds.length > 0 && !allSelected;
   const selectLabelId = `${entityType}-select-label`;
 
   const resetDialog = () => {
@@ -87,9 +92,9 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
       .join(", ");
 
   const addRole = () => {
-    if (selectedIds.length > 0 && role) {
+    if (addableSelectedIds.length > 0 && role) {
       resetDialog();
-      addEntities(selectedIds, role);
+      addEntities(addableSelectedIds, role);
     }
   };
 
@@ -108,7 +113,7 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
                 labelId={selectLabelId}
                 label={t(entityType.toLowerCase())}
                 name={entityType}
-                value={selectedIds}
+                value={addableSelectedIds}
                 onChange={handleEntityChange}
                 renderValue={renderSelectedLabels}>
                 {options.length > 0 && (
@@ -119,7 +124,7 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
                 )}
                 {options.map(option => (
                   <MenuItem key={option.id} value={option.id}>
-                    <Checkbox checked={selectedIds.includes(option.id)} />
+                    <Checkbox checked={addableSelectedIds.includes(option.id)} />
                     <ListItemText primary={option.label} />
                   </MenuItem>
                 ))}
@@ -145,7 +150,12 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
             <CancelButton onClick={resetDialog} />
-            <AddButton disabled={selectedIds.length === 0 || !role} label="add" variant="contained" onClick={addRole} />
+            <AddButton
+              disabled={addableSelectedIds.length === 0 || !role}
+              label="add"
+              variant="contained"
+              onClick={addRole}
+            />
           </Stack>
         </DialogActions>
       </Stack>
