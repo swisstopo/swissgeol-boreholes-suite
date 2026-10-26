@@ -9,7 +9,7 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers";
-import { setSelect } from "../helpers/formHelpers";
+import { checkSelectOptions, openDropdown, setSelect } from "../helpers/formHelpers";
 import { goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers";
 
 describe("User administration settings tests", () => {
@@ -177,56 +177,55 @@ describe("User administration settings tests", () => {
     goToRouteAndAcceptTerms("/setting/user/7");
     waitForTableData();
 
-    // Add a role to workgroup Reggae, then replace it
+    // Only active workgroups in which the user has no role are offered
     cy.dataCy("addworkgroup-button").click();
-    setSelect("workgroup", 1); // Workgroup called "Reggae";
+    openDropdown('[data-cy="workgroup-formSelect"]');
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .should("contain", "Stage And Screen")
+      .and("not.contain", "Default")
+      .and("not.contain", "Reggae")
+      .and("not.contain", "Country");
+    cy.focused().type("{esc}");
+
+    // Add a role to workgroup Stage And Screen, then change it in the table
+    checkSelectOptions("workgroup", ["Stage And Screen"]);
     setSelect("role", 1); // "Editor";
     cy.dataCy("add-button").click();
+    cy.wait("@set_workgroup_roles");
 
-    cy.dataCy("addworkgroup-button").click();
-    setSelect("workgroup", 1); // Workgroup called "Reggae";
-    setSelect("role", 2); // "Reviewer";
-    cy.dataCy("add-button").click();
+    cy.contains(".MuiDataGrid-row", "Stage And Screen")
+      .find('[data-cy="Editor-role-select"] [role="combobox"]')
+      .click();
+    cy.get('.MuiPaper-elevation [role="listbox"]').contains("li", "Reviewer").click();
+    cy.wait("@set_workgroup_roles");
 
-    // Add one workgroup roles to workgroup Country
-    cy.dataCy("addworkgroup-button").click();
-    setSelect("workgroup", 4); // Workgroup called "Country";
-    setSelect("role", 0); // "Reader";
-    cy.dataCy("add-button").click();
-
-    verifyRowContains("Country", 0);
-    verifyRowContains("Default", 1);
-    verifyRowContains("Reggae", 2);
+    verifyRowContains("Default", 0);
+    verifyRowContains("Stage And Screen", 1);
+    verifyRowWithContentAlsoContains("Stage And Screen", "Reviewer");
+    cy.dataCy("Editor-role-select").should("not.exist");
 
     hasPagination(false);
-    verifyTableLength(3);
-
-    // The second role for Reggae replaced the first one
-    verifyRowWithContentAlsoContains("Reggae", "Reviewer");
-    cy.dataCy("Editor-role-select").should("not.exist");
+    verifyTableLength(2);
 
     // sort
     sortBy("Workgroup");
-    verifyRowContains("Reggae", 0);
+    verifyRowContains("Stage And Screen", 0);
     verifyRowContains("Default", 1);
-    verifyRowContains("Country", 2);
 
-    // delete the workgroup role for Reggae Workgroup
-    cy.dataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Reggae"?', "delete");
+    // cancel delete the workgroup role for Stage And Screen Workgroup
+    cy.dataCy("delete-id-4").click();
+    handlePrompt(
+      'Do you want to remove the role of the user "u. be_deleted" in the workgroup "Stage And Screen"?',
+      "cancel",
+    );
     verifyTableLength(2);
-    verifyRowContains("Default", 0);
-    verifyRowContains("Country", 1);
 
-    // cancel delete the workgroup role for Country Workgroup
-    cy.dataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Country"?', "cancel");
-    verifyTableLength(2);
-    verifyRowContains("Default", 0);
-    verifyRowContains("Country", 1);
-
-    cy.dataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Country"?', "delete");
+    // delete the workgroup role for Stage And Screen Workgroup
+    cy.dataCy("delete-id-4").click();
+    handlePrompt(
+      'Do you want to remove the role of the user "u. be_deleted" in the workgroup "Stage And Screen"?',
+      "delete",
+    );
     verifyRowContains("Default", 0);
     verifyTableLength(1);
   });
