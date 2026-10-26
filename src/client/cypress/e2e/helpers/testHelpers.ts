@@ -314,6 +314,8 @@ export const goToDetailRouteAndAcceptTerms = (route: string) => {
 
 export const goToRouteAndAcceptTerms = (route: string, onBeforeLoad?: (win: Cypress.AUTWindow) => void) => {
   visitWithConsent(route, onBeforeLoad);
+  // The disclaimer replaces the application once the user is loaded, so wait until one of them is shown.
+  cy.get('[data-cy="accept-button"], [data-cy="app-header"]').should("exist");
   clickAcceptIfPresent();
 };
 
