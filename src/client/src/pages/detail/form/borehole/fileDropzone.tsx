@@ -1,26 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { CSSProperties, FC, useCallback, useEffect, useState } from "react";
+import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Chip } from "@mui/material";
-import PropTypes from "prop-types";
 import { theme } from "../../../../AppTheme.ts";
 
-/**
- * A component that provides a file dropzone for selecting and uploading files.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {Function} props.onHandleFileChange - A callback function to handle file changes. The function receives the files array as an argument.
- * @param {string} props.defaultText - The default text to display in the dropzone.
- * @param {number} props.maxFilesToSelectAtOnce - The maximum number of files that can be selected at once.
- * @param {number} props.maxFilesToUpload - The maximum number of files that can be uploaded.
- * @param {Array<string>} props.acceptedFileTypes - The list of accepted file types.
- * @param {boolean} props.isDisabled - Whether the dropzone is disabled.
- * @param {string} props.dataCy - The data-cy attribute for testing.
- * @param {Function} props.setFileType - A react SetStateAction to set the file type.
- * @returns {JSX.Element} The rendered FileDropzone component.
- */
-export const FileDropzone = props => {
+interface FileDropzoneProps {
+  onHandleFileChange: (files: File[]) => void; // Receives the files array whenever it changes.
+  defaultText: string; // The default text to display in the dropzone.
+  maxFilesToSelectAtOnce: number;
+  maxFilesToUpload: number;
+  acceptedFileTypes: string[];
+  isDisabled: boolean;
+  dataCy?: string;
+  setFileType?: (fileType: string) => void;
+}
+
+// A component that provides a file dropzone for selecting and uploading files.
+export const FileDropzone: FC<FileDropzoneProps> = props => {
   const {
     onHandleFileChange,
     defaultText,
@@ -32,7 +28,7 @@ export const FileDropzone = props => {
     setFileType,
   } = props;
   const { t } = useTranslation();
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<File[]>([]);
   const [dropZoneText, setDropZoneText] = useState(t(defaultText));
   const defaultDropzoneTextColor = isDisabled ? theme.palette.action.disabled : theme.palette.primary.main;
   const [dropZoneTextColor, setDropZoneTextColor] = useState(defaultDropzoneTextColor);
@@ -45,7 +41,7 @@ export const FileDropzone = props => {
 
   // Set the color of the dropzone text to red and display an error message
   const showErrorMsg = useCallback(
-    errorCode => {
+    (errorCode: string) => {
       setDropZoneTextColor("red");
       switch (errorCode) {
         case "file-invalid-type":
@@ -81,7 +77,7 @@ export const FileDropzone = props => {
 
   // Is called when the selected/dropped files are accepted
   const onDropAccepted = useCallback(
-    acceptedFiles => {
+    (acceptedFiles: File[]) => {
       // Check if the max number of files to upload would be exceeded with the new selected files.
       // If not, add the new files to the files array.
       if (files.length + acceptedFiles.length > maxFilesToUpload) {
@@ -115,7 +111,7 @@ export const FileDropzone = props => {
   );
 
   // Is called when an accepted file is removed.
-  const removeFile = fileToRemove => {
+  const removeFile = (fileToRemove: File) => {
     setFiles(prevFiles => prevFiles.filter(file => file !== fileToRemove));
     if (setFileType) {
       setFileType("");
@@ -124,7 +120,7 @@ export const FileDropzone = props => {
 
   // Is called when the selected/dropped files are rejected
   const onDropRejected = useCallback(
-    fileRejections => {
+    (fileRejections: FileRejection[]) => {
       const errorCode = fileRejections[0].errors[0].code;
       showErrorMsg(errorCode);
     },
@@ -139,16 +135,16 @@ export const FileDropzone = props => {
     maxSize: 209715200,
     accept:
       acceptedFileTypes.length > 0
-        ? acceptedFileTypes.reduce((acc, type) => {
+        ? acceptedFileTypes.reduce<Record<string, string[]>>((acc, type) => {
             acc[type] = [];
             return acc;
           }, {})
-        : "*",
+        : undefined,
     noClick: isDisabled,
     noKeyboard: isDisabled,
   });
 
-  const dropZoneStyles = {
+  const dropZoneStyles: CSSProperties = {
     flex: 1,
     display: "flex",
     padding: "15px",
@@ -219,15 +215,4 @@ export const FileDropzone = props => {
       </Box>
     </div>
   );
-};
-
-FileDropzone.propTypes = {
-  onHandleFileChange: PropTypes.func.isRequired,
-  defaultText: PropTypes.string.isRequired,
-  maxFilesToSelectAtOnce: PropTypes.number.isRequired,
-  maxFilesToUpload: PropTypes.number.isRequired,
-  acceptedFileTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isDisabled: PropTypes.bool.isRequired,
-  dataCy: PropTypes.string,
-  setFileType: PropTypes.func,
 };

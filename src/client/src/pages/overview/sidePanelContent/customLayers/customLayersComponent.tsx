@@ -1,10 +1,22 @@
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Checkbox, FormControlLabel, IconButton, Stack } from "@mui/material";
 import { CircleArrowDown, CircleArrowUp } from "lucide-react";
 import { theme } from "../../../../AppTheme.ts";
+import { LayerConfig } from "../../../../components/map/map.ts";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 
-export const CustomLayersComponent = ({
+interface CustomLayersComponentProps {
+  isFetching: boolean;
+  layers: Record<string, LayerConfig>;
+  moveDown: (layer: LayerConfig) => void;
+  moveUp: (layer: LayerConfig) => void;
+  toggleDrawer: (open: boolean) => void;
+  saveTransparency: (layer: LayerConfig) => void;
+  toggleVisibility: (layer: LayerConfig) => void;
+}
+
+export const CustomLayersComponent: FC<CustomLayersComponentProps> = ({
   isFetching,
   layers,
   moveDown,

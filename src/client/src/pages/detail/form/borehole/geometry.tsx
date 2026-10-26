@@ -1,26 +1,27 @@
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } from "@mui/material/";
-import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.ts";
+import { Card, CardActions, CardContent, CircularProgress, Grid2, Typography } from "@mui/material/";
+import {
+  BoreholeGeometryPoint,
+  useBoreholeGeometry,
+  useBoreholeGeometryMutations,
+} from "../../../../api/fetchApiV2.ts";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
-import GeometryChartNE from "./geometryChartNE.jsx";
-import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ.jsx";
-import GeometryImport from "./geometryImport.jsx";
-import GeometryTable from "./geometryTable.jsx";
+import GeometryChartNE from "./geometryChartNE.tsx";
+import { GeometryChartZE, GeometryChartZInteractive, GeometryChartZN } from "./geometryChartZ.tsx";
+import GeometryImport from "./geometryImport.tsx";
+import GeometryTable from "./geometryTable.tsx";
 
-/**
- * Renders the Geometry panel.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {number} props.measuredDepth - The measured depth to show a perfectly vertical geometry if no geometry is set.
- * @returns {JSX.Element} The rendered Geometry component.
- */
-const Geometry = ({ measuredDepth }) => {
+interface GeometryProps {
+  measuredDepth: number; // The measured depth to show a perfectly vertical geometry if no geometry is set.
+}
+
+// Renders the Geometry panel.
+const Geometry: FC<GeometryProps> = ({ measuredDepth }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const boreholeId = useRequiredId();
@@ -28,16 +29,16 @@ const Geometry = ({ measuredDepth }) => {
   const resetTabStatus = useResetTabStatus(["geometry"]);
 
   const {
-    delete: { mutate: deleteBoreholeGeometry, isLoading: isDeletingBoreholeGeometry },
+    delete: { mutate: deleteBoreholeGeometry, isPending: isDeletingBoreholeGeometry },
   } = useBoreholeGeometryMutations();
 
-  const defaultData = [
+  const defaultData: BoreholeGeometryPoint[] = [
     { md: 0, x: 0, y: 0, z: 0 },
     { md: measuredDepth, x: 0, y: 0, z: measuredDepth },
   ];
 
   const noDataLoaded = !data;
-  const anyDataPresent = data?.length > 0;
+  const anyDataPresent = (data?.length ?? 0) > 0;
 
   return (
     <>
@@ -50,16 +51,16 @@ const Geometry = ({ measuredDepth }) => {
           <Typography variant="fullPageMessage">{t("msgBoreholeGeometryEmpty")}</Typography>
         </FullPageCentered>
       ) : (
-        <Grid container spacing={2}>
+        <Grid2 container spacing={2}>
           {editingEnabled && (
             <>
-              <Grid item xs={12}>
+              <Grid2 size={12}>
                 <GeometryImport boreholeId={boreholeId} />
-              </Grid>
+              </Grid2>
             </>
           )}
           {editingEnabled && anyDataPresent && (
-            <Grid item xs={12}>
+            <Grid2 size={12}>
               <Card>
                 <CardActions>
                   <DeleteButton
@@ -74,7 +75,7 @@ const Geometry = ({ measuredDepth }) => {
                   />
                 </CardActions>
               </Card>
-            </Grid>
+            </Grid2>
           )}
           {(!editingEnabled || anyDataPresent) &&
             [
@@ -84,13 +85,13 @@ const Geometry = ({ measuredDepth }) => {
               <GeometryChartZInteractive key="" data={data.length === 0 ? defaultData : data} />,
               <GeometryTable key="" data={data.length === 0 ? defaultData : data} />,
             ].map((panel, i) => (
-              <Grid key={i} item xs={12} lg={6} xl={4}>
+              <Grid2 key={i} size={{ xs: 12, lg: 6, xl: 4 }}>
                 <Card>
                   <CardContent>{panel}</CardContent>
                 </Card>
-              </Grid>
+              </Grid2>
             ))}
-        </Grid>
+        </Grid2>
       )}
     </>
   );

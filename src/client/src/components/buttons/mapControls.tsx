@@ -1,9 +1,17 @@
+import { FC } from "react";
 import { Button, ButtonGroup, Stack } from "@mui/material";
 import { Minus, Plus, RotateCwSquare } from "lucide-react";
 import Circle from "../../assets/icons/circle.svg?react";
 import { theme } from "../../AppTheme";
 
-const MapControls = ({ onZoomIn, onZoomOut, onFitToExtent, onRotate }) => {
+interface MapControlsProps {
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+  onFitToExtent: () => void;
+  onRotate: (() => void) | undefined;
+}
+
+const MapControls: FC<MapControlsProps> = ({ onZoomIn, onZoomOut, onFitToExtent, onRotate }) => {
   return (
     <Stack
       sx={{

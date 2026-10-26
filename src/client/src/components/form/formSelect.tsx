@@ -19,7 +19,7 @@ export interface FormSelectProps {
   readonly?: boolean;
   ignoreOverlow?: boolean;
   selected?: number | boolean | null;
-  values?: FormSelectValue[];
+  values?: FormSelectValue<number | string>[];
   sx?: SystemStyleObject<Theme>;
   className?: string;
   onUpdate?: (value: number | string | boolean | null) => void;
@@ -27,14 +27,14 @@ export interface FormSelectProps {
   rules?: Omit<RegisterOptions, "disabled" | "setValueAs" | "valueAsNumber" | "valueAsDate">;
 }
 
-export interface FormSelectValue {
-  key: number;
+export interface FormSelectValue<Key extends number | string = number> {
+  key: Key;
   name: string;
 }
 
 export interface FormSelectMenuItem {
   key: number | string;
-  value?: number | null;
+  value?: number | string | null;
   label: string;
   italic?: boolean;
 }

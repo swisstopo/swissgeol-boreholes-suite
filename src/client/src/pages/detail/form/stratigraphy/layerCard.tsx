@@ -1,4 +1,4 @@
-import { memo, useCallback, useContext, useMemo, useState } from "react";
+import { ElementType, FC, memo, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import {
@@ -9,14 +9,16 @@ import {
   CircularProgress,
   ClickAwayListener,
   IconButton,
+  InputBaseComponentProps,
   Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
-import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
-import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.js";
+import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
+import { CodelistOption, HeaderColumn, HierarchicalLayer } from "./hierarchicalDataEditProfile.tsx";
 
 const State = Object.freeze({
   EDITING: Symbol("Editing"),
@@ -25,26 +27,47 @@ const State = Object.freeze({
   DISPLAY: Symbol("Display"),
 });
 
-const LayerCard = ({
+// A selected hierarchy level. Empty when the path names an unknown codelist, null past the end of the path.
+type Selection = Partial<CodelistOption> | null;
+
+const isCodelistOption = (selection: Selection): selection is CodelistOption => !!selection?.label;
+
+// The layer's codelist id is stored under a property whose name depends on the hierarchy (dataProperty).
+const getLayerValue = (layer: HierarchicalLayer, dataProperty: string): unknown =>
+  (layer as unknown as Record<string, unknown>)[dataProperty];
+
+interface LayerCardProps {
+  updateLayer: (layer: HierarchicalLayer) => void;
+  deleteLayer: (id: number) => void;
+  dataProperty: string; // string that specifies the property of the layer object that contains the data
+  layer: HierarchicalLayer; // the layer object to display
+  minFromDepth: number; // minimal allowed fromDepth
+  maxToDepth: number; // maximal allowed toDepth
+  header: HeaderColumn[]; // header object with titles and visibility
+  options: CodelistOption[][] | null; // options array for every level of the hierarchy
+  height: number; // height of the layerCard in pixels
+}
+
+const LayerCard: FC<LayerCardProps> = ({
   updateLayer,
   deleteLayer,
-  dataProperty, // string that specifies the property of the layer object that contains the data
-  layer, // {id, fromDepth, toDepth, [dataProperty]}: the layer object to display
-  minFromDepth, // number: minimal allowed fromDepth
-  maxToDepth, // number: maximal allowed toDepth
-  header, // Array<{title, isVisible}>: header object with titles and visibility
-  options, // options array for every level of the hierarchy
-  height, // height of the layerCard in pixels
+  dataProperty,
+  layer,
+  minFromDepth,
+  maxToDepth,
+  header,
+  options,
+  height,
 }) => {
   const { t } = useTranslation();
 
   const [fromDepthErrorMessage, setFromDepthErrorMessage] = useState("");
   const [toDepthErrorMessage, setToDepthErrorMessage] = useState("");
-  const [fromDepth, setFromDepth] = useState(null);
-  const [toDepth, setToDepth] = useState(null);
+  const [fromDepth, setFromDepth] = useState<number | null>(null);
+  const [toDepth, setToDepth] = useState<number | null>(null);
   const { editingEnabled } = useContext(EditStateContext);
   const defaultCardState = editingEnabled ? State.EDITABLE : State.DISPLAY;
-  const [cardState, setCardState] = useState(defaultCardState);
+  const [cardState, setCardState] = useState<symbol>(defaultCardState);
   const [syncedEditingEnabled, setSyncedEditingEnabled] = useState(editingEnabled);
 
   if (editingEnabled !== syncedEditingEnabled) {
@@ -62,19 +85,20 @@ const LayerCard = ({
 
   // create selection array from the path of the selected codelist
   // one element for each header
-  const selection = useMemo(() => {
+  const selection = useMemo<Selection[] | null>(() => {
     if (layer && options) {
-      let selectedOption;
+      let selectedOption: CodelistOption | undefined;
       search: for (const optionsAtLevel of options) {
         for (const option of optionsAtLevel) {
-          if (option.id === layer[dataProperty]) {
+          if (option.id === getLayerValue(layer, dataProperty)) {
             selectedOption = option;
             break search;
           }
         }
       }
 
-      const selections = selectedOption?.path?.map((id, index) => options[index].find(c => c.id === id) ?? {}) ?? [];
+      const selections: Partial<CodelistOption>[] =
+        selectedOption?.path?.map((id, index) => options[index].find(c => c.id === id) ?? {}) ?? [];
 
       // set color of empty path elements to the closest defined parent
       let currentColor = selections[0]?.color ?? null;
@@ -83,33 +107,34 @@ const LayerCard = ({
           currentColor = selection.color ?? currentColor;
           return selection;
         }
-        return { ...selection, color: currentColor };
+        return { ...selection, color: currentColor ?? undefined };
       });
 
       // make selection array the same length as header array
-      return coloredSelections
-        .slice(0, header.length)
-        .concat(Array.from({ length: Math.max(0, header.length - selections.length) }, () => null));
+      return [
+        ...coloredSelections.slice(0, header.length),
+        ...Array.from({ length: Math.max(0, header.length - selections.length) }, () => null),
+      ];
     }
     return null;
   }, [dataProperty, header.length, layer, options]);
 
   const handleFromDepth = useCallback(
-    newFromDepth => {
+    (newFromDepth: number | null) => {
       setFromDepth(newFromDepth);
       const errors = [];
-      if (newFromDepth === "" || Number.isNaN(newFromDepth)) {
+      if (newFromDepth === null || Number.isNaN(newFromDepth)) {
         errors.push(t("errorInvalidEntry"));
       } else {
         if (newFromDepth < minFromDepth) {
           errors.push(t("errorFromDepthTooLow"));
         }
-        if (newFromDepth >= layer.toDepth) {
+        if (newFromDepth >= (layer.toDepth ?? 0)) {
           errors.push(t("errorFromDepthGreaterThanToDepth"));
         }
       }
       setFromDepthErrorMessage(errors.join(", "));
-      if (errors.length === 0 && layer.fromDepth !== +newFromDepth) {
+      if (errors.length === 0 && layer.fromDepth !== newFromDepth) {
         updateLayer({
           ...layer,
           fromDepth: newFromDepth,
@@ -121,21 +146,21 @@ const LayerCard = ({
   );
 
   const handleToDepth = useCallback(
-    newToDepth => {
+    (newToDepth: number | null) => {
       setToDepth(newToDepth);
       const errors = [];
-      if (newToDepth === "" || Number.isNaN(newToDepth)) {
+      if (newToDepth === null || Number.isNaN(newToDepth)) {
         errors.push(t("errorInvalidEntry"));
       } else {
         if (newToDepth > maxToDepth) {
           errors.push(t("errorToDepthTooHigh"));
         }
-        if (newToDepth <= layer.fromDepth) {
+        if (newToDepth <= (layer.fromDepth ?? 0)) {
           errors.push(t("errorFromDepthGreaterThanToDepth"));
         }
       }
       setToDepthErrorMessage(errors.join(", "));
-      if (errors.length === 0 && layer.toDepth !== +newToDepth) {
+      if (errors.length === 0 && layer.toDepth !== newToDepth) {
         updateLayer({
           ...layer,
           toDepth: newToDepth,
@@ -145,19 +170,20 @@ const LayerCard = ({
     [layer, maxToDepth, updateLayer, t],
   );
 
-  const handleLayerChange = (newValue, index) => {
-    if (!newValue) {
+  const handleLayerChange = (newValue: CodelistOption | null, index: number) => {
+    let value: Selection = newValue;
+    if (!value) {
       // layer at index was deleted, search defined parent value
       let i = index - 1;
-      while (i >= 0 && !selection[i]?.id) {
+      while (i >= 0 && !selection?.[i]?.id) {
         i--;
       }
-      newValue = selection[i] ?? null;
+      value = selection?.[i] ?? null;
     }
 
     updateLayer({
       ...layer,
-      [dataProperty]: newValue?.id ?? null,
+      [dataProperty]: value?.id ?? null,
     });
   };
 
@@ -197,8 +223,8 @@ const LayerCard = ({
           sx={{ margin: "0.8rem 0" }}
           label={t("fromDepth")}
           defaultValue={fromDepth ?? layer.fromDepth}
-          InputProps={{
-            inputComponent: NumericFormatWithThousandSeparator,
+          slotProps={{
+            input: { inputComponent: NumericFormatWithThousandSeparator as ElementType<InputBaseComponentProps> },
           }}
           error={!!fromDepthErrorMessage}
           helperText={fromDepthErrorMessage}
@@ -261,8 +287,8 @@ const LayerCard = ({
           sx={{ margin: "0.8rem 0" }}
           label={t("toDepth")}
           defaultValue={toDepth ?? layer.toDepth}
-          InputProps={{
-            inputComponent: NumericFormatWithThousandSeparator,
+          slotProps={{
+            input: { inputComponent: NumericFormatWithThousandSeparator as ElementType<InputBaseComponentProps> },
           }}
           error={!!toDepthErrorMessage}
           helperText={toDepthErrorMessage}
@@ -278,7 +304,7 @@ const LayerCard = ({
       data-cy="layer-card"
       sx={{
         display: "grid",
-        gridTemplateColumns: `repeat(${header.reduce((acc, h) => acc + h.isVisible, 0)},minmax(0,1fr))`,
+        gridTemplateColumns: `repeat(${header.reduce((acc, h) => acc + Number(h.isVisible), 0)},minmax(0,1fr))`,
         justifyItems: "stretch",
         alignItems: "stretch",
         borderLeft: `1px solid ${theme.palette.border.light}`,
@@ -309,9 +335,9 @@ const LayerCard = ({
                   sx={{ flex: "1" }}
                   size="small"
                   options={options[index] ?? []}
-                  value={selectedItem?.label ? selectedItem : null}
+                  value={isCodelistOption(selectedItem) ? selectedItem : null}
                   renderInput={params => <TextField {...params} label={t(header[index].title)} />}
-                  onChange={(event, value) => handleLayerChange(value, index)}
+                  onChange={(_event, value) => handleLayerChange(value, index)}
                 />
               )}
             </Box>

@@ -16,8 +16,8 @@ vi.mock("../../../../components/codelist.ts", () => ({
   useCodelistSchema: () => ({ data: undefined }),
 }));
 
-vi.mock("./layerCard.jsx", () => ({ default: () => null }));
-vi.mock("./layerGap.jsx", () => ({ default: () => null }));
+vi.mock("./layerCard.tsx", () => ({ default: () => null }));
+vi.mock("./layerGap.tsx", () => ({ default: () => null }));
 
 const createWrapper = () => {
   const queryClient = new QueryClient({

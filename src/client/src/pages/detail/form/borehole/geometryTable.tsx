@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CircularProgress,
@@ -9,10 +10,15 @@ import {
   TableRow,
   Typography,
 } from "@mui/material/";
-import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
+import { BoreholeGeometryPoint } from "../../../../api/fetchApiV2.ts";
+import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 
-const GeometryTable = ({ data }) => {
+interface GeometryTableProps {
+  data: BoreholeGeometryPoint[] | undefined;
+}
+
+const GeometryTable: FC<GeometryTableProps> = ({ data }) => {
   const { t } = useTranslation();
 
   return (
@@ -38,8 +44,11 @@ const GeometryTable = ({ data }) => {
             <TableBody>
               {data.map((element, index) => (
                 <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                  {/* Object.keys only returns keys of the element, so the lookup cannot miss. */}
                   {Object.keys(element).map(key => (
-                    <TableCell key={key}>{formatNumberForDisplay(element[key])}</TableCell>
+                    <TableCell key={key}>
+                      {formatNumberForDisplay(element[key as keyof BoreholeGeometryPoint])}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))}
