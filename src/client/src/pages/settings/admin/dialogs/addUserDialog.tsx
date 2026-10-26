@@ -14,11 +14,11 @@ interface AddUserDialogProps {
 export const AddUserDialog: FC<AddUserDialogProps> = ({ open, setOpen, workgroupId }) => {
   const { data: users } = useUsers();
   const {
-    setWorkgroupRole: { mutate: setWorkgroupRole },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles },
   } = useWorkgroupMutations();
 
   const addUser = (userId: string, role: Role) => {
-    setWorkgroupRole({ userId: Number(userId), workgroupId: workgroupId, role: role, isActive: true });
+    setWorkgroupRoles([{ userId: Number(userId), workgroupId: workgroupId, role: role, isActive: true }]);
   };
 
   if (!users) return;

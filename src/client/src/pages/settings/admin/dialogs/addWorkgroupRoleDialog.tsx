@@ -13,11 +13,11 @@ interface AddWorkgroupRoleDialogProps {
 export const AddWorkgroupRoleDialog: FC<AddWorkgroupRoleDialogProps> = ({ open, setOpen, userId }) => {
   const { data: workgroups } = useWorkgroups();
   const {
-    setWorkgroupRole: { mutate: setWorkgroupRole },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles },
   } = useWorkgroupMutations();
 
   const addWorkgroup = (workgroupId: string, role: Role) => {
-    setWorkgroupRole({ userId: userId, workgroupId: Number(workgroupId), role: role, isActive: true });
+    setWorkgroupRoles([{ userId: userId, workgroupId: Number(workgroupId), role: role, isActive: true }]);
   };
 
   if (!workgroups) return;

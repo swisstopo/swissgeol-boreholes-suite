@@ -30,7 +30,7 @@ export const UserDetail: FC = () => {
     update: { mutate: updateUser },
   } = useUserMutations();
   const {
-    setWorkgroupRole: { mutate: setWorkgroupRole },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles },
   } = useWorkgroupMutations();
 
   // Get the user's workgroups, each with the user's role in it
@@ -63,7 +63,7 @@ export const UserDetail: FC = () => {
         value={params.value}
         disabled={isDisabled}
         onChange={role =>
-          setWorkgroupRole({ userId: selectedUser.id, workgroupId: params.row.id, role, isActive: true })
+          setWorkgroupRoles([{ userId: selectedUser.id, workgroupId: params.row.id, role, isActive: true }])
         }
       />
     );
@@ -84,12 +84,14 @@ export const UserDetail: FC = () => {
         variant: "contained",
         action: () => {
           if (!selectedUser) return;
-          setWorkgroupRole({
-            userId: selectedUser.id,
-            workgroupId: userWorkgroup.id,
-            role: userWorkgroup.role,
-            isActive: false,
-          });
+          setWorkgroupRoles([
+            {
+              userId: selectedUser.id,
+              workgroupId: userWorkgroup.id,
+              role: userWorkgroup.role,
+              isActive: false,
+            },
+          ]);
         },
       },
     ]);
