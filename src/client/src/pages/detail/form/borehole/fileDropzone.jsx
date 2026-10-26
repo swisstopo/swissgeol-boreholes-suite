@@ -34,12 +34,14 @@ export const FileDropzone = props => {
   const { t } = useTranslation();
   const [files, setFiles] = useState([]);
   const [dropZoneText, setDropZoneText] = useState(t(defaultText));
-  const [dropZoneTextColor, setDropZoneTextColor] = useState(null);
   const defaultDropzoneTextColor = isDisabled ? theme.palette.action.disabled : theme.palette.primary.main;
+  const [dropZoneTextColor, setDropZoneTextColor] = useState(defaultDropzoneTextColor);
+  const [syncedDefaultDropzoneTextColor, setSyncedDefaultDropzoneTextColor] = useState(defaultDropzoneTextColor);
 
-  useEffect(() => {
+  if (defaultDropzoneTextColor !== syncedDefaultDropzoneTextColor) {
+    setSyncedDefaultDropzoneTextColor(defaultDropzoneTextColor);
     setDropZoneTextColor(defaultDropzoneTextColor);
-  }, [defaultDropzoneTextColor]);
+  }
 
   // Set the color of the dropzone text to red and display an error message
   const showErrorMsg = useCallback(

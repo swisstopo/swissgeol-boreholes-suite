@@ -7,6 +7,7 @@ export const AlertBanner = () => {
   return (
     alertContext.alertIsOpen && (
       <Snackbar
+        key={alertContext.alertId}
         open={alertContext.alertIsOpen}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         autoHideDuration={alertContext.autoHideDuration}

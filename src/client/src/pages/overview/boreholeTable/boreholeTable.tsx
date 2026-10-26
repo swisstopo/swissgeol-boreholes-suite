@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, Dispatch, FC, SetStateAction, Suspense, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress } from "@mui/material";
 import { Box } from "@mui/system";
@@ -65,22 +65,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const auth = useAuth();
   const firstRender = useRef(true);
   const scrollPositionRef = useRef<Partial<GridScrollParams>>({ top: 0, left: 0 });
-  const [filteredIds, setFilteredIds] = useState<number[]>([]);
-
-  // This useEffect makes sure that the table selection model is only updated when the
-  // selectableBoreholeIds have changed and not whenever the boreholes change,
-  // which also happens on every pagination and order event (server side pagination/ordering).
-  useEffect(() => {
-    if (selectableBoreholeIds && filteredIds) {
-      const a = new Set(selectableBoreholeIds);
-      const b = new Set(filteredIds);
-      if (a.size !== b.size || selectableBoreholeIds.some(id => !b.has(id))) {
-        setFilteredIds(selectableBoreholeIds);
-        setSelectionModel([]);
-      }
-    }
-  }, [selectableBoreholeIds, filteredIds, setSelectionModel]);
-
   const renderHeaderCheckbox = useCallback(
     (params: GridColumnHeaderParams<BoreholeListItem>) => {
       const handleHeaderCheckboxClick = (event: ChangeEvent<HTMLInputElement>) => {

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
@@ -11,7 +11,6 @@ import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../..
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
-import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 
 interface BottomBarProps {
@@ -32,16 +31,19 @@ const BottomBar = ({
   setIsExporting,
 }: BottomBarProps) => {
   const { t } = useTranslation();
-  const { showPrompt, promptIsOpen } = useContext(PromptContext);
+  const { showPrompt } = useContext(PromptContext);
   const { bottomDrawerOpen, setBottomDrawerOpen } = useBoreholeUrlParams();
-  const { currentWorkgroupId } = useUserWorkgroups();
   const { data: user } = useCurrentUser();
   const userIsEditor = isEditorUser(user);
   const auth = useAuth();
-  const [copyPromptOpen, setCopyPromptOpen] = useState(false);
+  // The prompt keeps the actions it was opened with, while the workgroup can still change inside it.
+  // The copy action therefore calls the latest handler, which copies into the selected workgroup.
+  const onCopyBoreholeRef = useRef(onCopyBorehole);
+  useEffect(() => {
+    onCopyBoreholeRef.current = onCopyBorehole;
+  });
 
-  const showCopyPromptForSelectedWorkgroup = useCallback(() => {
-    setCopyPromptOpen(true);
+  const showCopyPrompt = () => {
     showPrompt(
       "selectWorkgroupToCreateCopy",
       [
@@ -52,18 +54,12 @@ const BottomBar = ({
           label: "copy",
           icon: <CopyIcon />,
           variant: "contained",
-          action: onCopyBorehole,
+          action: () => onCopyBoreholeRef.current(),
         },
       ],
       <WorkgroupSelect sx={{ pt: 6, pb: 3 }} />,
     );
-  }, [onCopyBorehole, showPrompt]);
-
-  //Ensures prompt content with the WorkgroupSelect is updated when a workgroup is selected.
-  useEffect(() => {
-    if (promptIsOpen && copyPromptOpen) showCopyPromptForSelectedWorkgroup();
-    if (!promptIsOpen) setCopyPromptOpen(false);
-  }, [copyPromptOpen, promptIsOpen, showCopyPromptForSelectedWorkgroup, currentWorkgroupId]);
+  };
 
   const showPromptExportMoreThan100 = (callback: () => void) => {
     showPrompt("exportMoreThan100", [
@@ -123,7 +119,7 @@ const BottomBar = ({
             />
           )}
           {selectionModel.length === 1 && showAllTableActions && (
-            <CopyButton color="secondary" onClick={() => showCopyPromptForSelectedWorkgroup()} />
+            <CopyButton color="secondary" onClick={showCopyPrompt} />
           )}
           {showAllTableActions && <BulkEditButton label={"bulkEditing"} onClick={onBulkEdit} />}
           <ExportButton label={"export"} onClick={() => onExportMultiple()} />

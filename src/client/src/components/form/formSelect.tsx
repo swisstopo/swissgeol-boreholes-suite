@@ -1,10 +1,13 @@
-import { FC, HTMLAttributes, useContext } from "react";
+import { FC, HTMLAttributes, useContext, useState } from "react";
 import { Controller, RegisterOptions, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
+import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
+import { useFieldAnalysis } from "./fieldAnalysis/fieldAnalysisContext.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
+import { SelectPopupIcon } from "./selectPopupIcon.tsx";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 export interface FormSelectProps {
@@ -55,6 +58,7 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { editingEnabled } = useContext(EditStateContext);
   const isReadOnly = readonly ?? !editingEnabled;
   const { labelWithTooltip } = useLabelOverflow(label);
+  const analysis = useFieldAnalysis(fieldName);
 
   // Synchronize Autocomplete with react hook form state
   // useWatch is untyped because the form itself is, so the assertion states the shape this
@@ -63,6 +67,11 @@ export const FormSelect: FC<FormSelectProps> = ({
     control,
     name: fieldName,
   }) as number | null | undefined;
+  const autocompleteKey = `${fieldName}-${fieldValue ?? "empty"}`;
+
+  // A value change remounts the Autocomplete through its key, which can close the popup without calling
+  // onClose. Remembering which instance was opened keeps the popup icon's tooltip in sync after that.
+  const [openPopupKey, setOpenPopupKey] = useState<string | null>(null);
 
   const menuItems: FormSelectMenuItem[] = [];
 
@@ -116,7 +125,7 @@ export const FormSelect: FC<FormSelectProps> = ({
         // Display FormSelect as Autocomplete when editable
         return (
           <Autocomplete
-            key={`${fieldName}-${fieldValue ?? "empty"}`}
+            key={autocompleteKey}
             sx={{ flex: "1", ...sx }}
             options={menuItems}
             getOptionLabel={option => option.label}
@@ -136,19 +145,37 @@ export const FormSelect: FC<FormSelectProps> = ({
                 if (onUpdate) onUpdate(newValue?.key ?? null);
               }
             }}
-            renderInput={params => {
+            renderInput={({ InputProps, ...params }) => {
+              const baseLabel = ignoreOverlow ? translatedLabel : labelWithTooltip;
               return (
                 <TextField
                   {...params}
-                  label={ignoreOverlow ? translatedLabel : labelWithTooltip}
+                  label={
+                    analysis && translatedLabel ? (
+                      <FieldAnalysisLabel label={baseLabel} change={analysis.change} />
+                    ) : (
+                      baseLabel
+                    )
+                  }
                   required={required}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message ? t(fieldState.error.message) : ""}
                   sx={{ ...sx, ...getFieldBorderColor(isReadOnly), backgroundColor: theme.palette.background.default }}
-                  className={className}
+                  className={`${className ?? ""}${analysis ? " analysis-highlight" : ""}`}
                   data-cy={fieldName + "-formSelect"}
                   disabled={disabled}
                   inputRef={field.ref}
+                  slotProps={{
+                    input: {
+                      ...InputProps,
+                      endAdornment: (
+                        <>
+                          {analysis && <FieldAnalysisResetButton fieldName={fieldName} onReset={analysis.reset} />}
+                          {InputProps.endAdornment}
+                        </>
+                      ),
+                    },
+                  }}
                 />
               );
             }}
@@ -161,6 +188,12 @@ export const FormSelect: FC<FormSelectProps> = ({
               );
             }}
             disabled={disabled}
+            onOpen={() => setOpenPopupKey(autocompleteKey)}
+            onClose={() => setOpenPopupKey(null)}
+            openText={t("open")}
+            closeText={t("close")}
+            popupIcon={<SelectPopupIcon open={openPopupKey === autocompleteKey} />}
+            slotProps={{ popupIndicator: { title: undefined, sx: { color: "primary.main" } } }}
             // Typescript quirk: By asserting "true as boolean", MUI's Autocomplete component allows null for the value type.
             // A boolean-typed constant does not work here, because TypeScript narrows it back to the literal true.
             // oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- the assertion widens the literal type

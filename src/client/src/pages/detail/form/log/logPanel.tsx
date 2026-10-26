@@ -53,9 +53,19 @@ export const LogPanel: FC = () => {
   } = useContext(SaveContext);
   const { showPrompt } = useContext(PromptContext);
   const showApiErrorAlert = useApiErrorAlert();
-  const { data: logRuns = [], isLoading } = useLogsByBoreholeId(boreholeId);
+  const { data: fetchedLogRuns, isLoading } = useLogsByBoreholeId(boreholeId);
+  const logRuns = useMemo(() => fetchedLogRuns ?? [], [fetchedLogRuns]);
   const setCachedLogRuns = useSetCachedLogRuns(boreholeId);
-  const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
+  const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>(() => toTrackedRuns(logRuns));
+  const [syncedLogRuns, setSyncedLogRuns] = useState(logRuns);
+
+  if (logRuns !== syncedLogRuns) {
+    setSyncedLogRuns(logRuns);
+    // Saving a new run creates it before its files are sent, and creating it makes the server's
+    // runs be read again. Taking them while the panel still holds files waiting to be sent would
+    // drop those files and mark what is left unchanged, leaving nothing to save a second time.
+    setTmpLogRuns(prev => (hasUnsavedWork(prev) ? prev : toTrackedRuns(logRuns)));
+  }
   const lastReportedAt = useRef(0);
   const lastReportedFile = useRef(0);
   const runningSave = useRef<AbortController | null>(null);
@@ -298,13 +308,6 @@ export const LogPanel: FC = () => {
       unMount();
     };
   }, [onReset, onSave, registerResetHandler, registerSaveHandler, unMount]);
-
-  useEffect(() => {
-    // Saving a new run creates it before its files are sent, and creating it makes the server's
-    // runs be read again. Taking them while the panel still holds files waiting to be sent would
-    // drop those files and mark what is left unchanged, leaving nothing to save a second time.
-    setTmpLogRuns(prev => (hasUnsavedWork(prev) ? prev : toTrackedRuns(logRuns)));
-  }, [logRuns]);
 
   if (isLoading) {
     return (

@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useLocation } from "react-router";
 import { ErrorResponse } from "../../api/errorClasses.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
@@ -16,8 +15,7 @@ import { ImportPanel } from "./sidePanelContent/importer/importPanel.tsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
 export const OverviewPage = () => {
-  const [sideDrawerOpen, setSideDrawerOpen] = useState<boolean>(false);
-  const location = useLocation();
+  const [sideDrawerOpen, setSideDrawerOpen] = useState(false);
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
@@ -46,11 +44,6 @@ export const OverviewPage = () => {
     newBorehole: <NewBoreholePanel toggleDrawer={toggleSideDrawer} />,
     customLayers: <CustomLayersPanel toggleDrawer={toggleSideDrawer} />,
   };
-
-  useEffect(() => {
-    // Close the side drawer when the route changes
-    setSideDrawerOpen(false);
-  }, [location.pathname]);
 
   return (
     <>

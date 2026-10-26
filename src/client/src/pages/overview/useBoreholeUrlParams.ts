@@ -172,7 +172,7 @@ export const useBoreholeUrlParamsState = () => {
     });
   }, []);
 
-  const restoreTableParamsFromSession = useCallback(() => {
+  const restoreTableParamsFromSession = useCallback(async () => {
     const updates: Record<string, unknown> = {};
     (Object.keys(tableParsers) as Array<keyof typeof tableParsers>).forEach(key => {
       const raw = sessionStorage.getItem(SessionKeys[key as keyof typeof SessionKeys]);
@@ -182,11 +182,11 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      void setQueryState(updates);
+      await setQueryState(updates);
     }
   }, [setQueryState]);
 
-  const restoreFilterParamsFromSession = useCallback(() => {
+  const restoreFilterParamsFromSession = useCallback(async () => {
     // URL takes precedence over session: if ANY filter is already set via the URL,
     // skip restoring filter values from sessionStorage entirely.
     const hasUrlFilter = Object.values(filterStateRef.current).some(v => v !== null);
@@ -202,11 +202,11 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      void setQueryState(updates);
+      await setQueryState(updates);
     }
   }, [setQueryState]);
 
-  const restoreMapParamsFromSession = useCallback(() => {
+  const restoreMapParamsFromSession = useCallback(async () => {
     const updates: Record<string, unknown> = {};
     (Object.keys(mapParsers) as Array<keyof typeof mapParsers>).forEach(key => {
       const raw = sessionStorage.getItem(SessionKeys[key as keyof typeof SessionKeys]);
@@ -216,7 +216,7 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      void setQueryState(updates);
+      await setQueryState(updates);
     }
   }, [setQueryState]);
 

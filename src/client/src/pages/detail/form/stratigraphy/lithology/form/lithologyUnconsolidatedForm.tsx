@@ -1,4 +1,5 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useMemo } from "react";
+import { useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Divider, Stack, TextField, Typography } from "@mui/material";
 import { Codelist, LithologyDescription } from "../../../../../../api/generated";
@@ -11,7 +12,7 @@ import {
   FormDomainMultiSelect,
   FormDomainSelect,
 } from "../../../../../../components/form/form.ts";
-import { Lithology, LithologyDescriptionEditForm, LithologyEditForm } from "../../stratigraphy.ts";
+import { LithologyDescriptionEditForm, LithologyEditForm } from "../../stratigraphy.ts";
 import { useLithologyDescriptionShareSync } from "../useLithologyDescriptionShareSync.ts";
 import { LithologyDescriptionForm } from "./lithologyDescriptionForm.tsx";
 
@@ -142,7 +143,6 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
   const { t } = useTranslation();
   const { data: lithologyUnconMain } = useCodelistSchema("lithology_uncon_main");
   const { data: lithologyUnconSecondary } = useCodelistSchema("lithology_uncon_secondary");
-  const [enCode, setEnCode] = useState("");
   const { watch } = formMethods;
   const hasBedding = watch("hasBedding");
   useLithologyDescriptionShareSync(formMethods);
@@ -165,50 +165,35 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
     return undefined;
   };
 
-  const buildLithologyUnconEnCode = useCallback(
-    (values: Lithology) => {
-      let enCode = "";
-      const descriptions: LithologyDescription[] | null | undefined = values.lithologyDescriptions;
-      if (descriptions && descriptions.length > 0) {
-        enCode = descriptions
-          ?.map(description => {
-            const codes = [];
-            // Main
-            const mainCode = getCode(
+  const lithologyDescriptions = useWatch({ control: formMethods.control, name: "lithologyDescriptions" });
+
+  const enCode = useMemo(() => {
+    let enCode = "";
+    const descriptions: LithologyDescription[] | null | undefined = lithologyDescriptions;
+    if (descriptions && descriptions.length > 0) {
+      enCode = descriptions
+        ?.map(description => {
+          const codes = [];
+          // Main
+          const mainCode = getCode(description, "lithologyUnconMain", "lithologyUnconMainId", lithologyUnconMain ?? []);
+          if (mainCode) codes.push(mainCode);
+          // 2-6
+          for (let i = 2; i <= 6; i++) {
+            const code = getCode(
               description,
-              "lithologyUnconMain",
-              "lithologyUnconMainId",
-              lithologyUnconMain ?? [],
+              `lithologyUncon${i}`,
+              `lithologyUncon${i}Id`,
+              lithologyUnconSecondary ?? [],
             );
-            if (mainCode) codes.push(mainCode);
-            // 2-6
-            for (let i = 2; i <= 6; i++) {
-              const code = getCode(
-                description,
-                `lithologyUncon${i}`,
-                `lithologyUncon${i}Id`,
-                lithologyUnconSecondary ?? [],
-              );
-              if (code) codes.push(code);
-            }
-            return codes.join("-");
-          })
-          .filter(c => c.length > 0)
-          .join(" / ");
-      }
-      setEnCode(enCode);
-    },
-    [lithologyUnconMain, lithologyUnconSecondary],
-  );
-
-  useEffect(() => {
-    const values = formMethods.getValues();
-    buildLithologyUnconEnCode(values);
-
-    formMethods.watch(values => {
-      buildLithologyUnconEnCode(values as Lithology);
-    });
-  }, [buildLithologyUnconEnCode, formMethods]);
+            if (code) codes.push(code);
+          }
+          return codes.join("-");
+        })
+        .filter(c => c.length > 0)
+        .join(" / ");
+    }
+    return enCode;
+  }, [lithologyDescriptions, lithologyUnconMain, lithologyUnconSecondary]);
 
   return (
     <>

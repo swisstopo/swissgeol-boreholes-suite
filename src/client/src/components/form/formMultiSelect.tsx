@@ -1,13 +1,16 @@
-import { FC, HTMLAttributes, useContext } from "react";
+import { FC, HTMLAttributes, useContext, useState } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Chip, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { CircleX } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
+import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
+import { useFieldAnalysis } from "./fieldAnalysis/fieldAnalysisContext.tsx";
 import { getFormFieldError } from "./form";
 import { FormSelectMenuItem } from "./formSelect.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
+import { SelectPopupIcon } from "./selectPopupIcon.tsx";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 export interface FormMultiSelectProps {
@@ -46,6 +49,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   const { formState, register, setValue, control } = useFormContext();
   const { editingEnabled } = useContext(EditStateContext);
   const { labelWithTooltip } = useLabelOverflow(label);
+  const analysis = useFieldAnalysis(fieldName);
   const isReadOnly = readonly ?? !editingEnabled;
 
   // Synchronize Autocomplete with react hook form state. useWatch is untyped because the form
@@ -54,6 +58,11 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
     control,
     name: fieldName,
   }) as number[] | undefined;
+  const autocompleteKey = `${fieldName}-${fieldValue ? fieldValue.join("-") : "empty"}`;
+
+  // Selecting a value remounts the Autocomplete through its key, which closes the popup without calling
+  // onClose. Remembering which instance was opened keeps the popup icon's tooltip in sync after that.
+  const [openPopupKey, setOpenPopupKey] = useState<string | null>(null);
 
   const formFieldError = getFormFieldError(fieldName, formState.errors);
 
@@ -90,7 +99,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
             {Array.isArray(values) && values.length > 0 ? (
               <Autocomplete
                 sx={{ ...(isReadOnly ? readonlyStyles : {}), flex: "1" }}
-                key={`${fieldName}-${fieldValue ? fieldValue.join("-") : "empty"}`}
+                key={autocompleteKey}
                 multiple
                 options={menuItems}
                 disableCloseOnSelect
@@ -128,17 +137,34 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                     );
                   });
                 }}
-                renderInput={params => (
+                renderInput={({ InputProps, ...params }) => (
                   <TextField
                     {...params}
-                    label={labelWithTooltip}
+                    label={
+                      analysis ? (
+                        <FieldAnalysisLabel label={labelWithTooltip} change={analysis.change} />
+                      ) : (
+                        labelWithTooltip
+                      )
+                    }
                     required={required}
                     error={!!formFieldError}
                     helperText={formFieldError?.message ? t(formFieldError.message) : ""}
                     sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
-                    className={className}
+                    className={`${className ?? ""}${analysis ? " analysis-highlight" : ""}`}
                     data-cy={fieldName + "-formMultiSelect"}
                     disabled={disabled}
+                    slotProps={{
+                      input: {
+                        ...InputProps,
+                        endAdornment: (
+                          <>
+                            {analysis && <FieldAnalysisResetButton fieldName={fieldName} onReset={analysis.reset} />}
+                            {InputProps.endAdornment}
+                          </>
+                        ),
+                      },
+                    }}
                   />
                 )}
                 renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
@@ -150,6 +176,17 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                   );
                 }}
                 disabled={disabled}
+                onOpen={() => setOpenPopupKey(autocompleteKey)}
+                onClose={() => setOpenPopupKey(null)}
+                openText={t("open")}
+                closeText={t("close")}
+                popupIcon={<SelectPopupIcon open={openPopupKey === autocompleteKey} />}
+                slotProps={{
+                  popupIndicator: { title: undefined, sx: { color: "primary.main" } },
+                  clearIndicator: { sx: { color: "primary.main" } },
+                }}
+                // The analysis reset button takes the place of the clear button.
+                disableClearable={!!analysis}
               />
             ) : (
               <TextField

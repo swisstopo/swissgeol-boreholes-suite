@@ -10,6 +10,7 @@ export interface AlertContextInterface {
   severity?: AlertColor;
   autoHideDuration?: number;
   variant?: AlertVariant;
+  alertId?: number;
 }
 
 export interface AlertOptions {
