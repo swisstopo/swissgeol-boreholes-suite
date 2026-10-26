@@ -209,6 +209,12 @@ public class WorkgroupController : ControllerBase
                 return BadRequest();
             }
 
+            var invalidRequestResult = await ValidateRoleChangesAsync(userWorkgroupRoles).ConfigureAwait(false);
+            if (invalidRequestResult is not null)
+            {
+                return invalidRequestResult;
+            }
+
             foreach (var userWorkgroupRole in userWorkgroupRoles)
             {
                 var existingRole = await context.UserWorkgroupRoles
@@ -246,5 +252,36 @@ public class WorkgroupController : ControllerBase
             logger.LogError(e, message);
             return Problem(message);
         }
+    }
+
+    /// <summary>
+    /// Rejects role changes with an unknown role, or for a user or workgroup that does not exist,
+    /// so they fail with a client error instead of a foreign key violation. The role is parsed from
+    /// JSON that also accepts plain numbers, so an out-of-range value can reach this point.
+    /// </summary>
+    /// <returns>The error result, or <c>null</c> if all role changes are valid.</returns>
+    private async Task<IActionResult?> ValidateRoleChangesAsync(UserWorkgroupRole[] userWorkgroupRoles)
+    {
+        var unknownRoles = userWorkgroupRoles.Select(r => r.Role).Where(role => !Enum.IsDefined(role)).Distinct().ToList();
+        if (unknownRoles.Count > 0)
+        {
+            return BadRequest($"Unknown role(s): {string.Join(", ", unknownRoles)}.");
+        }
+
+        var userIds = userWorkgroupRoles.Select(r => r.UserId).Distinct().ToList();
+        var existingUserCount = await context.Users.CountAsync(u => userIds.Contains(u.Id)).ConfigureAwait(false);
+        if (existingUserCount != userIds.Count)
+        {
+            return NotFound();
+        }
+
+        var workgroupIds = userWorkgroupRoles.Select(r => r.WorkgroupId).Distinct().ToList();
+        var existingWorkgroupCount = await context.Workgroups.CountAsync(w => workgroupIds.Contains(w.Id)).ConfigureAwait(false);
+        if (existingWorkgroupCount != workgroupIds.Count)
+        {
+            return NotFound();
+        }
+
+        return null;
     }
 }

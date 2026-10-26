@@ -342,6 +342,46 @@ public class WorkgroupControllerTest
         Times.Once);
     }
 
+    [TestMethod]
+    public async Task SetRolesWithoutRolesReturnsBadRequest()
+    {
+        var setRolesResult = await workgroupController.SetRolesAsync([]);
+        ActionResultAssert.IsBadRequest(setRolesResult);
+    }
+
+    [TestMethod]
+    public async Task SetRolesWithUnknownRoleReturnsBadRequest()
+    {
+        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == "editor");
+
+        var setRolesResult = await workgroupController.SetRolesAsync(
+            [new UserWorkgroupRole { UserId = user.Id, WorkgroupId = 1, Role = (Role)4, IsActive = true }]);
+
+        ActionResultAssert.IsBadRequest(setRolesResult);
+        var roles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.UserId == user.Id && r.WorkgroupId == 1).ToListAsync();
+        Assert.IsTrue(roles.All(r => r.Role != (Role)4));
+    }
+
+    [TestMethod]
+    public async Task SetRolesForInexistentUserReturnsNotFound()
+    {
+        var setRolesResult = await workgroupController.SetRolesAsync(
+            [new UserWorkgroupRole { UserId = int.MaxValue, WorkgroupId = 1, Role = Role.Editor, IsActive = true }]);
+
+        ActionResultAssert.IsNotFound(setRolesResult);
+    }
+
+    [TestMethod]
+    public async Task SetRolesForInexistentWorkgroupReturnsNotFound()
+    {
+        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == "editor");
+
+        var setRolesResult = await workgroupController.SetRolesAsync(
+            [new UserWorkgroupRole { UserId = user.Id, WorkgroupId = int.MaxValue, Role = Role.Editor, IsActive = true }]);
+
+        ActionResultAssert.IsNotFound(setRolesResult);
+    }
+
     private UserWorkgroupRole CreateUserWorkgroupRole(User user, Workgroup workgroup, Role role, bool? isActive) =>
         new UserWorkgroupRole { UserId = user.Id, WorkgroupId = workgroup.Id, Role = role, IsActive = isActive };
 }
