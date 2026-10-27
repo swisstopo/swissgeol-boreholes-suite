@@ -14,7 +14,7 @@ app:
 
 dataextraction:
   # -- The tag name of the Docker image tag to be deployed (updated by the bump-service workflow)
-  version: v1.0.162
+  version: 1.2.0-dev62
 
 ocr:
   # -- The tag name of the Docker image tag to be deployed (updated by the bump-service workflow)
