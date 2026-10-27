@@ -75,7 +75,7 @@ const endIfResolved = (state: AnalysisState): AnalysisState => (isResolved(state
 
 /**
  * The classification of a run, or undefined once the run was discarded. The request then either
- * rejects with the abort or, like the stand-in classification, completes regardless.
+ * rejects with the abort or, when the response arrived before the abort, completes regardless.
  */
 const classifyUnlessDiscarded = async (
   classify: (variables: ClassifyVariables) => Promise<ClassifyResponse>,
