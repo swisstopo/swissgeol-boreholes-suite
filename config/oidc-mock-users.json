@@ -74,13 +74,13 @@
     ]
   },
   {
-    "SubjectId": "sub_viewer",
-    "Username": "viewer",
+    "SubjectId": "sub_reader",
+    "Username": "reader",
     "Password": "swissforages",
     "Claims": [
       {
         "Type": "name",
-        "Value": "Viewer User",
+        "Value": "Reader User",
         "ValueType": "string"
       },
       {
@@ -90,12 +90,12 @@
       },
       {
         "Type": "given_name",
-        "Value": "Viewer",
+        "Value": "Reader",
         "ValueType": "string"
       },
       {
         "Type": "email",
-        "Value": "viewer.user@local.dev",
+        "Value": "reader.user@local.dev",
         "ValueType": "string"
       },
       {

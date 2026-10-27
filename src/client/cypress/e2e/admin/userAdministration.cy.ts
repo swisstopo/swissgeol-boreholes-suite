@@ -20,19 +20,19 @@ describe("User administration settings tests", () => {
     verifyRowWithContentAlsoContains("Admin", "Active");
     verifyRowWithContentAlsoContains("Admin", "admin.user@local.dev");
     hasPagination(false);
-    verifyTableLength(8);
+    verifyTableLength(7);
 
     // sort
     sortBy("First name");
     sortBy("First name"); // clicking twice to sort descending
-    verifyRowContains("viewer", 0);
+    verifyRowContains("user_that_only", 0);
     verifyRowContains("Active", 0);
 
     // navigate away and check if sorting is still applied
     cy.dataCy("workgroups-tab").click();
     cy.contains("Blues");
     cy.dataCy("users-tab").click();
-    verifyRowContains("viewer", 0);
+    verifyRowContains("user_that_only", 0);
 
     // filter with quick filter
     cy.get(".MuiDataGrid-toolbarQuickFilter input").click();
@@ -58,7 +58,7 @@ describe("User administration settings tests", () => {
     verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
     // Editor user should have role editor
-    cy.dataCy("Editor-chip").should("be.visible");
+    cy.dataCy("Editor-role-select").should("be.visible");
 
     cy.dataCy("backButton").click();
     waitForTableData();
@@ -71,12 +71,10 @@ describe("User administration settings tests", () => {
     verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
 
-    // Admin user should have roles view, editor, controller, validator, publisher
-    cy.dataCy("View-chip").should("be.visible");
-    cy.dataCy("Editor-chip").should("be.visible");
-    cy.dataCy("Controller-chip").should("be.visible");
-    cy.dataCy("Validator-chip").should("be.visible");
-    cy.dataCy("Publisher-chip").should("be.visible");
+    // Admin user should have role publisher only
+    cy.dataCy("Publisher-role-select").should("be.visible");
+    cy.dataCy("Reader-role-select").should("not.exist");
+    cy.dataCy("Editor-role-select").should("not.exist");
 
     cy.dataCy("backButton").click();
     waitForTableData();
@@ -113,23 +111,23 @@ describe("User administration settings tests", () => {
 
     const messageForInactiveDeletableUser = "Do you really want to delete this user? This cannot be undone.";
 
-    verifyRowContains("Active", 1); // controller
-    verifyRowWithTextCheckState("controller", false, "isAdmin");
+    verifyRowWithContentAlsoContains("reviewer", "Active");
+    verifyRowWithTextCheckState("reviewer", false, "isAdmin");
 
-    // try to delete controller from user table
+    // try to delete reviewer from user table
     cy.dataCy("delete-id-3").click();
     handlePrompt(messageForActiveNonDeletableUser, "cancel");
 
     // go to detail view and try to delete
-    clickOnRowWithText("controller");
-    cy.contains("C. user");
+    clickOnRowWithText("reviewer");
+    cy.contains("R. user");
     cy.dataCy("deleteuser-button").click();
     handlePrompt(messageForActiveNonDeletableUser, "cancel");
 
     // verify editing is enabled on active user
     cy.dataCy("is-user-admin-checkbox").children().first().should("not.have.attr", "disabled");
 
-    // inactivate controller
+    // inactivate reviewer
     cy.dataCy("inactivate-button").click();
     cy.wait("@update-user");
     cy.dataCy("is-user-admin-checkbox").children().first().should("have.attr", "disabled");
@@ -140,12 +138,12 @@ describe("User administration settings tests", () => {
     // go to users table
     cy.dataCy("backButton").click();
     waitForTableData();
-    verifyRowWithContentAlsoContains("controller", "Inactive");
-    cy.dataCy("delete-id-3").click(); // controller
+    verifyRowWithContentAlsoContains("reviewer", "Inactive");
+    cy.dataCy("delete-id-3").click(); // reviewer
     handlePrompt(messageForInactiveNonDeletableUser, "cancel");
 
-    // go to user detail and reactive controller
-    clickOnRowWithText("controller");
+    // go to user detail and reactive reviewer
+    clickOnRowWithText("reviewer");
     cy.wait("@get-user");
     cy.dataCy("activate-button").click();
 
@@ -179,7 +177,7 @@ describe("User administration settings tests", () => {
     goToRouteAndAcceptTerms("/setting/user/7");
     waitForTableData();
 
-    // Add two workgroup roles to workgroup Reggae
+    // Add a role to workgroup Reggae, then replace it
     cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 1); // Workgroup called "Reggae";
     setSelect("role", 1); // "Editor";
@@ -187,13 +185,13 @@ describe("User administration settings tests", () => {
 
     cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 1); // Workgroup called "Reggae";
-    setSelect("role", 2); // "Controller";
+    setSelect("role", 2); // "Reviewer";
     cy.dataCy("add-button").click();
 
     // Add one workgroup roles to workgroup Country
     cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 4); // Workgroup called "Country";
-    setSelect("role", 0); // "View";
+    setSelect("role", 0); // "Reader";
     cy.dataCy("add-button").click();
 
     verifyRowContains("Country", 0);
@@ -203,28 +201,32 @@ describe("User administration settings tests", () => {
     hasPagination(false);
     verifyTableLength(3);
 
+    // The second role for Reggae replaced the first one
+    verifyRowWithContentAlsoContains("Reggae", "Reviewer");
+    cy.dataCy("Editor-role-select").should("not.exist");
+
     // sort
     sortBy("Workgroup");
     verifyRowContains("Reggae", 0);
     verifyRowContains("Default", 1);
     verifyRowContains("Country", 2);
 
-    // delete all workgroup roles for Reggae Workgroup
+    // delete the workgroup role for Reggae Workgroup
     cy.dataCy("delete-id-2").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Reggae"?', "delete");
+    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Reggae"?', "delete");
     verifyTableLength(2);
     verifyRowContains("Default", 0);
     verifyRowContains("Country", 1);
 
-    // cancel delete all workgroup roles for Country Workgroup
+    // cancel delete the workgroup role for Country Workgroup
     cy.dataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "cancel");
+    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Country"?', "cancel");
     verifyTableLength(2);
     verifyRowContains("Default", 0);
     verifyRowContains("Country", 1);
 
     cy.dataCy("delete-id-5").click();
-    handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "delete");
+    handlePrompt('Do you want to remove the role of the user "u. be_deleted" in the workgroup "Country"?', "delete");
     verifyRowContains("Default", 0);
     verifyTableLength(1);
   });

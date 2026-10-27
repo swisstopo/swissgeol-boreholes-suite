@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { Role, User, Workgroup } from "./generated";
 
-const hasEditorRole = (role?: Role): boolean => role !== undefined && role !== "View";
+const hasEditorRole = (role?: Role): boolean => role !== undefined && role !== "Reader";
 
 const removeDuplicateWorkgroups = (workgroups: (Workgroup | undefined)[]): Workgroup[] => {
   const byId = new Map<number, Workgroup>();

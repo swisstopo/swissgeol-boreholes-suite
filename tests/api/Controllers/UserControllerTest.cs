@@ -14,7 +14,7 @@ namespace BDMS.Controllers;
 public class UserControllerTest
 {
     private readonly int workgroupId = 1;
-    private readonly string viewerSubjectId = "sub_viewer";
+    private readonly string readerSubjectId = "sub_reader";
     private readonly string adminSubjectId = "sub_admin";
     private BdmsContext context;
     private UserController userController;
@@ -32,7 +32,7 @@ public class UserControllerTest
             .Setup(s => s.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.Is<int>(x => x != workgroupId), Models.Role.Editor))
             .ReturnsAsync(false);
         boreholePermissionServiceMock
-            .Setup(s => s.HasUserRoleOnWorkgroupAsync(viewerSubjectId, workgroupId, Models.Role.Editor))
+            .Setup(s => s.HasUserRoleOnWorkgroupAsync(readerSubjectId, workgroupId, Models.Role.Editor))
             .ReturnsAsync(false);
         userController = new UserController(context, new Mock<ILogger<UserController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
@@ -44,11 +44,11 @@ public class UserControllerTest
     public async Task GetAll()
     {
         var users = await userController.GetAll();
-        Assert.AreEqual(8, users.Count());
+        Assert.AreEqual(7, users.Count());
 
         foreach (var user in users)
         {
-            Assert.AreEqual(user.SubjectId == "sub_deletableUser" || user.SubjectId == viewerSubjectId, user.Deletable);
+            Assert.AreEqual(user.SubjectId == "sub_deletableUser" || user.SubjectId == readerSubjectId, user.Deletable);
         }
     }
 
@@ -60,7 +60,7 @@ public class UserControllerTest
         Assert.AreEqual(adminSubjectId, user.SubjectId);
         Assert.IsTrue(user.IsAdmin);
         Assert.IsFalse(user.Deletable);
-        Assert.AreEqual(5, user.WorkgroupRoles.Count());
+        Assert.AreEqual(1, user.WorkgroupRoles.Count());
     }
 
     [TestMethod]
@@ -94,7 +94,7 @@ public class UserControllerTest
     [TestMethod]
     public async Task EditUser()
     {
-        var user = await context.UsersWithIncludes.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == "sub_validator");
+        var user = await context.UsersWithIncludes.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == "sub_reviewer");
         Assert.IsNotNull(user);
         Assert.IsFalse(user.IsAdmin);
         Assert.IsFalse(user.IsDisabled);
@@ -163,7 +163,7 @@ public class UserControllerTest
         var editors = result.Value;
 
         Assert.IsNotNull(editors);
-        Assert.AreEqual(7, editors.Count());
+        Assert.AreEqual(6, editors.Count());
 
         foreach (var editor in editors)
         {

@@ -713,8 +713,8 @@ public class BoreholeControllerTest
     {
         return new Borehole
         {
-            CreatedById = 4,
-            UpdatedById = 4,
+            CreatedById = 3,
+            UpdatedById = 3,
             Locked = null,
             LockedById = null,
             WorkgroupId = 1,
@@ -1085,7 +1085,7 @@ public class BoreholeControllerTest
         // Set up a borehole locked by a different user — a lock that would normally block CanEditBoreholeAsync.
         var borehole = GetBoreholeToAdd();
         borehole.Locked = DateTime.UtcNow;
-        borehole.LockedById = 4; // sub_editor id; anyone other than the admin acting here
+        borehole.LockedById = 2; // sub_editor id; anyone other than the admin acting here
         context.Add(borehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
         var idToDelete = borehole.Id;

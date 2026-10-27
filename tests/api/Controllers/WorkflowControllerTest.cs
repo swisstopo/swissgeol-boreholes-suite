@@ -66,7 +66,7 @@ public class WorkflowControllerTest
         Assert.AreEqual("Voluptates natus nemo saepe odit ea quaerat.", workflowChange.Comment);
         Assert.AreEqual(3, workflowChange.CreatedById);
         Assert.IsNotNull(workflowChange.CreatedBy);
-        Assert.AreEqual("c. user", workflowChange.CreatedBy.Name);
+        Assert.AreEqual("r. user", workflowChange.CreatedBy.Name);
         Assert.IsNotNull(workflowChange.Created);
         Assert.AreEqual(2000029, workflowChange.WorkflowId);
         Assert.IsNotNull(workflowChange.Workflow);

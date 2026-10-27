@@ -5,7 +5,15 @@
 ### Added
 - Lithological layer descriptions can be analyzed automatically. The lithology dialog offers an "Analyze" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein. The action is currently only shown with `?dev=true` while the classification still runs against a stand-in response.
 
+### Changed
+- A user now has exactly one role per workgroup. Assigning a role to a user who already has one in that workgroup replaces it. Users who had several roles in a workgroup keep only the highest one, so their permissions stay the same.
+- The Validator role is removed because it granted no permissions beyond Reviewer. Users who were Validators are now Reviewers.
+- The workgroup roles View and Controller are renamed to Reader and Reviewer, so the roles are now Reader, Editor, Reviewer and Publisher. The role names stored in the database change accordingly to READER, EDITOR, REVIEWER and PUBLISHER.
+- The role of a user in a workgroup is now shown as a dropdown in the user and workgroup administration and can be changed there directly.
+
 ### Fixed
+- Inactive users are no longer offered when adding users to a workgroup.
+- The workflow now judges each possible assignee by their role in the borehole's workgroup instead of their highest role in any workgroup.
 - Returning from a borehole to the overview no longer occasionally jumps the table back to an earlier page or the default sorting when the borehole was opened right after paging or sorting.
 
 ## v2.2.57 - 2026-10-08

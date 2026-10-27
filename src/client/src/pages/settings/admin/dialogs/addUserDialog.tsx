@@ -22,13 +22,14 @@ export const AddUserDialog: FC<AddUserDialogProps> = ({ open, setOpen, workgroup
   };
 
   if (!users) return;
+  const activeUsers = users.filter(user => !user.isDisabled);
   return (
     <RoleAssignmentDialog<User>
       open={open}
       setOpen={setOpen}
       addEntity={addUser}
       entityType={EntityType.user}
-      entities={users}
+      entities={activeUsers}
       entityQueryKey={usersQueryKey}
     />
   );

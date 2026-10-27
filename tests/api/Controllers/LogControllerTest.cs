@@ -172,7 +172,7 @@ public class LogControllerTest : TestControllerBase
 
         var firstLogRun = logRuns.OrderBy(lr => lr.Id).First();
         Assert.AreEqual(24000850, firstLogRun.Id);
-        Assert.AreEqual(4, firstLogRun.UpdatedById);
+        Assert.AreEqual(3, firstLogRun.UpdatedById);
         Assert.AreEqual("R33", firstLogRun.RunNumber);
         Assert.AreEqual("Fresh", firstLogRun.ServiceCo);
         Assert.AreEqual(20, firstLogRun.ToDepth);
@@ -184,7 +184,7 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual(25002126, logFile.Id);
         Assert.AreEqual(24000850, logFile.LogRunId);
         Assert.AreEqual(3, logFile.CreatedById);
-        Assert.AreEqual(4, logFile.UpdatedById);
+        Assert.AreEqual(3, logFile.UpdatedById);
         Assert.AreEqual("awesome_rubber_towels.crd", logFile.Name);
         Assert.AreEqual(100003018, logFile.DataPackageId);
         Assert.IsNull(logFile.DepthTypeId);
