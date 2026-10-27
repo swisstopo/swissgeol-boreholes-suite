@@ -10,7 +10,7 @@ public class BoreholePermissionServiceTest
 {
     private const string AdminSubjectId = "sub_admin";
     private const string EditorSubjectId = "sub_editor";
-    private const string ViewerSubjectId = "sub_viewer";
+    private const string ReaderSubjectId = "sub_reader";
     private const int AdminUserId = 1;
     private const int EditorUserId = 2;
     private const int DefaultWorkgroupId = 1;
@@ -255,7 +255,7 @@ public class BoreholePermissionServiceTest
     public async Task CanEditBoreholeAsync()
     {
         var borehole = await context.Boreholes.FirstAsync();
-        Assert.IsFalse(await boreholePermissionService.CanEditBoreholeAsync(ViewerSubjectId, borehole.Id));
+        Assert.IsFalse(await boreholePermissionService.CanEditBoreholeAsync(ReaderSubjectId, borehole.Id));
     }
 
     [TestMethod]
@@ -274,7 +274,7 @@ public class BoreholePermissionServiceTest
     public async Task CanViewBoreholeAsync()
     {
         var borehole = await context.Boreholes.FirstAsync();
-        Assert.IsTrue(await boreholePermissionService.CanViewBoreholeAsync(ViewerSubjectId, borehole.Id));
+        Assert.IsTrue(await boreholePermissionService.CanViewBoreholeAsync(ReaderSubjectId, borehole.Id));
     }
 
     [TestMethod]
@@ -314,7 +314,7 @@ public class BoreholePermissionServiceTest
     {
         var user = new User
         {
-            WorkgroupRoles = { new UserWorkgroupRole { WorkgroupId = 1, Role = Role.View } },
+            WorkgroupRoles = { new UserWorkgroupRole { WorkgroupId = 1, Role = Role.Reader } },
         };
 
         Assert.IsFalse(boreholePermissionService.HasUserRoleOnWorkgroup(user, 1, Role.Editor));

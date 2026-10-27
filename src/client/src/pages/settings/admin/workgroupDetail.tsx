@@ -1,10 +1,10 @@
 import { FC, MouseEvent, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
+import { Card, CardContent, CardHeader, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
-import { User, UserWorkgroupRole } from "../../../api/generated";
+import { Role, User, UserWorkgroupRole } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -14,8 +14,10 @@ import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
 import { useRequiredId } from "../../../hooks/useRequiredId.ts";
 import { AddUserDialog } from "./dialogs/addUserDialog.tsx";
+import { RoleSelect } from "./roleSelect.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
+import { getRoleInWorkgroup } from "./workgroupRoles.ts";
 
 export const WorkgroupDetail: FC = () => {
   const id = useRequiredId();
@@ -28,7 +30,7 @@ export const WorkgroupDetail: FC = () => {
     useContext(WorkgroupAdministrationContext);
   const { data: selectedWorkgroup } = useSelectedWorkgroup(id);
   const {
-    removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
+    setWorkgroupRole: { mutate: setWorkgroupRole },
     update: { mutate: updateWorkgroup },
   } = useWorkgroupMutations();
   const { showPrompt } = useContext(PromptContext);
@@ -72,7 +74,7 @@ export const WorkgroupDetail: FC = () => {
     event.stopPropagation();
     const user = users?.find(user => user.id === id);
     if (!user) return;
-    showPrompt(t("confirmRemoveRoles", { name: user.name, workgroupName: selectedWorkgroup.name }), [
+    showPrompt(t("confirmRemoveRole", { name: user.name, workgroupName: selectedWorkgroup.name }), [
       {
         label: "cancel",
         icon: <X />,
@@ -82,12 +84,13 @@ export const WorkgroupDetail: FC = () => {
         icon: <Trash2 />,
         variant: "contained",
         action: () => {
-          if (!selectedWorkgroup || !user?.workgroupRoles || user.workgroupRoles.length <= 0) return;
-          removeAllWorkgroupRolesForUser({
+          const role = getRoleInWorkgroup(user, selectedWorkgroup.id);
+          if (!role) return;
+          setWorkgroupRole({
             userId: user.id,
             workgroupId: selectedWorkgroup.id,
-            roles:
-              user.workgroupRoles?.map(r => r.role).filter((r): r is NonNullable<typeof r> => r !== undefined) ?? [],
+            role: role,
+            isActive: false,
           });
         },
       },
@@ -98,25 +101,16 @@ export const WorkgroupDetail: FC = () => {
     setUserDialogOpen(true);
   };
 
-  const renderRoleChips = (params: GridRenderCellParams<User, User["workgroupRoles"]>) => {
-    // An entry without a role renders a chip with no label, so it is left out.
-    const workgroupRoles = params.value?.filter(role => role.workgroupId === id && role.role) ?? [];
-    return (
-      <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
-        {workgroupRoles.map(workgroupRole => (
-          <Chip
-            key={workgroupRole.role}
-            label={workgroupRole.role!.toUpperCase()}
-            size="small"
-            color="primary"
-            data-cy={`${workgroupRole.role}-chip`}
-          />
-        ))}
-      </Stack>
-    );
-  };
-
   const isDisabled = selectedWorkgroup?.isDisabled;
+
+  const renderRoleSelect = (params: GridRenderCellParams<User, Role | undefined>) =>
+    params.value && (
+      <RoleSelect
+        value={params.value}
+        disabled={isDisabled ?? false}
+        onChange={role => setWorkgroupRole({ userId: params.row.id, workgroupId: id, role, isActive: true })}
+      />
+    );
 
   const columns: GridColDef[] = [
     firstNameColumn,
@@ -124,10 +118,12 @@ export const WorkgroupDetail: FC = () => {
     emailColumn,
     statusColumn,
     {
-      field: "workgroupRoles",
-      headerName: t("roles"),
+      field: "role",
+      headerName: t("role"),
       flex: 1,
-      renderCell: renderRoleChips,
+      minWidth: 200,
+      valueGetter: (_value, row: User) => getRoleInWorkgroup(row, id),
+      renderCell: renderRoleSelect,
     },
     getDeleteColumn(handleRemoveUserFromWorkgroup, isDisabled),
   ];

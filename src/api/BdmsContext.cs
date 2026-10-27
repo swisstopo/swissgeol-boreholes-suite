@@ -405,7 +405,7 @@ public class BdmsContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(BoreholesDatabaseSchemaName);
-        modelBuilder.Entity<UserWorkgroupRole>().HasKey(k => new { k.UserId, k.WorkgroupId, k.Role });
+        modelBuilder.Entity<UserWorkgroupRole>().HasKey(k => new { k.UserId, k.WorkgroupId });
 
         modelBuilder.Entity<Borehole>()
             .HasMany(b => b.Codelists)

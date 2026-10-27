@@ -5,13 +5,17 @@ namespace BDMS.Models;
 /// <summary>
 /// Represents a role entity in the database.
 /// </summary>
+/// <remarks>
+/// Role values are stored as ids in the database and must match the ids in <c>bdms.roles</c>.
+/// Changing a value requires a migration that moves the existing rows.
+/// </remarks>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Role
 {
     /// <summary>
-    /// View permissions.
+    /// Reader permissions.
     /// </summary>
-    View = 0,
+    Reader = 0,
 
     /// <summary>
     /// Editor permissions/ Change In Progress.
@@ -19,17 +23,12 @@ public enum Role
     Editor = 1,
 
     /// <summary>
-    /// Controller permissions/ In Review.
+    /// Reviewer permissions/ In Review.
     /// </summary>
-    Controller = 2,
-
-    /// <summary>
-    /// Validator permissions/ In Validation.
-    /// </summary>
-    Validator = 3,
+    Reviewer = 2,
 
     /// <summary>
     /// Publisher permissions/ Published.
     /// </summary>
-    Publisher = 4,
+    Publisher = 3,
 }

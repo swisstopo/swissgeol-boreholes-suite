@@ -89,8 +89,8 @@ function manuallyResetStatusToDraft() {
   cy.get(".select-option").contains(WorkflowStatus.Draft).click();
   cy.get(".select-trigger").eq(1).click();
   // all users with editor privileges should be selectable
-  cy.get(".select-option").should("have.length", 7);
-  cy.get(".select-option").contains("viewer user").should("not.exist");
+  cy.get(".select-option").should("have.length", 6);
+  cy.get(".select-option").contains("reader user").should("not.exist");
   cy.get(".select-option").contains("Editor User").should("exist");
   cy.get(".select-option").contains("Admin User").click();
   cy.get("sgc-modal-wrapper").find("sgc-button").contains("Change status manually").click();
@@ -105,11 +105,11 @@ function navigateToWorkflowAndStartEditing(id: number) {
   assertWorkflowSteps("Draft");
 }
 
-function requestReviewFromValidator() {
+function requestReviewFromReviewer() {
   clickSgcButtonWithContent("Request review");
   cy.get(".select-trigger").click();
   assertEmptyRequestReviewModal();
-  cy.get(".select-option").contains("validator user").click();
+  cy.get(".select-option").contains("reviewer user").click();
   cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
   cy.wait(["@workflow_by_id", "@borehole_by_id"]);
   assertWorkflowSteps("In review");
@@ -144,7 +144,7 @@ function testTabReviewAndReset(
 ) {
   cy.get("@borehole_id").then(id => {
     navigateToWorkflowAndStartEditing(id);
-    requestReviewFromValidator();
+    requestReviewFromReviewer();
     cy.get("sgc-tab").contains("Review").click();
     isUncheckedTabStatusBox("review", reviewSection);
     isUncheckedTabStatusBox("review", reviewSubSection);
@@ -179,7 +179,7 @@ function changeIdentifiersPanel() {
 }
 
 describe("Tests the publication workflow.", () => {
-  it("Can request review from users with controller privilege", () => {
+  it("Can request review from users with reviewer privilege", () => {
     createBorehole({
       originalName: "Flinchy clown fish",
     }).as("borehole_id");
@@ -194,17 +194,16 @@ describe("Tests the publication workflow.", () => {
 
       cy.get(".select-trigger").click();
 
-      cy.get(".select-option").should("have.length", 6);
-      // 2 users without controller privileges should not exist
-      cy.get(".select-option").contains("viewer user").should("not.exist");
+      cy.get(".select-option").should("have.length", 5);
+      // 2 users without reviewer privileges should not exist
+      cy.get(".select-option").contains("reader user").should("not.exist");
       cy.get(".select-option").contains("Editor User").should("not.exist");
 
-      // 6 users with controller privileges should be selectable
-      cy.get(".select-option").contains("controller user").should("exist");
+      // 5 users with reviewer privileges should be selectable
+      cy.get(".select-option").contains("reviewer user").should("exist");
       cy.get(".select-option").contains("publisher user").should("exist");
       cy.get(".select-option").contains("user_that_can be_deleted").should("exist");
       cy.get(".select-option").contains("user_that_only has_files").should("exist");
-      cy.get(".select-option").contains("validator user").should("exist");
       cy.get(".select-option").contains("Admin User").should("exist");
 
       cy.contains("Forward").click(); // click on dialog title to close dropdown again
@@ -218,7 +217,7 @@ describe("Tests the publication workflow.", () => {
       assertEmptyRequestReviewModal();
 
       cy.get(".select-trigger").click();
-      cy.get(".select-option").contains("validator user").click();
+      cy.get(".select-option").contains("reviewer user").click();
       cy.get("sgc-text-area").find("textarea").type("I requested a review!");
 
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
@@ -238,7 +237,7 @@ describe("Tests the publication workflow.", () => {
       assertWorkflowSteps("In review");
 
       // assert new assigned user
-      cy.get(".assignee").should("contain", "validator user");
+      cy.get(".assignee").should("contain", "reviewer user");
 
       // assert status update in header
       cy.dataCy("workflow-status-chip").should("contain", "Review");
@@ -250,7 +249,7 @@ describe("Tests the publication workflow.", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
-      requestReviewFromValidator();
+      requestReviewFromReviewer();
 
       cy.get("sgc-tab").contains("Review").click();
 
@@ -314,7 +313,7 @@ describe("Tests the publication workflow.", () => {
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
-      requestReviewFromValidator();
+      requestReviewFromReviewer();
       finishReview();
       cy.get("sgc-button[disabled]").contains("Publish");
     });
@@ -326,7 +325,7 @@ describe("Tests the publication workflow.", () => {
       navigateToWorkflowAndStartEditing(id);
       assertWorkflowSteps("Draft");
       AssertHeaderChips(WorkflowStatus.Draft, null, false, "Free");
-      requestReviewFromValidator();
+      requestReviewFromReviewer();
       cy.get("sgc-tab").contains("Review").click();
 
       // Check all checkboxes on review tab
@@ -392,8 +391,8 @@ describe("Tests the publication workflow.", () => {
       AssertHeaderChips(WorkflowStatus.InReview, "Admin User");
       assertWorkflowSteps("In review");
 
-      ClickInteractionAndAssignNewUser("Request changes", "controller user");
-      AssertHeaderChips(WorkflowStatus.Draft, "controller user", true);
+      ClickInteractionAndAssignNewUser("Request changes", "reviewer user");
+      AssertHeaderChips(WorkflowStatus.Draft, "reviewer user", true);
 
       ClickInteractionAndAssignNewUser("Request review", "publisher user");
       AssertHeaderChips(WorkflowStatus.InReview, "publisher user");
@@ -415,7 +414,7 @@ describe("Tests the publication workflow.", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
-      requestReviewFromValidator();
+      requestReviewFromReviewer();
       cy.get("sgc-tab").contains("Review").click();
       cy.dataCy("hydrogeology-menu-item").click();
 
@@ -450,7 +449,7 @@ describe("Tests the publication workflow.", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
-      requestReviewFromValidator();
+      requestReviewFromReviewer();
       cy.get("sgc-tab").contains("Review").click();
       clickCheckAllCheckbox("review");
       finishReview();
@@ -628,7 +627,7 @@ describe("Tests the publication workflow.", () => {
       clickSgcButtonWithContent("Request review");
       cy.get(".select-trigger").click();
       assertEmptyRequestReviewModal();
-      cy.get(".select-option").contains("validator user").click();
+      cy.get(".select-option").contains("reviewer user").click();
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
       cy.get(".MuiAlert-message").contains(
         "The status of the borehole was changed. You no longer have permission to edit the borehole.",

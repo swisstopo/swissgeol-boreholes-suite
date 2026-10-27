@@ -245,6 +245,13 @@ export const login = (user: string) => {
       cy.wait("@token")
         .then(interception => (interception.response!.body as TokenResponse).access_token)
         .then(token => globalThis.localStorage.setItem("access_token", token));
+      // The consent cookie is seeded for the subject of the stored OIDC user, so the session must not
+      // be saved before the application has written that user.
+      cy.window()
+        .its("localStorage")
+        .should(storage => {
+          expect(Object.keys(storage).some(key => key.startsWith("oidc.user:"))).to.equal(true);
+        });
     },
     {
       validate() {
@@ -307,6 +314,8 @@ export const goToDetailRouteAndAcceptTerms = (route: string) => {
 
 export const goToRouteAndAcceptTerms = (route: string, onBeforeLoad?: (win: Cypress.AUTWindow) => void) => {
   visitWithConsent(route, onBeforeLoad);
+  // The disclaimer replaces the application once the user is loaded, so wait until one of them is shown.
+  cy.get('[data-cy="accept-button"], [data-cy="app-header"]').should("exist");
   clickAcceptIfPresent();
 };
 
@@ -326,10 +335,10 @@ export const loginAsEditor = (route = "/") => {
 };
 
 /**
- * Login into the application as viewer.
+ * Login into the application as reader.
  */
-export const loginAsViewer = (route = "/") => {
-  login("viewer");
+export const loginAsReader = (route = "/") => {
+  login("reader");
   goToRouteAndAcceptTerms(route);
 };
 

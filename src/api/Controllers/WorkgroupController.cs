@@ -190,6 +190,10 @@ public class WorkgroupController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Sets or removes workgroup roles. A user holds one role per workgroup: an active role replaces the
+    /// user's current role in that workgroup, an inactive role removes it only if it is the current role.
+    /// </summary>
     [HttpPost("setRoles")]
     [SwaggerResponse(StatusCodes.Status200OK, "The roles were set successfully.")]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The roles could not be set due to invalid input.")]
@@ -208,14 +212,18 @@ public class WorkgroupController : ControllerBase
             foreach (var userWorkgroupRole in userWorkgroupRoles)
             {
                 var existingRole = await context.UserWorkgroupRoles
-                    .SingleOrDefaultAsync(r => r.UserId == userWorkgroupRole.UserId && r.WorkgroupId == userWorkgroupRole.WorkgroupId && r.Role == userWorkgroupRole.Role)
+                    .FindAsync(userWorkgroupRole.UserId, userWorkgroupRole.WorkgroupId)
                     .ConfigureAwait(false);
 
                 if (userWorkgroupRole.IsActive == true && existingRole == default)
                 {
                     await context.AddAsync(userWorkgroupRole).ConfigureAwait(false);
                 }
-                else if (userWorkgroupRole.IsActive == false && existingRole != default)
+                else if (userWorkgroupRole.IsActive == true && existingRole != default && existingRole.Role != userWorkgroupRole.Role)
+                {
+                    existingRole.Role = userWorkgroupRole.Role;
+                }
+                else if (userWorkgroupRole.IsActive == false && existingRole != default && existingRole.Role == userWorkgroupRole.Role)
                 {
                     context.UserWorkgroupRoles.Remove(existingRole);
                 }

@@ -79,7 +79,7 @@ public class BoreholeExportControllerTest
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync("sub_reader", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         boreholePermissionServiceMock
@@ -935,8 +935,8 @@ public class BoreholeExportControllerTest
     {
         return new Borehole
         {
-            CreatedById = 4,
-            UpdatedById = 4,
+            CreatedById = 3,
+            UpdatedById = 3,
             Locked = null,
             LockedById = null,
             WorkgroupId = 1,

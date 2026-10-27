@@ -2629,7 +2629,7 @@ export type ProfileUpdate = {
 /**
  * Represents a role entity in the database.
  */
-export type Role = "View" | "Editor" | "Controller" | "Validator" | "Publisher";
+export type Role = "Reader" | "Editor" | "Reviewer" | "Publisher";
 
 /**
  * Represents one section of a borehole.

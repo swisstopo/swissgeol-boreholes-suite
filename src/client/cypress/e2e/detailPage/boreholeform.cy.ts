@@ -5,7 +5,13 @@ import {
   verifyNoUnsavedChanges,
   verifyUnsavedChanges,
 } from "../helpers/buttonHelpers";
-import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
+import {
+  checkRowWithText,
+  clickOnRowWithText,
+  showTableAndWaitForData,
+  sortBy,
+  waitForTableData,
+} from "../helpers/dataGridHelpers";
 import {
   clearInput,
   evaluateInput,
@@ -464,7 +470,8 @@ describe("Test for the borehole form.", () => {
       ensureEditingDisabled();
       startBoreholeEditing();
       goToRouteAndAcceptTerms(`/`); //  navigating with browser does not stop editing
-      showTableAndWaitForData();
+      // The table drawer state is restored from the session, so the table is still open.
+      waitForTableData();
       clickOnRowWithText("AAA_HIPPOPOTHAMUS");
       ensureEditingEnabled();
     });

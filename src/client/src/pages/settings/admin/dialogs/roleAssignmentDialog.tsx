@@ -13,9 +13,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Role, User, Workgroup } from "../../../../api/generated";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
+import { allRoles } from "../workgroupRoles.ts";
 import { EntityType } from "./entityType.ts";
-
-const allRoles: Role[] = ["View", "Editor", "Controller", "Validator", "Publisher"];
 
 interface RoleAssignmentDialogProps<T> {
   open: boolean;

@@ -12,6 +12,7 @@ const HeaderComponent = () => {
 
   return (
     <Stack
+      data-cy="app-header"
       direction="row"
       alignItems="center"
       sx={{

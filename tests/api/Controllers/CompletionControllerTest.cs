@@ -327,7 +327,7 @@ public class CompletionControllerTest
         var copiedCompletion = GetCompletion((int)copiedCompletionId);
 
         Assert.AreEqual("Games & Shoes (Clone)", copiedCompletion.Name);
-        Assert.AreEqual("sub_validator", copiedCompletion.CreatedBy.SubjectId);
+        Assert.AreEqual("sub_reviewer", copiedCompletion.CreatedBy.SubjectId);
         Assert.AreEqual("sub_publisher", copiedCompletion.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedCompletion.IsPrimary);
         Assert.AreSame(originalCompletion.Kind, copiedCompletion.Kind);
