@@ -318,7 +318,7 @@ const LayerCard: FC<LayerCardProps> = ({
         (selectedItem, index) =>
           header[index]?.isVisible && (
             <Box
-              key={index}
+              key={header[index].title}
               sx={{
                 display: "flex",
                 alignItems: "center",

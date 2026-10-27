@@ -81,79 +81,77 @@ const GeometryImport: FC<GeometryImportProps> = ({ boreholeId }) => {
     geometryFormats?.find(f => f.key === formMethods.getValues("geometryFormat"))?.csvHeader ?? "";
 
   return (
-    <>
-      <Card>
-        <CardContent>
-          <DevTool control={formMethods.control} placement="top-left" />
-          <FormProvider {...formMethods}>
-            <form onSubmit={event => void formMethods.handleSubmit(uploadGeometryCSV)(event)}>
-              <Stack direction="row" alignItems="flex-start" pt={3}>
-                <StackHalfWidth spacing={2}>
-                  <FormSelect
-                    fieldName="geometryFormat"
-                    label="boreholeGeometryFormat"
-                    values={geometryFormats.map(f => ({
-                      key: f.key,
-                      name: t(`geometryFormat${f.key}`),
-                      csvHeader: f.csvHeader,
-                    }))}
-                    required={true}
-                  />
-                  {expectedCSVHeader !== "" && (
-                    <>
-                      <Typography>{t("csvFormatExplanation") + ". " + t("csvOptionalExplanation") + "."}</Typography>
-                      <TextField
-                        value={expectedCSVHeader}
-                        size="small"
-                        slotProps={{
-                          input: {
-                            readOnly: true,
-                            endAdornment: (
-                              <InputAdornment position="end">
-                                <Tooltip title={t("copyToClipboard")}>
-                                  <IconButton onClick={() => void navigator.clipboard.writeText(expectedCSVHeader)}>
-                                    <CopyIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              </InputAdornment>
-                            ),
-                          },
-                        }}
-                      />
-                    </>
-                  )}
-                </StackHalfWidth>
-                <Controller
-                  name="geometryFile"
-                  control={formMethods.control}
-                  render={({ field }) => (
-                    <FileDropzone
-                      key={i18n.language}
-                      onHandleFileChange={field.onChange}
-                      defaultText={"dropZoneGeometryText"}
-                      acceptedFileTypes={["text/csv"]}
-                      maxFilesToSelectAtOnce={1}
-                      maxFilesToUpload={1}
-                      isDisabled={false}
-                      dataCy={"import-geometry-input"}
-                    />
-                  )}
+    <Card>
+      <CardContent>
+        <DevTool control={formMethods.control} placement="top-left" />
+        <FormProvider {...formMethods}>
+          <form onSubmit={event => void formMethods.handleSubmit(uploadGeometryCSV)(event)}>
+            <Stack direction="row" alignItems="flex-start" pt={3}>
+              <StackHalfWidth spacing={2}>
+                <FormSelect
+                  fieldName="geometryFormat"
+                  label="boreholeGeometryFormat"
+                  values={geometryFormats.map(f => ({
+                    key: f.key,
+                    name: t(`geometryFormat${f.key}`),
+                    csvHeader: f.csvHeader,
+                  }))}
+                  required={true}
                 />
-              </Stack>
-            </form>
-          </FormProvider>
-        </CardContent>
-        <CardActions>
-          <AddButton
-            sx={{ marginLeft: "auto" }}
-            label={(data?.length ?? 0) > 0 ? "boreholeGeometryReplace" : "boreholeGeometryImport"}
-            onClick={() => void formMethods.handleSubmit(uploadGeometryCSV)()}
-            disabled={watch?.geometryFile?.length === 0 || isUpdatingBoreholeGeometry}
-            endIcon={isUpdatingBoreholeGeometry && <CircularProgress size="1em" sx={{ color: "currentColor" }} />}
-          />
-        </CardActions>
-      </Card>
-    </>
+                {expectedCSVHeader !== "" && (
+                  <>
+                    <Typography>{t("csvFormatExplanation") + ". " + t("csvOptionalExplanation") + "."}</Typography>
+                    <TextField
+                      value={expectedCSVHeader}
+                      size="small"
+                      slotProps={{
+                        input: {
+                          readOnly: true,
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Tooltip title={t("copyToClipboard")}>
+                                <IconButton onClick={() => void navigator.clipboard.writeText(expectedCSVHeader)}>
+                                  <CopyIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </InputAdornment>
+                          ),
+                        },
+                      }}
+                    />
+                  </>
+                )}
+              </StackHalfWidth>
+              <Controller
+                name="geometryFile"
+                control={formMethods.control}
+                render={({ field }) => (
+                  <FileDropzone
+                    key={i18n.language}
+                    onHandleFileChange={field.onChange}
+                    defaultText={"dropZoneGeometryText"}
+                    acceptedFileTypes={["text/csv"]}
+                    maxFilesToSelectAtOnce={1}
+                    maxFilesToUpload={1}
+                    isDisabled={false}
+                    dataCy={"import-geometry-input"}
+                  />
+                )}
+              />
+            </Stack>
+          </form>
+        </FormProvider>
+      </CardContent>
+      <CardActions>
+        <AddButton
+          sx={{ marginLeft: "auto" }}
+          label={(data?.length ?? 0) > 0 ? "boreholeGeometryReplace" : "boreholeGeometryImport"}
+          onClick={() => void formMethods.handleSubmit(uploadGeometryCSV)()}
+          disabled={watch?.geometryFile?.length === 0 || isUpdatingBoreholeGeometry}
+          endIcon={isUpdatingBoreholeGeometry && <CircularProgress size="1em" sx={{ color: "currentColor" }} />}
+        />
+      </CardActions>
+    </Card>
   );
 };
 

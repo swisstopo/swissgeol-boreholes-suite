@@ -20,19 +20,21 @@ import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
 import { DataCardItemInputProps } from "../completion/completionInterfaces.ts";
 
 // Select fields hold "" while nothing is selected; number fields hold the entered text until submit.
+type SectionFormFieldValue = number | string | null;
+
 interface SectionFormElement {
   id?: number;
   order?: number;
-  fromDepth: number | string | null;
-  toDepth: number | string | null;
-  drillingMethodId: number | string | null;
-  cuttingsId: number | string | null;
-  drillingMudTypeId: number | string | null;
-  drillingMudSubtypeId: number | string | null;
+  fromDepth: SectionFormFieldValue;
+  toDepth: SectionFormFieldValue;
+  drillingMethodId: SectionFormFieldValue;
+  cuttingsId: SectionFormFieldValue;
+  drillingMudTypeId: SectionFormFieldValue;
+  drillingMudSubtypeId: SectionFormFieldValue;
   drillingStartDate: string | null;
   drillingEndDate: string | null;
-  drillingDiameter: number | string | null;
-  drillingCoreDiameter: number | string | null;
+  drillingDiameter: SectionFormFieldValue;
+  drillingCoreDiameter: SectionFormFieldValue;
 }
 
 interface SectionFormValues {
@@ -47,7 +49,7 @@ interface DrillingMudTypeOption {
   path: number[];
 }
 
-const asSelected = (value: number | string | null) => (typeof value === "number" ? value : null);
+const asSelected = (value: SectionFormFieldValue) => (typeof value === "number" ? value : null);
 
 const SectionInput: FC<DataCardItemInputProps<Section>> = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
@@ -70,7 +72,7 @@ const SectionInput: FC<DataCardItemInputProps<Section>> = ({ item, parentId }) =
   };
 
   // prepare the options for the drillingMudType and drillingMudSubtype select fields
-  const drillingMudTypeOptions = new Map<number | string | null, DrillingMudTypeOption>(
+  const drillingMudTypeOptions = new Map<SectionFormFieldValue, DrillingMudTypeOption>(
     codelists
       ?.filter(d => d.schema === "drilling_mud_type")
       ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))

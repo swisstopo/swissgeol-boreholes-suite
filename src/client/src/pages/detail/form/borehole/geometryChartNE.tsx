@@ -1,8 +1,10 @@
-import { FC, useEffect, useRef } from "react";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import * as d3 from "d3";
 import { BoreholeGeometryPoint } from "../../../../api/fetchApiV2.ts";
+import { GeometryChartTrace } from "./geometryChartTrace.tsx";
+import { useGeometryChartAxes } from "./useGeometryChartAxes.ts";
 
 interface GeometryChartNEProps {
   data: BoreholeGeometryPoint[];
@@ -15,43 +17,20 @@ const GeometryChartNE: FC<GeometryChartNEProps> = ({ data }) => {
   const contentSize = size - 2 * margin - Math.max(padding.right + padding.left, padding.top + padding.bottom);
 
   const { t } = useTranslation();
-  const axisXRef = useRef<SVGGElement>(null);
-  const axisYRef = useRef<SVGGElement>(null);
 
   // define scales
   const maxExtent = Math.max(Math.sqrt(d3.max(data, d => d.x * d.x + d.y * d.y) ?? Number.NaN) || 0, 1);
   const x = d3.scaleLinear().domain([-maxExtent, maxExtent]).range([0, contentSize]).nice();
   const y = d3.scaleLinear().domain([-maxExtent, maxExtent]).range([contentSize, 0]).nice();
 
-  const line = d3
-    .line<BoreholeGeometryPoint>()
-    .x(d => x(d.x))
-    .y(d => y(d.y));
-
-  const numberFormatLocale = d3.formatLocale({
-    decimal: ".",
-    thousands: "'",
-    grouping: [3],
-    currency: ["", ""],
-  });
-  useEffect(() => {
-    if (axisXRef.current) {
-      d3.select(axisXRef.current).call(d3.axisBottom(x).tickFormat(numberFormatLocale.format(",.1f")));
-    }
-  }, [axisXRef, x, numberFormatLocale]);
-
-  useEffect(() => {
-    if (axisYRef.current) {
-      d3.select(axisYRef.current).call(d3.axisLeft(y).tickFormat(numberFormatLocale.format(",.1f")));
-    }
-  }, [axisYRef, y, numberFormatLocale]);
+  const { axisXRef, axisYRef } = useGeometryChartAxes(x, y);
 
   return (
     <Box sx={{ position: "relative" }}>
       <Stack sx={{ position: "absolute", left: 0, right: 0 }} alignItems="center">
         <Typography variant="h6">{t("topView")}</Typography>
       </Stack>
-      <svg viewBox={`0 0 ${size} ${size}`}>
+      <svg viewBox={`0 0 ${size} ${size}`} aria-label={t("topView")}>
         <g transform={`translate(${padding.left + margin}, ${padding.top + margin})`}>
           <g stroke="lightgray" fill="none" strokeLinecap="square">
             {x
@@ -77,21 +56,7 @@ const GeometryChartNE: FC<GeometryChartNEProps> = ({ data }) => {
               {t("geometryChartNEScaleYLabel")} [m]
             </text>
           </g>
-          <path
-            fill="none"
-            stroke={d3.schemeCategory10[0]}
-            strokeWidth={2}
-            d={line(data) ?? undefined}
-            strokeLinecap="round"
-          />
-          {data.length > 0 && (
-            <path
-              d={`${d3.symbol(d3.symbolTimes)()}`}
-              fill="none"
-              stroke={d3.schemeCategory10[0]}
-              transform={`translate(${x(data[0].x)},${y(data[0].y)})`}
-            />
-          )}
+          <GeometryChartTrace data={data} x={x} y={y} />
         </g>
       </svg>
     </Box>

@@ -1,16 +1,13 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Slider, Stack, Typography } from "@mui/material";
 import * as d3 from "d3";
 import { BoreholeGeometryPoint } from "../../../../api/fetchApiV2.ts";
+import { ChartPoint, GeometryChartTrace } from "./geometryChartTrace.tsx";
+import { useGeometryChartAxes } from "./useGeometryChartAxes.ts";
 
 interface GeometryChartsProps {
   data: BoreholeGeometryPoint[];
-}
-
-interface ProfilePoint {
-  x: number;
-  y: number;
 }
 
 /**
@@ -28,11 +25,12 @@ export const GeometryChartZInteractive: FC<GeometryChartsProps> = ({ data }) => 
   const factorX = Math.sin(azimuthRad);
   const factorY = Math.cos(azimuthRad);
   const projected = data.map(d => ({ y: d.z, x: d.x * factorX + d.y * factorY }));
+  const title = `${t("profile")} ${(azimuth + 180) % 360}° - ${azimuth % 360}°`;
 
   return (
     <Box sx={{ position: "relative" }}>
       <Stack sx={{ position: "absolute", left: 0, right: 0 }} alignItems="center">
-        <Typography variant="h6">{`${t("profile")} ${(azimuth + 180) % 360}° - ${azimuth % 360}°`}</Typography>
+        <Typography variant="h6">{title}</Typography>
         <Slider
           size="small"
           value={azimuth}
@@ -43,7 +41,7 @@ export const GeometryChartZInteractive: FC<GeometryChartsProps> = ({ data }) => 
           max={360}
         />
       </Stack>
-      <GeometryChartZ data={projected} paddingTop={65} />
+      <GeometryChartZ data={projected} title={title} paddingTop={65} />
     </Box>
   );
 };
@@ -57,7 +55,7 @@ export const GeometryChartZN: FC<GeometryChartsProps> = ({ data }) => {
       <Stack sx={{ position: "absolute", left: 0, right: 0 }} alignItems="center">
         <Typography variant="h6">{t("profileSouthNorth")}</Typography>
       </Stack>
-      <GeometryChartZ data={projected} />
+      <GeometryChartZ data={projected} title={t("profileSouthNorth")} />
     </Box>
   );
 };
@@ -71,17 +69,18 @@ export const GeometryChartZE: FC<GeometryChartsProps> = ({ data }) => {
       <Stack sx={{ position: "absolute", left: 0, right: 0 }} alignItems="center">
         <Typography variant="h6">{t("profileWestEast")}</Typography>
       </Stack>
-      <GeometryChartZ data={projected} />
+      <GeometryChartZ data={projected} title={t("profileWestEast")} />
     </Box>
   );
 };
 
 interface GeometryChartZProps {
-  data: ProfilePoint[];
+  data: ChartPoint[];
+  title: string; // accessible name of the chart, matching its visible heading
   paddingTop?: number;
 }
 
-const GeometryChartZ: FC<GeometryChartZProps> = ({ data, paddingTop = 35 }) => {
+const GeometryChartZ: FC<GeometryChartZProps> = ({ data, title, paddingTop = 35 }) => {
   const width = 500;
   const height = 500;
   const padding = { top: paddingTop, right: 20, bottom: 40, left: 60 };
@@ -90,8 +89,6 @@ const GeometryChartZ: FC<GeometryChartZProps> = ({ data, paddingTop = 35 }) => {
   const contentHeight = height - padding.top - padding.bottom - margin * 2;
 
   const { t } = useTranslation();
-  const axisXRef = useRef<SVGGElement>(null);
-  const axisYRef = useRef<SVGGElement>(null);
 
   // define scales
   const x_extent = d3.extent(data, d => d.x);
@@ -103,31 +100,10 @@ const GeometryChartZ: FC<GeometryChartZProps> = ({ data, paddingTop = 35 }) => {
     .scaleLinear([Math.min(y_extent[0] ?? Number.NaN, 0), Math.max(y_extent[1] ?? Number.NaN, 1)], [0, contentHeight])
     .nice();
 
-  const line = d3
-    .line<ProfilePoint>()
-    .x(d => x(d.x))
-    .y(d => y(d.y));
-
-  const numberFormatLocale = d3.formatLocale({
-    decimal: ".",
-    thousands: "'",
-    grouping: [3],
-    currency: ["", ""],
-  });
-  useEffect(() => {
-    if (axisXRef.current) {
-      d3.select(axisXRef.current).call(d3.axisBottom(x).tickFormat(numberFormatLocale.format(",.1f")));
-    }
-  }, [axisXRef, x, numberFormatLocale]);
-
-  useEffect(() => {
-    if (axisYRef.current) {
-      d3.select(axisYRef.current).call(d3.axisLeft(y).tickFormat(numberFormatLocale.format(",.1f")));
-    }
-  }, [axisYRef, y, numberFormatLocale]);
+  const { axisXRef, axisYRef } = useGeometryChartAxes(x, y);
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`}>
+    <svg viewBox={`0 0 ${width} ${height}`} aria-label={title}>
       <g transform={`translate(${padding.left + margin}, ${padding.top + margin})`}>
         <g stroke="lightgray" fill="none" strokeLinecap="square">
           {y.ticks().map((t, i) => (
@@ -147,21 +123,7 @@ const GeometryChartZ: FC<GeometryChartZProps> = ({ data, paddingTop = 35 }) => {
             {t("depthTVD")}
           </text>
         </g>
-        <path
-          fill="none"
-          stroke={d3.schemeCategory10[0]}
-          strokeWidth={2}
-          d={line(data) ?? undefined}
-          strokeLinecap="round"
-        />
-        {data.length > 0 && (
-          <path
-            d={`${d3.symbol(d3.symbolTimes)()}`}
-            fill="none"
-            stroke={d3.schemeCategory10[0]}
-            transform={`translate(${x(data[0].x)},${y(data[0].y)})`}
-          />
-        )}
+        <GeometryChartTrace data={data} x={x} y={y} />
       </g>
     </svg>
   );

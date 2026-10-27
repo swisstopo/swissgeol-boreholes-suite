@@ -71,7 +71,7 @@ export const CustomLayersComponent: FC<CustomLayersComponentProps> = ({
                     max="100"
                     min="0"
                     onChange={ev => {
-                      const updatedLayer = { ...layer, transparency: parseFloat(ev.target.value) };
+                      const updatedLayer = { ...layer, transparency: Number.parseFloat(ev.target.value) };
                       saveTransparency(updatedLayer);
                     }}
                     step="1"

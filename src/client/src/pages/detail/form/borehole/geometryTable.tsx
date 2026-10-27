@@ -18,45 +18,52 @@ interface GeometryTableProps {
   data: BoreholeGeometryPoint[] | undefined;
 }
 
+const getUnit = (key: string) => {
+  if (["x", "y", "z", "md"].includes(key)) return "[m]";
+  if (["hazi", "devi"].includes(key)) return "[deg]";
+  return "";
+};
+
 const GeometryTable: FC<GeometryTableProps> = ({ data }) => {
   const { t } = useTranslation();
 
+  if (!data) {
+    return (
+      <FullPageCentered>
+        <CircularProgress />
+      </FullPageCentered>
+    );
+  }
+
+  if (data.length === 0) {
+    return <Typography>{t("msgBoreholeGeometryEmpty")}</Typography>;
+  }
+
   return (
-    <>
-      {!data ? (
-        <FullPageCentered>
-          <CircularProgress />
-        </FullPageCentered>
-      ) : data.length === 0 ? (
-        <Typography>{t("msgBoreholeGeometryEmpty")}</Typography>
-      ) : (
-        <TableContainer sx={{ aspectRatio: 1 }}>
-          <Table stickyHeader size="small">
-            <TableHead>
-              <TableRow>
-                {Object.keys(data[0]).map(key => (
-                  <TableCell key={key} sx={{ fontWeight: 900 }}>
-                    {key} {["x", "y", "z", "md"].includes(key) ? "[m]" : ["hazi", "devi"].includes(key) ? "[deg]" : ""}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((element, index) => (
-                <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                  {/* Object.keys only returns keys of the element, so the lookup cannot miss. */}
-                  {Object.keys(element).map(key => (
-                    <TableCell key={key}>
-                      {formatNumberForDisplay(element[key as keyof BoreholeGeometryPoint])}
-                    </TableCell>
-                  ))}
-                </TableRow>
+    <TableContainer sx={{ aspectRatio: 1 }}>
+      <Table stickyHeader size="small">
+        <TableHead>
+          <TableRow>
+            {Object.keys(data[0]).map(key => (
+              <TableCell key={key} sx={{ fontWeight: 900 }}>
+                {key} {getUnit(key)}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {/* The measured depth increases along the borehole path, so it identifies a point. */}
+          {data.map(element => (
+            <TableRow key={element.md} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+              {/* Object.keys only returns keys of the element, so the lookup cannot miss. */}
+              {Object.keys(element).map(key => (
+                <TableCell key={key}>{formatNumberForDisplay(element[key as keyof BoreholeGeometryPoint])}</TableCell>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
