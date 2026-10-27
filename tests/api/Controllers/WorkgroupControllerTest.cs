@@ -12,6 +12,8 @@ namespace BDMS.Controllers;
 [TestClass]
 public class WorkgroupControllerTest
 {
+    private const string EditorFirstName = "editor";
+
     private readonly Mock<ILogger<WorkgroupController>> loggerMock = new();
     private BdmsContext context;
     private WorkgroupController workgroupController;
@@ -193,7 +195,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task SetSingleRole()
     {
-        var user = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "editor");
+        var user = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == EditorFirstName);
         var workgroup = new Workgroup { Name = "WINDDESPERADO" };
         var createResult = await workgroupController.CreateAsync(workgroup);
         ActionResultAssert.IsOk(createResult);
@@ -245,7 +247,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task SecondRoleInSameWorkgroupIsRejectedByDatabase()
     {
-        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == "editor");
+        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == EditorFirstName);
         await context.Database.ExecuteSqlRawAsync("SAVEPOINT second_role");
 
         var insert = () => context.Database.ExecuteSqlRawAsync(
@@ -258,7 +260,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task SetRoles()
     {
-        var user1 = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "editor");
+        var user1 = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == EditorFirstName);
         var user2 = await context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.FirstName == "reader");
         var workgroup = new Workgroup { Name = "TECHWARRIORS" };
         var createResult = await workgroupController.CreateAsync(workgroup);
@@ -352,7 +354,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task SetRolesWithUnknownRoleReturnsBadRequest()
     {
-        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == "editor");
+        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == EditorFirstName);
 
         var setRolesResult = await workgroupController.SetRolesAsync(
             [new UserWorkgroupRole { UserId = user.Id, WorkgroupId = 1, Role = (Role)4, IsActive = true }]);
@@ -374,7 +376,7 @@ public class WorkgroupControllerTest
     [TestMethod]
     public async Task SetRolesForInexistentWorkgroupReturnsNotFound()
     {
-        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == "editor");
+        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == EditorFirstName);
 
         var setRolesResult = await workgroupController.SetRolesAsync(
             [new UserWorkgroupRole { UserId = user.Id, WorkgroupId = int.MaxValue, Role = Role.Editor, IsActive = true }]);
