@@ -107,8 +107,6 @@ describe("LithologyModal", () => {
   beforeEach(() => {
     classify.mockReset();
     showAlert.mockClear();
-    // The analyse action is only offered in dev mode.
-    window.history.replaceState(null, "", "/?dev=true");
   });
 
   afterEach(() => {
@@ -123,6 +121,17 @@ describe("LithologyModal", () => {
     await waitFor(() => expect(byDataCy("analysis-result-card")).toBeInTheDocument());
 
     expect(byDataCy("analyze-button")).toBeDisabled();
+  });
+
+  it("reports a failed classification and leaves the form open for another try", async () => {
+    classify.mockRejectedValue(new Error("service unavailable"));
+    render(modalFor(lithology(1)), { wrapper: withAlerts });
+
+    fireEvent.click(byDataCy("analyze-button")!);
+
+    await waitFor(() => expect(showAlert).toHaveBeenCalledWith("errorLithologyClassification", "error"));
+    expect(byDataCy("analysis-result-card")).not.toBeInTheDocument();
+    expect(byDataCy("analyze-button")).toBeEnabled();
   });
 
   it("drops the analysis of the previous lithology when another one opens", async () => {

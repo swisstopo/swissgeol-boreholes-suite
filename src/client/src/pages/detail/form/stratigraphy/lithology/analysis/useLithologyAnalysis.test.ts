@@ -512,6 +512,20 @@ describe("useLithologyAnalysis", () => {
     expect(result.current.analysis.emptyResult).toBeUndefined();
   });
 
+  it("rejects a failed classification and leaves the form and the analysis untouched", async () => {
+    const failure = new Error("service unavailable");
+    classify.mockRejectedValue(failure);
+    const { result } = setup();
+
+    await act(async () => {
+      await expect(result.current.analysis.run("Silt")).rejects.toBe(failure);
+    });
+
+    expect(result.current.formMethods.getValues()).toEqual(initialValues);
+    expect(result.current.analysis.hasPendingChanges).toBe(false);
+    expect(result.current.analysis.emptyResult).toBeUndefined();
+  });
+
   it("cancels a running classification on discard", async () => {
     let finishClassification: (response: ClassifyResponse) => void = () => {};
     classify.mockReturnValue(
