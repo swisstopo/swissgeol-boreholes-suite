@@ -4,7 +4,9 @@ import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ClassifyResponse, ClassifyVariables } from "../../../../../../api/dataextractionInterfaces.ts";
 import { Codelist } from "../../../../../../api/generated";
+import { FormErrors } from "../../../../../../components/form/form.ts";
 import { LithologyFormValues } from "../../stratigraphy.ts";
+import { validateLithologyUnconValues } from "../form/lithologyUtils.ts";
 import { useLithologyAnalysis } from "./useLithologyAnalysis.ts";
 
 const codelist = (schema: string, code: string, en: string, id: number): Codelist => ({ id, schema, code, en });
@@ -12,6 +14,9 @@ const codelist = (schema: string, code: string, en: string, id: number): Codelis
 const codelists: Codelist[] = [
   codelist("lithology_uncon_main", "Si", "silt", 102),
   codelist("lithology_uncon_main", "Sa", "sand", 103),
+  codelist("lithology_uncon_secondary", "Si", "silt", 202),
+  codelist("lithology_uncon_secondary", "Co", "cobbles", 203),
+  codelist("lithology_uncon_secondary", "Gr", "gravel", 204),
   codelist("component_uncon_organic", "", "humus", 401),
   codelist("component_uncon_organic", "", "earth", 402),
   codelist("component_uncon_organic", "", "roots", 403),
@@ -57,6 +62,27 @@ const initialValues: LithologyFormValues = {
 const setup = () =>
   renderHook(() => {
     const formMethods = useForm<LithologyFormValues>({ defaultValues: initialValues });
+    return { formMethods, analysis: useLithologyAnalysis(formMethods) };
+  });
+
+const emptyUnconsolidatedValues: LithologyFormValues = {
+  ...initialValues,
+  lithologyDescriptions: [{ id: 0, lithologyId: 7, isFirst: true }],
+  lithologicalDescription: { description: "" },
+};
+
+/** A form validated like the lithology modal's, for the errors the analysis leaves behind. */
+const setupValidated = () =>
+  renderHook(() => {
+    const formMethods = useForm<LithologyFormValues>({
+      mode: "all",
+      defaultValues: emptyUnconsolidatedValues,
+      resolver: values => {
+        const errors: FormErrors = {};
+        validateLithologyUnconValues(values.lithologyDescriptions, errors, values.isUnconsolidated);
+        return Object.keys(errors).length > 0 ? { values: {}, errors } : { values, errors: {} };
+      },
+    });
     return { formMethods, analysis: useLithologyAnalysis(formMethods) };
   });
 
@@ -282,6 +308,25 @@ describe("useLithologyAnalysis", () => {
 
     expect(result.current.formMethods.getValues().notes).toBe("typed after the analysis");
     expect(result.current.formMethods.getValues().lithologyDescriptions?.[0].lithologyUnconMainId).toBe(103);
+  });
+
+  it("leaves no ordering error on the emptied secondary fields on resetAll", async () => {
+    classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "sa", en_secondary: ["si", "co", "gr"] });
+    const { result } = setupValidated();
+
+    await act(async () => {
+      await result.current.analysis.run("Sand, siltig, mit Steinen und Kies");
+    });
+    // Awaited so the validation the writes start has settled before the errors are read.
+    await act(() => {
+      result.current.analysis.resetAll();
+      return Promise.resolve();
+    });
+
+    const { getFieldState } = result.current.formMethods;
+    expect(getFieldState("lithologyDescriptions.0.lithologyUnconMainId").error).toBeUndefined();
+    expect(getFieldState("lithologyDescriptions.0.lithologyUncon2Id").error).toBeUndefined();
+    expect(getFieldState("lithologyDescriptions.0.lithologyUncon3Id").error).toBeUndefined();
   });
 
   it("keeps the remarks and depths typed while the request ran when the mode changes", async () => {
