@@ -184,10 +184,13 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
       const { lithologicalDescription, notes } = formMethods.getValues();
       formMethods.reset({ ...state.snapshot, lithologicalDescription, notes });
     } else {
-      state.changes.forEach(change => writeValue(change.path, change.previous));
+      // Validated together once all are written: validating each write against the fields not yet
+      // restored would leave ordering errors on the earlier fields that no later write clears.
+      state.changes.forEach(change => formMethods.setValue(change.path, change.previous, { shouldDirty: true }));
+      void formMethods.trigger(state.changes.map(change => change.path));
     }
     setState(emptyState);
-  }, [formMethods, state.changes, state.isModeChangeFixed, state.modeChange, state.snapshot, writeValue]);
+  }, [formMethods, state.changes, state.isModeChangeFixed, state.modeChange, state.snapshot]);
 
   const discard = useCallback(() => {
     runningClassification.current?.abort();
