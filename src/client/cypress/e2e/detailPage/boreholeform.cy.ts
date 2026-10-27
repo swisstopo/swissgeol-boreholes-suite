@@ -25,8 +25,16 @@ import {
   setYesNoSelect,
 } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
-import { createBorehole, goToDetailRouteAndAcceptTerms, goToRouteAndAcceptTerms, handlePrompt, newEditableBorehole, returnToOverview, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers";
-
+import {
+  createBorehole,
+  goToDetailRouteAndAcceptTerms,
+  goToRouteAndAcceptTerms,
+  handlePrompt,
+  newEditableBorehole,
+  returnToOverview,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 
 function ensureEditingDisabled() {
   cy.get('[data-cy="edit-button"]').should("exist");
