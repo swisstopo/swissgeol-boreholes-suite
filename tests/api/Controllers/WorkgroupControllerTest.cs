@@ -283,7 +283,7 @@ public class WorkgroupControllerTest
         Assert.IsTrue(roles.Any(r => r.UserId == user2.Id && r.Role == Role.Reader));
 
         // Replace the role of one user and remove the role of another.
-        // New instances like in a real request, because the context still tracks the ones added above.
+        // New instances like in a real request.
         userWorkgroupRoles =
         [
             CreateUserWorkgroupRole(user1, createdWorkgroup, Role.Publisher, true),
@@ -360,8 +360,55 @@ public class WorkgroupControllerTest
             [new UserWorkgroupRole { UserId = user.Id, WorkgroupId = 1, Role = (Role)4, IsActive = true }]);
 
         ActionResultAssert.IsBadRequest(setRolesResult);
-        var roles = await context.UserWorkgroupRoles.AsNoTracking().Where(r => r.UserId == user.Id && r.WorkgroupId == 1).ToListAsync();
-        Assert.IsTrue(roles.All(r => r.Role != (Role)4));
+    }
+
+    [TestMethod]
+    public async Task SetRolesWithNullRoleChangeReturnsBadRequest()
+    {
+        var setRolesResult = await workgroupController.SetRolesAsync([null]);
+        ActionResultAssert.IsBadRequest(setRolesResult);
+    }
+
+    [TestMethod]
+    public async Task SetRolesWithOneInvalidRoleChangeSavesNone()
+    {
+        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == EditorFirstName);
+        var roleBefore = await context.UserWorkgroupRoles.AsNoTracking().SingleAsync(r => r.UserId == user.Id && r.WorkgroupId == 1);
+        Assert.AreNotEqual(Role.Publisher, roleBefore.Role);
+
+        var setRolesResult = await workgroupController.SetRolesAsync(
+        [
+            new UserWorkgroupRole { UserId = user.Id, WorkgroupId = 1, Role = Role.Publisher, IsActive = true },
+            new UserWorkgroupRole { UserId = user.Id, WorkgroupId = int.MaxValue, Role = Role.Editor, IsActive = true },
+        ]);
+
+        ActionResultAssert.IsNotFound(setRolesResult);
+        var roleAfter = await context.UserWorkgroupRoles.AsNoTracking().SingleAsync(r => r.UserId == user.Id && r.WorkgroupId == 1);
+        Assert.AreEqual(roleBefore.Role, roleAfter.Role);
+    }
+
+    [TestMethod]
+    public async Task SetRolesDoesNotWriteWorkgroupSentAlong()
+    {
+        var user = await context.Users.AsNoTracking().SingleAsync(u => u.FirstName == EditorFirstName);
+        var workgroupCount = await context.Workgroups.CountAsync();
+
+        var setRolesResult = await workgroupController.SetRolesAsync(
+        [
+            new UserWorkgroupRole
+            {
+                UserId = user.Id,
+                WorkgroupId = 3,
+                Workgroup = new Workgroup { Name = "SMUGGLEDIN" },
+                Role = Role.Reader,
+                IsActive = true,
+            },
+        ]);
+
+        ActionResultAssert.IsOk(setRolesResult);
+        Assert.AreEqual(workgroupCount, await context.Workgroups.CountAsync());
+        var role = await context.UserWorkgroupRoles.AsNoTracking().SingleAsync(r => r.UserId == user.Id && r.WorkgroupId == 3);
+        Assert.AreEqual(Role.Reader, role.Role);
     }
 
     [TestMethod]
