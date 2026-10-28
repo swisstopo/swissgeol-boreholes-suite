@@ -1,9 +1,10 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import {
   GenericWorkflowSelection,
   LocalDate,
+  Role,
   SgcWorkflowChangeEventDetail,
   SgcWorkflowCustomEvent,
   SgcWorkflowSelectionChangeEventDetails,
@@ -17,7 +18,6 @@ import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailability.ts";
-import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import {
@@ -40,7 +40,6 @@ export const WorkflowView = () => {
   const { setEditingEnabled } = useContext(EditStateContext);
   const workgroupId = borehole?.workgroup?.id ?? 0;
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(workgroupId);
-  const { navigateTo } = useBoreholesNavigate();
   const { showAlert } = useContext(AlertContext);
   const {
     hasStratigraphy,
@@ -71,12 +70,16 @@ export const WorkflowView = () => {
     updateTabStatus: { mutate: updateTabStatus },
   } = useWorkflowMutation();
 
+  // The page turns read-only when a status change takes away the manage permission. Users who never
+  // had it while the page was open get no alert, since nothing changed for them.
+  const previousCanManage = useRef(canManage);
   useEffect(() => {
-    if (canManage === false) {
+    const hasLostManagePermission = previousCanManage.current === true && canManage === false;
+    previousCanManage.current = canManage;
+    if (hasLostManagePermission) {
       showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
-      navigateTo({ path: "/" + boreholeId + "/location" });
     }
-  }, [canManage, showAlert, navigateTo, t, boreholeId]);
+  }, [canManage, showAlert, t]);
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
     const field = (name: string, isDisabled: boolean = false, label: string = name) => ({
@@ -209,6 +212,9 @@ export const WorkflowView = () => {
   };
 
   const isAnythingApproved = Object.values(workflow.publishedTabs).includes(true);
+  const canPublish =
+    currentUser.isAdmin === true ||
+    getWorkflowRoleInWorkgroup(currentUser.workgroupRoles, workgroupId) === Role.Publisher;
 
   return (
     <Box sx={{ minHeight: "100dvh" }}>
@@ -224,11 +230,13 @@ export const WorkflowView = () => {
         review={workflow.reviewedTabs}
         item={"Borehole"}
         approval={workflow.publishedTabs}
-        isReadOnly={false}
+        // Hides the publish button and locks the review and approval checkboxes.
+        isReadOnly={!canManage}
         availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
         canChangeStatus={canManage}
-        isRestricted={borehole?.restrictionId !== restrictionFreeCode || !isAnythingApproved}
+        // Only greys out the publish button, everything else stays usable.
+        isRestricted={borehole?.restrictionId !== restrictionFreeCode || !isAnythingApproved || !canPublish}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)
         }

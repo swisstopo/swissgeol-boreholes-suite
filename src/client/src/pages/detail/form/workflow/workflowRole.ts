@@ -1,5 +1,5 @@
 ﻿import { Role } from "@swissgeol/ui-core";
-import { UserWorkgroupRole } from "../../../../api/generated/types.gen";
+import { UserWorkgroupRole } from "../../../../api/generated";
 
 // A user holds one role per workgroup, and only the role in the borehole's workgroup grants rights on it.
 export const getWorkflowRoleInWorkgroup = (

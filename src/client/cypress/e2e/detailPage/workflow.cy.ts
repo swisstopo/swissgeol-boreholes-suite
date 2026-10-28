@@ -614,7 +614,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  it("Editor can request review and is redirected", () => {
+  it("Editor can request review and still sees the status", () => {
     createBorehole({
       originalName: "Cormoran Cellar",
     }).as("borehole_id");
@@ -632,9 +632,10 @@ describe("Tests the publication workflow.", () => {
       cy.get(".MuiAlert-message").contains(
         "The status of the borehole was changed. You no longer have permission to edit the borehole.",
       );
-      cy.location().should(location => {
-        expect(location.pathname).to.eq(`/${id}/location`);
-      });
+      cy.location("pathname").should("eq", `/${id}/status`);
+      assertWorkflowSteps("In review");
+      cy.get("sgc-button").contains("Finish review").should("not.exist");
+      cy.get("sgc-button").contains("Request changes").should("not.exist");
     });
   });
 
