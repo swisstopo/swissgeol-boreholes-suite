@@ -52,9 +52,9 @@ const GeometryTable: FC<GeometryTableProps> = ({ data }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {/* The measured depth increases along the borehole path, so it identifies a point. */}
-          {data.map(element => (
-            <TableRow key={element.md} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+          {/* The rows are never reordered, inserted or removed, so the index identifies a point. */}
+          {data.map((element, index) => (
+            <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
               {/* Object.keys only returns keys of the element, so the lookup cannot miss. */}
               {Object.keys(element).map(key => (
                 <TableCell key={key}>{formatNumberForDisplay(element[key as keyof BoreholeGeometryElement])}</TableCell>
