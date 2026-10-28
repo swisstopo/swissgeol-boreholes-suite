@@ -1,4 +1,4 @@
-FROM node:22-bookworm-slim AS development
+FROM node:22.23.4-bookworm-slim AS development
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}
@@ -18,7 +18,7 @@ RUN mkdocs build -d ./public/help
 
 ENTRYPOINT ["npm", "run", "start", "--", "--host"]
 
-FROM node:22-bookworm-slim AS deploy
+FROM node:22.23.4-bookworm-slim AS deploy
 ARG VERSION
 ARG REVISION
 ENV VITE_APP_VERSION=${VERSION}+${REVISION}
@@ -34,7 +34,7 @@ RUN npm run build
 # Generate license and copyright notice for Node.js packages
 RUN npm run licenses
 
-# UID of user Node in `node:22-bookworm-slim`
+# UID of user Node in `node:22.23.4-bookworm-slim`
 USER 1000
 
 ENTRYPOINT ["node", "server.cjs"]

@@ -18,7 +18,7 @@ RUN dotnet publish "./extern-sync/BDMS.ExternSync.csproj" \
   -p:SourceRevisionId=${REVISION} \
   -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS deploy
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.14 AS deploy
 ENV ASPNETCORE_ENVIRONMENT=Production
 WORKDIR /app
 
