@@ -6,7 +6,9 @@ import { User, Workgroup } from "../../../../api/generated";
 import { AddWorkgroupRoleDialog } from "./addWorkgroupRoleDialog.tsx";
 import { checkOptions, chooseRole, openSelect } from "./roleAssignmentDialogTestHelpers.ts";
 
-const { setWorkgroupRoles } = vi.hoisted(() => ({ setWorkgroupRoles: vi.fn() }));
+const { setWorkgroupRoles } = vi.hoisted(() => ({
+  setWorkgroupRoles: vi.fn<(changes: unknown[], options: { onSuccess: () => void }) => void>(),
+}));
 
 const workgroups: Workgroup[] = [
   { id: 1, name: "Default", isDisabled: false },
@@ -29,7 +31,7 @@ vi.mock("react-i18next", () => ({
 vi.mock("../../../../api/workgroup.ts", () => ({
   workgroupQueryKey: "workgroups",
   useWorkgroups: () => ({ data: workgroups }),
-  useWorkgroupMutations: () => ({ setWorkgroupRoles: { mutate: setWorkgroupRoles } }),
+  useWorkgroupMutations: () => ({ setWorkgroupRoles: { mutate: setWorkgroupRoles, isPending: false } }),
 }));
 
 const renderDialog = () =>
@@ -61,7 +63,8 @@ describe("AddWorkgroupRoleDialog", () => {
     chooseRole("Editor");
     fireEvent.click(screen.getByRole("button", { name: /add/i }));
 
-    expect(setWorkgroupRoles).toHaveBeenCalledExactlyOnceWith([
+    expect(setWorkgroupRoles).toHaveBeenCalledOnce();
+    expect(setWorkgroupRoles.mock.calls[0][0]).toEqual([
       { userId: 7, workgroupId: 3, role: "Editor", isActive: true },
       { userId: 7, workgroupId: 4, role: "Editor", isActive: true },
     ]);
