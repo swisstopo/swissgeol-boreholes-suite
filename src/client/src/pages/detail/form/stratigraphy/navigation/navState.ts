@@ -44,16 +44,26 @@ export class NavState {
     Object.freeze(this);
   }
 
+  with(changes: NavStateInit): NavState {
+    return new NavState({
+      lensStart: this.lensStart,
+      rawLensSize: this.rawLensSize,
+      height: this.height,
+      contentHeights: this.contentHeights,
+      ...changes,
+    });
+  }
+
   setLensStart(value: number): NavState {
-    return new NavState({ ...this, lensStart: value });
+    return this.with({ lensStart: value });
   }
 
   setLensSize(value: number): NavState {
-    return new NavState({ ...this, rawLensSize: value });
+    return this.with({ rawLensSize: value });
   }
 
   setHeight(value: number): NavState {
-    return new NavState({ ...this, height: value });
+    return this.with({ height: value });
   }
 
   setContentHeightFromLayers(name: string, layers: ReadonlyArray<{ toDepth: number | null }> | undefined): NavState {
@@ -62,14 +72,11 @@ export class NavState {
   }
 
   setContentHeight(name: string, height: number): NavState {
-    const temp = new NavState({
-      ...this,
-      contentHeights: { ...this.contentHeights, [name]: height },
-    });
+    const temp = this.with({ contentHeights: { ...this.contentHeights, [name]: height } });
     if (temp.lensStart + temp.lensSize > temp.maxContent) {
       const newLensStart = Math.max(0, temp.maxContent - temp.lensSize);
       const newLensSize = temp.maxContent - newLensStart;
-      return new NavState({ ...temp, lensStart: newLensStart, rawLensSize: newLensSize });
+      return temp.with({ lensStart: newLensStart, rawLensSize: newLensSize });
     }
     return temp;
   }

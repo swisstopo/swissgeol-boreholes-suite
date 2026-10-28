@@ -4,7 +4,7 @@ import { Box, Stack } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 import { AddRowButton } from "../../../../components/buttons/buttons.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { LayerAddButton } from "./components/layerAddButton.tsx";
+import { LayerAddIcon } from "./components/layerAddButton.tsx";
 import { LensColumn } from "./components/lensColumn/LensColumn.tsx";
 import { StratigraphyTableHeaderCell } from "./components/stratigraphyTableHeaderCell.tsx";
 import { StratigraphyTableHeader } from "./components/stratigraphyTablePrimitives.tsx";
@@ -127,7 +127,7 @@ const StratigraphyEditPanelContent: FC<StratigraphyEditPanelContentProps> = ({
           {/*Temporary add button position until the editing view is adapted*/}
           {/* https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2301*/}
           {/* https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2300*/}
-          <AddRowButton onClick={handleAddLayer} dataCy="add-layer-button" buttonContent={<LayerAddButton />} />
+          <AddRowButton onClick={handleAddLayer} dataCy="add-layer-button" buttonContent={<LayerAddIcon />} />
         </Box>
       )}
     </>

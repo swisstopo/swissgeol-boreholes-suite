@@ -1,6 +1,7 @@
 import { memo, ReactNode, useMemo } from "react";
 import { Box } from "@mui/material";
-import { SxProps, Theme } from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
+import { SystemStyleObject } from "@mui/system";
 import { NavState } from "../../navigation/navState.ts";
 
 interface ScaledLayer {
@@ -14,7 +15,7 @@ interface ScaledLayerColumnProps<T extends ScaledLayer> {
   renderLayer: (layer: T, index: number) => ReactNode;
   getKey?: (layer: T, index: number) => string | number;
   minPixelHeight?: number;
-  sx?: SxProps<Theme>;
+  sx?: SystemStyleObject<Theme>;
 }
 
 // Renders each layer as an absolutely-positioned box at depth `fromDepth * pixelPerMeter` with

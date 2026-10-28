@@ -1,7 +1,8 @@
 import { FC, ReactNode, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material";
-import { SxProps, Theme } from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
+import { SystemStyleObject } from "@mui/system";
 import { Copy } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../../components/buttons/buttons.tsx";
@@ -17,7 +18,7 @@ const minVerticalPaddingPx = 0;
 interface ScaledCellShellProps {
   children: ReactNode;
   dataCy?: string;
-  sx?: SxProps<Theme>;
+  sx?: SystemStyleObject<Theme>;
 }
 
 export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx }) => {

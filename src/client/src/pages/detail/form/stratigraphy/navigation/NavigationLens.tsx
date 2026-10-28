@@ -47,13 +47,7 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
   const [syncedContentHeights, setSyncedContentHeights] = useState(navState.contentHeights);
   if (navState.contentHeights !== syncedContentHeights) {
     setSyncedContentHeights(navState.contentHeights);
-    setBackgroundNavState(
-      prev =>
-        new NavState({
-          ...prev,
-          contentHeights: { ...navState.contentHeights },
-        }),
-    );
+    setBackgroundNavState(prev => prev.with({ contentHeights: { ...navState.contentHeights } }));
   }
 
   const handleDrag = (_e: DraggableEvent, data: DraggableData) => {

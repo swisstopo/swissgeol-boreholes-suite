@@ -1,13 +1,14 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { SxProps } from "@mui/material";
+import { Theme } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { Sparkles } from "lucide-react";
 import { ButtonSelect } from "../../../../../components/buttons/buttonSelect.tsx";
 
 interface AddStratigraphyButtonProps {
   addEmptyStratigraphy: () => void;
   extractStratigraphyFromProfile: () => void;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   onBeforeOpen?: (proceed: () => void) => void;
 }
 
