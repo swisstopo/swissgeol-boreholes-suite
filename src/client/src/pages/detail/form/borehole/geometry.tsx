@@ -1,11 +1,8 @@
 import { FC, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardActions, CardContent, CircularProgress, Grid2, Typography } from "@mui/material/";
-import {
-  BoreholeGeometryPoint,
-  useBoreholeGeometry,
-  useBoreholeGeometryMutations,
-} from "../../../../api/fetchApiV2.ts";
+import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.ts";
+import { BoreholeGeometryElement } from "../../../../api/generated";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
@@ -32,7 +29,7 @@ const Geometry: FC<GeometryProps> = ({ measuredDepth }) => {
     delete: { mutate: deleteBoreholeGeometry, isPending: isDeletingBoreholeGeometry },
   } = useBoreholeGeometryMutations();
 
-  const defaultData: BoreholeGeometryPoint[] = [
+  const defaultData: BoreholeGeometryElement[] = [
     { md: 0, x: 0, y: 0, z: 0 },
     { md: measuredDepth, x: 0, y: 0, z: measuredDepth },
   ];

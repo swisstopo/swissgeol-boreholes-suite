@@ -2,12 +2,12 @@ import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Slider, Stack, Typography } from "@mui/material";
 import * as d3 from "d3";
-import { BoreholeGeometryPoint } from "../../../../api/fetchApiV2.ts";
+import { BoreholeGeometryElement } from "../../../../api/generated";
 import { ChartPoint, GeometryChartTrace } from "./geometryChartTrace.tsx";
 import { useGeometryChartAxes } from "./useGeometryChartAxes.ts";
 
 interface GeometryChartsProps {
-  data: BoreholeGeometryPoint[];
+  data: BoreholeGeometryElement[];
 }
 
 /**

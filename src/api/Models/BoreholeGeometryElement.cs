@@ -32,24 +32,28 @@ public class BoreholeGeometryElement : IIdentifyable
     /// Gets or sets the Measured Depth (MD) of the data point in meters.
     /// </summary>
     [IncludeInExport]
+    [Required]
     public double MD { get; set; }
 
     /// <summary>
     /// Gets or sets the X coordinate of the data point in meters.
     /// </summary>
     [IncludeInExport]
+    [Required]
     public double X { get; set; }
 
     /// <summary>
     /// Gets or sets the Y coordinate of the data point in meters.
     /// </summary>
     [IncludeInExport]
+    [Required]
     public double Y { get; set; }
 
     /// <summary>
     /// Gets or sets the Z coordinate of the data point in meters.
     /// </summary>
     [IncludeInExport]
+    [Required]
     public double Z { get; set; }
 
     /// <summary>

@@ -7717,6 +7717,12 @@
         "description": "Join table entity for a BDMS.Models.Codelist attached to a BDMS.Models.Borehole to store multiple borehole ids."
       },
       "BoreholeGeometryElement": {
+        "required": [
+          "md",
+          "x",
+          "y",
+          "z"
+        ],
         "type": "object",
         "properties": {
           "md": {

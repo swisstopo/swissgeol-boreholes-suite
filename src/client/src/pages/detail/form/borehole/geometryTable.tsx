@@ -10,12 +10,12 @@ import {
   TableRow,
   Typography,
 } from "@mui/material/";
-import { BoreholeGeometryPoint } from "../../../../api/fetchApiV2.ts";
+import { BoreholeGeometryElement } from "../../../../api/generated";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 
 interface GeometryTableProps {
-  data: BoreholeGeometryPoint[] | undefined;
+  data: BoreholeGeometryElement[] | undefined;
 }
 
 const getUnit = (key: string) => {
@@ -57,7 +57,7 @@ const GeometryTable: FC<GeometryTableProps> = ({ data }) => {
             <TableRow key={element.md} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
               {/* Object.keys only returns keys of the element, so the lookup cannot miss. */}
               {Object.keys(element).map(key => (
-                <TableCell key={key}>{formatNumberForDisplay(element[key as keyof BoreholeGeometryPoint])}</TableCell>
+                <TableCell key={key}>{formatNumberForDisplay(element[key as keyof BoreholeGeometryElement])}</TableCell>
               ))}
             </TableRow>
           ))}

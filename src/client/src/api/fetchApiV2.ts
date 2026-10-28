@@ -184,15 +184,13 @@ export const useBoreholeGeometry = (boreholeId?: number) =>
   useQuery({
     queryKey: [geometryQueryKey, boreholeId],
     queryFn: async () => {
-      return await fetchApiV2WithApiError<BoreholeGeometryPoint[]>(`boreholegeometry?boreholeId=${boreholeId}`, "GET");
+      return await fetchApiV2WithApiError<BoreholeGeometryElement[]>(
+        `boreholegeometry?boreholeId=${boreholeId}`,
+        "GET",
+      );
     },
     enabled: !!boreholeId,
   });
-
-// The API always sends md, x, y and z (non-nullable on the backend), but the generated type marks them
-// optional because the model lacks [Required].
-export type BoreholeGeometryPoint = BoreholeGeometryElement &
-  Required<Pick<BoreholeGeometryElement, "md" | "x" | "y" | "z">>;
 
 export interface GeometryFormat {
   key: string;
