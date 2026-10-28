@@ -5,13 +5,21 @@ import { Box, Chip } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 
 interface FileDropzoneProps {
-  onHandleFileChange: (files: File[]) => void; // Receives the files array whenever it changes.
-  defaultText: string; // The default text to display in the dropzone.
+  // A callback function to handle file changes. The function receives the files array as an argument.
+  onHandleFileChange: (files: File[]) => void;
+  // The default text to display in the dropzone.
+  defaultText: string;
+  // The maximum number of files that can be selected at once.
   maxFilesToSelectAtOnce: number;
+  // The maximum number of files that can be uploaded.
   maxFilesToUpload: number;
+  // The list of accepted file types.
   acceptedFileTypes: string[];
+  // Whether the dropzone is disabled.
   isDisabled: boolean;
+  // The data-cy attribute for testing.
   dataCy?: string;
+  // A react SetStateAction to set the file type.
   setFileType?: (fileType: string) => void;
 }
 
