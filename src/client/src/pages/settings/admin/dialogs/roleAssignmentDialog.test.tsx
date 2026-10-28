@@ -1,6 +1,6 @@
 ﻿// @vitest-environment jsdom
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { Role } from "../../../../api/generated";
@@ -20,18 +20,41 @@ const options: EntityOption[] = [
 
 const queryClient = new QueryClient();
 
-const dialog = (open: boolean, addEntities: (ids: number[], role: Role) => void, dialogOptions = options) => (
+type AddEntities = (ids: number[], role: Role, onAdded: () => void) => void;
+
+interface DialogSetup {
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
+  addEntities?: AddEntities;
+  isAdding?: boolean;
+  dialogOptions?: EntityOption[];
+}
+
+const dialog = ({
+  open = true,
+  setOpen = vi.fn(),
+  addEntities = vi.fn(),
+  isAdding = false,
+  dialogOptions = options,
+}: DialogSetup = {}) => (
   <QueryClientProvider client={queryClient}>
     <RoleAssignmentDialog
       open={open}
-      setOpen={vi.fn()}
+      setOpen={setOpen}
       addEntities={addEntities}
+      isAdding={isAdding}
       entityType={EntityType.user}
       options={dialogOptions}
       entityQueryKey="users"
     />
   </QueryClientProvider>
 );
+
+const addSelection = (names: string[]) => {
+  checkOptions("user-formSelect", names);
+  chooseRole("Editor");
+  fireEvent.click(screen.getByRole("button", { name: /add/i }));
+};
 
 const getCheckbox = (name: string) =>
   within(screen.getByRole("option", { name })).getByRole<HTMLInputElement>("checkbox");
@@ -42,7 +65,7 @@ describe("RoleAssignmentDialog", () => {
   });
 
   it("lists Select all first, then every option", () => {
-    render(dialog(true, vi.fn()));
+    render(dialog());
 
     openSelect("user-formSelect");
 
@@ -51,7 +74,7 @@ describe("RoleAssignmentDialog", () => {
   });
 
   it("checks every option with Select all and unchecks them with a second click", () => {
-    render(dialog(true, vi.fn()));
+    render(dialog());
     openSelect("user-formSelect");
 
     fireEvent.click(screen.getByRole("option", { name: "selectAll" }));
@@ -66,7 +89,7 @@ describe("RoleAssignmentDialog", () => {
   });
 
   it("shows Select all as indeterminate while only some options are checked", () => {
-    render(dialog(true, vi.fn()));
+    render(dialog());
     openSelect("user-formSelect");
 
     fireEvent.click(screen.getByRole("option", { name: "Ada Lovelace" }));
@@ -82,7 +105,7 @@ describe("RoleAssignmentDialog", () => {
   });
 
   it("keeps Add disabled until an option and a role are chosen", () => {
-    render(dialog(true, vi.fn()));
+    render(dialog());
     const addButton = screen.getByRole("button", { name: /add/i });
     expect(addButton).toBeDisabled();
 
@@ -94,33 +117,64 @@ describe("RoleAssignmentDialog", () => {
   });
 
   it("adds every checked option with the chosen role in one call", () => {
-    const addEntities = vi.fn();
-    render(dialog(true, addEntities));
+    const addEntities = vi.fn<AddEntities>();
+    render(dialog({ addEntities }));
 
-    checkOptions("user-formSelect", ["Ada Lovelace", "Grace Hopper"]);
+    addSelection(["Ada Lovelace", "Grace Hopper"]);
+
+    expect(addEntities).toHaveBeenCalledOnce();
+    expect(addEntities.mock.calls[0].slice(0, 2)).toEqual([[1, 3], "Editor"]);
+  });
+
+  it("closes only once the roles are saved", () => {
+    const setOpen = vi.fn();
+    const addEntities = vi.fn<AddEntities>();
+    render(dialog({ setOpen, addEntities }));
+
+    addSelection(["Ada Lovelace"]);
+    expect(setOpen).not.toHaveBeenCalled();
+
+    const onAdded = addEntities.mock.calls[0][2];
+    act(() => onAdded());
+    expect(setOpen).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it("keeps the selection when the roles are not saved", () => {
+    render(dialog({ addEntities: vi.fn<AddEntities>() }));
+
+    addSelection(["Ada Lovelace"]);
+    openSelect("user-formSelect");
+
+    expect(getCheckbox("Ada Lovelace").checked).toBe(true);
+  });
+
+  it("disables Add while the roles are being saved", () => {
+    render(dialog({ isAdding: true }));
+
+    checkOptions("user-formSelect", ["Ada Lovelace"]);
     chooseRole("Editor");
-    fireEvent.click(screen.getByRole("button", { name: /add/i }));
 
-    expect(addEntities).toHaveBeenCalledExactlyOnceWith([1, 3], "Editor");
+    expect(screen.getByRole("button", { name: /add/i })).toBeDisabled();
   });
 
   it("does not add a checked option that is no longer offered", () => {
-    const addEntities = vi.fn();
-    const { rerender } = render(dialog(true, addEntities));
+    const addEntities = vi.fn<AddEntities>();
+    const { rerender } = render(dialog({ addEntities }));
     checkOptions("user-formSelect", ["Ada Lovelace", "Grace Hopper"]);
 
-    rerender(dialog(true, addEntities, options.slice(0, 2)));
+    rerender(dialog({ addEntities, dialogOptions: options.slice(0, 2) }));
     chooseRole("Editor");
     fireEvent.click(screen.getByRole("button", { name: /add/i }));
 
-    expect(addEntities).toHaveBeenCalledExactlyOnceWith([1], "Editor");
+    expect(addEntities).toHaveBeenCalledOnce();
+    expect(addEntities.mock.calls[0].slice(0, 2)).toEqual([[1], "Editor"]);
   });
 
   it("does not count a checked option that is no longer offered towards Select all", () => {
-    const { rerender } = render(dialog(true, vi.fn()));
+    const { rerender } = render(dialog());
     checkOptions("user-formSelect", ["Ada Lovelace", "Grace Hopper"]);
 
-    rerender(dialog(true, vi.fn(), options.slice(0, 2)));
+    rerender(dialog({ dialogOptions: options.slice(0, 2) }));
     openSelect("user-formSelect");
 
     expect(getCheckbox("selectAll").checked).toBe(false);
@@ -128,7 +182,7 @@ describe("RoleAssignmentDialog", () => {
   });
 
   it("shows no options and no Select all when there is nothing to add", () => {
-    render(dialog(true, vi.fn(), []));
+    render(dialog({ dialogOptions: [] }));
 
     openSelect("user-formSelect");
 
@@ -136,12 +190,12 @@ describe("RoleAssignmentDialog", () => {
   });
 
   it("starts without checked options after cancelling", () => {
-    const { rerender } = render(dialog(true, vi.fn()));
+    const { rerender } = render(dialog());
     checkOptions("user-formSelect", ["Ada Lovelace"]);
     fireEvent.click(screen.getByRole("button", { name: /cancel/i }));
 
-    rerender(dialog(false, vi.fn()));
-    rerender(dialog(true, vi.fn()));
+    rerender(dialog({ open: false }));
+    rerender(dialog());
     openSelect("user-formSelect");
 
     expect(getCheckbox("Ada Lovelace").checked).toBe(false);

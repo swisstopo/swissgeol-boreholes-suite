@@ -33,7 +33,9 @@ type EntitySelectValue = number | typeof selectAllValue;
 interface RoleAssignmentDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  addEntities: (ids: number[], role: Role) => void;
+  /** Saves the role for the given entities and calls `onAdded` once they are saved. */
+  addEntities: (ids: number[], role: Role, onAdded: () => void) => void;
+  isAdding: boolean;
   entityType: EntityType;
   options: EntityOption[];
   entityQueryKey: string;
@@ -43,6 +45,7 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
   open,
   setOpen,
   addEntities,
+  isAdding,
   entityType,
   options,
   entityQueryKey,
@@ -93,8 +96,8 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
 
   const addRole = () => {
     if (addableSelectedIds.length > 0 && role) {
-      resetDialog();
-      addEntities(addableSelectedIds, role);
+      // The dialog only closes once the roles are saved, so a failed save keeps the selection for another try.
+      addEntities(addableSelectedIds, role, resetDialog);
     }
   };
 
@@ -151,7 +154,7 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
             <CancelButton onClick={resetDialog} />
             <AddButton
-              disabled={addableSelectedIds.length === 0 || !role}
+              disabled={addableSelectedIds.length === 0 || !role || isAdding}
               label="add"
               variant="contained"
               onClick={addRole}
