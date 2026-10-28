@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
-import { Role } from "@swissgeol/ui-core";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { Borehole } from "../../api/generated";
 import { useCurrentUser } from "../../api/user.ts";
@@ -12,7 +11,7 @@ import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useCapitalizedTranslation } from "../../hooks/useCapitalizedTranslation.ts";
 import { useRequiredId } from "../../hooks/useRequiredId.ts";
 import { TabStatus } from "./form/workflow/workflow.ts";
-import { getWorkflowRoleInWorkgroup } from "./form/workflow/workflowRole.ts";
+import { canViewWorkflow } from "./form/workflow/workflowRole.ts";
 
 interface DetailSideNavProps {
   borehole: Borehole;
@@ -21,10 +20,7 @@ interface DetailSideNavProps {
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const id = useRequiredId();
   const { data: currentUser } = useCurrentUser();
-  // Every editor of the workgroup can view the status, also in statuses they cannot change.
-  const canViewWorkflow =
-    currentUser?.isAdmin === true ||
-    getWorkflowRoleInWorkgroup(currentUser?.workgroupRoles, borehole.workgroup?.id ?? 0) !== Role.Reader;
+  const isWorkflowVisible = canViewWorkflow(currentUser, borehole.workgroup?.id ?? 0);
   const location = useLocation();
   const isHydrogeologyPath = location.pathname.startsWith(`/${id}/hydrogeology`);
   // A toggle of the hydrogeology menu applies to the location it was made on. After navigating,
@@ -199,7 +195,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             }}>
             {ct("attachments")}
           </SgcMenuItem>
-          {!auth.anonymousModeEnabled && canViewWorkflow && (
+          {!auth.anonymousModeEnabled && isWorkflowVisible && (
             <SgcMenuItem
               isActive={location.pathname === `/${id}/status`}
               data-cy="status-menu-item"

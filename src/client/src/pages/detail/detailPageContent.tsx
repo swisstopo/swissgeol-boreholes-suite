@@ -58,7 +58,7 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
             <Route path="completion/:completionId" element={<CompletionPanel />} />
             <Route path="completion" element={<CompletionPanel />} />
             <Route path="log" element={<LogPanel />} />
-            <Route path="status" element={<WorkflowView />} />
+            <Route path="status" element={<WorkflowView key={borehole.id} />} />
             <Route path="" element={<Navigate to="location" replace />} />
           </Routes>
         </Box>
