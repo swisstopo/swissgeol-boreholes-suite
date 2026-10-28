@@ -204,7 +204,7 @@ public class WorkgroupController : ControllerBase
     {
         try
         {
-            if (userWorkgroupRoles == null || userWorkgroupRoles.Length < 1)
+            if (userWorkgroupRoles == null || userWorkgroupRoles.Length < 1 || userWorkgroupRoles.Any(r => r is null))
             {
                 return BadRequest();
             }
@@ -223,7 +223,13 @@ public class WorkgroupController : ControllerBase
 
                 if (userWorkgroupRole.IsActive == true && existingRole == default)
                 {
-                    await context.AddAsync(userWorkgroupRole).ConfigureAwait(false);
+                    // Only the keys and the role are taken from the request, so users or workgroups sent along are not written.
+                    await context.AddAsync(new UserWorkgroupRole
+                    {
+                        UserId = userWorkgroupRole.UserId,
+                        WorkgroupId = userWorkgroupRole.WorkgroupId,
+                        Role = userWorkgroupRole.Role,
+                    }).ConfigureAwait(false);
                 }
                 else if (userWorkgroupRole.IsActive == true && existingRole != default && existingRole.Role != userWorkgroupRole.Role)
                 {
