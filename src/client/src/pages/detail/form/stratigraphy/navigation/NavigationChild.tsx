@@ -1,12 +1,13 @@
 import { FC, ReactNode } from "react";
 import { Box } from "@mui/material";
-import { SxProps, Theme } from "@mui/material/styles";
+import { Theme } from "@mui/material/styles";
+import { SystemStyleObject } from "@mui/system";
 import { NavState } from "./navState.ts";
 
 interface NavigationChildProps {
   navState: NavState;
   children: ReactNode;
-  sx?: SxProps<Theme>;
+  sx?: SystemStyleObject<Theme>;
 }
 
 // Clips its children to the body row and slides them up by lensStart so depth-positioned cells

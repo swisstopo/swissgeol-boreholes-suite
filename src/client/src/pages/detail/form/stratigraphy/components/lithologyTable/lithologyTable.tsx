@@ -24,7 +24,7 @@ import { DepthInsertButton } from "../depthInsertButton.tsx";
 import { DescriptionResizeHandle } from "../descriptionResize/descriptionResizeHandle.tsx";
 import { ResizeSide, useDescriptionResize } from "../descriptionResize/useDescriptionResize.ts";
 import { useGapRangeSelect } from "../descriptionResize/useGapRangeSelect.ts";
-import { LayerAddButton } from "../layerAddButton.tsx";
+import { LayerAddIcon } from "../layerAddButton.tsx";
 import { StratigraphyTableActionCell } from "../stratigraphyTableActionCell.tsx";
 import { defaultRowHeight } from "../stratigraphyTableConstants.ts";
 import { StratigraphyTableDescriptionGap } from "../stratigraphyTableDescriptionGap.tsx";
@@ -423,7 +423,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
         )}
       </Stack>
       {showAddRowButton && (
-        <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddButton />} />
+        <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddIcon />} />
       )}
       <LithologyModal
         lithology={selectedLithology}

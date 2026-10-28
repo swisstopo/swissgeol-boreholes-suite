@@ -1,13 +1,14 @@
 import { FC } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Checkbox, FormControlLabel, SxProps } from "@mui/material";
+import { Checkbox, FormControlLabel, Theme } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 
 interface FormCheckboxProps {
   fieldName: string;
   label: string;
   disabled?: boolean;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   onChange?: (value: boolean) => void;
 }
 

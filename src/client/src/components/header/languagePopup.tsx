@@ -38,7 +38,7 @@ export function LanguagePopup() {
   return (
     <ButtonSelect
       fieldName="language"
-      items={[...languages.map(language => ({ key: language, value: language.toUpperCase() }))]}
+      items={languages.map(language => ({ key: language, value: language.toUpperCase() }))}
       selectedItem={{ key: selectedLanguage, value: selectedLanguage.toUpperCase() }}
       onItemSelected={item => onLanguageChanged(item.key as string)}
       textAlign="right"

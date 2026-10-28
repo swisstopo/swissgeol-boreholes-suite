@@ -32,13 +32,6 @@
     "server.cjs"
   ],
   "rules": {
-    // Correctness rules that still have violations in the codebase.
-    "typescript/no-misused-spread": "off",
-    "unicorn/no-useless-spread": "off",
-    "unicorn/no-empty-file": "off",
-    "unicorn/no-new-array": "off",
-    "jsx-a11y/prefer-tag-over-role": "off",
-
     // An options object switches off oxlint's default "^_" ignore patterns, matching
     // typescript-eslint, which ignores no names by default.
     "no-unused-vars": ["error", {}],

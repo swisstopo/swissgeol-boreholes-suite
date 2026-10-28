@@ -1,7 +1,8 @@
 import { FC, HTMLAttributes, useContext, useState } from "react";
 import { Controller, RegisterOptions, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Autocomplete, SxProps, TextField } from "@mui/material";
+import { Autocomplete, TextField, Theme } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { theme } from "../../AppTheme.ts";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
@@ -19,7 +20,7 @@ export interface FormSelectProps {
   ignoreOverlow?: boolean;
   selected?: number | boolean | null;
   values?: FormSelectValue[];
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   className?: string;
   onUpdate?: (value: number | string | boolean | null) => void;
   canReset?: boolean;

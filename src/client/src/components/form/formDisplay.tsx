@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack, SxProps, Typography } from "@mui/material";
+import { Stack, Theme, Typography } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { Language } from "@swissgeol/ui-core";
 import { Codelist } from "../../api/generated";
 import { FormValueType } from "./form";
@@ -11,7 +12,7 @@ interface FormDisplayProps {
   label: string;
   value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null | undefined;
   type?: FormValueType;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
 }
 
 export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, sx }) => {

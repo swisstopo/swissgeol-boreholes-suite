@@ -1,5 +1,6 @@
 import { FC, MouseEvent } from "react";
-import { Stack, SxProps } from "@mui/material";
+import { Stack, Theme } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { theme } from "../../../../../AppTheme.ts";
 import { LayerAddButton } from "./layerAddButton.tsx";
 import { StratigraphyTableCell, StratigraphyTableCellRow } from "./stratigraphyTablePrimitives.tsx";
@@ -9,7 +10,7 @@ interface StratigraphyTableDescriptionGapProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   isSelected?: boolean;
-  sx?: SxProps;
+  sx?: SystemStyleObject<Theme>;
   dataCy?: string;
 }
 

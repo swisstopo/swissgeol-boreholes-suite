@@ -1,10 +1,12 @@
 import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Backdrop, BackdropProps, CircularProgress, IconButton, Stack, Typography } from "@mui/material";
+import { Backdrop, BackdropProps, CircularProgress, IconButton, Stack, Theme, Typography } from "@mui/material";
+import { SystemStyleObject } from "@mui/system";
 import { X } from "lucide-react";
 import { theme } from "../AppTheme.ts";
 
-interface LoadingBackdropProps extends BackdropProps {
+interface LoadingBackdropProps extends Omit<BackdropProps, "sx"> {
+  sx?: SystemStyleObject<Theme>;
   message?: ReactNode;
 
   /** Explains how to get out of the running operation. Only shown together with a message. */
