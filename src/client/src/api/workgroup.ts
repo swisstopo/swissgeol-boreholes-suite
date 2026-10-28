@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth/useBoreholesAuth.tsx";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { Role, Workgroup } from "./generated/types.gen";
@@ -33,6 +33,13 @@ const setWorkgroupRoles = async (changes: WorkgroupRoleChange[]) =>
   await fetchApiV2WithApiError("workgroup/setRoles", "POST", changes);
 
 export const workgroupQueryKey = "workgroups";
+const setWorkgroupRolesMutationKey = "setWorkgroupRoles";
+
+/**
+ * Whether any component is saving workgroup roles. Pending state of a single mutation is local to the
+ * component that started it, so this lets a table lock its role selects while a dialog saves too.
+ */
+export const useIsSettingWorkgroupRoles = () => useIsMutating({ mutationKey: [setWorkgroupRolesMutationKey] }) > 0;
 
 export const useWorkgroups = () => {
   const auth = useAuth();
@@ -79,6 +86,7 @@ export const useWorkgroupMutations = () => {
   });
 
   const useSetWorkgroupRoles = useMutation({
+    mutationKey: [setWorkgroupRolesMutationKey],
     mutationFn: async (changes: WorkgroupRoleChange[]) => {
       return await setWorkgroupRoles(changes);
     },

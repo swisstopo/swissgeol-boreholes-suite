@@ -6,7 +6,7 @@ import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-g
 import { Trash2, X } from "lucide-react";
 import { Role, User, UserWorkgroupRole } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
-import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
+import { useIsSettingWorkgroupRoles, useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FormInput } from "../../../components/form/form.ts";
@@ -30,9 +30,10 @@ export const WorkgroupDetail: FC = () => {
     useContext(WorkgroupAdministrationContext);
   const { data: selectedWorkgroup } = useSelectedWorkgroup(id);
   const {
-    setWorkgroupRoles: { mutate: setWorkgroupRoles, isPending: isSettingWorkgroupRoles },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles },
     update: { mutate: updateWorkgroup },
   } = useWorkgroupMutations();
+  const isSettingWorkgroupRoles = useIsSettingWorkgroupRoles();
   const { showPrompt } = useContext(PromptContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
