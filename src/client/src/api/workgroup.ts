@@ -82,13 +82,11 @@ export const useWorkgroupMutations = () => {
     mutationFn: async (changes: WorkgroupRoleChange[]) => {
       return await setWorkgroupRoles(changes);
     },
-    // Invalidating the list keys also invalidates every [key, id] query, since TanStack Query matches by prefix.
-    // The current user is refetched too, as an admin may change their own role. Returning the promise keeps
-    // the mutation pending until the refetch shows the new roles.
     onSettled: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] }),
         queryClient.invalidateQueries({ queryKey: [usersQueryKey] }),
+        // The current user is refetched too, as an admin may change their own role.
         queryClient.invalidateQueries({ queryKey: [currentUserQueryKey] }),
       ]),
   });
