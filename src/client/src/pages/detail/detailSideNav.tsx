@@ -4,14 +4,13 @@ import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { Borehole } from "../../api/generated";
-import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useCapitalizedTranslation } from "../../hooks/useCapitalizedTranslation.ts";
 import { useRequiredId } from "../../hooks/useRequiredId.ts";
+import { useCanViewWorkflow } from "./form/workflow/useCanViewWorkflow.ts";
 import { TabStatus } from "./form/workflow/workflow.ts";
-import { canViewWorkflow } from "./form/workflow/workflowRole.ts";
 
 interface DetailSideNavProps {
   borehole: Borehole;
@@ -19,8 +18,7 @@ interface DetailSideNavProps {
 
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const id = useRequiredId();
-  const { data: currentUser } = useCurrentUser();
-  const isWorkflowVisible = canViewWorkflow(currentUser, borehole.workgroup?.id ?? 0);
+  const { canView: isWorkflowVisible } = useCanViewWorkflow(borehole.workgroup?.id ?? 0);
   const location = useLocation();
   const isHydrogeologyPath = location.pathname.startsWith(`/${id}/hydrogeology`);
   // A toggle of the hydrogeology menu applies to the location it was made on. After navigating,
@@ -195,7 +193,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             }}>
             {ct("attachments")}
           </SgcMenuItem>
-          {!auth.anonymousModeEnabled && isWorkflowVisible && (
+          {isWorkflowVisible && (
             <SgcMenuItem
               isActive={location.pathname === `/${id}/status`}
               data-cy="status-menu-item"

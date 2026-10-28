@@ -1,7 +1,6 @@
 ﻿// @vitest-environment jsdom
-import { MemoryRouter, Route, Routes } from "react-router";
 import { WorkflowStatus } from "@swissgeol/ui-core";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { User, UserWorkgroupRole } from "../../../../api/generated";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
@@ -28,7 +27,6 @@ const useBoreholeManageable =
   vi.fn<
     () => ManagePermissionResult & { refetch: (options: { cancelRefetch: boolean }) => Promise<ManagePermissionResult> }
   >();
-const useAuth = vi.fn<() => { anonymousModeEnabled: boolean }>();
 const updateWorkflow = vi.fn<(request: WorkflowChangeRequest, options?: { onSuccess?: () => void }) => void>();
 const showAlert = vi.fn<AlertContextInterface["showAlert"]>();
 
@@ -80,10 +78,6 @@ vi.mock("./workflow.ts", async () => {
   };
 });
 
-vi.mock("../../../../auth/useBoreholesAuth.tsx", () => ({
-  useAuth: () => useAuth(),
-}));
-
 vi.mock("../../../../hooks/useBoreholeDataAvailability.ts", () => ({
   useBoreholeDataAvailability: () => ({}),
 }));
@@ -109,15 +103,13 @@ const givenManagePermission = (canManage: boolean | undefined, canManageAfterRef
 
 const renderStatusPage = () =>
   render(
-    <MemoryRouter initialEntries={["/42/status"]}>
-      <AlertContext.Provider value={{ alertIsOpen: false, text: undefined, showAlert, closeAlert: vi.fn() }}>
-        <Routes>
-          <Route path="/42/status" element={<WorkflowView />} />
-          <Route path="/42/location" element={<div>location page</div>} />
-        </Routes>
-      </AlertContext.Provider>
-    </MemoryRouter>,
+    <AlertContext.Provider value={{ alertIsOpen: false, text: undefined, showAlert, closeAlert: vi.fn() }}>
+      <WorkflowView />
+    </AlertContext.Provider>,
   );
+
+// A macrotask runs only after every pending promise continuation, however many awaits the component chains.
+const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
 
 const getWorkflowProps = (): CapturedWorkflowProps | undefined => sgcWorkflow.mock.lastCall?.[0];
 
@@ -128,7 +120,6 @@ const requestReviewAndSucceed = () => {
 
 describe("WorkflowView", () => {
   beforeEach(() => {
-    useAuth.mockReturnValue({ anonymousModeEnabled: false });
     givenUserWithRole("Editor");
     givenManagePermission(true);
   });
@@ -136,24 +127,6 @@ describe("WorkflowView", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
-  });
-
-  it("sends readers of the workgroup to the location page", () => {
-    givenUserWithRole("Reader");
-
-    renderStatusPage();
-
-    expect(screen.getByText("location page")).toBeDefined();
-    expect(sgcWorkflow).not.toHaveBeenCalled();
-  });
-
-  it("sends anonymous users to the location page", () => {
-    useAuth.mockReturnValue({ anonymousModeEnabled: true });
-
-    renderStatusPage();
-
-    expect(screen.getByText("location page")).toBeDefined();
-    expect(sgcWorkflow).not.toHaveBeenCalled();
   });
 
   it("shows the status read-only to editors who cannot manage the borehole in its status", () => {
@@ -207,8 +180,7 @@ describe("WorkflowView", () => {
 
     requestReviewAndSucceed();
 
-    // Awaiting the same promise as the component lets its continuation run first.
-    await refetch.mock.results[0]?.value;
+    await flushPromises();
     expect(refetch).toHaveBeenCalledWith({ cancelRefetch: false });
     expect(showAlert).not.toHaveBeenCalled();
   });

@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Navigate } from "react-router";
 import { Box, CircularProgress } from "@mui/material";
 import {
   GenericWorkflowSelection,
@@ -14,7 +13,6 @@ import {
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
 import { useBorehole, useBoreholeManageable } from "../../../../api/borehole.ts";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
-import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
@@ -29,7 +27,7 @@ import {
   WorkflowChange,
   WorkflowChangeRequest,
 } from "./workflow.ts";
-import { canPublishInWorkgroup, canViewWorkflow, getWorkflowRoleInWorkgroup } from "./workflowRole.ts";
+import { canPublishInWorkgroup, getWorkflowRoleInWorkgroup } from "./workflowRole.ts";
 
 export const WorkflowView = () => {
   const boreholeId = useRequiredId();
@@ -38,7 +36,6 @@ export const WorkflowView = () => {
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
   const { t } = useTranslation();
   const { data: canManage, refetch: refetchCanManage } = useBoreholeManageable(boreholeId);
-  const auth = useAuth();
   const { setEditingEnabled } = useContext(EditStateContext);
   const workgroupId = borehole?.workgroup?.id ?? 0;
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(workgroupId);
@@ -81,8 +78,6 @@ export const WorkflowView = () => {
       showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
     }
   };
-
-  if (auth.anonymousModeEnabled) return <Navigate to={`/${boreholeId}/location`} replace />;
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
     const field = (name: string, isDisabled: boolean = false, label: string = name) => ({
@@ -149,10 +144,6 @@ export const WorkflowView = () => {
       </FullPageCentered>
     );
 
-  if (!workflow || !currentUser || !borehole) return null;
-
-  if (!canViewWorkflow(currentUser, workgroupId)) return <Navigate to={`/${boreholeId}/location`} replace />;
-
   const availableAssignees = editorUsersForWorkgroup?.map(user => ({
     ...user,
     firstName: user.firstName ?? "",
@@ -160,7 +151,7 @@ export const WorkflowView = () => {
     role: getWorkflowRoleInWorkgroup(user.workgroupRoles, workgroupId),
   }));
 
-  if (!availableAssignees) return null;
+  if (!workflow || !currentUser || !borehole || !availableAssignees) return null;
 
   const handleWorkflowChange = (changeEvent: SgcWorkflowCustomEvent<SgcWorkflowChangeEventDetail>) => {
     const changes: WorkflowChange = changeEvent.detail.changes;
@@ -243,7 +234,7 @@ export const WorkflowView = () => {
         selection={makeSelectionEntries()}
         canChangeStatus={canManageBorehole}
         // Only greys out the publish button, everything else stays usable.
-        isRestricted={borehole?.restrictionId !== restrictionFreeCode || !isAnythingApproved || !canPublish}
+        isRestricted={borehole.restrictionId !== restrictionFreeCode || !isAnythingApproved || !canPublish}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)
         }

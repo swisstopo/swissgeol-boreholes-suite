@@ -13,7 +13,7 @@ import { IdentifiersPanel } from "./form/identifiers/identifiersPanel.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
 import { LogPanel } from "./form/log/logPanel.tsx";
 import { StratigraphyPanel } from "./form/stratigraphy/stratigraphyPanel.tsx";
-import { WorkflowView } from "./form/workflow/workflowView.tsx";
+import { WorkflowRoute } from "./form/workflow/workflowRoute.tsx";
 
 interface DetailPageContentProps {
   borehole: Borehole;
@@ -58,7 +58,7 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
             <Route path="completion/:completionId" element={<CompletionPanel />} />
             <Route path="completion" element={<CompletionPanel />} />
             <Route path="log" element={<LogPanel />} />
-            <Route path="status" element={<WorkflowView key={borehole.id} />} />
+            <Route path="status" element={<WorkflowRoute borehole={borehole} />} />
             <Route path="" element={<Navigate to="location" replace />} />
           </Routes>
         </Box>
