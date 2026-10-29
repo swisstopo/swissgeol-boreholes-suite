@@ -2,7 +2,7 @@
 import { getBackfills } from "../../../../api/fetchApiV2.ts";
 import { Backfill } from "../../../../api/generated/types.gen.ts";
 import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
-import { sortByDepth } from "../sorter.jsx";
+import { sortByDepth } from "../sorter.ts";
 import BackfillDisplay from "./backfillDisplay.tsx";
 import BackfillInput from "./backfillInput.tsx";
 import { CompletionTabProps } from "./completionInterfaces.ts";

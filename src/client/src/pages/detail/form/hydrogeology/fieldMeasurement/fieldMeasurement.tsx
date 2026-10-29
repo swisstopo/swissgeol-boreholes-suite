@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { FieldMeasurement as FieldMeasurementType } from "../../../../../api/generated";
 import { DataCards } from "../../../../../components/dataCard/dataCards";
 import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
-import { sortByDepth } from "../../sorter.jsx";
+import { sortByDepth } from "../../sorter.ts";
 import { getFieldMeasurements } from "./FieldMeasurement.ts";
 import { FieldMeasurementDisplay } from "./fieldMeasurementDisplay.js";
 import { FieldMeasurementInput } from "./fieldMeasurementInput.js";

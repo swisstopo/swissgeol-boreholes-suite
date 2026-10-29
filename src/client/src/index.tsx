@@ -8,6 +8,9 @@ import { SettingsProvider } from "./api/SettingsContext.tsx";
 import App from "./App";
 
 const container = document.getElementById("root");
+if (!container) {
+  throw new Error("index.html has no #root element to render into.");
+}
 const root = createRoot(container);
 
 root.render(

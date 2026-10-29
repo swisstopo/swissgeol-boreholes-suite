@@ -5,8 +5,8 @@ import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailability.ts";
 import { BoreholeForm } from "./boreholeForm.tsx";
 import { BoreholeProps } from "./boreholePanelInterfaces";
-import Geometry from "./geometry.jsx";
-import Sections from "./sections.jsx";
+import Geometry from "./geometry.tsx";
+import Sections from "./sections.tsx";
 
 export const BoreholePanel: FC<BoreholeProps> = ({ borehole }) => {
   const { t } = useTranslation();

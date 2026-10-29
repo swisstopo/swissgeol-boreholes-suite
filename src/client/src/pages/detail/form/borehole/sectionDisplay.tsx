@@ -1,10 +1,12 @@
 import { Divider } from "@mui/material";
 import { deleteSection } from "../../../../api/fetchApiV2.ts";
-import { useCodelists } from "../../../../components/codelist.js";
+import { Section } from "../../../../api/generated";
+import { useCodelists } from "../../../../components/codelist.ts";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
+import { DataCardItemDisplayProps } from "../completion/completionInterfaces.ts";
 
-const SectionDisplay = ({ item }) => {
+const SectionDisplay = ({ item }: DataCardItemDisplayProps<Section>) => {
   const codelists = useCodelists();
 
   return (
@@ -12,7 +14,7 @@ const SectionDisplay = ({ item }) => {
       <FormDisplay label="sectionName" value={item?.name} />
 
       {item?.sectionElements
-        ?.sort((a, b) => a.order - b.order)
+        ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
         .map((element, index) => (
           <FormContainer key={element.id}>
             <FormContainer direction="row">
@@ -83,10 +85,10 @@ const SectionDisplay = ({ item }) => {
             <FormDisplay
               prefix={`${index}.`}
               label="overcoring"
-              value={index < item.sectionElements.length - 1}
+              value={index < (item.sectionElements?.length ?? 0) - 1}
               type={FormValueType.Boolean}
             />
-            {index < item.sectionElements.length - 1 && <Divider />}
+            {index < (item.sectionElements?.length ?? 0) - 1 && <Divider />}
           </FormContainer>
         ))}
     </DataDisplayCard>

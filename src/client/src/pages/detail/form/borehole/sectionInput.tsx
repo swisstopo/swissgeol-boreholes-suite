@@ -1,29 +1,64 @@
-import { useContext, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Checkbox, Divider, FormControlLabel, IconButton } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { DevTool } from "../../../../../hookformDevtools.ts";
 import { addSection, updateSection } from "../../../../api/fetchApiV2.ts";
+import { Section } from "../../../../api/generated";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
-import { useCodelists } from "../../../../components/codelist.ts";
+import { useCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDirty.tsx";
-import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
+import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
+import { DataCardItemInputProps } from "../completion/completionInterfaces.ts";
 
-const SectionInput = ({ item, parentId }) => {
+// Select fields hold "" while nothing is selected; number fields hold the entered text until submit.
+type SectionFormFieldValue = number | string | null;
+
+interface SectionFormElement {
+  id?: number;
+  order?: number;
+  fromDepth: SectionFormFieldValue;
+  toDepth: SectionFormFieldValue;
+  drillingMethodId: SectionFormFieldValue;
+  cuttingsId: SectionFormFieldValue;
+  drillingMudTypeId: SectionFormFieldValue;
+  drillingMudSubtypeId: SectionFormFieldValue;
+  drillingStartDate: string | null;
+  drillingEndDate: string | null;
+  drillingDiameter: SectionFormFieldValue;
+  drillingCoreDiameter: SectionFormFieldValue;
+}
+
+interface SectionFormValues {
+  name?: string;
+  boreholeId?: number;
+  sectionElements: SectionFormElement[];
+}
+
+interface DrillingMudTypeOption {
+  key: number;
+  name: string;
+  path: number[];
+}
+
+const asSelected = (value: SectionFormFieldValue) => (typeof value === "number" ? value : null);
+
+const SectionInput: FC<DataCardItemInputProps<Section>> = ({ item, parentId }) => {
   const { triggerReload } = useContext(DataCardContext);
   const { data: codelists } = useCodelists();
-  const { i18n, t } = useTranslation();
+  const getLocalizedLabel = useCodelistLocalizedLabel();
+  const { t } = useTranslation();
   const resetTabStatus = useResetTabStatus(["sections"]);
 
-  const sectionElementDefaults = {
+  const sectionElementDefaults: SectionFormElement = {
     fromDepth: null,
     toDepth: null,
     drillingMethodId: "",
@@ -37,22 +72,24 @@ const SectionInput = ({ item, parentId }) => {
   };
 
   // prepare the options for the drillingMudType and drillingMudSubtype select fields
-  const drillingMudTypeOptions = new Map(
+  const drillingMudTypeOptions = new Map<SectionFormFieldValue, DrillingMudTypeOption>(
     codelists
       ?.filter(d => d.schema === "drilling_mud_type")
-      ?.sort((a, b) => a.order - b.order)
+      ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       ?.map(d => [
         d.id,
         {
           key: d.id,
-          name: d[i18n.language],
-          path: d.path?.split(".")?.map(id => +id) ?? [],
+          name: getLocalizedLabel(d),
+          // Path is delivered by the API as an ltree string ("1.2.3"), but the generated TS type
+          // represents it as a record.
+          path: (d.path as unknown as string | undefined)?.split(".")?.map(id => +id) ?? [],
         },
       ]),
   );
 
   // initialize react-hook-form
-  const formMethods = useForm({
+  const formMethods = useForm<SectionFormValues>({
     mode: "all",
     defaultValues: {
       sectionElements: item?.sectionElements || [{ ...sectionElementDefaults }],
@@ -69,31 +106,35 @@ const SectionInput = ({ item, parentId }) => {
   });
 
   // define methods for data submission
-  const prepareFormDataForSubmit = data => {
+  const prepareFormDataForSubmit = (data: SectionFormValues) => {
     data.sectionElements = data.sectionElements.map((element, i) => {
       element.order = i;
       element.fromDepth = parseFloatWithThousandsSeparator(element.fromDepth);
       element.toDepth = parseFloatWithThousandsSeparator(element.toDepth);
       element.drillingDiameter = parseFloatWithThousandsSeparator(element.drillingDiameter);
       element.drillingCoreDiameter = parseFloatWithThousandsSeparator(element.drillingCoreDiameter);
-      return Object.fromEntries(Object.entries(element).map(([k, v]) => [k, v === "" ? null : v]));
+      return Object.fromEntries(
+        Object.entries(element).map(([k, v]) => [k, v === "" ? null : v]),
+      ) as unknown as SectionFormElement;
     });
     data.boreholeId = parentId;
     return data;
   };
 
-  const submitForm = data => {
+  const submitForm = (data: SectionFormValues) => {
     resetTabStatus();
     data = prepareFormDataForSubmit(data);
+    // The form keeps entered values loosely typed; prepareFormDataForSubmit turns them into the API shape.
+    const payload = data as unknown as Section;
     if (item.id === 0) {
-      addSection(data).then(() => {
+      void addSection(payload).then(() => {
         reset();
         triggerReload();
       });
     } else {
-      updateSection({
+      void updateSection({
         ...item,
-        ...data,
+        ...payload,
       }).then(() => {
         reset();
         triggerReload();
@@ -101,12 +142,12 @@ const SectionInput = ({ item, parentId }) => {
     }
   };
 
-  useSaveOnCtrlS(handleSubmit(submitForm));
+  useSaveOnCtrlS(() => void handleSubmit(submitForm)());
   useValidateFormOnMount({ formMethods });
   useFormDirtyMarkAsChanged({ formState });
 
   useEffect(() => {
-    trigger("sectionElements");
+    void trigger("sectionElements");
     // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [getValues()["sectionElements"]]);
 
@@ -114,11 +155,11 @@ const SectionInput = ({ item, parentId }) => {
     <>
       <DevTool control={control} placement="top-left" />
       <FormProvider {...formMethods}>
-        <form onSubmit={handleSubmit(submitForm)}>
+        <form onSubmit={event => void handleSubmit(submitForm)(event)}>
           <FormContainer>
             <FormInput fieldName="name" label="sectionName" value={item?.name} required={true} />
             {fields
-              .sort((a, b) => a.order - b.order)
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
               .map((field, index) => (
                 <FormContainer key={field.sectionElementId || field.id} direction="row">
                   <FormContainer sx={{ flex: "1 0 0", width: 0 }}>
@@ -142,13 +183,13 @@ const SectionInput = ({ item, parentId }) => {
                       <FormDomainSelect
                         fieldName={`sectionElements.${index}.drillingMethodId`}
                         label="drillingMethod"
-                        selected={field.drillingMethodId}
+                        selected={asSelected(field.drillingMethodId)}
                         schemaName="drilling_method"
                       />
                       <FormDomainSelect
                         fieldName={`sectionElements.${index}.cuttingsId`}
                         label="cuttings"
-                        selected={field.cuttingsId}
+                        selected={asSelected(field.cuttingsId)}
                         schemaName="borehole_cuttings_core"
                       />
                     </FormContainer>
@@ -156,7 +197,7 @@ const SectionInput = ({ item, parentId }) => {
                       <FormSelect
                         fieldName={`sectionElements.${index}.drillingMudTypeId`}
                         label="drillingMudType"
-                        selected={field.drillingMudTypeId}
+                        selected={asSelected(field.drillingMudTypeId)}
                         values={[...drillingMudTypeOptions.values()].filter(
                           d => d.path.length === 0 || d.path.length === 1,
                         )}
@@ -164,16 +205,16 @@ const SectionInput = ({ item, parentId }) => {
                           const subtypeValue = getValues(`sectionElements.${index}.drillingMudSubtypeId`);
                           update(index, {
                             ...getValues(`sectionElements.${index}`),
-                            drillingMudTypeId: newValue,
+                            drillingMudTypeId: typeof newValue === "boolean" ? null : newValue,
                             drillingMudSubtypeId:
-                              drillingMudTypeOptions.get(subtypeValue)?.path?.length > 0 ? "" : subtypeValue,
+                              (drillingMudTypeOptions.get(subtypeValue)?.path?.length ?? 0) > 0 ? "" : subtypeValue,
                           });
                         }}
                       />
                       <FormSelect
                         fieldName={`sectionElements.${index}.drillingMudSubtypeId`}
                         label="drillingMudSubtype"
-                        selected={field.drillingMudSubtypeId}
+                        selected={asSelected(field.drillingMudSubtypeId)}
                         values={[...drillingMudTypeOptions.values()].filter(
                           d =>
                             d.path.length === 0 ||

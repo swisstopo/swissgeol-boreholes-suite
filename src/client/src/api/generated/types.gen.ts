@@ -406,19 +406,19 @@ export type BoreholeGeometryElement = {
   /**
    * Gets or sets the Measured Depth (MD) of the data point in meters.
    */
-  md?: number;
+  md: number;
   /**
    * Gets or sets the X coordinate of the data point in meters.
    */
-  x?: number;
+  x: number;
   /**
    * Gets or sets the Y coordinate of the data point in meters.
    */
-  y?: number;
+  y: number;
   /**
    * Gets or sets the Z coordinate of the data point in meters.
    */
-  z?: number;
+  z: number;
   /**
    * Gets or sets the hole azimuth at the data point in degrees.
    */
