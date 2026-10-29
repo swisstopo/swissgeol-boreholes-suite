@@ -1,7 +1,7 @@
 ﻿import { Role } from "@swissgeol/ui-core";
 import { describe, expect, it } from "vitest";
-import { UserWorkgroupRole } from "../../../../api/generated/types.gen";
-import { getWorkflowRoleInWorkgroup } from "./workflowRole.ts";
+import { UserWorkgroupRole } from "../../../../api/generated";
+import { canPublishInWorkgroup, canViewWorkflow, getWorkflowRoleInWorkgroup } from "./workflowRole.ts";
 
 const workgroupRoles: UserWorkgroupRole[] = [
   { userId: 7, workgroupId: 1, role: "Editor" },
@@ -26,5 +26,42 @@ describe("getWorkflowRoleInWorkgroup", () => {
     expect(getWorkflowRoleInWorkgroup(workgroupRoles, 5)).toBe(Role.Reader);
     expect(getWorkflowRoleInWorkgroup(workgroupRoles, 99)).toBe(Role.Reader);
     expect(getWorkflowRoleInWorkgroup(undefined, 1)).toBe(Role.Reader);
+  });
+});
+
+describe("canViewWorkflow", () => {
+  const user = { isAdmin: false, workgroupRoles };
+
+  it("lets editors, reviewers and publishers of the workgroup view the status", () => {
+    expect(canViewWorkflow(user, 1)).toBe(true);
+    expect(canViewWorkflow(user, 2)).toBe(true);
+    expect(canViewWorkflow(user, 3)).toBe(true);
+  });
+
+  it("hides the status from readers and users without a role in the workgroup", () => {
+    expect(canViewWorkflow(user, 4)).toBe(false);
+    expect(canViewWorkflow(user, 5)).toBe(false);
+    expect(canViewWorkflow(user, 99)).toBe(false);
+    expect(canViewWorkflow(undefined, 1)).toBe(false);
+  });
+
+  it("lets admins view the status of every workgroup", () => {
+    expect(canViewWorkflow({ isAdmin: true, workgroupRoles: [] }, 99)).toBe(true);
+  });
+});
+
+describe("canPublishInWorkgroup", () => {
+  const user = { isAdmin: false, workgroupRoles };
+
+  it("lets only publishers of the workgroup publish", () => {
+    expect(canPublishInWorkgroup(user, 2)).toBe(true);
+    expect(canPublishInWorkgroup(user, 1)).toBe(false);
+    expect(canPublishInWorkgroup(user, 3)).toBe(false);
+    expect(canPublishInWorkgroup(user, 4)).toBe(false);
+    expect(canPublishInWorkgroup(undefined, 2)).toBe(false);
+  });
+
+  it("lets admins publish in every workgroup", () => {
+    expect(canPublishInWorkgroup({ isAdmin: true, workgroupRoles: [] }, 99)).toBe(true);
   });
 });
