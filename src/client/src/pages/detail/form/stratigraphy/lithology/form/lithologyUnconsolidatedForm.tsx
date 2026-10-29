@@ -15,6 +15,7 @@ import {
 import { LithologyDescriptionEditForm, LithologyEditForm } from "../../stratigraphy.ts";
 import { useLithologyDescriptionShareSync } from "../useLithologyDescriptionShareSync.ts";
 import { LithologyDescriptionForm } from "./lithologyDescriptionForm.tsx";
+import { lithologyUnconFields } from "./lithologyUtils.ts";
 
 const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> = ({
   lithologyId,
@@ -23,6 +24,11 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
   hasBedding,
 }) => {
   const index = isFirst ? 0 : 1;
+  // Whether a component is required depends on the ones after it, but the resolver only updates the
+  // error of the field that changed. Listing the other components as deps revalidates them as well.
+  const unconRules = (field: (typeof lithologyUnconFields)[number]) => ({
+    deps: lithologyUnconFields.filter(other => other !== field).map(other => `lithologyDescriptions.${index}.${other}`),
+  });
   return (
     <LithologyDescriptionForm
       lithologyId={lithologyId}
@@ -34,6 +40,7 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUnconMainId`}
             fieldName={`lithologyDescriptions.${index}.lithologyUnconMainId`}
+            rules={unconRules("lithologyUnconMainId")}
             label={"lithologyUnconMain"}
             schemaName={"lithology_uncon_main"}
             labelStyle={CodelistLabelStyle.TextAndCode}
@@ -41,6 +48,7 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUncon2Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon2Id`}
+            rules={unconRules("lithologyUncon2Id")}
             label={"lithologyUnconSecondary"}
             schemaName={"lithology_uncon_secondary"}
             labelStyle={CodelistLabelStyle.TextAndCode}
@@ -50,6 +58,7 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUncon3Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon3Id`}
+            rules={unconRules("lithologyUncon3Id")}
             label={"componentUncon"}
             schemaName={"lithology_uncon_secondary"}
             ignoreOverlow
@@ -63,18 +72,21 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUncon4Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon4Id`}
+            rules={unconRules("lithologyUncon4Id")}
             schemaName={"lithology_uncon_secondary"}
             labelStyle={CodelistLabelStyle.TextAndCode}
           />,
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUncon5Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon5Id`}
+            rules={unconRules("lithologyUncon5Id")}
             schemaName={"lithology_uncon_secondary"}
             labelStyle={CodelistLabelStyle.TextAndCode}
           />,
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUncon6Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon6Id`}
+            rules={unconRules("lithologyUncon6Id")}
             schemaName={"lithology_uncon_secondary"}
             labelStyle={CodelistLabelStyle.TextAndCode}
           />,

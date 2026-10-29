@@ -74,6 +74,16 @@ export const prepareLithologyForSubmit = (values: LithologyFormValues) => {
   }
 };
 
+/** The unconsolidated lithology components in the order they must be filled. */
+export const lithologyUnconFields = [
+  "lithologyUnconMainId",
+  "lithologyUncon2Id",
+  "lithologyUncon3Id",
+  "lithologyUncon4Id",
+  "lithologyUncon5Id",
+  "lithologyUncon6Id",
+] as const;
+
 export const validateLithologyUnconValues = (
   descriptions: LithologyDescription[] | null | undefined,
   errors: FormErrors,
@@ -83,14 +93,7 @@ export const validateLithologyUnconValues = (
   if (!descriptions || descriptions.length === 0) return;
 
   const index = descriptions?.[0].isFirst ? 0 : 1;
-  const fields = [
-    "lithologyUnconMainId",
-    "lithologyUncon2Id",
-    "lithologyUncon3Id",
-    "lithologyUncon4Id",
-    "lithologyUncon5Id",
-    "lithologyUncon6Id",
-  ];
+  const fields = lithologyUnconFields;
   const flatErrors: Record<string, string> = {};
 
   for (let i = 0; i < fields.length; i++) {

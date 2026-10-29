@@ -20,6 +20,7 @@
 - Editors, Reviewers and Publishers of a workgroup can open the status of its boreholes in every status. Actions they are not allowed to take in the current status are locked. After requesting a review, editors stay on the status page instead of being sent back to the location.
 - The "Publish" button is greyed out for users who are not Publishers in the borehole's workgroup.
 - Returning from a borehole to the overview no longer occasionally jumps the table back to an earlier page or the default sorting when the borehole was opened right after paging or sorting.
+- In the lithology dialog, the "Eintrag erforderlich" errors on the Lockergestein soil type and secondary component dropdowns now disappear as soon as the later component that required them is cleared, and no longer leave the fields marked red after they are filled again.
 
 ## v2.2.57 - 2026-10-08
 
