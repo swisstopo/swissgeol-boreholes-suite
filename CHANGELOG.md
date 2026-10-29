@@ -19,6 +19,7 @@
 - Inactive users and disabled workgroups are no longer offered when adding users to a workgroup or workgroups to a user.
 - The workflow now judges each possible assignee by their role in the borehole's workgroup instead of their highest role in any workgroup.
 - Returning from a borehole to the overview no longer occasionally jumps the table back to an earlier page or the default sorting when the borehole was opened right after paging or sorting.
+- In edit mode, the checkbox in the header of the "Public" column of the attachment and LOG file tables now follows the rows. It could appear checked although no row was public, for example after adding the first photo to a borehole.
 
 ## v2.2.57 - 2026-10-08
 
