@@ -8,7 +8,7 @@ import ImageLayer from "ol/layer/Image";
 import Map from "ol/Map";
 import Projection from "ol/proj/Projection";
 import Static from "ol/source/ImageStatic";
-import MapControls from "../../../components/buttons/mapControls.jsx";
+import MapControls from "../../../components/buttons/mapControls.tsx";
 
 const createView = (extent?: Extent, currentView?: View): View => {
   const projection = new Projection({

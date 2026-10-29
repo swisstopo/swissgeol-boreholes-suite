@@ -1,11 +1,17 @@
-import { memo, useContext } from "react";
+import { FC, memo, ReactNode, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { AddCircle, ArrowDownward, ArrowUpward, Warning } from "@mui/icons-material";
 import { Card, CardActionArea, Stack, Typography } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
+import { HierarchicalLayer, NewLayerInput } from "./hierarchicalDataEditProfile.tsx";
 
-const IconTypography = ({ icon, text }) => {
+interface IconTypographyProps {
+  icon: ReactNode;
+  text: string;
+}
+
+const IconTypography: FC<IconTypographyProps> = ({ icon, text }) => {
   return (
     <Typography
       sx={{
@@ -21,11 +27,19 @@ const IconTypography = ({ icon, text }) => {
   );
 };
 
+interface LayerGapProps {
+  addLayer: (layer: NewLayerInput) => void;
+  updateLayer: (layer: HierarchicalLayer) => void;
+  previousLayer: HierarchicalLayer | undefined;
+  nextLayer: HierarchicalLayer;
+  height: number;
+}
+
 /**
  * Component that is displayed if there is a gap between two layers.
  * It offers solutions to fix the gap like extending the upper layer or filling the gap with an empty layers.
  */
-const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, height }) => {
+const LayerGap: FC<LayerGapProps> = ({ addLayer, updateLayer, previousLayer, nextLayer, height }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
 
@@ -58,7 +72,7 @@ const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, height }) =
                 addLayer({
                   stratigraphyId: nextLayer.stratigraphyId,
                   fromDepth: previousLayer?.toDepth ?? 0,
-                  toDepth: nextLayer.fromDepth,
+                  toDepth: nextLayer.fromDepth ?? 0,
                 })
               }>
               <IconTypography text={t("errorGapSolution_fillWithUndefined")} icon={<AddCircle />} />

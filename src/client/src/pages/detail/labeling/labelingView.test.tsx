@@ -9,7 +9,7 @@ import { LabelingView } from "./labelingView.tsx";
 // was rendered in.
 const rotateHandlers: (() => void)[] = [];
 
-vi.mock("../../../components/buttons/mapControls.jsx", () => ({
+vi.mock("../../../components/buttons/mapControls.tsx", () => ({
   default: ({ onRotate }: { onRotate: () => void }) => {
     rotateHandlers.push(onRotate);
     return null;

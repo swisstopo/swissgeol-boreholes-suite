@@ -17,7 +17,7 @@ import { getHeight } from "../../api/height.ts";
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
-import MapControls from "../buttons/mapControls.jsx";
+import MapControls from "../buttons/mapControls.tsx";
 import "./mapProjections.ts";
 import { theme } from "../../AppTheme.ts";
 import { detailMapStyleFunction } from "./mapStyleFunctions.ts";

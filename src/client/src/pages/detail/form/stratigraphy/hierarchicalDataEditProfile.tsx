@@ -4,9 +4,9 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { ChronostratigraphyLayer, Codelist, LithostratigraphyLayer } from "../../../../api/generated";
 import { useCodelistSchema } from "../../../../components/codelist.ts";
-import LayerCard from "./layerCard.jsx";
+import LayerCard from "./layerCard.tsx";
 import { collectLayerDepths } from "./layerDepths.ts";
-import LayerGap from "./layerGap.jsx";
+import LayerGap from "./layerGap.tsx";
 import { NavState } from "./navigation/navState.ts";
 
 export type HierarchicalLayer = ChronostratigraphyLayer | LithostratigraphyLayer;
@@ -18,15 +18,15 @@ export interface NewLayerInput {
   toDepth: number;
 }
 
-interface HeaderColumn {
+export interface HeaderColumn {
   title: string;
   isVisible: boolean;
 }
 
-interface CodelistOption {
+export interface CodelistOption {
   label: string;
   id: number;
-  color: string | undefined;
+  color: number[] | undefined; // RGB
   path: number[];
 }
 
@@ -119,7 +119,7 @@ export function useHierarchicalDataEditProfile({
       const pathString = (d.path as unknown as string | undefined) ?? "";
       const path = pathString.split(".").map(p => +p);
       const level = path.length - 1;
-      const conf = JSON.parse(d.conf ?? "null") as { color?: string } | null;
+      const conf = JSON.parse(d.conf ?? "null") as { color?: number[] } | null;
       accu[level] ??= [];
       accu[level].push({
         label: codelistLocale(d, i18n.language),

@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { GroundwaterLevelMeasurement as GroundwaterLevelMeasurementType } from "../../../../../api/generated";
 import { DataCards } from "../../../../../components/dataCard/dataCards.js";
 import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
-import { sortByDepth } from "../../sorter.jsx";
+import { sortByDepth } from "../../sorter.ts";
 import { getGroundwaterLevelMeasurements } from "./GroundwaterLevelMeasurement.ts";
 import { GroundwaterLevelMeasurementDisplay } from "./groundwaterLevelMeasurementDisplay.tsx";
 import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput.tsx";

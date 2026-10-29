@@ -2,7 +2,7 @@
 import { getCasings } from "../../../../api/fetchApiV2.ts";
 import { Casing } from "../../../../api/generated";
 import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
-import { sortByDepth } from "../sorter.jsx";
+import { sortByDepth } from "../sorter.ts";
 import CasingDisplay from "./casingDisplay.tsx";
 import CasingInput from "./casingInput.tsx";
 import { extractCasingDepth } from "./casingUtils.tsx";

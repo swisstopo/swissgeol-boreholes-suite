@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { useMapOverlays } from "../../../../api/useMapOverlays.ts";
 import { LayerConfig } from "../../../../components/map/map.ts";
-import { CustomLayersComponent } from "./customLayersComponent.jsx";
+import { CustomLayersComponent } from "./customLayersComponent.tsx";
 
 interface CustomLayersPanelProps {
   toggleDrawer: (open: boolean) => void;
