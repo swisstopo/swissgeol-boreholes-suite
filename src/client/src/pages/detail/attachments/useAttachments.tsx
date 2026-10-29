@@ -47,7 +47,6 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     apiRef,
     updatedRows,
     setUpdatedRows,
-    rows,
   });
 
   const showLoadedAttachments = useCallback(

@@ -7,7 +7,14 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers";
-import { evaluateInput, setInput, setSelect } from "../helpers/formHelpers";
+import {
+  checkSelectOptions,
+  closeDropdown,
+  evaluateInput,
+  openDropdown,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 import { goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers";
 
 describe("User administration settings tests", () => {
@@ -60,18 +67,19 @@ describe("User administration settings tests", () => {
   });
 
   it("shows workgroup detail inactivates and activates workgroup", () => {
-    goToRouteAndAcceptTerms("/setting#users");
-    waitForTableData();
-
-    // add "publisher" to workgroup "World"
-    clickOnRowWithText("publisher");
-    cy.dataCy("addworkgroup-button").click();
-    setSelect("workgroup", 2); // Workgroup called "World";
+    // add "publisher" to workgroup "World", which is only possible while the workgroup is active
+    goToRouteAndAcceptTerms("/setting/workgroup/3"); // World
+    cy.dataCy("activate-button").click();
+    cy.wait("@update-workgroup");
+    cy.dataCy("adduser-button").click();
+    checkSelectOptions("user", ["publisher user"]);
     setSelect("role", 3); // "Publisher";
     cy.dataCy("add-button").click();
     cy.wait("@set_workgroup_roles");
+    cy.dataCy("inactivate-button").click();
+    cy.wait("@update-workgroup");
     cy.dataCy("backButton").click();
-    cy.dataCy("workgroups-tab").click();
+    waitForTableData();
 
     const activeWorkgroupDeletePrompt =
       "Do you really want to delete this workgroup? This cannot be undone. You can deactivate the workgroup and re-enable it again at any time.";
@@ -149,26 +157,32 @@ describe("User administration settings tests", () => {
     goToRouteAndAcceptTerms("/setting/workgroup/6"); // Blues
     cy.dataCy("activate-button").click();
 
-    // Add  two users to workgroup
+    // Add two users to workgroup at once
     cy.dataCy("adduser-button").click();
-    setSelect("user", 1); // "editor user";
-    setSelect("role", 0); // "Reader";
-    cy.dataCy("add-button").click();
-
-    cy.dataCy("adduser-button").click();
-    setSelect("user", 2); //  "publisher user";
+    checkSelectOptions("user", ["editor user", "publisher user"]);
     setSelect("role", 2); // "Reviewer";
     cy.dataCy("add-button").click();
+    cy.wait("@set_workgroup_roles");
 
-    // Assigning another role to user publisher replaces Reviewer
+    verifyRowWithContentAlsoContains("editor", "Reviewer");
+    verifyRowWithContentAlsoContains("publisher", "Reviewer");
+
+    // Users with a role in the workgroup are no longer offered
     cy.dataCy("adduser-button").click();
-    setSelect("user", 2); // "publisher user";
-    setSelect("role", 0); // "Reader";
-    cy.dataCy("add-button").click();
+    openDropdown('[data-cy="user-formSelect"]');
+    cy.get('.MuiPaper-elevation [role="listbox"]')
+      .should("not.contain", "editor user")
+      .and("not.contain", "publisher user");
+    closeDropdown();
+    cy.dataCy("cancel-button").click();
+
+    // Change the role of user editor in the table
+    cy.contains(".MuiDataGrid-row", "editor").find('[data-cy="Reviewer-role-select"] [role="combobox"]').click();
+    cy.get('.MuiPaper-elevation [role="listbox"]').contains("li", "Reader").click();
+    cy.wait("@set_workgroup_roles");
 
     verifyRowWithContentAlsoContains("editor", "Reader");
-    verifyRowWithContentAlsoContains("publisher", "Reader");
-    cy.dataCy("Reviewer-role-select").should("not.exist");
+    verifyRowWithContentAlsoContains("publisher", "Reviewer");
 
     hasPagination(false);
     verifyTableLength(2);

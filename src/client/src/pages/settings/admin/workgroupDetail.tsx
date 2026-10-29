@@ -6,7 +6,7 @@ import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-g
 import { Trash2, X } from "lucide-react";
 import { Role, User, UserWorkgroupRole } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
-import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
+import { useIsSettingWorkgroupRoles, useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FormInput } from "../../../components/form/form.ts";
@@ -30,9 +30,10 @@ export const WorkgroupDetail: FC = () => {
     useContext(WorkgroupAdministrationContext);
   const { data: selectedWorkgroup } = useSelectedWorkgroup(id);
   const {
-    setWorkgroupRole: { mutate: setWorkgroupRole },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles },
     update: { mutate: updateWorkgroup },
   } = useWorkgroupMutations();
+  const isSettingWorkgroupRoles = useIsSettingWorkgroupRoles();
   const { showPrompt } = useContext(PromptContext);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const handleFilterModelChange = useCallback((newModel: GridFilterModel) => setFilterModel(newModel), []);
@@ -86,12 +87,14 @@ export const WorkgroupDetail: FC = () => {
         action: () => {
           const role = getRoleInWorkgroup(user, selectedWorkgroup.id);
           if (!role) return;
-          setWorkgroupRole({
-            userId: user.id,
-            workgroupId: selectedWorkgroup.id,
-            role: role,
-            isActive: false,
-          });
+          setWorkgroupRoles([
+            {
+              userId: user.id,
+              workgroupId: selectedWorkgroup.id,
+              role: role,
+              isActive: false,
+            },
+          ]);
         },
       },
     ]);
@@ -107,8 +110,9 @@ export const WorkgroupDetail: FC = () => {
     params.value && (
       <RoleSelect
         value={params.value}
-        disabled={isDisabled ?? false}
-        onChange={role => setWorkgroupRole({ userId: params.row.id, workgroupId: id, role, isActive: true })}
+        label={`${t("role")} ${params.row.name}`}
+        disabled={(isDisabled ?? false) || isSettingWorkgroupRoles}
+        onChange={role => setWorkgroupRoles([{ userId: params.row.id, workgroupId: id, role, isActive: true }])}
       />
     );
 

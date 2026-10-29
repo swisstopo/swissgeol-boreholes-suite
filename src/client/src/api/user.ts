@@ -45,7 +45,7 @@ const updateUser = async (user: User) => {
 const deleteUser = async (id: number) => await fetchApiV2WithApiError(`user/${id}`, "DELETE");
 
 export const usersQueryKey = "users";
-const currentUserQueryKey = "currentUser";
+export const currentUserQueryKey = "currentUser";
 
 export const useUsers = () => {
   return useQuery({

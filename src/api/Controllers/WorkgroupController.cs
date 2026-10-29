@@ -204,9 +204,15 @@ public class WorkgroupController : ControllerBase
     {
         try
         {
-            if (userWorkgroupRoles == null || userWorkgroupRoles.Length < 1)
+            if (userWorkgroupRoles == null || userWorkgroupRoles.Length < 1 || userWorkgroupRoles.Any(r => r is null))
             {
                 return BadRequest();
+            }
+
+            var invalidRequestResult = await ValidateRoleChangesAsync(userWorkgroupRoles).ConfigureAwait(false);
+            if (invalidRequestResult is not null)
+            {
+                return invalidRequestResult;
             }
 
             foreach (var userWorkgroupRole in userWorkgroupRoles)
@@ -217,7 +223,13 @@ public class WorkgroupController : ControllerBase
 
                 if (userWorkgroupRole.IsActive == true && existingRole == default)
                 {
-                    await context.AddAsync(userWorkgroupRole).ConfigureAwait(false);
+                    // Only the keys and the role are taken from the request, so users or workgroups sent along are not written.
+                    await context.AddAsync(new UserWorkgroupRole
+                    {
+                        UserId = userWorkgroupRole.UserId,
+                        WorkgroupId = userWorkgroupRole.WorkgroupId,
+                        Role = userWorkgroupRole.Role,
+                    }).ConfigureAwait(false);
                 }
                 else if (userWorkgroupRole.IsActive == true && existingRole != default && existingRole.Role != userWorkgroupRole.Role)
                 {
@@ -246,5 +258,36 @@ public class WorkgroupController : ControllerBase
             logger.LogError(e, message);
             return Problem(message);
         }
+    }
+
+    /// <summary>
+    /// Rejects role changes with an unknown role, or for a user or workgroup that does not exist,
+    /// so they fail with a client error instead of a foreign key violation. The role is parsed from
+    /// JSON that also accepts plain numbers, so an out-of-range value can reach this point.
+    /// </summary>
+    /// <returns>The error result, or <c>null</c> if all role changes are valid.</returns>
+    private async Task<IActionResult?> ValidateRoleChangesAsync(UserWorkgroupRole[] userWorkgroupRoles)
+    {
+        var unknownRoles = userWorkgroupRoles.Select(r => r.Role).Where(role => !Enum.IsDefined(role)).Distinct().ToList();
+        if (unknownRoles.Count > 0)
+        {
+            return BadRequest($"Unknown role(s): {string.Join(", ", unknownRoles)}.");
+        }
+
+        var userIds = userWorkgroupRoles.Select(r => r.UserId).Distinct().ToList();
+        var existingUserCount = await context.Users.CountAsync(u => userIds.Contains(u.Id)).ConfigureAwait(false);
+        if (existingUserCount != userIds.Count)
+        {
+            return NotFound();
+        }
+
+        var workgroupIds = userWorkgroupRoles.Select(r => r.WorkgroupId).Distinct().ToList();
+        var existingWorkgroupCount = await context.Workgroups.CountAsync(w => workgroupIds.Contains(w.Id)).ConfigureAwait(false);
+        if (existingWorkgroupCount != workgroupIds.Count)
+        {
+            return NotFound();
+        }
+
+        return null;
     }
 }
