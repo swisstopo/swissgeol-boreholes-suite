@@ -7,7 +7,14 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers";
-import { checkSelectOptions, evaluateInput, openDropdown, setInput, setSelect } from "../helpers/formHelpers";
+import {
+  checkSelectOptions,
+  closeDropdown,
+  evaluateInput,
+  openDropdown,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers";
 import { goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers";
 
 describe("User administration settings tests", () => {
@@ -166,7 +173,7 @@ describe("User administration settings tests", () => {
     cy.get('.MuiPaper-elevation [role="listbox"]')
       .should("not.contain", "editor user")
       .and("not.contain", "publisher user");
-    cy.focused().type("{esc}");
+    closeDropdown();
     cy.dataCy("cancel-button").click();
 
     // Change the role of user editor in the table

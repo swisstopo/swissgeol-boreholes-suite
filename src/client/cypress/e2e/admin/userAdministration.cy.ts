@@ -9,7 +9,7 @@ import {
   verifyTableLength,
   waitForTableData,
 } from "../helpers/dataGridHelpers";
-import { checkSelectOptions, openDropdown, setSelect } from "../helpers/formHelpers";
+import { checkSelectOptions, closeDropdown, openDropdown, setSelect } from "../helpers/formHelpers";
 import { goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers";
 
 describe("User administration settings tests", () => {
@@ -185,7 +185,7 @@ describe("User administration settings tests", () => {
       .and("not.contain", "Default")
       .and("not.contain", "Reggae")
       .and("not.contain", "Country");
-    cy.focused().type("{esc}");
+    closeDropdown();
 
     // Add a role to workgroup Stage And Screen, then change it in the table
     checkSelectOptions("workgroup", ["Stage And Screen"]);

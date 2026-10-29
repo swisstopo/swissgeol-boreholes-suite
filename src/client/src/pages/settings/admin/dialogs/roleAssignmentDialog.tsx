@@ -55,12 +55,14 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
   const [role, setRole] = useState<Role | null>(null);
   const queryClient = useQueryClient();
 
+  // Refetched on every opening, as the dialog stays mounted and the options can change meanwhile.
   useEffect(() => {
+    if (!open) return;
     // Not awaited: effects cannot be async, and the dialog renders from the query cache.
     void queryClient.invalidateQueries({
       queryKey: [entityQueryKey],
     });
-  }, [entityQueryKey, queryClient]);
+  }, [open, entityQueryKey, queryClient]);
 
   // A refetch can drop an option while it is selected; adding it anyway would overwrite a role assigned elsewhere.
   const addableSelectedIds = useMemo(
@@ -152,7 +154,8 @@ export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
         </DialogContent>
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
-            <CancelButton onClick={resetDialog} />
+            {/* Locked while saving, as the save resets the dialog once done and would clear a reopened one. */}
+            <CancelButton onClick={resetDialog} disabled={isAdding} />
             <AddButton
               disabled={addableSelectedIds.length === 0 || !role || isAdding}
               label="add"

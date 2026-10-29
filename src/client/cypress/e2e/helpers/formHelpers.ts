@@ -120,6 +120,14 @@ export const openDropdown = (selector: string) => {
 };
 
 /**
+ * Closes the open dropdown of a select or multi-select form element and waits until it is gone.
+ */
+export const closeDropdown = () => {
+  cy.focused().type("{esc}");
+  cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
+};
+
+/**
  * Selects an option from a dropdown.
  * @param {number} index The index of the option to select.
  */
@@ -169,8 +177,7 @@ export const checkSelectOptions = (fieldName: string, optionTexts: string[], par
   optionTexts.forEach(text => {
     cy.get('.MuiPaper-elevation [role="listbox"]').contains("li", text, { matchCase: false }).click();
   });
-  cy.focused().type("{esc}");
-  cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
+  closeDropdown();
 };
 
 /**

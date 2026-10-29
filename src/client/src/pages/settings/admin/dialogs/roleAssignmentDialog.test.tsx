@@ -62,6 +62,7 @@ const getCheckbox = (name: string) =>
 describe("RoleAssignmentDialog", () => {
   afterEach(() => {
     cleanup();
+    vi.restoreAllMocks();
   });
 
   it("lists Select all first, then every option", () => {
@@ -155,6 +156,25 @@ describe("RoleAssignmentDialog", () => {
     chooseRole("Editor");
 
     expect(screen.getByRole("button", { name: /add/i })).toBeDisabled();
+  });
+
+  it("disables Cancel while the roles are being saved", () => {
+    render(dialog({ isAdding: true }));
+
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeDisabled();
+  });
+
+  it("refetches the options each time it opens", () => {
+    const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
+    const { rerender } = render(dialog({ open: false }));
+    expect(invalidateQueries).not.toHaveBeenCalled();
+
+    rerender(dialog());
+    rerender(dialog({ open: false }));
+    rerender(dialog());
+
+    expect(invalidateQueries).toHaveBeenCalledTimes(2);
+    expect(invalidateQueries).toHaveBeenLastCalledWith({ queryKey: ["users"] });
   });
 
   it("does not add a checked option that is no longer offered", () => {
