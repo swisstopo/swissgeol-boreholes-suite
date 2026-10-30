@@ -1,78 +1,105 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  InputLabel,
+  ListItemText,
   MenuItem,
+  Select,
+  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { Role, User, Workgroup } from "../../../../api/generated";
+import { Role } from "../../../../api/generated";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
 import { allRoles } from "../workgroupRoles.ts";
 import { EntityType } from "./entityType.ts";
 
-interface RoleAssignmentDialogProps<T> {
+export interface EntityOption {
+  id: number;
+  label: string;
+}
+
+const selectAllValue = "selectAll";
+type EntitySelectValue = number | typeof selectAllValue;
+
+interface RoleAssignmentDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  addEntity: (id: string, role: Role) => void;
+  /** Saves the role for the given entities and calls `onAdded` once they are saved. */
+  addEntities: (ids: number[], role: Role, onAdded: () => void) => void;
+  isAdding: boolean;
   entityType: EntityType;
-  entities: T[];
+  options: EntityOption[];
   entityQueryKey: string;
 }
 
-export const RoleAssignmentDialog = <T,>({
+export const RoleAssignmentDialog: FC<RoleAssignmentDialogProps> = ({
   open,
   setOpen,
-  addEntity,
+  addEntities,
+  isAdding,
   entityType,
-  entities,
+  options,
   entityQueryKey,
-}: RoleAssignmentDialogProps<T>) => {
+}) => {
   const { t } = useTranslation();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [role, setRole] = useState<Role | null>(null);
   const queryClient = useQueryClient();
 
+  // Refetched on every opening, as the dialog stays mounted and the options can change meanwhile.
   useEffect(() => {
+    if (!open) return;
     // Not awaited: effects cannot be async, and the dialog renders from the query cache.
     void queryClient.invalidateQueries({
       queryKey: [entityQueryKey],
     });
-  }, [entityQueryKey, queryClient]);
+  }, [open, entityQueryKey, queryClient]);
+
+  // A refetch can drop an option while it is selected; adding it anyway would overwrite a role assigned elsewhere.
+  const addableSelectedIds = useMemo(
+    () => selectedIds.filter(id => options.some(option => option.id === id)),
+    [selectedIds, options],
+  );
+  const allSelected = options.length > 0 && addableSelectedIds.length === options.length;
+  const someSelected = addableSelectedIds.length > 0 && !allSelected;
+  const selectLabelId = `${entityType}-select-label`;
 
   const resetDialog = () => {
     setOpen(false);
-    setSelectedId(null);
+    setSelectedIds([]);
     setRole(null);
   };
 
-  const getEntityMenuItem = (entity: T) => {
-    if (entityType === EntityType.workgroup) {
-      const workgroup = entity as Workgroup;
-      return (
-        <MenuItem key={workgroup.id} value={workgroup.id}>
-          {workgroup.name}
-        </MenuItem>
-      );
-    } else {
-      const user = entity as User;
-      return (
-        <MenuItem key={user.id} value={user.id}>
-          {`${user.firstName} ${user.lastName}`}
-        </MenuItem>
-      );
+  const handleEntityChange = (event: SelectChangeEvent<EntitySelectValue[]>) => {
+    const { value } = event.target;
+    // A string value only comes from browser autofill, which this select does not offer.
+    if (typeof value === "string") return;
+    if (value.includes(selectAllValue)) {
+      setSelectedIds(allSelected ? [] : options.map(option => option.id));
+      return;
     }
+    setSelectedIds(value.filter((selected): selected is number => selected !== selectAllValue));
   };
 
+  const renderSelectedLabels = (selected: EntitySelectValue[]) =>
+    options
+      .filter(option => selected.includes(option.id))
+      .map(option => option.label)
+      .join(", ");
+
   const addRole = () => {
-    if (selectedId && role) {
-      resetDialog();
-      addEntity(selectedId, role);
+    if (addableSelectedIds.length > 0 && role) {
+      // The dialog only closes once the roles are saved, so a failed save keeps the selection for another try.
+      addEntities(addableSelectedIds, role, resetDialog);
     }
   };
 
@@ -82,19 +109,32 @@ export const RoleAssignmentDialog = <T,>({
         <DialogTitle>
           <Typography variant="h4">{t(`add${entityType}Role`)}</Typography>
         </DialogTitle>
-        <DialogContent>
-          <Stack gap={2} sx={{ mt: 3 }}>
-            <TextField
-              select
-              label={t(entityType)}
-              name={entityType}
-              value={selectedId}
-              data-cy={`${entityType.toLowerCase()}-formSelect`}
-              onChange={event => {
-                setSelectedId(event.target.value);
-              }}>
-              {entities.map(entity => getEntityMenuItem(entity))}
-            </TextField>
+        <DialogContent sx={{ pb: 3 }}>
+          <Stack gap={2.5} sx={{ mt: 4 }}>
+            <FormControl size="small" sx={{ mt: 2 }} data-cy={`${entityType.toLowerCase()}-formSelect`}>
+              <InputLabel id={selectLabelId}>{t(entityType.toLowerCase())}</InputLabel>
+              <Select<EntitySelectValue[]>
+                multiple
+                labelId={selectLabelId}
+                label={t(entityType.toLowerCase())}
+                name={entityType}
+                value={addableSelectedIds}
+                onChange={handleEntityChange}
+                renderValue={renderSelectedLabels}>
+                {options.length > 0 && (
+                  <MenuItem value={selectAllValue} data-cy="selectAll">
+                    <Checkbox checked={allSelected} indeterminate={someSelected} />
+                    <ListItemText primary={t("selectAll")} />
+                  </MenuItem>
+                )}
+                {options.map(option => (
+                  <MenuItem key={option.id} value={option.id}>
+                    <Checkbox checked={addableSelectedIds.includes(option.id)} />
+                    <ListItemText primary={option.label} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               select
               label={t("role")}
@@ -114,8 +154,14 @@ export const RoleAssignmentDialog = <T,>({
         </DialogContent>
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
-            <CancelButton onClick={resetDialog} />
-            <AddButton disabled={!selectedId || !role} label="add" variant="contained" onClick={addRole} />
+            {/* Locked while saving, as the save resets the dialog once done and would clear a reopened one. */}
+            <CancelButton onClick={resetDialog} disabled={isAdding} />
+            <AddButton
+              disabled={addableSelectedIds.length === 0 || !role || isAdding}
+              label="add"
+              variant="contained"
+              onClick={addRole}
+            />
           </Stack>
         </DialogActions>
       </Stack>
