@@ -1,9 +1,10 @@
-import { ChangeEvent, Dispatch, RefObject, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
-import { Checkbox, Stack, Typography } from "@mui/material";
+import { ChangeEvent, Dispatch, RefObject, SetStateAction, useCallback, useContext } from "react";
+import { Checkbox, Stack } from "@mui/material";
 import { GridColumnHeaderParams, GridRenderCellParams, GridRowId } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { CheckIcon } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
+import { PublicColumnHeader } from "./publicColumnHeader.tsx";
 
 interface ItemWithPublicState {
   public?: boolean | null;
@@ -13,18 +14,14 @@ interface UsePublicColumnProps<T extends ItemWithPublicState> {
   apiRef: RefObject<GridApiCommunity>;
   updatedRows: Map<GridRowId, T>;
   setUpdatedRows: Dispatch<SetStateAction<Map<GridRowId, T>>>;
-  rows?: T[];
 }
 
 export const usePublicColumn = <T extends ItemWithPublicState>({
   apiRef,
   updatedRows,
   setUpdatedRows,
-  rows,
 }: UsePublicColumnProps<T>) => {
   const { editingEnabled } = useContext(EditStateContext);
-  const [allPublic, setAllPublic] = useState(false);
-  const [somePublic, setSomePublic] = useState(false);
 
   const togglePublicValueForRow = useCallback(
     (id: GridRowId, checked: boolean) => {
@@ -54,13 +51,10 @@ export const usePublicColumn = <T extends ItemWithPublicState>({
   const getPublicColumnHeader = useCallback(
     (params: GridColumnHeaderParams<T>) => {
       return editingEnabled ? (
-        <Stack direction="row" justifyContent="flex-start" alignItems="center" gap={1} data-cy={"public-header"}>
-          <Checkbox checked={allPublic} indeterminate={somePublic && !allPublic} onChange={toggleAllPublicValues} />
-          <Typography sx={{ fontSize: "16px", fontWeight: 500 }}>{params.colDef.headerName}</Typography>
-        </Stack>
+        <PublicColumnHeader onToggleAll={toggleAllPublicValues} headerName={params.colDef.headerName} />
       ) : undefined;
     },
-    [allPublic, editingEnabled, somePublic, toggleAllPublicValues],
+    [editingEnabled, toggleAllPublicValues],
   );
 
   const getPublicColumnCell = useCallback(
@@ -84,15 +78,6 @@ export const usePublicColumn = <T extends ItemWithPublicState>({
     },
     [editingEnabled, togglePublicValueForRow, updatedRows],
   );
-
-  // Update allPublic and somePublic states when rows or updatedRows change
-  useEffect(() => {
-    const currentRows = apiRef.current?.getRowModels?.();
-    if (currentRows) {
-      setAllPublic(Array.from(currentRows.values()).every(row => (row as T).public));
-      setSomePublic(Array.from(currentRows.values()).some(row => (row as T).public));
-    }
-  }, [apiRef, updatedRows, rows]);
 
   return {
     getPublicColumnHeader,

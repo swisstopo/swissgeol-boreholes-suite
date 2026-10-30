@@ -9,9 +9,9 @@ describe("RoleSelect", () => {
   });
 
   it("shows the current role and offers every role", () => {
-    render(<RoleSelect value="Editor" disabled={false} onChange={vi.fn()} />);
+    render(<RoleSelect value="Editor" label="Role Ada Lovelace" disabled={false} onChange={vi.fn()} />);
 
-    const select = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox", { name: "Role Ada Lovelace" });
     expect(select.textContent).toBe("Editor");
 
     fireEvent.mouseDown(select);
@@ -21,7 +21,7 @@ describe("RoleSelect", () => {
 
   it("reports the role picked from the list", () => {
     const onChange = vi.fn();
-    render(<RoleSelect value="Editor" disabled={false} onChange={onChange} />);
+    render(<RoleSelect value="Editor" label="Role" disabled={false} onChange={onChange} />);
 
     fireEvent.mouseDown(screen.getByRole("combobox"));
     fireEvent.click(screen.getByRole("option", { name: "Publisher" }));
@@ -30,7 +30,7 @@ describe("RoleSelect", () => {
   });
 
   it("cannot be opened when disabled", () => {
-    render(<RoleSelect value="Editor" disabled={true} onChange={vi.fn()} />);
+    render(<RoleSelect value="Editor" label="Role" disabled={true} onChange={vi.fn()} />);
 
     fireEvent.mouseDown(screen.getByRole("combobox"));
 
