@@ -454,8 +454,7 @@ public class LogControllerTest : TestControllerBase
     /// </summary>
     private static void AssertRunNumberMustBeUnique(IActionResult? result, string runNumber)
     {
-        var problem = (result as ObjectResult)?.Value as ProblemDetails;
-        Assert.IsNotNull(problem, $"The action result does not carry {nameof(ProblemDetails)}.");
+        Assert.IsInstanceOfType<ProblemDetails>((result as ObjectResult)?.Value, out var problem);
         Assert.AreEqual(ProblemType.UserError, problem.Type);
         Assert.AreEqual("logRunNumberMustBeUnique", problem.Extensions["messageKey"]);
         Assert.AreEqual(runNumber, problem.Extensions["runNumber"]);
