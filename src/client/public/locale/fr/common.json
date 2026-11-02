@@ -386,6 +386,7 @@
   "logFileNameAlreadyExists": "Un fichier nommé {{fileName}} existe déjà dans ce LOG Run.",
   "logFiles": "Fichiers LOG",
   "logRun": "Run LOG",
+  "logRunNumberMustBeUnique": "Le numéro de run {{runNumber}} existe déjà dans ce forage.",
   "logRuns": "LOG runs",
   "loggedInterval": "Intervalle enregistré",
   "mMd": "m MD",

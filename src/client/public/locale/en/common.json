@@ -386,6 +386,7 @@
   "logFileNameAlreadyExists": "A file named {{fileName}} already exists in this LOG Run.",
   "logFiles": "LOG files",
   "logRun": "LOG run",
+  "logRunNumberMustBeUnique": "The run number {{runNumber}} already exists in this borehole.",
   "logRuns": "LOG runs",
   "loggedInterval": "Logged interval",
   "mMd": "m MD",

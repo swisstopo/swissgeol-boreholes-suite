@@ -426,6 +426,7 @@ public class LogControllerTest : TestControllerBase
 
         var createResult = await controller.EditAsync(logRun2);
         ActionResultAssert.IsInternalServerError(createResult.Result, "Run number must be unique");
+        AssertRunNumberMustBeUnique(createResult.Result, "Number1");
     }
 
     [TestMethod]
@@ -444,6 +445,19 @@ public class LogControllerTest : TestControllerBase
 
         var createResult = await controller.CreateAsync(logRun);
         ActionResultAssert.IsInternalServerError(createResult.Result, "Run number must be unique");
+        AssertRunNumberMustBeUnique(createResult.Result, "RUN01");
+    }
+
+    /// <summary>
+    /// The refusal is one the client shows in the user's language, so it has to be marked as a user
+    /// error and carry the key and the run number the translated message names.
+    /// </summary>
+    private static void AssertRunNumberMustBeUnique(IActionResult? result, string runNumber)
+    {
+        var problem = (ProblemDetails)((ObjectResult)result!).Value!;
+        Assert.AreEqual(ProblemType.UserError, problem.Type);
+        Assert.AreEqual("logRunNumberMustBeUnique", problem.Extensions["messageKey"]);
+        Assert.AreEqual(runNumber, problem.Extensions["runNumber"]);
     }
 
     // Export tests

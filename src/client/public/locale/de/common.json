@@ -386,6 +386,7 @@
   "logFileNameAlreadyExists": "Eine Datei mit dem Namen {{fileName}} existiert in diesem LOG Run bereits.",
   "logFiles": "LOG Dateien",
   "logRun": "LOG Run",
+  "logRunNumberMustBeUnique": "Die Run Nummer {{runNumber}} existiert in dieser Bohrung bereits.",
   "logRuns": "LOG Runs",
   "loggedInterval": "Geloggtes Intervall",
   "mMd": "m MD",
