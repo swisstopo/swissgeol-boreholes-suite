@@ -183,7 +183,7 @@ public class TusUploadEndpointTest
 
     /// <summary>
     /// The client tells a file that is too large apart from any other refusal by the status alone,
-    /// because tusdotnet answers it before any code of ours runs and sends no problem body.
+    /// because tusdotnet refuses the length itself and sends no problem body.
     /// </summary>
     [TestMethod]
     public async Task CreatingAnUploadLargerThanTheLimitIsRefusedAsTooLarge()
@@ -192,6 +192,9 @@ public class TusUploadEndpointTest
         using var client = factory.CreateClient();
 
         using var response = await client.SendAsync(CreateUpload(SubAdmin, logRun.Id, $"{Guid.NewGuid()}.las", FileSizeLimits.Large + 1));
+
+        // An upload accepted against the limit would hold parts in the bucket until it is cleaned up.
+        if (response.Headers.Location is not null) startedUploadPaths.Add(response.Headers.Location.ToString());
 
         Assert.AreEqual(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
     }

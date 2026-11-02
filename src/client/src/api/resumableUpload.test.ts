@@ -185,6 +185,26 @@ describe("uploadResumable", () => {
     });
   });
 
+  it("keeps the status of a refusal whose problem is not one for the user", async () => {
+    const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+
+    optionsOf<{ onError: (error: Error) => void }>().onError(
+      Object.assign(new Error("tus: unexpected response while uploading chunk"), {
+        originalResponse: {
+          getStatus: () => 500,
+          getBody: () => JSON.stringify({ title: "An error occurred while processing your request.", status: 500 }),
+        },
+      }),
+    );
+
+    await expect(pending).rejects.toBeInstanceOf(ApiError);
+    await expect(pending).rejects.toMatchObject({
+      message: "tus: unexpected response while uploading chunk",
+      status: 500,
+      messageKey: undefined,
+    });
+  });
+
   it("passes a transport failure on unchanged", async () => {
     const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
     const failure = new Error("tus: failed to upload chunk");
