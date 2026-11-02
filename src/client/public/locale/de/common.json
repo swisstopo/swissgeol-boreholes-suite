@@ -433,7 +433,7 @@
   "msgStratigraphyExtractionRunning": "Die Stratigraphie wird aus dem Profil extrahiert. Bitte warten Sie.",
   "msgStratigraphyExtractionTakingLonger": "Die Extraktion dauert länger als gewöhnlich. Bitte warten Sie.",
   "msgStratigraphyExtractionTimeout": "Die Extraktion konnte nicht innerhalb der maximalen Wartezeit abgeschlossen werden. Bei umfangreichen Bohrprofilen kann dies vorkommen. Bitte versuchen Sie es später erneut oder erfassen Sie die Stratigraphie manuell.",
-  "msgStratigraphyExtractionWaitingForOcr": "Die Texterkennung (OCR) des Profils läuft noch. Die Extraktion startet automatisch, sobald sie abgeschlossen ist. Dies kann je nach Umfang des Profils eine Weile dauern, bitte haben Sie etwas Geduld.",
+  "msgStratigraphyExtractionWaitingForOcr": "Die Texterkennung (OCR) des Profils läuft noch. Die Extraktion startet automatisch, sobald sie abgeschlossen ist.",
   "msgWateringressEmpty": "Kein Wasserzutritt vorhanden",
   "mustBeUnique": "Wert muss eindeutig sein",
   "name": "Name",

@@ -433,7 +433,7 @@
   "msgStratigraphyExtractionRunning": "La stratigraphie est en cours d'extraction du profil. Veuillez patienter.",
   "msgStratigraphyExtractionTakingLonger": "L'extraction prend plus de temps que d'habitude. Veuillez patienter.",
   "msgStratigraphyExtractionTimeout": "L'extraction n'a pas pu être terminée dans le temps d'attente maximal. Cela peut arriver avec des profils volumineux. Veuillez réessayer plus tard ou saisir la stratigraphie manuellement.",
-  "msgStratigraphyExtractionWaitingForOcr": "La reconnaissance de texte (OCR) du profil est encore en cours. L'extraction démarre automatiquement dès qu'elle est terminée. Selon la taille du profil, cela peut prendre un certain temps, veuillez patienter.",
+  "msgStratigraphyExtractionWaitingForOcr": "La reconnaissance de texte (OCR) du profil est encore en cours. L'extraction démarre automatiquement dès qu'elle est terminée.",
   "msgWateringressEmpty": "Aucune entrée d'eau disable",
   "mustBeUnique": "La valeur doit être unique",
   "name": "Nom",

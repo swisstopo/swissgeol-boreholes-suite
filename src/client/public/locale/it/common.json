@@ -433,7 +433,7 @@
   "msgStratigraphyExtractionRunning": "La stratigrafia viene estratta dal profilo. Si prega di attendere.",
   "msgStratigraphyExtractionTakingLonger": "L'estrazione richiede più tempo del solito. Si prega di attendere.",
   "msgStratigraphyExtractionTimeout": "Non è stato possibile completare l'estrazione entro il tempo di attesa massimo. Ciò può accadere con profili estesi. Si prega di riprovare più tardi o di inserire la stratigrafia manualmente.",
-  "msgStratigraphyExtractionWaitingForOcr": "Il riconoscimento del testo (OCR) del profilo è ancora in corso. L'estrazione inizia automaticamente non appena è terminato. A seconda delle dimensioni del profilo, questo può richiedere un po' di tempo, si prega di pazientare.",
+  "msgStratigraphyExtractionWaitingForOcr": "Il riconoscimento del testo (OCR) del profilo è ancora in corso. L'estrazione inizia automaticamente non appena è terminato.",
   "msgWateringressEmpty": "Nessun ingresso d'acqua disponibile",
   "mustBeUnique": "Il valore deve essere unico",
   "name": "Nome",

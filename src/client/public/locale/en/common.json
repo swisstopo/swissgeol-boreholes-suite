@@ -433,7 +433,7 @@
   "msgStratigraphyExtractionRunning": "The stratigraphy is being extracted from the profile. Please wait.",
   "msgStratigraphyExtractionTakingLonger": "The extraction is taking longer than usual. Please wait.",
   "msgStratigraphyExtractionTimeout": "The extraction could not be completed within the maximum waiting time. This can happen with extensive profiles. Please try again later or enter the stratigraphy manually.",
-  "msgStratigraphyExtractionWaitingForOcr": "Text recognition (OCR) of the profile is still running. The extraction starts automatically once it has finished. Depending on the size of the profile, this can take a while, please be patient.",
+  "msgStratigraphyExtractionWaitingForOcr": "Text recognition (OCR) of the profile is still running. The extraction starts automatically once it has finished.",
   "msgWateringressEmpty": "No water ingress available",
   "mustBeUnique": "Value must be unique",
   "name": "Name",
