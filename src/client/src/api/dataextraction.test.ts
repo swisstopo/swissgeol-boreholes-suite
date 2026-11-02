@@ -13,15 +13,24 @@ import {
 import { ClassifyResponse, ExtractionBoundingBox, StratigraphyExtractionResponse } from "./dataextractionInterfaces.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { OcrStatus } from "./generated";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
 vi.mock("../auth/authTokenStore.ts", () => ({
   getAuthToken: vi.fn(() => ({ token_type: "Bearer", access_token: "token" })),
 }));
 
-// The extraction query only runs once the file info query resolved, so it is stubbed out here.
+// The extraction query only runs once the file info query resolved and OCR of the profile finished, so
+// both are stubbed out here; ocrState drives the status the OCR polling sees.
+const ocrState: { status: OcrStatus } = { status: "Success" };
 vi.mock("./fetchApiV2.ts", () => ({
-  fetchApiV2WithApiError: vi.fn(() => Promise.resolve({ fileName: "profile.pdf", count: 1 })),
+  fetchApiV2WithApiError: vi.fn((url: string) =>
+    Promise.resolve(
+      url.startsWith("profile/getOcrStatusForBorehole")
+        ? [{ id: 1, ocrStatus: ocrState.status }]
+        : { fileName: "profile.pdf", count: 1 },
+    ),
+  ),
 }));
 
 const layer = (text: string) => ({
@@ -68,9 +77,14 @@ const createWrapper = () => {
 };
 
 const profile = { id: 1, name: "profile.pdf", nameUuid: "uuid-1" } as BoreholeAttachment;
+const boreholeId = 42;
+
+const extractionCalls = () =>
+  vi.mocked(fetch).mock.calls.filter(([url]) => typeof url === "string" && url.includes("extract_stratigraphy"));
 
 describe("useExtractStratigraphies", () => {
   beforeEach(() => {
+    ocrState.status = "Success";
     vi.stubGlobal(
       "fetch",
       vi.fn(() => Promise.resolve(new Response("gateway timeout", { status: 504 }))),
@@ -83,14 +97,58 @@ describe("useExtractStratigraphies", () => {
   });
 
   it("does not retry a failed extraction, even when queries retry by default", async () => {
-    const { result } = renderHook(() => useExtractStratigraphies(profile, 1), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useExtractStratigraphies(profile, boreholeId, 1), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 
-    const extractionCalls = vi
-      .mocked(fetch)
-      .mock.calls.filter(([url]) => typeof url === "string" && url.includes("extract_stratigraphy"));
-    expect(extractionCalls).toHaveLength(1);
+    expect(extractionCalls()).toHaveLength(1);
+  });
+
+  it("waits for OCR of the profile to finish before extracting", async () => {
+    ocrState.status = "Processing";
+    vi.mocked(fetch).mockResolvedValue(Response.json(responseWith("Gravel")));
+    const { result } = renderHook(() => useExtractStratigraphies(profile, boreholeId, 1), {
+      wrapper: createWrapper(),
+    });
+
+    // A second status poll means the file info has long resolved, so only OCR can hold the extraction back.
+    const ocrStatusPolls = () =>
+      vi.mocked(fetchApiV2WithApiError).mock.calls.filter(([url]) => url.startsWith("profile/getOcrStatusForBorehole"));
+    await waitFor(() => expect(ocrStatusPolls().length).toBeGreaterThanOrEqual(2), { timeout: 5000 });
+    expect(extractionCalls()).toHaveLength(0);
+
+    ocrState.status = "Success";
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true), { timeout: 5000 });
+    expect(extractionCalls()).toHaveLength(1);
+  });
+
+  it("does not extract when OCR failed", async () => {
+    ocrState.status = "Error";
+    vi.mocked(fetch).mockResolvedValue(Response.json(responseWith("Gravel")));
+    renderHook(() => useExtractStratigraphies(profile, boreholeId, 1), { wrapper: createWrapper() });
+
+    // Once the OCR status and the file info are requested and resolved, an enabled extraction would have started.
+    await waitFor(() => expect(fetchApiV2WithApiError).toHaveBeenCalledTimes(2));
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(extractionCalls()).toHaveLength(0);
+  });
+
+  it("extracts anew when the file is selected again after closing", async () => {
+    vi.mocked(fetch).mockImplementation(() => Promise.resolve(Response.json(responseWith("Gravel"))));
+    const wrapper = createWrapper();
+    const first = renderHook(() => useExtractStratigraphies(profile, boreholeId, 1), { wrapper });
+    await waitFor(() => expect(first.result.current.isSuccess).toBe(true));
+    first.unmount();
+    // The query cache drops unobserved queries in a timeout, which reopening the dialog always outlasts.
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const second = renderHook(() => useExtractStratigraphies(profile, boreholeId, 1), { wrapper });
+    await waitFor(() => expect(second.result.current.isSuccess).toBe(true));
+
+    expect(extractionCalls()).toHaveLength(2);
   });
 });
 

@@ -16,6 +16,7 @@
 - The dialogs for adding users to a workgroup and workgroups to a user no longer offer users or workgroups that already have a role there. Their role is changed in the table instead.
 
 ### Fixed
+- Extracting a stratigraphy from a newly uploaded scanned profile now waits until text recognition (OCR) of the profile has finished and shows a note while it runs. Before, the extraction started right away and found no stratigraphy. If text recognition failed, the dialog says so instead of extracting and explains how to repeat it. Closing the dialog also discards the result, so selecting the profile again extracts anew.
 - Inactive users and disabled workgroups are no longer offered when adding users to a workgroup or workgroups to a user.
 - The workflow now judges each possible assignee by their role in the borehole's workgroup instead of their highest role in any workgroup.
 - Editors, Reviewers and Publishers of a workgroup can open the status of its boreholes in every status. Actions they are not allowed to take in the current status are locked. After requesting a review, editors stay on the status page instead of being sent back to the location.

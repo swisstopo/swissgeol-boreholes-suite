@@ -93,19 +93,40 @@ export const useReloadProfiles = (boreholeId: number) => {
 export const ocrStatusIsTerminal = (status?: OcrStatus): boolean =>
   status === "Success" || status === "Error" || status === "WillNotBeProcessed";
 
+const ocrStatusPollIntervalMs = 2000;
+
 export const decidePollInterval = (data: ProfileOcrStatus[] | undefined): number | false =>
-  data?.some(p => !ocrStatusIsTerminal(p.ocrStatus)) ? 2000 : false;
+  data?.some(p => !ocrStatusIsTerminal(p.ocrStatus)) ? ocrStatusPollIntervalMs : false;
+
+const fetchOcrStatuses = async (boreholeId?: number): Promise<ProfileOcrStatus[]> =>
+  await fetchApiV2WithApiError<ProfileOcrStatus[]>(`profile/getOcrStatusForBorehole?boreholeId=${boreholeId}`, "GET");
 
 export function useProfileOcrStatus(boreholeId?: number) {
   return useQuery({
     enabled: !!boreholeId,
     queryKey: [profileOcrStatusQueryKey, boreholeId],
-    queryFn: async (): Promise<ProfileOcrStatus[]> => {
-      return await fetchApiV2WithApiError<ProfileOcrStatus[]>(
-        `profile/getOcrStatusForBorehole?boreholeId=${boreholeId}`,
-        "GET",
-      );
-    },
+    queryFn: () => fetchOcrStatuses(boreholeId),
     refetchInterval: ({ state: { data } }) => decidePollInterval(data),
   });
+}
+
+const findOcrStatus = (data: ProfileOcrStatus[] | undefined, profileId: number): OcrStatus | undefined =>
+  data?.find(p => p.id === profileId)?.ocrStatus;
+
+/**
+ * Polls the OCR status of one profile until it reached a terminal status. OCR writes the recognized text into
+ * the stored file, so anything reading the file's text before that finds none in scanned documents. A profile
+ * missing from the borehole's statuses keeps polling, which covers a fresh upload.
+ * @param boreholeId The borehole the profile belongs to.
+ * @param profileId The profile whose OCR to follow.
+ * @returns The profile's OCR status, or undefined until it is known.
+ */
+export function useProfileOcrStatusOf(boreholeId: number, profileId: number): OcrStatus | undefined {
+  const { data } = useQuery({
+    queryKey: [profileOcrStatusQueryKey, boreholeId],
+    queryFn: () => fetchOcrStatuses(boreholeId),
+    refetchInterval: ({ state: { data } }) =>
+      ocrStatusIsTerminal(findOcrStatus(data, profileId)) ? false : ocrStatusPollIntervalMs,
+  });
+  return findOcrStatus(data, profileId);
 }

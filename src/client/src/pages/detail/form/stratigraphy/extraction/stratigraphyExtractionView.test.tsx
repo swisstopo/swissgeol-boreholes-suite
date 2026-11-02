@@ -2,6 +2,7 @@
 import { act, cleanup, configure, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
+import { OcrStatus } from "../../../../../api/generated";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { extractionTakingLongerThresholdMs, StratigraphyExtractionView } from "./stratigraphyExtractionView.tsx";
 
@@ -25,13 +26,19 @@ vi.mock("./stratigraphyExtractionItem.tsx", () => ({
 
 const onRetry = vi.fn();
 
-const renderView = (props: { isLoading?: boolean; isError?: boolean; stratigraphies?: ExtractedStratigraphy[] }) =>
+const renderView = (props: {
+  ocrStatus?: OcrStatus;
+  isLoading?: boolean;
+  isError?: boolean;
+  stratigraphies?: ExtractedStratigraphy[];
+}) =>
   render(
     <StratigraphyExtractionView
       file={{ id: 1, name: "profile.pdf", nameUuid: "uuid-1" } as BoreholeAttachment}
       allExtractedStratigraphies={props.stratigraphies ?? []}
       selectedIndex={0}
       onItemStateChange={vi.fn()}
+      ocrStatus={props.ocrStatus ?? "Success"}
       isLoading={props.isLoading ?? false}
       isError={props.isError ?? false}
       onRetry={onRetry}
@@ -70,6 +77,41 @@ describe("StratigraphyExtractionView", () => {
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 
+  it.each<OcrStatus>(["Created", "Processing"])(
+    "asks for patience instead of showing a result while OCR is %s",
+    ocrStatus => {
+      renderView({ ocrStatus, stratigraphies: [] });
+
+      expect(screen.getByTestId("stratigraphy-extraction-ocr-running")).toBeDefined();
+      expect(screen.queryByTestId("stratigraphy-extraction-empty")).toBeNull();
+    },
+  );
+
+  it("keeps showing only the OCR hint past the long-extraction threshold", () => {
+    vi.useFakeTimers();
+    renderView({ ocrStatus: "Processing", isLoading: true });
+
+    act(() => {
+      vi.advanceTimersByTime(extractionTakingLongerThresholdMs);
+    });
+
+    expect(screen.queryByTestId("stratigraphy-extraction-taking-longer")).toBeNull();
+  });
+
+  it("reports failed OCR instead of a result and without offering a retry", () => {
+    renderView({ ocrStatus: "Error", stratigraphies: [] });
+
+    expect(screen.getByTestId("stratigraphy-extraction-ocr-failed")).toBeDefined();
+    expect(screen.queryByTestId("stratigraphy-extraction-empty")).toBeNull();
+    expect(screen.queryByTestId("retry-stratigraphy-extraction-button")).toBeNull();
+  });
+
+  it.each<OcrStatus>(["Success", "WillNotBeProcessed"])("does not report failed OCR when it is %s", ocrStatus => {
+    renderView({ ocrStatus, stratigraphies: [] });
+
+    expect(screen.queryByTestId("stratigraphy-extraction-ocr-failed")).toBeNull();
+  });
+
   it("does not hint at a long extraction before the threshold", () => {
     vi.useFakeTimers();
     renderView({ isLoading: true });
@@ -79,6 +121,7 @@ describe("StratigraphyExtractionView", () => {
     });
 
     expect(screen.queryByTestId("stratigraphy-extraction-taking-longer")).toBeNull();
+    expect(screen.getByTestId("stratigraphy-extraction-running")).toBeDefined();
   });
 
   it("hints at a long extraction once the threshold has passed", () => {
@@ -90,6 +133,7 @@ describe("StratigraphyExtractionView", () => {
     });
 
     expect(screen.getByTestId("stratigraphy-extraction-taking-longer")).toBeDefined();
+    expect(screen.queryByTestId("stratigraphy-extraction-running")).toBeNull();
   });
 
   it("renders the extracted stratigraphies on success", () => {

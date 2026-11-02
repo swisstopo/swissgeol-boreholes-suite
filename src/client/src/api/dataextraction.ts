@@ -12,6 +12,7 @@ import {
 } from "./dataextractionInterfaces.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { useProfileOcrStatusOf } from "./profile.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
 async function fetchCreatePngs(fileName: string): Promise<Response> {
@@ -241,13 +242,16 @@ export function useExtractionBoundingBoxes(
   });
 }
 
-export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number) {
+export function useExtractStratigraphies(file: BoreholeAttachment, boreholeId: number, activePage: number) {
   const { data: fileInfo } = useFileInfo(file?.id, activePage);
+  const ocrStatus = useProfileOcrStatusOf(boreholeId, file.id);
+  const hasFileText = ocrStatus === "Success" || ocrStatus === "WillNotBeProcessed";
   return useQuery({
     queryKey: ["extractStratigraphies", file.nameUuid],
-    enabled: !!file && !!fileInfo,
+    enabled: !!file && !!fileInfo && hasFileText,
     retry: false, // no retries to reduce load on dataextraction service after failure.
     staleTime: Infinity, // Extraction results dont go stale and a failing refetch on window focus should not override valid data.
+    gcTime: 0, // Selecting the file again after closing the dialog extracts anew instead of showing a previous result.
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid!, signal);
       return mapExtractionResponse(response);

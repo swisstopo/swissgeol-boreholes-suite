@@ -5,6 +5,7 @@ import { cleanup, configure, fireEvent, render, screen, waitFor } from "@testing
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
 import { ApiError } from "../../../../../api/errorClasses.ts";
+import { OcrStatus } from "../../../../../api/generated";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { AlertContextInterface } from "../../../../../components/alert/alertInterfaces.ts";
@@ -36,6 +37,10 @@ vi.mock("../../../../../api/dataextraction.ts", () => ({
   useExtractStratigraphies: () => ({ ...extractionState, refetch: refetchExtraction }),
   useFileInfo: () => ({ ...fileInfoState, refetch: refetchFileInfo }),
 }));
+const ocrState: { status: OcrStatus } = { status: "Success" };
+vi.mock("../../../../../api/profile.ts", () => ({
+  useProfileOcrStatusOf: () => ocrState.status,
+}));
 
 const bulkAdd = vi.fn();
 vi.mock("../stratigraphy.ts", () => ({
@@ -56,10 +61,12 @@ vi.mock("./stratigraphyExtractionView.tsx", () => ({
     names,
     nameErrors,
     onNameChange,
+    ocrStatus,
     isError,
     onRetry,
   }: StratigraphyExtractionViewProps) => (
     <div>
+      <span aria-label="view-ocr-status">{String(ocrStatus)}</span>
       <span aria-label="view-is-error">{String(isError)}</span>
       <button aria-label="view-retry" onClick={onRetry}>
         retry
@@ -127,6 +134,7 @@ describe("StratigraphyExtractionDialog", () => {
     extractionState.isError = false;
     fileInfoState.isLoading = false;
     fileInfoState.isError = false;
+    ocrState.status = "Success";
     refetchExtraction.mockReset();
     refetchFileInfo.mockReset();
     bulkAdd.mockReset();
@@ -236,6 +244,13 @@ describe("StratigraphyExtractionDialog", () => {
     renderDialog([]);
 
     await waitFor(() => expect(screen.getByLabelText("view-is-error").textContent).toBe("false"));
+  });
+
+  it.each<OcrStatus>(["Processing", "Error"])("passes the profile's OCR status %s to the view", async status => {
+    ocrState.status = status;
+    renderDialog([]);
+
+    await waitFor(() => expect(screen.getByLabelText("view-ocr-status").textContent).toBe(status));
   });
 
   it("retries the extraction when the extraction query failed", async () => {
