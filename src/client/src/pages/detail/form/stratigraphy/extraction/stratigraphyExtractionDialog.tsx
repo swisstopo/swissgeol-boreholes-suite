@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useExtractStratigraphies, useFileInfo } from "../../../../../api/dataextraction.ts";
-import { ApiError } from "../../../../../api/errorClasses.ts";
+import { ApiError, isGatewayTimeout } from "../../../../../api/errorClasses.ts";
 import { isOcrTextAvailable, useProfileOcrStatusOf } from "../../../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { theme } from "../../../../../AppTheme.ts";
@@ -44,6 +44,16 @@ const getBaseName = (file: BoreholeAttachment): string => (file.name ?? "").repl
 const getDefaultStratigraphyName = (file: BoreholeAttachment, index: number, count: number): string =>
   count === 1 ? getBaseName(file) : `${getBaseName(file)}_${index + 1}`;
 
+// Extensive profiles can take longer to extract than the gateway in front of the extraction service waits.
+const getExtractionErrorMessageKey = (
+  hasPreparationFailed: boolean,
+  extractionError: Error | null,
+): string | undefined => {
+  if (hasPreparationFailed) return "msgStratigraphyExtractionFailed";
+  if (!extractionError) return undefined;
+  return isGatewayTimeout(extractionError) ? "msgStratigraphyExtractionTimeout" : "msgStratigraphyExtractionFailed";
+};
+
 export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps> = ({
   file,
   setSelectedFile,
@@ -57,7 +67,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const {
     data: allExtractedStratigraphies = [],
     isLoading: isLoadingExtraction,
-    isError: isExtractionError,
+    error: extractionError,
     refetch: refetchExtraction,
   } = useExtractStratigraphies(file, 1, isOcrTextAvailable(ocrStatus));
   const { isLoading: isLoadingFileInfo, isError: isFileInfoError, refetch: refetchFileInfo } = useFileInfo(file?.id, 1);
@@ -298,7 +308,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
           onItemStateChange={handleItemStateChange}
           ocrStatus={ocrStatus}
           isLoading={isLoadingExtraction || isLoadingFileInfo}
-          isError={isExtractionError || isFileInfoError || isStatusUnavailable}
+          errorMessageKey={getExtractionErrorMessageKey(isFileInfoError || isStatusUnavailable, extractionError)}
           onRetry={retryExtraction}
           names={names}
           nameErrors={nameErrors}

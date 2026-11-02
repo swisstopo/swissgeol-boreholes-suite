@@ -130,6 +130,17 @@ describe("useExtractStratigraphies", () => {
 
     expect(extractionCalls()).toHaveLength(2);
   });
+
+  it("keeps the status of a failed extraction, so a gateway timeout can be told apart", async () => {
+    const { result } = renderHook(() => useExtractStratigraphies(profile, 1, true), {
+      wrapper: createWrapper(),
+    });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.error).toBeInstanceOf(ApiError);
+    expect(result.current.error).toMatchObject({ status: 504 });
+  });
 });
 
 describe("useFileInfo", () => {

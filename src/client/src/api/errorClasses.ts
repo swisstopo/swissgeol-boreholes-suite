@@ -15,6 +15,14 @@ export class ApiError extends Error {
 }
 
 /**
+ * Whether a request failed because the gateway in front of the service stopped waiting for its answer. The gateway
+ * ends requests after a fixed time, so a service that needs longer answers with this although it may still succeed.
+ * @param error The error a request failed with.
+ * @returns True if the error is an ApiError with status 504 Gateway Timeout.
+ */
+export const isGatewayTimeout = (error: unknown): boolean => error instanceof ApiError && error.status === 504;
+
+/**
  * The reason fields every problem document from the API may carry. Each response carries only a
  * subset of them, so every reader has to check.
  */

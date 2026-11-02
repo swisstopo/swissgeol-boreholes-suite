@@ -27,10 +27,10 @@ vi.mock("react-router", () => ({
 // Drives what the dialog sees as extracted stratigraphies; mutated per test before render.
 const refetchExtraction = vi.fn();
 const refetchFileInfo = vi.fn();
-const extractionState: { data: ExtractedStratigraphy[]; isLoading: boolean; isError: boolean } = {
+const extractionState: { data: ExtractedStratigraphy[]; isLoading: boolean; error: Error | null } = {
   data: [],
   isLoading: false,
-  isError: false,
+  error: null,
 };
 const fileInfoState: { isLoading: boolean; isError: boolean } = { isLoading: false, isError: false };
 const extractionArgs = vi.fn();
@@ -75,12 +75,12 @@ vi.mock("./stratigraphyExtractionView.tsx", () => ({
     nameErrors,
     onNameChange,
     ocrStatus,
-    isError,
+    errorMessageKey,
     onRetry,
   }: StratigraphyExtractionViewProps) => (
     <div>
       <span aria-label="view-ocr-status">{String(ocrStatus)}</span>
-      <span aria-label="view-is-error">{String(isError)}</span>
+      <span aria-label="view-error">{errorMessageKey ?? ""}</span>
       <button aria-label="view-retry" onClick={onRetry}>
         retry
       </button>
@@ -144,7 +144,7 @@ describe("StratigraphyExtractionDialog", () => {
   beforeEach(() => {
     extractionState.data = [];
     extractionState.isLoading = false;
-    extractionState.isError = false;
+    extractionState.error = null;
     fileInfoState.isLoading = false;
     fileInfoState.isError = false;
     ocrState.status = "Success";
@@ -250,16 +250,36 @@ describe("StratigraphyExtractionDialog", () => {
   });
 
   it("reports a failed extraction to the view instead of an empty result", async () => {
-    extractionState.isError = true;
+    extractionState.error = new ApiError("errorDataExtraction", 500);
     renderDialog([]);
 
-    await waitFor(() => expect(screen.getByLabelText("view-is-error").textContent).toBe("true"));
+    await waitFor(() =>
+      expect(screen.getByLabelText("view-error").textContent).toBe("msgStratigraphyExtractionFailed"),
+    );
+  });
+
+  it("reports an extraction the gateway stopped waiting for as a timeout", async () => {
+    extractionState.error = new ApiError("errorDataExtraction", 504);
+    renderDialog([]);
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("view-error").textContent).toBe("msgStratigraphyExtractionTimeout"),
+    );
+  });
+
+  it("reports a failed file info as a failed extraction", async () => {
+    fileInfoState.isError = true;
+    renderDialog([]);
+
+    await waitFor(() =>
+      expect(screen.getByLabelText("view-error").textContent).toBe("msgStratigraphyExtractionFailed"),
+    );
   });
 
   it("reports a successful but empty extraction as not being an error", async () => {
     renderDialog([]);
 
-    await waitFor(() => expect(screen.getByLabelText("view-is-error").textContent).toBe("false"));
+    await waitFor(() => expect(screen.getByLabelText("view-error").textContent).toBe(""));
   });
 
   it.each<OcrStatus>(["Processing", "Error"])("passes the profile's OCR status %s to the view", async status => {
@@ -287,7 +307,9 @@ describe("StratigraphyExtractionDialog", () => {
     ocrState.isStatusUnavailable = true;
     renderDialog([]);
 
-    await waitFor(() => expect(screen.getByLabelText("view-is-error").textContent).toBe("true"));
+    await waitFor(() =>
+      expect(screen.getByLabelText("view-error").textContent).toBe("msgStratigraphyExtractionFailed"),
+    );
     fireEvent.click(screen.getByLabelText("view-retry"));
 
     expect(reloadOcrStatus).toHaveBeenCalledTimes(1);
@@ -295,7 +317,7 @@ describe("StratigraphyExtractionDialog", () => {
   });
 
   it("retries the extraction when the extraction query failed", async () => {
-    extractionState.isError = true;
+    extractionState.error = new ApiError("errorDataExtraction", 500);
     renderDialog([]);
 
     fireEvent.click(screen.getByLabelText("view-retry"));

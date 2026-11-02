@@ -22,7 +22,7 @@ export interface StratigraphyExtractionViewProps {
   onItemStateChange: (index: number, state: StratigraphyExtractionItemState) => void;
   ocrStatus: OcrStatus | undefined;
   isLoading: boolean;
-  isError: boolean;
+  errorMessageKey: string | undefined;
   onRetry: () => void;
   activePage: number;
   setActivePage: (page: number) => void;
@@ -38,7 +38,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   onItemStateChange,
   ocrStatus,
   isLoading,
-  isError,
+  errorMessageKey,
   onRetry,
   activePage,
   setActivePage,
@@ -59,11 +59,11 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const renderExtractionItems = () => {
     // Checked first: an OCR status that could not be loaded leaves the status unknown, which would otherwise read as
     // OCR still running.
-    if (isError) {
+    if (errorMessageKey) {
       return (
         <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
           <Typography data-cy="stratigraphy-extraction-error" textAlign="center">
-            {t("msgStratigraphyExtractionFailed")}
+            {t(errorMessageKey)}
           </Typography>
           <BoreholesButton
             dataCy="retry-stratigraphy-extraction-button"
