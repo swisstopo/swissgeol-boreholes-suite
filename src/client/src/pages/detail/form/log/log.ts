@@ -43,9 +43,10 @@ const uploadLogFileBlob = async (
   try {
     return await uploadResumable(file, metadata, options);
   } catch (error) {
-    // Giving up is told apart from a failure further up, so it has to keep its own shape.
+    // The save tells a cancelled upload from a failed one by its AbortError, and only for a
+    // cancel reads back the files that reached the server, so a cancel is not rewrapped.
     if (isAbortError(error)) throw error;
-    throw toLogFileUploadError(error, file.name);
+    throw toLogFileUploadError(error, file);
   }
 };
 
