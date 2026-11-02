@@ -12,7 +12,6 @@ import {
 } from "./dataextractionInterfaces.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
-import { isOcrTextAvailable, useProfileOcrStatusOf } from "./profile.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
 async function fetchCreatePngs(fileName: string): Promise<Response> {
@@ -244,11 +243,11 @@ export function useExtractionBoundingBoxes(
   });
 }
 
-export function useExtractStratigraphies(file: BoreholeAttachment, boreholeId: number, activePage: number) {
+export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number, isTextAvailable: boolean) {
   const { data: fileInfo } = useFileInfo(file?.id, activePage);
-  const isTextAvailable = isOcrTextAvailable(useProfileOcrStatusOf(boreholeId, file.id));
   return useQuery({
     queryKey: ["extractStratigraphies", file.nameUuid],
+    // Scanned documents only contain text once OCR succeeded, so extracting earlier finds no stratigraphy.
     enabled: !!file && !!fileInfo && isTextAvailable,
     retry: false, // no retries to reduce load on dataextraction service after failure.
     staleTime: Infinity, // Extraction results dont go stale and a failing refetch on window focus should not override valid data.

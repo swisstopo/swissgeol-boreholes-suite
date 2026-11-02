@@ -16,7 +16,7 @@ import {
 import { Stack } from "@mui/system";
 import { useExtractStratigraphies, useFileInfo } from "../../../../../api/dataextraction.ts";
 import { ApiError } from "../../../../../api/errorClasses.ts";
-import { useProfileOcrStatusOf } from "../../../../../api/profile.ts";
+import { isOcrTextAvailable, useProfileOcrStatusOf } from "../../../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
@@ -53,14 +53,14 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
   const id = useRequiredId();
+  const ocrStatus = useProfileOcrStatusOf(id, file.id);
   const {
     data: allExtractedStratigraphies = [],
     isLoading: isLoadingExtraction,
     isError: isExtractionError,
     refetch: refetchExtraction,
-  } = useExtractStratigraphies(file, id, 1);
+  } = useExtractStratigraphies(file, 1, isOcrTextAvailable(ocrStatus));
   const { isLoading: isLoadingFileInfo, isError: isFileInfoError, refetch: refetchFileInfo } = useFileInfo(file?.id, 1);
-  const ocrStatus = useProfileOcrStatusOf(id, file.id);
   const { mutateAsync: bulkAdd, isPending: isLoadingBulkAdd } = useAddExtractedStratigraphies();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();

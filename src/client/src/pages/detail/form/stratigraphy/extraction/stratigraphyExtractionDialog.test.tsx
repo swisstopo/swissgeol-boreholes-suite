@@ -33,12 +33,17 @@ const extractionState: { data: ExtractedStratigraphy[]; isLoading: boolean; isEr
   isError: false,
 };
 const fileInfoState: { isLoading: boolean; isError: boolean } = { isLoading: false, isError: false };
+const extractionArgs = vi.fn();
 vi.mock("../../../../../api/dataextraction.ts", () => ({
-  useExtractStratigraphies: () => ({ ...extractionState, refetch: refetchExtraction }),
+  useExtractStratigraphies: (...args: unknown[]) => {
+    extractionArgs(...args);
+    return { ...extractionState, refetch: refetchExtraction };
+  },
   useFileInfo: () => ({ ...fileInfoState, refetch: refetchFileInfo }),
 }));
 const ocrState: { status: OcrStatus } = { status: "Success" };
-vi.mock("../../../../../api/profile.ts", () => ({
+vi.mock("../../../../../api/profile.ts", async importOriginal => ({
+  ...(await importOriginal<typeof import("../../../../../api/profile.ts")>()),
   useProfileOcrStatusOf: () => ocrState.status,
 }));
 
@@ -135,6 +140,7 @@ describe("StratigraphyExtractionDialog", () => {
     fileInfoState.isLoading = false;
     fileInfoState.isError = false;
     ocrState.status = "Success";
+    extractionArgs.mockReset();
     refetchExtraction.mockReset();
     refetchFileInfo.mockReset();
     bulkAdd.mockReset();
@@ -251,6 +257,19 @@ describe("StratigraphyExtractionDialog", () => {
     renderDialog([]);
 
     await waitFor(() => expect(screen.getByLabelText("view-ocr-status").textContent).toBe(status));
+  });
+
+  it.each<[OcrStatus, boolean]>([
+    ["Created", false],
+    ["Processing", false],
+    ["Error", false],
+    ["Success", true],
+    ["WillNotBeProcessed", true],
+  ])("lets the extraction run with OCR status %s: %s", (status, isTextAvailable) => {
+    ocrState.status = status;
+    renderDialog([]);
+
+    expect(extractionArgs).toHaveBeenLastCalledWith(expect.anything(), 1, isTextAvailable);
   });
 
   it("retries the extraction when the extraction query failed", async () => {
