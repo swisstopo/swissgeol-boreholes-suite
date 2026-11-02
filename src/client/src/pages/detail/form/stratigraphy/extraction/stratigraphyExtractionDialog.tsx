@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import { useExtractStratigraphies, useFileInfo } from "../../../../../api/dataextraction.ts";
+import { ExtractedStratigraphy, useExtractStratigraphies, useFileInfo } from "../../../../../api/dataextraction.ts";
 import { ApiError, isGatewayTimeout } from "../../../../../api/errorClasses.ts";
 import { isOcrTextAvailable, useProfileOcrStatusOf } from "../../../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
@@ -80,6 +80,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const [itemStates, setItemStates] = useState<Map<number, StratigraphyExtractionItemState>>(new Map());
   const [editedNames, setEditedNames] = useState<Map<number, string>>(new Map());
   const [conflictingNames, setConflictingNames] = useState<Set<string>>(new Set());
+  const [pageAlignedStratigraphies, setPageAlignedStratigraphies] = useState<ExtractedStratigraphy[]>([]);
 
   const handleItemStateChange = useCallback((index: number, state: StratigraphyExtractionItemState) => {
     setItemStates(prev => {
@@ -92,6 +93,13 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   // Auto-check the only stratigraphy when there is exactly one
   if (allExtractedStratigraphies.length === 1 && !checkedIndices.has(0)) {
     setCheckedIndices(new Set([0]));
+  }
+
+  // Show the first page of the first stratigraphy once per extraction result, even if the user paged while waiting.
+  // Empty results are skipped: they keep the current page, and the empty default is a new array on every render.
+  if (allExtractedStratigraphies.length > 0 && allExtractedStratigraphies !== pageAlignedStratigraphies) {
+    setPageAlignedStratigraphies(allExtractedStratigraphies);
+    setActivePage(allExtractedStratigraphies[0].pageNumbers[0] ?? 1);
   }
 
   // The displayed name per stratigraphy: the default derived from the file name, overridden by any edit.
