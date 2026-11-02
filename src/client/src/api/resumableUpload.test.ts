@@ -165,6 +165,26 @@ describe("uploadResumable", () => {
     });
   });
 
+  it("keeps the status of a refusal that gives no reason", async () => {
+    const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+
+    optionsOf<{ onError: (error: Error) => void }>().onError(
+      Object.assign(new Error("tus: unexpected response while creating upload"), {
+        originalResponse: {
+          getStatus: () => 413,
+          getBody: () => "Header Upload-Length exceeds the server's max file size.",
+        },
+      }),
+    );
+
+    await expect(pending).rejects.toBeInstanceOf(ApiError);
+    await expect(pending).rejects.toMatchObject({
+      message: "tus: unexpected response while creating upload",
+      status: 413,
+      messageKey: undefined,
+    });
+  });
+
   it("passes a transport failure on unchanged", async () => {
     const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
     const failure = new Error("tus: failed to upload chunk");
