@@ -8,7 +8,7 @@ import { downloadPost } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2WithApiError, isJsonContentType, upload } from "../../../../api/fetchApiV2.ts";
 import { uploadResumable } from "../../../../api/resumableUpload.ts";
-import { TransferOptions } from "../../../../api/transferProgress.ts";
+import { isAbortError, TransferOptions } from "../../../../api/transferProgress.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -23,6 +23,7 @@ import {
   RequiredAttachmentsVariables,
   UpdateLogRunVariables,
 } from "./logInterfaces.ts";
+import { toLogFileUploadError } from "./logFileUploadError.ts";
 import { toStoredFileName } from "./logUtils.ts";
 
 const deleteLogRunsByIds = async (logRunIds: number[]) => {
@@ -30,7 +31,7 @@ const deleteLogRunsByIds = async (logRunIds: number[]) => {
   return await fetchApiV2WithApiError(`${logController}?${queryParams}`, "DELETE");
 };
 
-const uploadLogFileBlob = (
+const uploadLogFileBlob = async (
   file: File,
   logRunId: number,
   logFileId?: number,
@@ -39,7 +40,13 @@ const uploadLogFileBlob = (
   const metadata: Record<string, string> = { logRunId: String(logRunId) };
   if (logFileId) metadata.logFileId = String(logFileId);
 
-  return uploadResumable(file, metadata, options);
+  try {
+    return await uploadResumable(file, metadata, options);
+  } catch (error) {
+    // Giving up is told apart from a failure further up, so it has to keep its own shape.
+    if (isAbortError(error)) throw error;
+    throw toLogFileUploadError(error, file.name);
+  }
 };
 
 export type LogFileUploadProgressCallback = (progress: LogFileUploadProgress) => void;

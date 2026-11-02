@@ -384,6 +384,8 @@
   "log": "LOG",
   "logFile": "LOG file",
   "logFileNameAlreadyExists": "A file named {{fileName}} already exists in this LOG Run.",
+  "logFileTooLarge": "The file {{fileName}} exceeds the maximum file size of {{size}}.",
+  "logFileUploadFailed": "The file {{fileName}} could not be uploaded.",
   "logFiles": "LOG files",
   "logRun": "LOG run",
   "logRunNumberMustBeUnique": "The run number {{runNumber}} already exists in this borehole.",
