@@ -87,6 +87,14 @@ describe("StratigraphyExtractionView", () => {
     },
   );
 
+  it("shows the error with a retry button instead of the OCR hint when loading failed", () => {
+    renderView({ ocrStatus: "Processing", isError: true });
+
+    expect(screen.getByTestId("stratigraphy-extraction-error")).toBeDefined();
+    expect(screen.getByTestId("retry-stratigraphy-extraction-button")).toBeDefined();
+    expect(screen.queryByTestId("stratigraphy-extraction-ocr-running")).toBeNull();
+  });
+
   it("keeps showing only the OCR hint past the long-extraction threshold", () => {
     vi.useFakeTimers();
     renderView({ ocrStatus: "Processing", isLoading: true });

@@ -24,11 +24,18 @@ vi.mock("../../../api/dataextraction.ts", () => ({
   useExtractionBoundingBoxes: (...args: unknown[]) => useExtractionBoundingBoxes(...args),
 }));
 
-const ocrState: { status: OcrStatus | undefined } = { status: "Success" };
+const ocrState: { status: OcrStatus | undefined; isStatusUnavailable: boolean } = {
+  status: "Success",
+  isStatusUnavailable: false,
+};
 vi.mock("../../../api/profile.ts", async importOriginal => ({
   ...(await importOriginal<typeof import("../../../api/profile.ts")>()),
   useProfileImage: () => ({ data: {}, isError: false }),
-  useProfileOcrStatusOf: () => ocrState.status,
+  useProfileOcrStatusOf: () => ({
+    ocrStatus: ocrState.status,
+    isStatusUnavailable: ocrState.isStatusUnavailable,
+    reloadStatus: vi.fn(),
+  }),
 }));
 
 vi.mock("../../../hooks/useShowAlertOnError.tsx", () => ({
@@ -84,6 +91,7 @@ const textExtraction = () => screen.getByLabelText("text-extraction");
 describe("LabelingExtraction", () => {
   beforeEach(() => {
     ocrState.status = "Success";
+    ocrState.isStatusUnavailable = false;
     useExtractionBoundingBoxes.mockReturnValue(pageWithText);
   });
 
@@ -114,6 +122,17 @@ describe("LabelingExtraction", () => {
     expect(useExtractionBoundingBoxes).toHaveBeenLastCalledWith("uuid-1.pdf", expect.anything(), 1, false);
     expect(textExtraction().dataset.disabled).toBe("true");
     expect(textExtraction().textContent).toBe("msgLabelingOcrFailed");
+  });
+
+  it("explains an OCR status that could not be loaded on the text button", () => {
+    ocrState.status = undefined;
+    ocrState.isStatusUnavailable = true;
+    useExtractionBoundingBoxes.mockReturnValue(notRequestedBoundingBoxes);
+    renderExtraction();
+
+    expect(useExtractionBoundingBoxes).toHaveBeenLastCalledWith("uuid-1.pdf", expect.anything(), 1, false);
+    expect(textExtraction().dataset.disabled).toBe("true");
+    expect(textExtraction().textContent).toBe("pageTextCouldNotBeLoaded");
   });
 
   it.each<OcrStatus>(["Success", "WillNotBeProcessed"])("enables text extraction once OCR is %s", status => {

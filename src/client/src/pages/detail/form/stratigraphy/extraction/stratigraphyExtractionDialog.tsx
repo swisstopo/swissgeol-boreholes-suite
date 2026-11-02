@@ -53,7 +53,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
   const id = useRequiredId();
-  const ocrStatus = useProfileOcrStatusOf(id, file.id);
+  const { ocrStatus, isStatusUnavailable, reloadStatus: reloadOcrStatus } = useProfileOcrStatusOf(id, file.id);
   const {
     data: allExtractedStratigraphies = [],
     isLoading: isLoadingExtraction,
@@ -148,15 +148,19 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     setOpen(false);
   }, [setOpen, setSelectedFile]);
 
-  // A failing file info query keeps the extraction query disabled, so retrying starts one step
+  // A failing file info or OCR status query keeps the extraction query disabled, so retrying starts one step
   // earlier in that case.
   const retryExtraction = useCallback(() => {
+    if (isStatusUnavailable) {
+      reloadOcrStatus();
+    }
     if (isFileInfoError) {
       void refetchFileInfo();
-    } else {
+    }
+    if (!isStatusUnavailable && !isFileInfoError) {
       void refetchExtraction();
     }
-  }, [isFileInfoError, refetchExtraction, refetchFileInfo]);
+  }, [isFileInfoError, isStatusUnavailable, refetchExtraction, refetchFileInfo, reloadOcrStatus]);
 
   const handleClose: DialogProps["onClose"] = (_event: MouseEvent, reason: string) => {
     if (reason === "backdropClick") return; // prevents dialog close on backdropClick
@@ -294,7 +298,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
           onItemStateChange={handleItemStateChange}
           ocrStatus={ocrStatus}
           isLoading={isLoadingExtraction || isLoadingFileInfo}
-          isError={isExtractionError || isFileInfoError}
+          isError={isExtractionError || isFileInfoError || isStatusUnavailable}
           onRetry={retryExtraction}
           names={names}
           nameErrors={nameErrors}

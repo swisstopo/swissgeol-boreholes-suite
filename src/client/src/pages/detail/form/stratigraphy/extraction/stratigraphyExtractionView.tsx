@@ -57,6 +57,23 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const rawDescriptions = selectedStratigraphy?.descriptions ?? [];
 
   const renderExtractionItems = () => {
+    // Checked first: an OCR status that could not be loaded leaves the status unknown, which would otherwise read as
+    // OCR still running.
+    if (isError) {
+      return (
+        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
+          <Typography data-cy="stratigraphy-extraction-error" textAlign="center">
+            {t("msgStratigraphyExtractionFailed")}
+          </Typography>
+          <BoreholesButton
+            dataCy="retry-stratigraphy-extraction-button"
+            variant="outlined"
+            label="retry"
+            onClick={onRetry}
+          />
+        </Stack>
+      );
+    }
     if (isOcrRunning) {
       return (
         <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
@@ -89,21 +106,6 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
           <Typography data-cy="stratigraphy-extraction-ocr-failed" textAlign="center">
             {t("msgStratigraphyExtractionOcrFailed")}
           </Typography>
-        </Stack>
-      );
-    }
-    if (isError) {
-      return (
-        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
-          <Typography data-cy="stratigraphy-extraction-error" textAlign="center">
-            {t("msgStratigraphyExtractionFailed")}
-          </Typography>
-          <BoreholesButton
-            dataCy="retry-stratigraphy-extraction-button"
-            variant="outlined"
-            label="retry"
-            onClick={onRetry}
-          />
         </Stack>
       );
     }

@@ -42,7 +42,8 @@ const drawTooltipLabels: Partial<Record<ExtractionType, string>> = {
 };
 
 // Explains why the profile's text cannot be extracted yet or at all, or undefined when it can.
-const getOcrMessageKey = (ocrStatus: OcrStatus | undefined): string | undefined => {
+const getOcrMessageKey = (ocrStatus: OcrStatus | undefined, isStatusUnavailable: boolean): string | undefined => {
+  if (isStatusUnavailable) return "pageTextCouldNotBeLoaded";
   if (ocrStatus === "Error") return "msgLabelingOcrFailed";
   if (!ocrStatusIsTerminal(ocrStatus)) return "msgLabelingWaitingForOcr";
   return undefined;
@@ -68,7 +69,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
     useLabelingContext();
   const drawTooltipLabel = getDrawTooltipLabel(extractionState, extractionObject);
   const boreholeId = useRequiredId();
-  const ocrStatus = useProfileOcrStatusOf(boreholeId, selectedFile?.id);
+  const { ocrStatus, isStatusUnavailable } = useProfileOcrStatusOf(boreholeId, selectedFile?.id);
   const isTextAvailable = isOcrTextAvailable(ocrStatus);
   const { data: fileInfo, isError: isFileInfoError, error: fileInfoError } = useFileInfo(selectedFile?.id, activePage);
   const { data: image, isError: isProfileInfoError, error: profileError } = useProfileImage(fileInfo?.fileName);
@@ -91,7 +92,9 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   const canExtractText = isPageSelectable && hasPageText;
   const missingPageTextKey = isBoundingBoxesError ? "pageTextCouldNotBeLoaded" : "noTextRecognizedOnPage";
   const textExtractionDisabledReason =
-    isPageSelectable && !hasPageText ? t(getOcrMessageKey(ocrStatus) ?? missingPageTextKey) : undefined;
+    isPageSelectable && !hasPageText
+      ? t(getOcrMessageKey(ocrStatus, isStatusUnavailable) ?? missingPageTextKey)
+      : undefined;
 
   const setTextToClipboard = useCallback(
     async (text: string) => {

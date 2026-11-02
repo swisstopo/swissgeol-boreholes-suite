@@ -124,18 +124,26 @@ const findOcrStatus = (data: ProfileOcrStatus[] | undefined, profileId: number |
 /**
  * Polls the OCR status of one profile until it reached a terminal status. OCR writes the recognized text into
  * the stored file, so anything reading the file's text before that finds none in scanned documents. A profile
- * missing from the borehole's statuses keeps polling, which covers a fresh upload.
+ * missing from the borehole's statuses keeps polling, which covers a fresh upload. When the statuses cannot be
+ * loaded at all, polling stops so callers can offer a retry instead of waiting forever.
  * @param boreholeId The borehole the profile belongs to.
  * @param profileId The profile whose OCR to follow, or undefined while none is selected.
- * @returns The profile's OCR status, or undefined until it is known.
  */
-export function useProfileOcrStatusOf(boreholeId: number, profileId: number | undefined): OcrStatus | undefined {
-  const { data } = useQuery({
+export function useProfileOcrStatusOf(boreholeId: number, profileId: number | undefined) {
+  const { data, isError, refetch } = useQuery({
     enabled: profileId !== undefined,
     queryKey: [profileOcrStatusQueryKey, boreholeId],
     queryFn: () => fetchOcrStatuses(boreholeId),
-    refetchInterval: ({ state: { data } }) =>
-      ocrStatusIsTerminal(findOcrStatus(data, profileId)) ? false : ocrStatusPollIntervalMs,
+    refetchInterval: ({ state }) => {
+      if (state.status === "error" && state.data === undefined) return false;
+      return ocrStatusIsTerminal(findOcrStatus(state.data, profileId)) ? false : ocrStatusPollIntervalMs;
+    },
   });
-  return findOcrStatus(data, profileId);
+  const reloadStatus = useCallback(() => void refetch(), [refetch]);
+  return {
+    ocrStatus: findOcrStatus(data, profileId),
+    // A failed poll after an earlier success keeps the last known status, so only a status never loaded counts.
+    isStatusUnavailable: isError && data === undefined,
+    reloadStatus,
+  };
 }
