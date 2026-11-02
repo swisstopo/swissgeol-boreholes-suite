@@ -12,7 +12,7 @@ import {
 } from "./dataextractionInterfaces.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
-import { useProfileOcrStatusOf } from "./profile.ts";
+import { isOcrTextAvailable, useProfileOcrStatusOf } from "./profile.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
 async function fetchCreatePngs(fileName: string): Promise<Response> {
@@ -230,11 +230,13 @@ export function useExtractionBoundingBoxes(
   fileName: string | undefined,
   fileInfo: DataExtractionResponse | null | undefined,
   pageNumber: number,
+  isTextAvailable: boolean,
 ) {
   return useQuery({
     queryKey: ["extractionBoundingBoxes", fileName, pageNumber],
     // only fetch bounding boxes if all necessary information is available: if fileInfo is available, we are sure that pngs have been created for newly uploaded files.
-    enabled: !!fileName && !!fileInfo && pageNumber > 0,
+    // Before the file's text is available, the page would report no text even where OCR is about to find some.
+    enabled: !!fileName && !!fileInfo && pageNumber > 0 && isTextAvailable,
     queryFn: async () => {
       if (!fileName) return null;
       return await fetchExtractionBoundingBoxes(fileName, pageNumber);
@@ -244,11 +246,10 @@ export function useExtractionBoundingBoxes(
 
 export function useExtractStratigraphies(file: BoreholeAttachment, boreholeId: number, activePage: number) {
   const { data: fileInfo } = useFileInfo(file?.id, activePage);
-  const ocrStatus = useProfileOcrStatusOf(boreholeId, file.id);
-  const hasFileText = ocrStatus === "Success" || ocrStatus === "WillNotBeProcessed";
+  const isTextAvailable = isOcrTextAvailable(useProfileOcrStatusOf(boreholeId, file.id));
   return useQuery({
     queryKey: ["extractStratigraphies", file.nameUuid],
-    enabled: !!file && !!fileInfo && hasFileText,
+    enabled: !!file && !!fileInfo && isTextAvailable,
     retry: false, // no retries to reduce load on dataextraction service after failure.
     staleTime: Infinity, // Extraction results dont go stale and a failing refetch on window focus should not override valid data.
     gcTime: 0, // Selecting the file again after closing the dialog extracts anew instead of showing a previous result.

@@ -420,6 +420,8 @@
   "msgGroundwaterLevelMeasurementsEmpty": "No groundwater measurement available.",
   "msgHydrotestEmpty": "No hydrotest available",
   "msgInstrumentsEmpty": "No instrumentation available",
+  "msgLabelingOcrFailed": "Text recognition (OCR) failed for this profile, so no text can be extracted. Delete the file, then upload it again to repeat the text recognition. Contact support if the error persists.",
+  "msgLabelingWaitingForOcr": "Text recognition (OCR) of the profile is still running. Extraction is possible once it has finished.",
   "msgLithologyEmpty": "No lithology available",
   "msgNoBoreholesInSelection": "There are no boreholes in the selection",
   "msgNoStratigraphyExtracted": "The extraction has completed, but no stratigraphy was found in the profile.",

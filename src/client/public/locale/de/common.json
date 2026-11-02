@@ -420,6 +420,8 @@
   "msgGroundwaterLevelMeasurementsEmpty": "Keine Grundwassermessung vorhanden",
   "msgHydrotestEmpty": "Kein Hydrotest vorhanden",
   "msgInstrumentsEmpty": "Kein Instrument verfügbar",
+  "msgLabelingOcrFailed": "Die Texterkennung (OCR) für dieses Profil ist fehlgeschlagen, daher kann kein Text extrahiert werden. Löschen Sie die Datei und laden Sie sie danach erneut hoch, um die Texterkennung zu wiederholen. Wenden Sie sich an den Support, falls der Fehler weiterhin auftritt.",
+  "msgLabelingWaitingForOcr": "Die Texterkennung (OCR) des Profils läuft noch. Die Extraktion ist möglich, sobald sie abgeschlossen ist.",
   "msgLithologyEmpty": "Keine Lithologie verfügbar",
   "msgNoBoreholesInSelection": "Es sind keine Bohrungen in der Selektion enthalten",
   "msgNoStratigraphyExtracted": "Die Extraktion wurde abgeschlossen, es konnte aber keine Stratigraphie im Bohrprofil gefunden werden.",

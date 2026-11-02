@@ -93,6 +93,14 @@ export const useReloadProfiles = (boreholeId: number) => {
 export const ocrStatusIsTerminal = (status?: OcrStatus): boolean =>
   status === "Success" || status === "Error" || status === "WillNotBeProcessed";
 
+/**
+ * Whether the file's text can be read. Scanned documents only contain text after a successful OCR, while files
+ * that are not processed are read as they are.
+ * @param status The profile's OCR status.
+ */
+export const isOcrTextAvailable = (status?: OcrStatus): boolean =>
+  status === "Success" || status === "WillNotBeProcessed";
+
 const ocrStatusPollIntervalMs = 2000;
 
 export const decidePollInterval = (data: ProfileOcrStatus[] | undefined): number | false =>
@@ -110,7 +118,7 @@ export function useProfileOcrStatus(boreholeId?: number) {
   });
 }
 
-const findOcrStatus = (data: ProfileOcrStatus[] | undefined, profileId: number): OcrStatus | undefined =>
+const findOcrStatus = (data: ProfileOcrStatus[] | undefined, profileId: number | undefined): OcrStatus | undefined =>
   data?.find(p => p.id === profileId)?.ocrStatus;
 
 /**
@@ -118,11 +126,12 @@ const findOcrStatus = (data: ProfileOcrStatus[] | undefined, profileId: number):
  * the stored file, so anything reading the file's text before that finds none in scanned documents. A profile
  * missing from the borehole's statuses keeps polling, which covers a fresh upload.
  * @param boreholeId The borehole the profile belongs to.
- * @param profileId The profile whose OCR to follow.
+ * @param profileId The profile whose OCR to follow, or undefined while none is selected.
  * @returns The profile's OCR status, or undefined until it is known.
  */
-export function useProfileOcrStatusOf(boreholeId: number, profileId: number): OcrStatus | undefined {
+export function useProfileOcrStatusOf(boreholeId: number, profileId: number | undefined): OcrStatus | undefined {
   const { data } = useQuery({
+    enabled: profileId !== undefined,
     queryKey: [profileOcrStatusQueryKey, boreholeId],
     queryFn: () => fetchOcrStatuses(boreholeId),
     refetchInterval: ({ state: { data } }) =>
