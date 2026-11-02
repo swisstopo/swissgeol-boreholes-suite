@@ -61,9 +61,11 @@ describe("Tests for 'Attachments' edit page.", () => {
   };
 
   const uploadPhoto = () => {
+    // The tab click renders in a transition, so right after it the profiles tab and its file input can still be shown.
+    cy.dataCy("addPhoto-button").should("be.visible");
     selectInputFile(photoFilename, "image/jpeg");
 
-    cy.dataCy("addPhoto-button").should("be.visible").click();
+    cy.dataCy("addPhoto-button").click();
     cy.wait(["@upload-photo", "@getAllPhotos"]);
   };
 

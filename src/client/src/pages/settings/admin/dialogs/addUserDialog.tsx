@@ -1,7 +1,8 @@
-import { FC } from "react";
-import { Role, User } from "../../../../api/generated";
+import { FC, useMemo } from "react";
+import { Role } from "../../../../api/generated";
 import { usersQueryKey, useUsers } from "../../../../api/user.ts";
 import { useWorkgroupMutations } from "../../../../api/workgroup.ts";
+import { getRoleInWorkgroup } from "../workgroupRoles.ts";
 import { EntityType } from "./entityType.ts";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
 
@@ -14,22 +15,33 @@ interface AddUserDialogProps {
 export const AddUserDialog: FC<AddUserDialogProps> = ({ open, setOpen, workgroupId }) => {
   const { data: users } = useUsers();
   const {
-    setWorkgroupRole: { mutate: setWorkgroupRole },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles, isPending: isAddingUsers },
   } = useWorkgroupMutations();
 
-  const addUser = (userId: string, role: Role) => {
-    setWorkgroupRole({ userId: Number(userId), workgroupId: workgroupId, role: role, isActive: true });
+  const userOptions = useMemo(
+    () =>
+      users
+        ?.filter(user => !user.isDisabled && !getRoleInWorkgroup(user, workgroupId))
+        .map(user => ({ id: user.id, label: `${user.firstName} ${user.lastName}` })),
+    [users, workgroupId],
+  );
+
+  const addUsers = (userIds: number[], role: Role, onAdded: () => void) => {
+    setWorkgroupRoles(
+      userIds.map(userId => ({ userId, workgroupId, role, isActive: true })),
+      { onSuccess: onAdded },
+    );
   };
 
-  if (!users) return;
-  const activeUsers = users.filter(user => !user.isDisabled);
+  if (!userOptions) return;
   return (
-    <RoleAssignmentDialog<User>
+    <RoleAssignmentDialog
       open={open}
       setOpen={setOpen}
-      addEntity={addUser}
+      addEntities={addUsers}
+      isAdding={isAddingUsers}
       entityType={EntityType.user}
-      entities={activeUsers}
+      options={userOptions}
       entityQueryKey={usersQueryKey}
     />
   );

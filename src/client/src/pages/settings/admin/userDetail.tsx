@@ -5,7 +5,7 @@ import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-g
 import { Trash2, X } from "lucide-react";
 import { Role } from "../../../api/generated";
 import { useSelectedUser, useUserMutations } from "../../../api/user.ts";
-import { useWorkgroupMutations } from "../../../api/workgroup.ts";
+import { useIsSettingWorkgroupRoles, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
@@ -30,8 +30,9 @@ export const UserDetail: FC = () => {
     update: { mutate: updateUser },
   } = useUserMutations();
   const {
-    setWorkgroupRole: { mutate: setWorkgroupRole },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles },
   } = useWorkgroupMutations();
+  const isSettingWorkgroupRoles = useIsSettingWorkgroupRoles();
 
   // Get the user's workgroups, each with the user's role in it
   const userWorkgroups = useMemo(
@@ -61,9 +62,10 @@ export const UserDetail: FC = () => {
     params.value && (
       <RoleSelect
         value={params.value}
-        disabled={isDisabled}
+        label={`${t("role")} ${params.row.name}`}
+        disabled={isDisabled || isSettingWorkgroupRoles}
         onChange={role =>
-          setWorkgroupRole({ userId: selectedUser.id, workgroupId: params.row.id, role, isActive: true })
+          setWorkgroupRoles([{ userId: selectedUser.id, workgroupId: params.row.id, role, isActive: true }])
         }
       />
     );
@@ -84,12 +86,14 @@ export const UserDetail: FC = () => {
         variant: "contained",
         action: () => {
           if (!selectedUser) return;
-          setWorkgroupRole({
-            userId: selectedUser.id,
-            workgroupId: userWorkgroup.id,
-            role: userWorkgroup.role,
-            isActive: false,
-          });
+          setWorkgroupRoles([
+            {
+              userId: selectedUser.id,
+              workgroupId: userWorkgroup.id,
+              role: userWorkgroup.role,
+              isActive: false,
+            },
+          ]);
         },
       },
     ]);
@@ -154,7 +158,7 @@ export const UserDetail: FC = () => {
           )}
         </CardContent>
       </Card>
-      <AddWorkgroupRoleDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} userId={id} />
+      <AddWorkgroupRoleDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} user={selectedUser} />
     </Stack>
   );
 };

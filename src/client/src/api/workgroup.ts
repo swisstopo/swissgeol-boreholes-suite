@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useIsMutating, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth/useBoreholesAuth.tsx";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
-import { Role, UserWorkgroupRole, Workgroup } from "./generated/types.gen";
-import { usersQueryKey } from "./user.ts";
+import { Role, Workgroup } from "./generated/types.gen";
+import { currentUserQueryKey, usersQueryKey } from "./user.ts";
 
 const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2WithApiError("workgroup", "GET");
 
@@ -22,19 +22,24 @@ const updateWorkgroup = async (workgroup: Workgroup) => {
 
 const deleteWorkgroup = async (id: number) => await fetchApiV2WithApiError(`workgroup/${id}`, "DELETE");
 
-const setWorkgroupRole = async (userId: number, workgroupId: number, role: Role, isActive: boolean) => {
-  const workgroupRole: UserWorkgroupRole[] = [
-    {
-      workgroupId: workgroupId,
-      userId: userId,
-      role: role,
-      isActive: isActive,
-    },
-  ];
-  return await fetchApiV2WithApiError("workgroup/setRoles", "POST", workgroupRole);
-};
+interface WorkgroupRoleChange {
+  userId: number;
+  workgroupId: number;
+  role: Role;
+  isActive: boolean;
+}
+
+const setWorkgroupRoles = async (changes: WorkgroupRoleChange[]) =>
+  await fetchApiV2WithApiError("workgroup/setRoles", "POST", changes);
 
 export const workgroupQueryKey = "workgroups";
+const setWorkgroupRolesMutationKey = "setWorkgroupRoles";
+
+/**
+ * Whether any component is saving workgroup roles. Pending state of a single mutation is local to the
+ * component that started it, so this lets a table lock its role selects while a dialog saves too.
+ */
+export const useIsSettingWorkgroupRoles = () => useIsMutating({ mutationKey: [setWorkgroupRolesMutationKey] }) > 0;
 
 export const useWorkgroups = () => {
   const auth = useAuth();
@@ -80,26 +85,18 @@ export const useWorkgroupMutations = () => {
     },
   });
 
-  const useSetWorkgroupRole = useMutation({
-    mutationFn: async ({
-      userId,
-      workgroupId,
-      role,
-      isActive,
-    }: {
-      userId: number;
-      workgroupId: number;
-      role: Role;
-      isActive: boolean;
-    }) => {
-      return await setWorkgroupRole(userId, workgroupId, role, isActive);
+  const useSetWorkgroupRoles = useMutation({
+    mutationKey: [setWorkgroupRolesMutationKey],
+    mutationFn: async (changes: WorkgroupRoleChange[]) => {
+      return await setWorkgroupRoles(changes);
     },
-    onSettled: (_data, _error, variables) => {
-      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
-      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, variables.workgroupId] });
-      void queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
-      void queryClient.invalidateQueries({ queryKey: [usersQueryKey, variables.userId] });
-    },
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] }),
+        queryClient.invalidateQueries({ queryKey: [usersQueryKey] }),
+        // The current user is refetched too, as an admin may change their own role.
+        queryClient.invalidateQueries({ queryKey: [currentUserQueryKey] }),
+      ]),
   });
 
   const useDeleteWorkgroup = useMutation({
@@ -116,7 +113,7 @@ export const useWorkgroupMutations = () => {
   return {
     add: useAddWorkgroup,
     update: useUpdateWorkgroup,
-    setWorkgroupRole: useSetWorkgroupRole,
+    setWorkgroupRoles: useSetWorkgroupRoles,
     delete: useDeleteWorkgroup,
   };
 };

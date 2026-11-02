@@ -120,6 +120,14 @@ export const openDropdown = (selector: string) => {
 };
 
 /**
+ * Closes the open dropdown of a select or multi-select form element and waits until it is gone.
+ */
+export const closeDropdown = () => {
+  cy.focused().type("{esc}");
+  cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
+};
+
+/**
  * Selects an option from a dropdown.
  * @param {number} index The index of the option to select.
  */
@@ -154,6 +162,22 @@ export const setSelect = (fieldName: string, index: number, optionsLength?: numb
     evaluateDropdownOptionsLength(optionsLength);
   }
   selectDropdownOption(index);
+};
+
+/**
+ * Checks options of a multiple select form element by their text and closes the dropdown.
+ * @param {string} fieldName The name of the select field.
+ * @param {string[]} optionTexts The texts of the options to check.
+ * @param {string} parent (optional) The parent of the form element.
+ */
+export const checkSelectOptions = (fieldName: string, optionTexts: string[], parent?: string) => {
+  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"]`;
+  scrollIntoView(selector);
+  openDropdown(selector);
+  optionTexts.forEach(text => {
+    cy.get('.MuiPaper-elevation [role="listbox"]').contains("li", text, { matchCase: false }).click();
+  });
+  closeDropdown();
 };
 
 /**

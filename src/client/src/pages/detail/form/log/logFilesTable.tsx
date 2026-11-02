@@ -114,7 +114,6 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
     apiRef,
     updatedRows,
     setUpdatedRows,
-    rows: files,
   });
 
   const getCodelistCode = useCallback(

@@ -1,34 +1,47 @@
-import { FC } from "react";
-import { Role, Workgroup } from "../../../../api/generated";
+import { FC, useMemo } from "react";
+import { Role, User } from "../../../../api/generated";
 import { useWorkgroupMutations, useWorkgroups, workgroupQueryKey } from "../../../../api/workgroup.ts";
+import { getRoleInWorkgroup } from "../workgroupRoles.ts";
 import { EntityType } from "./entityType.ts";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
 
 interface AddWorkgroupRoleDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  userId: number;
+  user: User;
 }
 
-export const AddWorkgroupRoleDialog: FC<AddWorkgroupRoleDialogProps> = ({ open, setOpen, userId }) => {
+export const AddWorkgroupRoleDialog: FC<AddWorkgroupRoleDialogProps> = ({ open, setOpen, user }) => {
   const { data: workgroups } = useWorkgroups();
   const {
-    setWorkgroupRole: { mutate: setWorkgroupRole },
+    setWorkgroupRoles: { mutate: setWorkgroupRoles, isPending: isAddingWorkgroups },
   } = useWorkgroupMutations();
 
-  const addWorkgroup = (workgroupId: string, role: Role) => {
-    setWorkgroupRole({ userId: userId, workgroupId: Number(workgroupId), role: role, isActive: true });
+  const workgroupOptions = useMemo(
+    () =>
+      workgroups
+        ?.filter(workgroup => !workgroup.isDisabled && !getRoleInWorkgroup(user, workgroup.id))
+        .map(workgroup => ({ id: workgroup.id, label: workgroup.name })),
+    [workgroups, user],
+  );
+
+  const addWorkgroups = (workgroupIds: number[], role: Role, onAdded: () => void) => {
+    setWorkgroupRoles(
+      workgroupIds.map(workgroupId => ({ userId: user.id, workgroupId, role, isActive: true })),
+      { onSuccess: onAdded },
+    );
   };
 
-  if (!workgroups) return;
+  if (!workgroupOptions) return;
   return (
-    <RoleAssignmentDialog<Workgroup>
+    <RoleAssignmentDialog
       open={open}
       setOpen={setOpen}
       entityQueryKey={workgroupQueryKey}
-      addEntity={addWorkgroup}
+      addEntities={addWorkgroups}
+      isAdding={isAddingWorkgroups}
       entityType={EntityType.workgroup}
-      entities={workgroups}
+      options={workgroupOptions}
     />
   );
 };
