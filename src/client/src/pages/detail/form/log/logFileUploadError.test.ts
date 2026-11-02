@@ -50,6 +50,10 @@ describe("toLogFileUploadError", () => {
   it("names the file when the rejection is not an error at all", () => {
     const error = toLogFileUploadError("gone", "gamma.las");
 
-    expect(error).toMatchObject({ message: "gone", messageKey: "logFileUploadFailed", details: { fileName: "gamma.las" } });
+    expect(error).toMatchObject({
+      message: "gone",
+      messageKey: "logFileUploadFailed",
+      details: { fileName: "gamma.las" },
+    });
   });
 });

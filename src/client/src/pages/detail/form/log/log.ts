@@ -13,6 +13,7 @@ import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { SaveContext } from "../../saveContext.tsx";
+import { toLogFileUploadError } from "./logFileUploadError.ts";
 import {
   AddLogRunVariables,
   ImportLogsVariables,
@@ -23,7 +24,6 @@ import {
   RequiredAttachmentsVariables,
   UpdateLogRunVariables,
 } from "./logInterfaces.ts";
-import { toLogFileUploadError } from "./logFileUploadError.ts";
 import { toStoredFileName } from "./logUtils.ts";
 
 const deleteLogRunsByIds = async (logRunIds: number[]) => {
