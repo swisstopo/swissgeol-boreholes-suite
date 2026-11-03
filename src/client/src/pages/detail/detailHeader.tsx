@@ -139,6 +139,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   };
 
   if (!borehole) return;
+  const exportFileName = borehole.name?.replaceAll(/\s/g, "_") ?? "export";
   return (
     <DetailHeaderStack direction="row" alignItems="center">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
@@ -194,15 +195,15 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
         exportItems={[
           {
             label: "CSV",
-            exportFunction: () => exportCSVBorehole([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
+            exportFunction: () => exportCSVBorehole([borehole.id], exportFileName),
           },
           {
             label: "JSON",
-            exportFunction: () => exportJsonBoreholes([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
+            exportFunction: () => exportJsonBoreholes([borehole.id], exportFileName),
           },
           {
             label: "exportJsonProfile",
-            exportFunction: options => exportJsonWithAttachmentsBorehole([borehole.id], options),
+            exportFunction: options => exportJsonWithAttachmentsBorehole([borehole.id], exportFileName, options),
           },
         ]}
       />

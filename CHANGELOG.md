@@ -16,6 +16,7 @@
 - The dialogs for adding users to a workgroup and workgroups to a user no longer offer users or workgroups that already have a role there. Their role is changed in the table instead.
 
 ### Fixed
+- In Chrome and Edge, exports saved as a ZIP archive (boreholes with attachments, LOG runs and LOG files, several photos) no longer have to fit into the browser's memory, so archives of many gigabytes can be exported. These browsers now ask where to save the archive and write it to that file while it downloads. Other browsers still save it to the download folder, which keeps them limited by the available memory.
 - Inactive users and disabled workgroups are no longer offered when adding users to a workgroup or workgroups to a user.
 - The workflow now judges each possible assignee by their role in the borehole's workgroup instead of their highest role in any workgroup.
 - Editors, Reviewers and Publishers of a workgroup can open the status of its boreholes in every status. Actions they are not allowed to take in the current status are locked. After requesting a review, editors stay on the status page instead of being sent back to the location.

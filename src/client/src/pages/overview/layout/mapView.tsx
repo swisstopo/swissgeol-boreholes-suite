@@ -30,6 +30,8 @@ const containSameIds = (ids: number[], otherIds: number[]) => {
 // A stable empty array, so the fallback response does not count as new data on every render.
 const noSelectableBoreholeIds: number[] = [];
 
+const getBulkExportFileName = () => `bulkexport_${new Date().toISOString().split("T")[0]}`;
+
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
   const [rowsToHighlight, setRowsToHighlight] = useState<number[]>([]);
@@ -151,17 +153,16 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         exportItems={[
           {
             label: "CSV",
-            exportFunction: () =>
-              exportCSVBorehole(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+            exportFunction: () => exportCSVBorehole(selectionModel.slice(0, 100), getBulkExportFileName()),
           },
           {
             label: "JSON",
-            exportFunction: () =>
-              exportJsonBoreholes(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+            exportFunction: () => exportJsonBoreholes(selectionModel.slice(0, 100), getBulkExportFileName()),
           },
           {
             label: "exportJsonProfile",
-            exportFunction: options => exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100), options),
+            exportFunction: options =>
+              exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100), getBulkExportFileName(), options),
           },
         ]}
       />
