@@ -178,7 +178,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         if (!await IsRunNumberUnique(entity).ConfigureAwait(false))
         {
-            return Problem(detail: $"{entity.RunNumber}: Run number must be unique", type: ProblemType.UserError);
+            return RunNumberMustBeUniqueProblem(entity.RunNumber);
         }
 
         entity.LogFiles = null; // Cannot create LogFiles here because the files first have to be uploaded to S3
@@ -214,7 +214,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         if (!await IsRunNumberUnique(entity).ConfigureAwait(false))
         {
-            return Problem(detail: "Run number must be unique");
+            return RunNumberMustBeUniqueProblem(entity.RunNumber);
         }
 
         if (entity.LogFiles != null)
@@ -773,5 +773,23 @@ public class LogController : BoreholeControllerBase<LogRun>
                 .ConfigureAwait(false);
 
         return !hasBoreholeLogRunsWithSameRunNumber;
+    }
+
+    /// <summary>
+    /// Answers a run number the borehole already holds. It is marked as a user error and carries a
+    /// key and the run number, so the client can say in the user's language which run was refused.
+    /// </summary>
+    /// <param name="runNumber">The run number that is taken.</param>
+    /// <returns>The problem response.</returns>
+    private ObjectResult RunNumberMustBeUniqueProblem(string runNumber)
+    {
+        var result = Problem(detail: $"{runNumber}: Run number must be unique", type: ProblemType.UserError);
+        if (result.Value is ProblemDetails problemDetails)
+        {
+            problemDetails.Extensions["messageKey"] = "logRunNumberMustBeUnique";
+            problemDetails.Extensions["runNumber"] = runNumber;
+        }
+
+        return result;
     }
 }
