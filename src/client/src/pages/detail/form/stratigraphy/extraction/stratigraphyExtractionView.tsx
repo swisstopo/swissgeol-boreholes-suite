@@ -2,6 +2,8 @@ import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
+import { OcrStatus } from "../../../../../api/generated";
+import { ocrStatusIsTerminal } from "../../../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { BoreholesButton } from "../../../../../components/buttons/buttons.tsx";
@@ -18,6 +20,7 @@ export interface StratigraphyExtractionViewProps {
   allExtractedStratigraphies: ExtractedStratigraphy[];
   selectedIndex: number;
   onItemStateChange: (index: number, state: StratigraphyExtractionItemState) => void;
+  ocrStatus: OcrStatus | undefined;
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
@@ -33,6 +36,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   allExtractedStratigraphies,
   selectedIndex,
   onItemStateChange,
+  ocrStatus,
   isLoading,
   isError,
   onRetry,
@@ -45,24 +49,16 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const { t } = useTranslation();
   const [pageCount, setPageCount] = useState<number>();
   const isTakingLonger = useDelayedFlag(isLoading, extractionTakingLongerThresholdMs);
+  const isOcrRunning = !ocrStatusIsTerminal(ocrStatus);
+  const hasOcrFailed = ocrStatus === "Error";
 
   const selectedStratigraphy = allExtractedStratigraphies[selectedIndex];
   const currentPageRange = selectedStratigraphy?.pageNumbers;
   const rawDescriptions = selectedStratigraphy?.descriptions ?? [];
 
   const renderExtractionItems = () => {
-    if (isLoading) {
-      return (
-        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
-          <CircularProgress />
-          {isTakingLonger && (
-            <Typography data-cy="stratigraphy-extraction-taking-longer" textAlign="center">
-              {t("msgStratigraphyExtractionTakingLonger")}
-            </Typography>
-          )}
-        </Stack>
-      );
-    }
+    // Checked first: an OCR status that could not be loaded leaves the status unknown, which would otherwise read as
+    // OCR still running.
     if (isError) {
       return (
         <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
@@ -75,6 +71,41 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
             label="retry"
             onClick={onRetry}
           />
+        </Stack>
+      );
+    }
+    if (isOcrRunning) {
+      return (
+        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
+          <CircularProgress />
+          <Typography data-cy="stratigraphy-extraction-ocr-running" textAlign="center">
+            {t("msgStratigraphyExtractionWaitingForOcr")}
+          </Typography>
+        </Stack>
+      );
+    }
+    if (isLoading) {
+      return (
+        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
+          <CircularProgress />
+          {isTakingLonger ? (
+            <Typography data-cy="stratigraphy-extraction-taking-longer" textAlign="center">
+              {t("msgStratigraphyExtractionTakingLonger")}
+            </Typography>
+          ) : (
+            <Typography data-cy="stratigraphy-extraction-running" textAlign="center">
+              {t("msgStratigraphyExtractionRunning")}
+            </Typography>
+          )}
+        </Stack>
+      );
+    }
+    if (hasOcrFailed) {
+      return (
+        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
+          <Typography data-cy="stratigraphy-extraction-ocr-failed" textAlign="center">
+            {t("msgStratigraphyExtractionOcrFailed")}
+          </Typography>
         </Stack>
       );
     }
