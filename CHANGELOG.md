@@ -23,6 +23,7 @@
 - Returning from a borehole to the overview no longer occasionally jumps the table back to an earlier page or the default sorting when the borehole was opened right after paging or sorting.
 - In the lithology dialog, the "entry required" errors on the unconsolidated rock soil type and secondary component dropdowns now disappear as soon as the later component that required them is cleared, and no longer leave the fields marked red after they are filled again.
 - In edit mode, the checkbox in the header of the "Public" column of the attachment and LOG file tables now follows the rows. It could appear checked although no row was public, for example after adding the first photo to a borehole.
+- When saving a LOG run fails, the message now says which run or file it is about and is shown in the user's language, also when a file upload fails for a technical reason or a run number is already taken.
 
 ## v2.2.57 - 2026-10-08
 

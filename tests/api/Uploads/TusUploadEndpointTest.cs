@@ -182,6 +182,24 @@ public class TusUploadEndpointTest
     }
 
     /// <summary>
+    /// The client tells a file that is too large apart from any other refusal by the status alone,
+    /// because tusdotnet refuses the length itself and sends no problem body.
+    /// </summary>
+    [TestMethod]
+    public async Task CreatingAnUploadLargerThanTheLimitIsRefusedAsTooLarge()
+    {
+        var logRun = await context.LogRuns.FirstAsync();
+        using var client = factory.CreateClient();
+
+        using var response = await client.SendAsync(CreateUpload(SubAdmin, logRun.Id, $"{Guid.NewGuid()}.las", FileSizeLimits.Large + 1));
+
+        // An upload accepted against the limit would hold parts in the bucket until it is cleaned up.
+        if (response.Headers.Location is not null) startedUploadPaths.Add(response.Headers.Location.ToString());
+
+        Assert.AreEqual(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
+    }
+
+    /// <summary>
     /// The endpoint names the role it admits, rather than leaving that to the fallback policy.
     /// The fallback admits administrators alone, which would refuse every user the per-borehole
     /// check is there to admit, and would do so with the status that check answers with itself.
