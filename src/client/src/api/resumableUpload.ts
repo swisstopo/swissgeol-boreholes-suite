@@ -1,7 +1,7 @@
 import { DetailedError, Upload } from "tus-js-client";
 import { getAuthToken } from "../auth/authTokenStore.ts";
 import { getAuthorizationHeader } from "./authentication.ts";
-import { isUserErrorProblem, toUserError } from "./errorClasses.ts";
+import { ApiError, isUserErrorProblem, toUserError } from "./errorClasses.ts";
 import { getChunkSize } from "./fileSize.ts";
 import { TransferOptions } from "./transferProgress.ts";
 
@@ -19,7 +19,9 @@ const isDetailedError = (error: Error): error is DetailedError => "originalRespo
  *
  * A failure while the server stores the finished upload is answered with the same problem body
  * the other upload endpoints send, so it is turned into the same error the rest of the API layer
- * throws. Anything else is a transport failure and is passed on as it is.
+ * throws. A refusal without that body keeps its status, which is all that tells a file the server
+ * found too large apart from any other refusal. A failure that never got an answer is a transport
+ * failure and is passed on as it is.
  * @param error The failure reported by the upload client.
  * @returns The error to reject with.
  */
@@ -29,14 +31,15 @@ const toApiError = (error: Error): Error => {
   const response = error.originalResponse;
   if (response === null) return error;
 
+  const status = response.getStatus();
   let body: unknown;
   try {
     body = JSON.parse(response.getBody());
   } catch {
-    return error;
+    return new ApiError(error.message, status);
   }
 
-  return isUserErrorProblem(body) ? toUserError(body, response.getStatus()) : error;
+  return isUserErrorProblem(body) ? toUserError(body, status) : new ApiError(error.message, status);
 };
 
 /**
@@ -45,7 +48,8 @@ const toApiError = (error: Error): Error => {
  * @param metadata What the file is for, read by the server from the upload metadata.
  * @param options Progress reporting and cancellation.
  * @returns The id of the log file the server stored.
- * @throws {ApiError} If the server refused the upload for a reason the user can act on.
+ * @throws {ApiError} If the server refused the upload. It carries a message key when the reason is
+ * one the user can act on, and the status otherwise.
  * @throws {DOMException} Named `AbortError` if the signal is aborted.
  */
 export function uploadResumable(
