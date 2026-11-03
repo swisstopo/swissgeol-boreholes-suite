@@ -1,10 +1,17 @@
 // @vitest-environment jsdom
 import { createElement, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, renderHook } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { OcrStatus, ProfileOcrStatus } from "./generated";
-import { decidePollInterval, ocrStatusIsTerminal, useReloadProfiles } from "./profile";
+import { decidePollInterval, ocrStatusIsTerminal, useProfileOcrStatusOf, useReloadProfiles } from "./profile";
+
+vi.mock("./fetchApiV2.ts", () => ({
+  fetchApiV2Legacy: vi.fn(),
+  fetchApiV2WithApiError: vi.fn(),
+  upload: vi.fn(),
+}));
 
 const allTerminal: ProfileOcrStatus[] = [
   { id: 1, ocrStatus: "Success" },
@@ -45,12 +52,51 @@ describe("OCR polling decision", () => {
   });
 });
 
-describe("useReloadProfiles", () => {
-  const createWrapper = (queryClient: QueryClient) => {
-    return ({ children }: { children: ReactNode }) =>
-      createElement(QueryClientProvider, { client: queryClient }, children);
-  };
+const createWrapper = (queryClient: QueryClient) => {
+  return ({ children }: { children: ReactNode }) =>
+    createElement(QueryClientProvider, { client: queryClient }, children);
+};
 
+describe("useProfileOcrStatusOf", () => {
+  const pollIntervalMs = 2000;
+  const statusRequests = () => vi.mocked(fetchApiV2WithApiError).mock.calls.length;
+  const renderOcrStatus = (profileId: number) =>
+    renderHook(() => useProfileOcrStatusOf(42, profileId), {
+      wrapper: createWrapper(new QueryClient({ defaultOptions: { queries: { retry: false } } })),
+    });
+
+  afterEach(() => {
+    cleanup();
+    vi.mocked(fetchApiV2WithApiError).mockReset();
+  });
+
+  it("polls until the profile's OCR has finished", async () => {
+    vi.mocked(fetchApiV2WithApiError)
+      .mockResolvedValueOnce([{ id: 1, ocrStatus: "Processing" }])
+      .mockResolvedValue([{ id: 1, ocrStatus: "Success" }]);
+    const { result } = renderOcrStatus(1);
+
+    await waitFor(() => expect(result.current.ocrStatus).toBe("Processing"));
+    await waitFor(() => expect(result.current.ocrStatus).toBe("Success"), { timeout: pollIntervalMs * 2 });
+  });
+
+  it("reports an unavailable status, stops polling and recovers on retry", async () => {
+    vi.mocked(fetchApiV2WithApiError).mockRejectedValueOnce(new Error("Server unavailable"));
+    const { result } = renderOcrStatus(1);
+
+    await waitFor(() => expect(result.current.isStatusUnavailable).toBe(true));
+    await new Promise(resolve => setTimeout(resolve, pollIntervalMs + 500));
+    expect(statusRequests()).toBe(1);
+
+    vi.mocked(fetchApiV2WithApiError).mockResolvedValue([{ id: 1, ocrStatus: "Success" }]);
+    act(() => result.current.reloadStatus());
+
+    await waitFor(() => expect(result.current.ocrStatus).toBe("Success"));
+    expect(result.current.isStatusUnavailable).toBe(false);
+  });
+});
+
+describe("useReloadProfiles", () => {
   it("invalidates both profiles and OCR status queries", () => {
     const queryClient = new QueryClient();
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");

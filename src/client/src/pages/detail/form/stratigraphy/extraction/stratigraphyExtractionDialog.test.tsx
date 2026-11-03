@@ -5,6 +5,7 @@ import { cleanup, configure, fireEvent, render, screen, waitFor } from "@testing
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
 import { ApiError } from "../../../../../api/errorClasses.ts";
+import { OcrStatus } from "../../../../../api/generated";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { AlertContextInterface } from "../../../../../components/alert/alertInterfaces.ts";
@@ -32,9 +33,26 @@ const extractionState: { data: ExtractedStratigraphy[]; isLoading: boolean; isEr
   isError: false,
 };
 const fileInfoState: { isLoading: boolean; isError: boolean } = { isLoading: false, isError: false };
+const extractionArgs = vi.fn();
 vi.mock("../../../../../api/dataextraction.ts", () => ({
-  useExtractStratigraphies: () => ({ ...extractionState, refetch: refetchExtraction }),
+  useExtractStratigraphies: (...args: unknown[]) => {
+    extractionArgs(...args);
+    return { ...extractionState, refetch: refetchExtraction };
+  },
   useFileInfo: () => ({ ...fileInfoState, refetch: refetchFileInfo }),
+}));
+const reloadOcrStatus = vi.fn();
+const ocrState: { status: OcrStatus | undefined; isStatusUnavailable: boolean } = {
+  status: "Success",
+  isStatusUnavailable: false,
+};
+vi.mock("../../../../../api/profile.ts", async importOriginal => ({
+  ...(await importOriginal<typeof import("../../../../../api/profile.ts")>()),
+  useProfileOcrStatusOf: () => ({
+    ocrStatus: ocrState.status,
+    isStatusUnavailable: ocrState.isStatusUnavailable,
+    reloadStatus: reloadOcrStatus,
+  }),
 }));
 
 const bulkAdd = vi.fn();
@@ -56,10 +74,12 @@ vi.mock("./stratigraphyExtractionView.tsx", () => ({
     names,
     nameErrors,
     onNameChange,
+    ocrStatus,
     isError,
     onRetry,
   }: StratigraphyExtractionViewProps) => (
     <div>
+      <span aria-label="view-ocr-status">{String(ocrStatus)}</span>
       <span aria-label="view-is-error">{String(isError)}</span>
       <button aria-label="view-retry" onClick={onRetry}>
         retry
@@ -127,6 +147,10 @@ describe("StratigraphyExtractionDialog", () => {
     extractionState.isError = false;
     fileInfoState.isLoading = false;
     fileInfoState.isError = false;
+    ocrState.status = "Success";
+    ocrState.isStatusUnavailable = false;
+    reloadOcrStatus.mockReset();
+    extractionArgs.mockReset();
     refetchExtraction.mockReset();
     refetchFileInfo.mockReset();
     bulkAdd.mockReset();
@@ -236,6 +260,38 @@ describe("StratigraphyExtractionDialog", () => {
     renderDialog([]);
 
     await waitFor(() => expect(screen.getByLabelText("view-is-error").textContent).toBe("false"));
+  });
+
+  it.each<OcrStatus>(["Processing", "Error"])("passes the profile's OCR status %s to the view", async status => {
+    ocrState.status = status;
+    renderDialog([]);
+
+    await waitFor(() => expect(screen.getByLabelText("view-ocr-status").textContent).toBe(status));
+  });
+
+  it.each<[OcrStatus, boolean]>([
+    ["Created", false],
+    ["Processing", false],
+    ["Error", false],
+    ["Success", true],
+    ["WillNotBeProcessed", true],
+  ])("lets the extraction run with OCR status %s: %s", (status, isTextAvailable) => {
+    ocrState.status = status;
+    renderDialog([]);
+
+    expect(extractionArgs).toHaveBeenLastCalledWith(expect.anything(), 1, isTextAvailable);
+  });
+
+  it("reports an OCR status that could not be loaded as an error and retries loading it", async () => {
+    ocrState.status = undefined;
+    ocrState.isStatusUnavailable = true;
+    renderDialog([]);
+
+    await waitFor(() => expect(screen.getByLabelText("view-is-error").textContent).toBe("true"));
+    fireEvent.click(screen.getByLabelText("view-retry"));
+
+    expect(reloadOcrStatus).toHaveBeenCalledTimes(1);
+    expect(refetchExtraction).not.toHaveBeenCalled();
   });
 
   it("retries the extraction when the extraction query failed", async () => {
