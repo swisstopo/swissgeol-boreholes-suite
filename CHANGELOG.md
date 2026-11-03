@@ -17,6 +17,7 @@
 
 ### Fixed
 - Extracting a stratigraphy from a newly uploaded scanned profile now waits until text recognition (OCR) of the profile has finished and shows a note while it runs. Before, the extraction started right away and found no stratigraphy. If text recognition failed, the dialog says so instead of extracting and explains how to repeat it. Closing the dialog also discards the result, so selecting the profile again extracts anew.
+- When extracting a stratigraphy takes longer than the maximum waiting time, the dialog now says so and suggests trying again later or entering the stratigraphy manually, instead of reporting a general error.
 - Text extraction from a newly uploaded scanned profile in the labeling panel now waits until text recognition (OCR) has finished. Until then, and when it failed, the text extraction button explains why instead of reporting that no text was recognized.
 - Inactive users and disabled workgroups are no longer offered when adding users to a workgroup or workgroups to a user.
 - The workflow now judges each possible assignee by their role in the borehole's workgroup instead of their highest role in any workgroup.

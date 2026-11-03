@@ -29,7 +29,7 @@ const onRetry = vi.fn();
 const renderView = (props: {
   ocrStatus?: OcrStatus;
   isLoading?: boolean;
-  isError?: boolean;
+  errorMessageKey?: string;
   stratigraphies?: ExtractedStratigraphy[];
 }) =>
   render(
@@ -40,7 +40,7 @@ const renderView = (props: {
       onItemStateChange={vi.fn()}
       ocrStatus={props.ocrStatus ?? "Success"}
       isLoading={props.isLoading ?? false}
-      isError={props.isError ?? false}
+      errorMessageKey={props.errorMessageKey}
       onRetry={onRetry}
       activePage={1}
       setActivePage={vi.fn()}
@@ -68,9 +68,9 @@ describe("StratigraphyExtractionView", () => {
   });
 
   it("shows the error state with a retry button when the extraction failed", () => {
-    renderView({ isError: true });
+    renderView({ errorMessageKey: "msgStratigraphyExtractionTimeout" });
 
-    expect(screen.getByTestId("stratigraphy-extraction-error")).toBeDefined();
+    expect(screen.getByTestId("stratigraphy-extraction-error").textContent).toBe("msgStratigraphyExtractionTimeout");
     expect(screen.queryByTestId("stratigraphy-extraction-empty")).toBeNull();
 
     fireEvent.click(screen.getByTestId("retry-stratigraphy-extraction-button"));
@@ -88,7 +88,7 @@ describe("StratigraphyExtractionView", () => {
   );
 
   it("shows the error with a retry button instead of the OCR hint when loading failed", () => {
-    renderView({ ocrStatus: "Processing", isError: true });
+    renderView({ ocrStatus: "Processing", errorMessageKey: "msgStratigraphyExtractionFailed" });
 
     expect(screen.getByTestId("stratigraphy-extraction-error")).toBeDefined();
     expect(screen.getByTestId("retry-stratigraphy-extraction-button")).toBeDefined();

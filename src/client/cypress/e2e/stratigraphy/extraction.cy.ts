@@ -307,7 +307,7 @@ describe("Tests for stratigraphy extraction", () => {
   });
 
   it("displays an error with a retry option if the extraction fails", () => {
-    cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", { statusCode: 504 }).as(
+    cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", { statusCode: 500 }).as(
       "extract-stratigraphy-failed",
     );
 

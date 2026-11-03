@@ -435,6 +435,7 @@
   "msgStratigraphyExtractionOcrFailed": "Die Texterkennung (OCR) für dieses Profil ist fehlgeschlagen, daher kann keine Stratigraphie extrahiert werden. Schliessen Sie den Dialog, löschen Sie die Datei und laden Sie sie danach erneut hoch, um die Texterkennung zu wiederholen. Wenden Sie sich an den Support, falls der Fehler weiterhin auftritt.",
   "msgStratigraphyExtractionRunning": "Die Stratigraphie wird aus dem Profil extrahiert. Bitte warten Sie.",
   "msgStratigraphyExtractionTakingLonger": "Die Extraktion dauert länger als gewöhnlich. Bitte warten Sie.",
+  "msgStratigraphyExtractionTimeout": "Die Extraktion konnte nicht innerhalb der maximalen Wartezeit abgeschlossen werden. Bei umfangreichen Bohrprofilen kann dies vorkommen. Bitte versuchen Sie es später erneut oder erfassen Sie die Stratigraphie manuell.",
   "msgStratigraphyExtractionWaitingForOcr": "Die Texterkennung (OCR) des Profils läuft noch. Die Extraktion startet automatisch, sobald sie abgeschlossen ist.",
   "msgWateringressEmpty": "Kein Wasserzutritt vorhanden",
   "mustBeUnique": "Wert muss eindeutig sein",
