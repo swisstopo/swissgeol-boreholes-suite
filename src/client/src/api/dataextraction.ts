@@ -229,11 +229,13 @@ export function useExtractionBoundingBoxes(
   fileName: string | undefined,
   fileInfo: DataExtractionResponse | null | undefined,
   pageNumber: number,
+  isTextAvailable: boolean,
 ) {
   return useQuery({
     queryKey: ["extractionBoundingBoxes", fileName, pageNumber],
     // only fetch bounding boxes if all necessary information is available: if fileInfo is available, we are sure that pngs have been created for newly uploaded files.
-    enabled: !!fileName && !!fileInfo && pageNumber > 0,
+    // Before the file's text is available, the page would report no text even where OCR is about to find some.
+    enabled: !!fileName && !!fileInfo && pageNumber > 0 && isTextAvailable,
     queryFn: async () => {
       if (!fileName) return null;
       return await fetchExtractionBoundingBoxes(fileName, pageNumber);
@@ -241,13 +243,15 @@ export function useExtractionBoundingBoxes(
   });
 }
 
-export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number) {
+export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number, isTextAvailable: boolean) {
   const { data: fileInfo } = useFileInfo(file?.id, activePage);
   return useQuery({
     queryKey: ["extractStratigraphies", file.nameUuid],
-    enabled: !!file && !!fileInfo,
+    // Scanned documents only contain text once OCR succeeded, so extracting earlier finds no stratigraphy.
+    enabled: !!file && !!fileInfo && isTextAvailable,
     retry: false, // no retries to reduce load on dataextraction service after failure.
     staleTime: Infinity, // Extraction results dont go stale and a failing refetch on window focus should not override valid data.
+    gcTime: 0, // Selecting the file again after closing the dialog extracts anew instead of showing a previous result.
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid!, signal);
       return mapExtractionResponse(response);

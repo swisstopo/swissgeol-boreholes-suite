@@ -69,6 +69,9 @@ const createWrapper = () => {
 
 const profile = { id: 1, name: "profile.pdf", nameUuid: "uuid-1" } as BoreholeAttachment;
 
+const extractionCalls = () =>
+  vi.mocked(fetch).mock.calls.filter(([url]) => typeof url === "string" && url.includes("extract_stratigraphy"));
+
 describe("useExtractStratigraphies", () => {
   beforeEach(() => {
     vi.stubGlobal(
@@ -83,14 +86,49 @@ describe("useExtractStratigraphies", () => {
   });
 
   it("does not retry a failed extraction, even when queries retry by default", async () => {
-    const { result } = renderHook(() => useExtractStratigraphies(profile, 1), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useExtractStratigraphies(profile, 1, true), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 
-    const extractionCalls = vi
-      .mocked(fetch)
-      .mock.calls.filter(([url]) => typeof url === "string" && url.includes("extract_stratigraphy"));
-    expect(extractionCalls).toHaveLength(1);
+    expect(extractionCalls()).toHaveLength(1);
+  });
+
+  it("extracts only once the file's text is available", async () => {
+    vi.mocked(fetch).mockResolvedValue(Response.json(responseWith("Gravel")));
+    const { result, rerender } = renderHook(
+      ({ isTextAvailable }) => ({
+        extraction: useExtractStratigraphies(profile, 1, isTextAvailable),
+        fileInfo: useFileInfo(profile.id, 1),
+      }),
+      { wrapper: createWrapper(), initialProps: { isTextAvailable: false } },
+    );
+
+    // With the file info resolved, the text availability is all that holds the extraction back.
+    await waitFor(() => expect(result.current.fileInfo.isSuccess).toBe(true));
+    expect(result.current.extraction.fetchStatus).toBe("idle");
+    expect(extractionCalls()).toHaveLength(0);
+
+    rerender({ isTextAvailable: true });
+
+    await waitFor(() => expect(result.current.extraction.isSuccess).toBe(true));
+    expect(extractionCalls()).toHaveLength(1);
+  });
+
+  it("extracts anew when the file is selected again after closing", async () => {
+    vi.mocked(fetch).mockImplementation(() => Promise.resolve(Response.json(responseWith("Gravel"))));
+    const wrapper = createWrapper();
+    const first = renderHook(() => useExtractStratigraphies(profile, 1, true), { wrapper });
+    await waitFor(() => expect(first.result.current.isSuccess).toBe(true));
+    first.unmount();
+    // The query cache drops unobserved queries in a timeout, which reopening the dialog always outlasts.
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const second = renderHook(() => useExtractStratigraphies(profile, 1, true), { wrapper });
+    await waitFor(() => expect(second.result.current.isSuccess).toBe(true));
+
+    expect(extractionCalls()).toHaveLength(2);
   });
 });
 
