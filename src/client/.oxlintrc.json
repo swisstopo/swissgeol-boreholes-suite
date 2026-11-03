@@ -43,6 +43,7 @@
     "no-redeclare": "error",
     "no-regex-spaces": "error",
     "no-undef": "error",
+    "no-useless-constructor": "error",
 
     "react/jsx-no-comment-textnodes": "error",
     "react/jsx-no-target-blank": "error",
@@ -110,13 +111,25 @@
       }
     ],
 
-    "typescript/ban-ts-comment": "error",
+    "typescript/adjacent-overload-signatures": "error",
+    "typescript/ban-ts-comment": ["error", { "minimumDescriptionLength": 10 }],
+    "typescript/ban-tslint-comment": "error",
+    "typescript/class-literal-property-style": "error",
+    "typescript/consistent-generic-constructors": "error",
+    "typescript/consistent-type-assertions": "error",
+    "typescript/no-confusing-non-null-assertion": "error",
+    "typescript/no-dynamic-delete": "error",
     "typescript/no-empty-object-type": "error",
     "typescript/no-explicit-any": "error",
+    "typescript/no-extraneous-class": "error",
     "typescript/no-namespace": "error",
+    "typescript/no-non-null-asserted-nullish-coalescing": "error",
     "typescript/no-require-imports": "error",
     "typescript/no-unnecessary-type-constraint": "error",
-    "typescript/no-unsafe-function-type": "error"
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/prefer-for-of": "error",
+    "typescript/prefer-function-type": "error",
+    "typescript/prefer-literal-enum-member": "error"
   },
   "overrides": [
     {
@@ -178,7 +191,16 @@
             "considerDefaultExhaustiveForUnions": true
           }
         ],
-        "typescript/prefer-readonly": "error"
+        "typescript/prefer-readonly": "error",
+        "typescript/no-mixed-enums": "error",
+        "typescript/no-unnecessary-boolean-literal-compare": "error",
+        "typescript/prefer-find": "error",
+        "typescript/prefer-return-this-type": "error",
+        "typescript/prefer-string-starts-ends-with": "error",
+        "typescript/related-getter-setter-pairs": "error",
+        // Only where leaving out the await changes behavior, such as a return inside try/catch,
+        // where a rejection would otherwise skip the catch.
+        "typescript/return-await": ["error", "error-handling-correctness-only"]
       }
     },
     {
