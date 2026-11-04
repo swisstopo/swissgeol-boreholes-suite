@@ -4,7 +4,7 @@ import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
-import { download, downloadData } from "./download.ts";
+import { download, downloadData, downloadPost } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
 import { TransferOptions } from "./transferProgress.ts";
@@ -54,8 +54,11 @@ const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: numb
 
 // Saves the response body verbatim. Reading it as text first would strip the UTF-8 byte order mark
 // that tells Excel how to decode the accented characters.
-export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, fileName: string) =>
-  await download(`boreholeexport/csv?${getIdQuery(boreholeIds)}`, { fileName: `${fileName}.csv` });
+export const exportCSVBorehole = async (
+  boreholeIds: GridRowSelectionModel,
+  fileName: string,
+  options?: TransferOptions,
+) => await downloadPost("boreholeexport/csv", { ids: boreholeIds }, { ...options, fileName: `${fileName}.csv` });
 
 export const exportJsonWithAttachmentsBorehole = async (
   boreholeIds: number[] | GridRowSelectionModel,

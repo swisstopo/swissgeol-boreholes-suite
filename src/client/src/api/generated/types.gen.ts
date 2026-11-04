@@ -402,6 +402,17 @@ export type BoreholeCodelist = {
   comment?: string | null;
 };
 
+/**
+ * Selects the boreholes to export. The ids travel in the request body, so a selection of many thousands
+ * of boreholes fits into one request.
+ */
+export type BoreholeExportRequest = {
+  /**
+   * The ids of the boreholes to export, in the order their rows are written. At least one id is required.
+   */
+  ids: Array<number>;
+};
+
 export type BoreholeGeometryElement = {
   /**
    * Gets or sets the Measured Depth (MD) of the data point in meters.
@@ -5979,21 +5990,19 @@ export type GetApiVbyVersionBoreholeexportGpkgResponses = {
   200: unknown;
 };
 
-export type GetApiVbyVersionBoreholeexportCsvData = {
-  body?: never;
+export type PostApiVbyVersionBoreholeexportCsvData = {
+  /**
+   * The ids of the boreholes to export, in the order their rows are written.
+   */
+  body?: BoreholeExportRequest;
   path: {
     version: string;
   };
-  query?: {
-    /**
-     * The list of ids for the boreholes to be exported.
-     */
-    ids?: Array<number>;
-  };
+  query?: never;
   url: "/api/v{version}/boreholeexport/csv";
 };
 
-export type GetApiVbyVersionBoreholeexportCsvResponses = {
+export type PostApiVbyVersionBoreholeexportCsvResponses = {
   /**
    * OK
    */
