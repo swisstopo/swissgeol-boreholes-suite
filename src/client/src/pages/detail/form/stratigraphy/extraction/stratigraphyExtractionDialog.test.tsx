@@ -68,6 +68,7 @@ vi.mock("../../../../../hooks/useBoreholesNavigate.tsx", () => ({
 // Lightweight stand-in for the heavy extraction view (maps, canvas, lithology table).
 // It only surfaces the name field and inline error per stratigraphy so we can exercise
 // the dialog's name prefill, validation and submit logic in isolation.
+// The active page and a page input stand in for the preview's page navigation.
 vi.mock("./stratigraphyExtractionView.tsx", () => ({
   StratigraphyExtractionView: ({
     allExtractedStratigraphies,
@@ -77,9 +78,13 @@ vi.mock("./stratigraphyExtractionView.tsx", () => ({
     ocrStatus,
     errorMessageKey,
     onRetry,
+    activePage,
+    setActivePage,
   }: StratigraphyExtractionViewProps) => (
     <div>
       <span aria-label="view-ocr-status">{String(ocrStatus)}</span>
+      <span aria-label="view-active-page">{activePage}</span>
+      <input aria-label="view-page-input" onChange={event => setActivePage(Number(event.target.value))} />
       <span aria-label="view-error">{errorMessageKey ?? ""}</span>
       <button aria-label="view-retry" onClick={onRetry}>
         retry
@@ -123,18 +128,23 @@ const createWrapper = () => {
 
 const makeStratigraphy = (pageNumbers: number[]): ExtractedStratigraphy => ({ pageNumbers, descriptions: [] });
 
+const dialogElement = (fileName = "profile.pdf") => (
+  <StratigraphyExtractionDialog
+    file={{ id: 1, name: fileName, nameUuid: "uuid-1" } as BoreholeAttachment}
+    setSelectedFile={setSelectedFile}
+    open
+    setOpen={setOpen}
+  />
+);
+
 const renderDialog = (stratigraphies: ExtractedStratigraphy[], fileName = "profile.pdf") => {
   extractionState.data = stratigraphies;
-  return render(
-    <StratigraphyExtractionDialog
-      file={{ id: 1, name: fileName, nameUuid: "uuid-1" } as BoreholeAttachment}
-      setSelectedFile={setSelectedFile}
-      open
-      setOpen={setOpen}
-    />,
-    { wrapper: createWrapper() },
-  );
+  return render(dialogElement(fileName), { wrapper: createWrapper() });
 };
+
+const activePage = () => screen.getByLabelText("view-active-page").textContent;
+const goToPage = (page: number) =>
+  fireEvent.change(screen.getByLabelText("view-page-input"), { target: { value: String(page) } });
 
 const nameInput = (index: number) => screen.getByLabelText<HTMLInputElement>(`name-input-${index}`);
 const nameError = (index: number) => screen.getByLabelText(`name-error-${index}`);
@@ -334,6 +344,50 @@ describe("StratigraphyExtractionDialog", () => {
 
     await waitFor(() => expect(refetchFileInfo).toHaveBeenCalledTimes(1));
     expect(refetchExtraction).not.toHaveBeenCalled();
+  });
+
+  it("shows the first page of the first extracted stratigraphy", async () => {
+    renderDialog([makeStratigraphy([7]), makeStratigraphy([8])]);
+
+    await waitFor(() => expect(activePage()).toBe("7"));
+  });
+
+  it("keeps the first page when no stratigraphy was extracted", async () => {
+    renderDialog([]);
+
+    await waitFor(() => expect(activePage()).toBe("1"));
+  });
+
+  it("jumps to the first extracted stratigraphy when the result arrives after the user paged", async () => {
+    extractionState.isLoading = true;
+    const { rerender } = renderDialog([]);
+    goToPage(3);
+    await waitFor(() => expect(activePage()).toBe("3"));
+
+    extractionState.isLoading = false;
+    extractionState.data = [makeStratigraphy([7]), makeStratigraphy([8])];
+    rerender(dialogElement());
+
+    await waitFor(() => expect(activePage()).toBe("7"));
+  });
+
+  it("keeps a page the user chose after the result arrived", async () => {
+    const { rerender } = renderDialog([makeStratigraphy([7]), makeStratigraphy([8])]);
+    await waitFor(() => expect(activePage()).toBe("7"));
+
+    goToPage(9);
+    rerender(dialogElement());
+
+    expect(activePage()).toBe("9");
+  });
+
+  it("shows the first page of the stratigraphy the user switches to", async () => {
+    renderDialog([makeStratigraphy([7]), makeStratigraphy([8])]);
+    await waitFor(() => expect(activePage()).toBe("7"));
+
+    fireEvent.click(screen.getByTestId("stratigraphy-toggle-item-1"));
+
+    await waitFor(() => expect(activePage()).toBe("8"));
   });
 
   it("delegates non-uniqueness save errors to the alert", async () => {
