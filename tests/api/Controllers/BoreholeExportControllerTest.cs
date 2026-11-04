@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NetTopologySuite.IO.Converters;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
@@ -848,6 +849,39 @@ public class BoreholeExportControllerTest
         }
     }
 
+    [TestMethod]
+    public async Task DownloadCsvWritesCoreRepositoryStoredAndSourceTypes()
+    {
+        var sourceTypeIds = await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .OrderBy(c => c.Order)
+            .Select(c => c.Id)
+            .ToListAsync();
+
+        var withTypes = new Borehole { OriginalName = "CORESTORE_CSV_TYPES", WorkgroupId = 1, CoreRepositoryStored = true };
+        withTypes.SyncSourceTypeCodes(new[] { sourceTypeIds[2], sourceTypeIds[0] });
+        var withoutTypes = new Borehole { OriginalName = "CORESTORE_CSV_NONE", WorkgroupId = 1, CoreRepositoryStored = null };
+        context.AddRange(withTypes, withoutTypes);
+        await context.SaveChangesAsync();
+
+        var result = await controller.ExportCsvAsync(new[] { withTypes.Id, withoutTypes.Id }) as FileContentResult;
+        Assert.IsNotNull(result);
+        var records = GetRecordsFromFileContent(result);
+
+        var headers = ((IDictionary<string, object>)records[0]).Keys.ToList();
+        var nationalInterestIndex = headers.IndexOf(nameof(Borehole.NationalInterest));
+        Assert.AreEqual(nameof(Borehole.CoreRepositoryStored), headers[nationalInterestIndex + 1]);
+        Assert.AreEqual(nameof(Borehole.SourceTypeCodelistIds), headers[nationalInterestIndex + 2]);
+
+        var first = records.Single(r => r.Id == withTypes.Id.ToString(CultureInfo.InvariantCulture));
+        Assert.AreEqual("True", first.CoreRepositoryStored);
+        Assert.AreEqual($"{sourceTypeIds[0]},{sourceTypeIds[2]}", first.SourceTypeCodelistIds);
+
+        var second = records.Single(r => r.Id == withoutTypes.Id.ToString(CultureInfo.InvariantCulture));
+        Assert.AreEqual("", second.CoreRepositoryStored);
+        Assert.AreEqual("", second.SourceTypeCodelistIds);
+    }
+
     private static List<dynamic> GetRecordsFromFileContent(FileContentResult result)
     {
         var memoryStream = new MemoryStream(result.FileContents);
@@ -859,6 +893,7 @@ public class BoreholeExportControllerTest
     private static void PopulateCodelistCollectionsFromJoinTables(Borehole newBorehole)
     {
         // Make sure all CodelistId collections are populated so they can be compared, to the export.
+        newBorehole.MapSourceTypeCodelistIds();
         foreach (var strat in newBorehole.Stratigraphies ?? [])
         {
             foreach (var lithology in strat.Lithologies)

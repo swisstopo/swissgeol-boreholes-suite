@@ -29,6 +29,7 @@ public class ImportController : ControllerBase
     private readonly ProfileCloudService profileCloudService;
     private readonly IBoreholePermissionService boreholePermissionService;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
+    private readonly string invalidSourceTypeMsg = "Source type <{0}> is not a valid 'source_type' codelist id.";
 
     private static readonly JsonSerializerOptions jsonImportOptions = new()
     {
@@ -82,7 +83,8 @@ public class ImportController : ControllerBase
                 .ConfigureAwait(false);
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile, identifierCodelists);
-            ValidateBoreholeImports(boreholeImports, ValidationErrorType.Csv);
+            var sourceTypeIds = await GetSourceTypeCodelistIdsAsync().ConfigureAwait(false);
+            ValidateBoreholeImports(boreholeImports, sourceTypeIds, ValidationErrorType.Csv);
 
             // If any validation error occured, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem();
@@ -91,6 +93,7 @@ public class ImportController : ControllerBase
             List<Borehole> boreholes = new();
             foreach (var boreholeImport in boreholeImports)
             {
+                MapSourceTypeCodelists(boreholeImport);
                 var borehole = (Borehole)boreholeImport;
 
                 // Assign borehole id to the borehole import object to be able to map attachments to the borehole.
@@ -257,7 +260,8 @@ public class ImportController : ControllerBase
         if (user == null)
             return Unauthorized();
 
-        ValidateBoreholeImports(boreholes, ValidationErrorType.Json);
+        var sourceTypeIds = await GetSourceTypeCodelistIdsAsync().ConfigureAwait(false);
+        ValidateBoreholeImports(boreholes, sourceTypeIds, ValidationErrorType.Json);
         if (!ModelState.IsValid)
             return ValidationProblem();
 
@@ -291,6 +295,7 @@ public class ImportController : ControllerBase
             MapHydrotestCodelists(borehole, hydrotestCodelists);
             MapLithologyCodelists(borehole);
             MapLogCodelists(borehole);
+            MapSourceTypeCodelists(borehole);
         }
     }
 
@@ -391,6 +396,29 @@ public class ImportController : ControllerBase
             .ConfigureAwait(false);
     }
 
+    private async Task<HashSet<int>> GetSourceTypeCodelistIdsAsync()
+    {
+        var ids = await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .Select(c => c.Id)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return ids.ToHashSet();
+    }
+
+    // CSV rows carry the ids as text, JSON boreholes as numbers; both are validated as tokens.
+    private static IEnumerable<string> GetSourceTypeTokens(BoreholeImport borehole) =>
+        borehole.SourceTypeCodelistIdsText != null
+            ? borehole.SourceTypeCodelistIdsText.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            : borehole.SourceTypeCodelistIds?.Select(id => id.ToString(CultureInfo.InvariantCulture)) ?? [];
+
+    // Runs only after validation passed, so every token parses.
+    private static void MapSourceTypeCodelists(BoreholeImport borehole)
+    {
+        borehole.SyncSourceTypeCodes(GetSourceTypeTokens(borehole).Select(token => int.Parse(token, CultureInfo.InvariantCulture)));
+    }
+
     private static void MapLogCodelists(BoreholeImport borehole)
     {
         foreach (var logRun in borehole.LogRuns ?? [])
@@ -455,18 +483,31 @@ public class ImportController : ControllerBase
         return 0;
     }
 
-    private void ValidateBoreholeImports(List<BoreholeImport> boreholesFromFile, ValidationErrorType errorType)
+    private void ValidateBoreholeImports(List<BoreholeImport> boreholesFromFile, ISet<int> sourceTypeIds, ValidationErrorType errorType)
     {
         foreach (var borehole in boreholesFromFile.Select((value, index) => (value, index)))
         {
-            ValidateBorehole(borehole.value, borehole.index, errorType);
+            ValidateBorehole(borehole.value, borehole.index, sourceTypeIds, errorType);
         }
     }
 
-    private void ValidateBorehole(BoreholeImport borehole, int boreholeIndex, ValidationErrorType errorType)
+    private void ValidateBorehole(BoreholeImport borehole, int boreholeIndex, ISet<int> sourceTypeIds, ValidationErrorType errorType)
     {
         ValidateRequiredFields(borehole, boreholeIndex, errorType);
         ValidateCasingReferences(borehole, boreholeIndex);
+        ValidateSourceTypes(borehole, boreholeIndex, sourceTypeIds, errorType);
+    }
+
+    private void ValidateSourceTypes(BoreholeImport borehole, int processingIndex, ISet<int> sourceTypeIds, ValidationErrorType errorType)
+    {
+        foreach (var token in GetSourceTypeTokens(borehole).Distinct(StringComparer.Ordinal))
+        {
+            var isValid = int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id) && sourceTypeIds.Contains(id);
+            if (!isValid)
+            {
+                AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, invalidSourceTypeMsg, token), errorType);
+            }
+        }
     }
 
     private void ValidateRequiredFields(BoreholeImport borehole, int processingIndex, ValidationErrorType errorType)
@@ -555,6 +596,8 @@ public class ImportController : ControllerBase
             Map(m => m.RestrictionId).Optional();
             Map(m => m.RestrictionUntil).Optional();
             Map(m => m.NationalInterest).Optional();
+            Map(m => m.CoreRepositoryStored).Optional();
+            Map(m => m.SourceTypeCodelistIdsText).Name(nameof(Borehole.SourceTypeCodelistIds)).Optional();
             Map(m => m.Name).Optional();
             Map(m => m.LocationPrecisionId).Optional();
             Map(m => m.ElevationPrecisionId).Optional();
@@ -588,6 +631,7 @@ public class ImportController : ControllerBase
             Map(m => m.TotalDepthTvd).Ignore();
             Map(m => m.TopBedrockFreshTvd).Ignore();
             Map(m => m.TopBedrockWeatheredTvd).Ignore();
+            Map(m => m.SourceTypeCodelistIds).Ignore();
 
             Map(m => m.BoreholeCodelists).Convert(args =>
             {
