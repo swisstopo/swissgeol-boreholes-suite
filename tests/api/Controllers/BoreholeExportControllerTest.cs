@@ -91,6 +91,10 @@ public class BoreholeExportControllerTest
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(Array.Empty<int>());
+
+        boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>()))
             .ReturnsAsync(true);
 
@@ -686,6 +690,9 @@ public class BoreholeExportControllerTest
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string>(), It.IsAny<int>()))
             .ReturnsAsync(false);
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync((string? _, IReadOnlyCollection<int> boreholeIds) => boreholeIds.ToList());
 
         var profileControllerLoggerMock = new Mock<ILogger<ProfileController>>(MockBehavior.Strict);
         profileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));

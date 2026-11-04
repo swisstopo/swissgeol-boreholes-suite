@@ -473,14 +473,8 @@ public class BoreholeExportController : ControllerBase
     /// <returns><see langword="true"/> if the user has permissions for all boreholes; otherwise, <see langword="false"/>.</returns>
     private async Task<bool> HasViewPermissionsForAllBoreholes(List<Borehole> boreholes)
     {
-        foreach (var borehole in boreholes)
-        {
-            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), borehole.Id).ConfigureAwait(false))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        var boreholeIds = boreholes.Select(borehole => borehole.Id).ToList();
+        var deniedIds = await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync(HttpContext.GetUserSubjectId(), boreholeIds).ConfigureAwait(false);
+        return deniedIds.Count == 0;
     }
 }
