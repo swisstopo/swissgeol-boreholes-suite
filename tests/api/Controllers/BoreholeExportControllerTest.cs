@@ -942,6 +942,9 @@ public class BoreholeExportControllerTest
         borehole.Observations = borehole.Observations?.Where(o => o.Type != ObservationType.None).OrderBy(o => o.Type).ToList();
         borehole.Completions = borehole.Completions?.OrderBy(o => o.Name).ToList();
 
+        // The database returns the identifier rows in no particular order, and the order can differ between two reads.
+        borehole.BoreholeCodelists = borehole.BoreholeCodelists?.OrderBy(c => c.CodelistId).ThenBy(c => c.Value).ToList();
+
         foreach (var completion in borehole.Completions ?? [])
         {
             completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
