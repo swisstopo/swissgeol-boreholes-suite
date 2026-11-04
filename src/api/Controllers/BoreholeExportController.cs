@@ -399,7 +399,7 @@ public class BoreholeExportController : ControllerBase
     /// duplicated id the first position counts. Sorting by list position inside the database query scans the id
     /// array once per row, which does not scale to selections of thousands of boreholes.
     /// </summary>
-    private static List<Borehole> OrderByRequestedIds(IEnumerable<Borehole> boreholes, IReadOnlyList<int> requestedIds)
+    private static List<Borehole> OrderByRequestedIds(IEnumerable<Borehole> boreholes, List<int> requestedIds)
     {
         var positionById = new Dictionary<int, int>();
         for (var position = 0; position < requestedIds.Count; position++)
