@@ -241,9 +241,9 @@ describe("Test for exporting boreholes.", () => {
     handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "delete");
   });
 
-  it("downloads a maximum of 100 boreholes", () => {
+  it("exports all selected boreholes as csv but at most 100 as json", () => {
     // The seed contains exactly 100 boreholes, so we need to add a couple of extras
-    // to exceed the 100-entry cap and trigger the truncation prompt under test.
+    // to exceed the 100-entry cap the JSON export keeps.
     for (let i = 0; i < 5; i++) {
       createBorehole({ originalName: `EXPORT_CAP_TEST_${i}` });
     }
@@ -253,25 +253,33 @@ describe("Test for exporting boreholes.", () => {
     deleteDownloadedFile(jsonFileName);
     showTableAndWaitForData();
     checkAllVisibleRows();
-    deleteDownloadedFile(csvFileName);
-    exportItem();
 
-    const moreThan100SelectedPrompt =
-      "You have selected more than 100 entries and a maximum of 100 entries can be exported. Do you want to continue?";
-    handlePrompt(moreThan100SelectedPrompt, "cancel");
+    // CSV exports every selected borehole without asking.
     exportItem();
-    handlePrompt(moreThan100SelectedPrompt, "exportFirst100");
-    exportItem();
+    cy.dataCy("prompt").should("not.exist");
     exportCSVItem();
     cy.wait("@borehole_export_csv").its("response.statusCode").should("eq", 200);
     readDownloadedFile(csvFileName);
+    // Header, 105 rows and the empty string after the trailing line break.
+    cy.readFile<string>(prepareDownloadPath(csvFileName))
+      .then(fileContent => fileContent.split("\n"))
+      .should("have.length", 107);
 
-    // Verify file length
-    cy.readFile<string>(prepareDownloadPath(csvFileName)).then(fileContent => {
-      const lines = fileContent.split("\n");
-      expect(lines.length).to.equal(102);
-    });
+    // JSON asks first; cancelling returns to the export dialog. The JSON button is clicked directly, because
+    // the export helper expects the export to start right away instead of the prompt.
+    const jsonLimitPrompt =
+      "JSON exports are limited to 100 boreholes. You have selected more than 100. Do you want to export the first 100?";
+    exportItem();
+    cy.dataCy("json-button").click();
+    handlePrompt(jsonLimitPrompt, "cancel");
+    cy.dataCy("csv-button").should("be.visible");
+    cy.dataCy("json-button").click();
+    handlePrompt(jsonLimitPrompt, "exportFirst100");
+    cy.wait("@borehole_export_json").its("response.statusCode").should("eq", 200);
+    readDownloadedFile(jsonFileName);
+    cy.readFile<unknown[]>(prepareDownloadPath(jsonFileName)).should("have.length", 100);
 
+    deleteDownloadedFile(csvFileName);
     deleteDownloadedFile(jsonFileName);
   });
 
