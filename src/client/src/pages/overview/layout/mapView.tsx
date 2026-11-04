@@ -11,7 +11,7 @@ import {
 } from "../../../api/borehole.ts";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
-import { ExportDialog } from "../../../components/export/exportDialog.tsx";
+import { ExportConfirmation, ExportDialog } from "../../../components/export/exportDialog.tsx";
 import { MapComponent } from "../../../components/map/mapComponent";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
@@ -29,6 +29,11 @@ const containSameIds = (ids: number[], otherIds: number[]) => {
 
 // A stable empty array, so the fallback response does not count as new data on every render.
 const noSelectableBoreholeIds: number[] = [];
+
+// JSON exports carry each borehole's full data, so they stay limited. The CSV export has no limit.
+const maxJsonExportCount = 100;
+
+const bulkExportFileName = () => `bulkexport_${new Date().toISOString().split("T")[0]}`;
 
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
@@ -138,6 +143,12 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     if (!containSameIds(selectableBoreholeIds, selectionScope)) setSelectionModel([]);
   }
 
+  const jsonExportIds = selectionModel.slice(0, maxJsonExportCount);
+  const jsonExportConfirmation: ExportConfirmation | undefined =
+    selectionModel.length > maxJsonExportCount
+      ? { message: "exportJsonLimitedTo100", confirmLabel: "exportFirst100" }
+      : undefined;
+
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
       <BulkEditDialog
@@ -151,17 +162,17 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         exportItems={[
           {
             label: "CSV",
-            exportFunction: () =>
-              exportCSVBorehole(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+            exportFunction: options => exportCSVBorehole(selectionModel, bulkExportFileName(), options),
           },
           {
             label: "JSON",
-            exportFunction: () =>
-              exportJsonBoreholes(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+            exportFunction: () => exportJsonBoreholes(jsonExportIds, bulkExportFileName()),
+            confirmation: jsonExportConfirmation,
           },
           {
             label: "exportJsonProfile",
-            exportFunction: options => exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100), options),
+            exportFunction: options => exportJsonWithAttachmentsBorehole(jsonExportIds, options),
+            confirmation: jsonExportConfirmation,
           },
         ]}
       />
