@@ -179,6 +179,7 @@ public static class BoreholeExtensions
         {
             sourceTypeCode.BoreholeId = 0;
         }
+
         borehole.Stratigraphies?.MarkAsNew();
         borehole.Completions?.MarkAsNew();
         borehole.Sections?.MarkAsNew();
