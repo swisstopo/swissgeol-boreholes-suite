@@ -315,6 +315,7 @@ SET
     project_name = NULL,
     restriction_until = NULL,
     national_interest = NULL,
+    core_repository_stored = NULL,
     borehole_type_id = NULL,
     purpose_id = NULL,
     status_id = NULL,
@@ -331,6 +332,13 @@ SET
 FROM bdms.workflow w
 INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
 WHERE w.borehole_id = b.id AND t."general" = false;
+
+DELETE FROM bdms.borehole_source_type_codelist WHERE borehole_id IN (
+    SELECT b.id FROM bdms.borehole b
+    INNER JOIN bdms.workflow w ON w.borehole_id = b.id
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t."general" = false
+);
 
 -- Borehole: Location
 UPDATE bdms.borehole AS b
