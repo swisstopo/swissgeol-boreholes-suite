@@ -26,6 +26,7 @@ export interface FormMultiSelectProps {
   sx?: SystemStyleObject<Theme>;
   className?: string;
   renderTagLabel?: (option: FormSelectMenuItem) => string;
+  onUpdate?: (values: number[]) => void;
 }
 
 export interface FormMultiSelectValue {
@@ -45,6 +46,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   sx,
   className,
   renderTagLabel,
+  onUpdate,
 }) => {
   const { t } = useTranslation();
   const { formState, register, setValue, control } = useFormContext();
@@ -114,10 +116,12 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                   if (newValues.some(m => m.label.toLowerCase() === t("reset").toLowerCase())) {
                     // Clear autocomplete if reset option is clicked
                     field.onChange([]);
+                    onUpdate?.([]);
                   } else {
                     const selectedValues = newValues.map(item => item.value);
                     field.onChange(selectedValues);
                     setValue(fieldName, selectedValues, { shouldValidate: true, shouldDirty: true });
+                    onUpdate?.(selectedValues.filter((value): value is number => typeof value === "number"));
                   }
                 }}
                 renderTags={(tagValue, getTagProps) => {

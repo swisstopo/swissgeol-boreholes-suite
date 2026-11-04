@@ -25,6 +25,7 @@ import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, SaveButton } from "../buttons/buttons.tsx";
 import { FormSelect, FormValueType } from "../form/form.ts";
 import { FormBooleanSelect } from "../form/formBooleanSelect.tsx";
+import { FormDomainMultiSelect } from "../form/formDomainMultiSelect.tsx";
 import { FormDomainSelect } from "../form/formDomainSelect.tsx";
 import { FormInput } from "../form/formInput.tsx";
 import { StackFullWidth } from "../styledComponents.ts";
@@ -46,6 +47,13 @@ export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps)
       { fieldName: "workgroup", type: FormValueType.Workgroup, payloadKey: "workgroupId" },
       { fieldName: "restrictionUntil", type: FormValueType.Date, payloadKey: "restrictionUntil" },
       { fieldName: "nationalInterest", type: FormValueType.Boolean, payloadKey: "nationalInterest" },
+      { fieldName: "coreRepositoryStored", type: FormValueType.Boolean, payloadKey: "coreRepositoryStored" },
+      {
+        fieldName: "sourceType",
+        type: FormValueType.DomainMultiSelect,
+        payloadKey: "sourceTypeCodelistIds",
+        schemaName: "source_type",
+      },
       {
         fieldName: "locationPrecision",
         type: FormValueType.Domain,
@@ -112,8 +120,9 @@ export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps)
 
   const formMethods = useForm({
     mode: "all",
-    defaultValues: bulkEditFormFields.reduce<Record<string, string>>((acc, field) => {
-      acc[field.fieldName] = "";
+    // The multi-select reads its value as an array, so it cannot start at "".
+    defaultValues: bulkEditFormFields.reduce<Record<string, string | number[]>>((acc, field) => {
+      acc[field.fieldName] = field.type === FormValueType.DomainMultiSelect ? [] : "";
       return acc;
     }, {}),
   });
@@ -183,6 +192,19 @@ export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps)
             schemaName={field.schemaName ?? field.fieldName}
             onUpdate={e => {
               onFieldValueChange(field, e);
+            }}
+          />
+        );
+      }
+      if (field.type === FormValueType.DomainMultiSelect) {
+        return (
+          <FormDomainMultiSelect
+            readonly={false}
+            fieldName={field.fieldName}
+            label=""
+            schemaName={field.schemaName ?? field.fieldName}
+            onUpdate={values => {
+              onFieldValueChange(field, values);
             }}
           />
         );

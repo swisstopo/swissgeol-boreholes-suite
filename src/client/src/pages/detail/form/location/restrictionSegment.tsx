@@ -1,10 +1,11 @@
 import { useContext, useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { Card } from "@mui/material";
+import { Box, Card } from "@mui/material";
 import { restrictionUntilCode } from "../../../../components/codelist.ts";
 import {
   FormBooleanSelect,
   FormContainer,
+  FormDomainMultiSelect,
   FormDomainSelect,
   FormInput,
   FormValueType,
@@ -35,28 +36,45 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
   return (
     <Card>
       <FormSegmentBox>
-        <FormContainer direction="row">
-          <FormDomainSelect
-            fieldName={"restrictionId"}
-            label={"restriction"}
-            schemaName={"restriction"}
-            selected={borehole.restrictionId}
-            onUpdate={clearRestrictionUntil}
-          />
-          <FormInput
-            fieldName={"restrictionUntil"}
-            label="restrictionUntilDate"
-            disabled={!restrictionUntilEnabled}
-            readonly={!editingEnabled || !restrictionUntilEnabled}
-            value={borehole.restrictionUntil}
-            type={FormValueType.Date}
-          />
-          <FormBooleanSelect
-            canReset={false}
-            fieldName={"nationalInterest"}
-            label="nationalInterest"
-            selected={borehole.nationalInterest}
-          />
+        <FormContainer>
+          <FormContainer direction="row">
+            <FormDomainSelect
+              fieldName={"restrictionId"}
+              label={"restriction"}
+              schemaName={"restriction"}
+              selected={borehole.restrictionId}
+              onUpdate={clearRestrictionUntil}
+            />
+            <FormInput
+              fieldName={"restrictionUntil"}
+              label="restrictionUntilDate"
+              disabled={!restrictionUntilEnabled}
+              readonly={!editingEnabled || !restrictionUntilEnabled}
+              value={borehole.restrictionUntil}
+              type={FormValueType.Date}
+            />
+            <FormBooleanSelect
+              canReset={false}
+              fieldName={"nationalInterest"}
+              label="nationalInterest"
+              selected={borehole.nationalInterest}
+            />
+          </FormContainer>
+          <FormContainer direction="row">
+            <FormBooleanSelect
+              canReset={false}
+              fieldName={"coreRepositoryStored"}
+              label="coreRepositoryStored"
+              selected={borehole.coreRepositoryStored}
+            />
+            <FormDomainMultiSelect
+              fieldName={"sourceTypeCodelistIds"}
+              label="sourceType"
+              schemaName={"source_type"}
+              selected={borehole.sourceTypeCodelistIds ?? []}
+            />
+            <Box sx={{ flex: 1 }} />
+          </FormContainer>
         </FormContainer>
       </FormSegmentBox>
     </Card>
