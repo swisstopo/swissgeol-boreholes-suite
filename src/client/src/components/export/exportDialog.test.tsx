@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TransferOptions, TransferProgressCallback } from "../../api/transferProgress.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { AlertContextInterface } from "../alert/alertInterfaces";
+import { Prompt } from "../prompt/prompt.tsx";
+import { PromptProvider } from "../prompt/promptContext.tsx";
 import { ExportDialog } from "./exportDialog.tsx";
 
 vi.mock("react-i18next", () => ({
@@ -80,6 +82,36 @@ const startExport = async (controllable: ReturnType<typeof controllableExport>) 
   await controllable.started;
 };
 
+const ConfirmingExportDialogHarness = ({ exportFunction }: { exportFunction: () => Promise<void> }) => {
+  const [isExporting, setIsExporting] = useState(true);
+  return (
+    <AlertContext.Provider value={alertContext}>
+      <PromptProvider>
+        <ExportDialog
+          isExporting={isExporting}
+          setIsExporting={setIsExporting}
+          exportItems={[
+            {
+              label: "JSON",
+              exportFunction,
+              confirmation: { message: "exportJsonLimitedTo100", confirmLabel: "exportFirst100" },
+            },
+          ]}
+        />
+        <Prompt />
+      </PromptProvider>
+    </AlertContext.Provider>
+  );
+};
+
+const byPromptCy = (name: string) => document.querySelector<HTMLElement>(`[data-cy="prompt"] [data-cy="${name}"]`);
+
+const clickPromptCy = (name: string) => {
+  const element = byPromptCy(name);
+  if (!element) throw new Error(`No prompt element marked '${name}' to click.`);
+  fireEvent.click(element);
+};
+
 beforeEach(() => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
   vi.setSystemTime(new Date("2026-01-01T00:00:00Z"));
@@ -133,5 +165,41 @@ describe("export progress", () => {
 
     expect(controllable.getSignal()?.aborted).toBe(true);
     await waitFor(() => expect(byCy("loading-backdrop-status")).toBeNull());
+  });
+});
+
+describe("export confirmation", () => {
+  it("asks before running an export that needs confirmation", async () => {
+    const exportFunction = vi.fn(() => Promise.resolve());
+    render(<ConfirmingExportDialogHarness exportFunction={exportFunction} />);
+
+    clickCy("json-button");
+
+    await waitFor(() => expect(byCy("prompt")?.textContent).toContain("exportJsonLimitedTo100"));
+    expect(exportFunction).not.toHaveBeenCalled();
+  });
+
+  it("returns to the export dialog when the confirmation is cancelled", async () => {
+    const exportFunction = vi.fn(() => Promise.resolve());
+    render(<ConfirmingExportDialogHarness exportFunction={exportFunction} />);
+    clickCy("json-button");
+    await waitFor(() => expect(byPromptCy("cancel-button")).not.toBeNull());
+
+    clickPromptCy("cancel-button");
+
+    await waitFor(() => expect(byCy("prompt")).toBeNull());
+    expect(byCy("json-button")).not.toBeNull();
+    expect(exportFunction).not.toHaveBeenCalled();
+  });
+
+  it("runs the export once confirmed", async () => {
+    const exportFunction = vi.fn(() => Promise.resolve());
+    render(<ConfirmingExportDialogHarness exportFunction={exportFunction} />);
+    clickCy("json-button");
+    await waitFor(() => expect(byPromptCy("exportfirst100-button")).not.toBeNull());
+
+    clickPromptCy("exportfirst100-button");
+
+    await waitFor(() => expect(exportFunction).toHaveBeenCalledTimes(1));
   });
 });

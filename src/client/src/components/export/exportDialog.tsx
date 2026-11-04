@@ -1,16 +1,25 @@
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
+import { ArrowDownToLine } from "lucide-react";
 import { ApiError } from "../../api/errorClasses.ts";
 import { formatBytes, isAbortError, progressRefreshIntervalMs, TransferOptions } from "../../api/transferProgress.ts";
 import { theme } from "../../AppTheme.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 import { LoadingBackdrop } from "../loadingBackdrop.tsx";
+import { PromptContext } from "../prompt/promptContext.tsx";
+
+/** Asks before an export runs, for exports that will not deliver everything the user selected. */
+export interface ExportConfirmation {
+  message: string;
+  confirmLabel: string;
+}
 
 export interface ExportItem {
   label: string;
   exportFunction: (options?: TransferOptions) => Promise<Response | void>;
+  confirmation?: ExportConfirmation;
 }
 
 interface ExportDialogProps {
@@ -27,6 +36,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
   const runningExport = useRef<AbortController | null>(null);
   const minimumDisplayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { showAlert } = useContext(AlertContext);
+  const { showPrompt } = useContext(PromptContext);
 
   const closeExportDialog = useCallback(() => {
     setIsExporting(false);
@@ -110,6 +120,25 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
     [hideProgress, setIsExporting, showAlert, t],
   );
 
+  // The prompt only closes itself on cancel, so the export dialog stays open for another choice.
+  const startExport = (item: ExportItem) => {
+    const { confirmation } = item;
+    if (!confirmation) {
+      void handleExport(item.exportFunction);
+      return;
+    }
+
+    showPrompt(confirmation.message, [
+      { label: "cancel" },
+      {
+        label: confirmation.confirmLabel,
+        icon: <ArrowDownToLine />,
+        variant: "contained",
+        action: () => void handleExport(item.exportFunction),
+      },
+    ]);
+  };
+
   return (
     <>
       <Dialog open={isExporting}>
@@ -118,11 +147,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           <DialogContent>
             <Stack gap={1} sx={{ mt: 3 }}>
               {exportItems.map(item => (
-                <ExportButton
-                  key={`export-${item.label}`}
-                  label={item.label}
-                  onClick={() => void handleExport(item.exportFunction)}
-                />
+                <ExportButton key={`export-${item.label}`} label={item.label} onClick={() => startExport(item)} />
               ))}
             </Stack>
           </DialogContent>
