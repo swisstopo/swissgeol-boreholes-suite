@@ -47,6 +47,11 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return Problem(errorMessage);
         }
 
+        if (entity.SourceTypeCodelistIds != null)
+        {
+            entity.SyncSourceTypeCodes(entity.SourceTypeCodelistIds);
+        }
+
         await Context.AddAsync(entity).ConfigureAwait(false);
         try
         {
@@ -72,6 +77,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var existingBorehole = await Context.Boreholes
             .Include(b => b.BoreholeCodelists)
+            .Include(b => b.BoreholeSourceTypeCodes)
             .Include(b => b.Workflow)
             .SingleOrDefaultAsync(l => l.Id == entity.Id)
             .ConfigureAwait(false);
@@ -113,6 +119,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         if (entity.BoreholeCodelists != null)
         {
             existingBorehole.BoreholeCodelists = entity.BoreholeCodelists;
+        }
+
+        // Source types are only replaced when the client sends them, like the borehole identifiers above.
+        if (entity.SourceTypeCodelistIds != null)
+        {
+            existingBorehole.SyncSourceTypeCodes(entity.SourceTypeCodelistIds);
         }
 
         try
@@ -257,6 +269,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         var boreholes = await Context.Boreholes
             .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
             .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
+            .Include(b => b.BoreholeSourceTypeCodes)
             .Where(b => request.BoreholeIds.Contains(b.Id))
             .ToListAsync()
             .ConfigureAwait(false);
@@ -366,6 +379,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), id).ConfigureAwait(false)) return Unauthorized();
 
+        borehole.MapSourceTypeCodelistIds();
         return Ok(borehole);
     }
 
@@ -584,6 +598,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         "restrictionId", "restrictionUntil", "nationalInterest", "projectName", "typeId", "purposeId", "statusId",
         "depthPrecisionId", "totalDepth", "topBedrockFreshMd", "topBedrockWeatheredMd", "hasGroundwater",
         "lithologyTopBedrockId", "lithostratigraphyTopBedrockId", "chronostratigraphyTopBedrockId",
+        "coreRepositoryStored", "sourceTypeCodelistIds",
     };
 
     // All fields that may be bulk-edited: the union of the tab field sets plus workgroupId
@@ -637,6 +652,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             case "RESTRICTIONID": borehole.RestrictionId = update.RestrictionId; break;
             case "RESTRICTIONUNTIL": borehole.RestrictionUntil = update.RestrictionUntil; break;
             case "NATIONALINTEREST": borehole.NationalInterest = update.NationalInterest; break;
+            case "COREREPOSITORYSTORED": borehole.CoreRepositoryStored = update.CoreRepositoryStored; break;
+            case "SOURCETYPECODELISTIDS": borehole.SyncSourceTypeCodes(update.SourceTypeCodelistIds ?? []); break;
             case "PROJECTNAME": borehole.ProjectName = update.ProjectName; break;
             case "TYPEID": borehole.TypeId = update.TypeId; break;
             case "PURPOSEID": borehole.PurposeId = update.PurposeId; break;

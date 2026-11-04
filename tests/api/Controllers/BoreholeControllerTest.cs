@@ -1539,6 +1539,173 @@ public class BoreholeControllerTest
         await context.SaveChangesAsync();
     }
 
+    private async Task<List<int>> GetSourceTypeIdsAsync() =>
+        await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .OrderBy(c => c.Order)
+            .Select(c => c.Id)
+            .ToListAsync();
+
+    private async Task<Borehole> EditSourceTypesAsync(int id, ICollection<int>? sourceTypeIds)
+    {
+        var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+        borehole.SourceTypeCodelistIds = sourceTypeIds;
+        var result = await controller.EditAsync(borehole);
+        return ActionResultAssert.IsOkObjectResult<Borehole>(result.Result);
+    }
+
+    [TestMethod]
+    public async Task CreateWithoutCoreRepositoryStoredDefaultsToFalse()
+    {
+        var result = await controller.CreateAsync(new Borehole { WorkgroupId = DefaultWorkgroupId, OriginalName = "CORESTORE_DEFAULT" });
+        var id = ActionResultAssert.IsOkObjectResult<Borehole>(result.Result).Id;
+
+        var stored = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+        Assert.AreEqual(false, stored.CoreRepositoryStored);
+    }
+
+    [TestMethod]
+    public async Task CreateWithSourceTypeCodelistIdsAddsJoinRows()
+    {
+        var sourceTypeIds = await GetSourceTypeIdsAsync();
+        var borehole = GetBoreholeToAdd();
+        borehole.SourceTypeCodelistIds = new List<int> { sourceTypeIds[2], sourceTypeIds[0] };
+
+        var id = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.CreateAsync(borehole)).Result).Id;
+
+        var read = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[0], sourceTypeIds[2] }, read.SourceTypeCodelistIds!.ToArray());
+    }
+
+    [TestMethod]
+    public async Task EditSynchronizesSourceTypeCodelists()
+    {
+        var sourceTypeIds = await GetSourceTypeIdsAsync();
+        var id = await CreateDisposableBoreholeAsync();
+
+        var added = await EditSourceTypesAsync(id, new List<int> { sourceTypeIds[0], sourceTypeIds[1] });
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[0], sourceTypeIds[1] }, added.SourceTypeCodelistIds!.ToArray());
+
+        var replaced = await EditSourceTypesAsync(id, new List<int> { sourceTypeIds[1], sourceTypeIds[2] });
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[2] }, replaced.SourceTypeCodelistIds!.ToArray());
+
+        var omitted = await EditSourceTypesAsync(id, null);
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[2] }, omitted.SourceTypeCodelistIds!.ToArray(), "null leaves the source types unchanged.");
+
+        var cleared = await EditSourceTypesAsync(id, new List<int>());
+        Assert.AreEqual(0, cleared.SourceTypeCodelistIds!.Count);
+    }
+
+    [TestMethod]
+    public async Task EditUpdatesCoreRepositoryStoredIncludingNull()
+    {
+        var id = await CreateDisposableBoreholeAsync();
+
+        foreach (var value in new bool?[] { true, null, false })
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            borehole.CoreRepositoryStored = value;
+            var updated = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.EditAsync(borehole)).Result);
+            Assert.AreEqual(value, updated.CoreRepositoryStored);
+        }
+    }
+
+    [TestMethod]
+    public async Task CopyCarriesCoreRepositoryStoredAndSourceTypes()
+    {
+        var sourceTypeIds = await GetSourceTypeIdsAsync();
+        var original = GetBoreholeToAdd();
+        original.CoreRepositoryStored = null;
+        original.SourceTypeCodelistIds = new List<int> { sourceTypeIds[0], sourceTypeIds[3] };
+        var originalId = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.CreateAsync(original)).Result).Id;
+
+        var result = await controller.CopyAsync(originalId, workgroupId: DefaultWorkgroupId);
+        ActionResultAssert.IsOk(result.Result);
+        var copiedId = (int)((OkObjectResult)result.Result!).Value!;
+
+        var copied = GetBorehole(copiedId);
+        Assert.IsNull(copied.CoreRepositoryStored);
+        CollectionAssert.AreEquivalent(new[] { sourceTypeIds[0], sourceTypeIds[3] }, copied.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+
+        var unchangedOriginal = GetBorehole(originalId);
+        Assert.AreEqual(2, unchangedOriginal.BoreholeSourceTypeCodes!.Count, "The original keeps its source types.");
+    }
+
+    [TestMethod]
+    public async Task BulkEditAllowsNullForCoreRepositoryStored()
+    {
+        var id = await CreateDisposableBoreholeAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { id },
+            Update = new BoreholeBulkUpdate { CoreRepositoryStored = null },
+            FieldsToUpdate = new() { "coreRepositoryStored" },
+        };
+
+        ActionResultAssert.IsOk(await controller.BulkEditAsync(request));
+        var updated = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+        Assert.IsNull(updated.CoreRepositoryStored);
+    }
+
+    [TestMethod]
+    public async Task BulkEditReplacesSourceTypesOnEveryBorehole()
+    {
+        var sourceTypeIds = await GetSourceTypeIdsAsync();
+        var first = await CreateDisposableBoreholeAsync();
+        var second = await CreateDisposableBoreholeAsync();
+        await EditSourceTypesAsync(first, new List<int> { sourceTypeIds[0], sourceTypeIds[1] });
+        await EditSourceTypesAsync(second, new List<int> { sourceTypeIds[2] });
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { first, second },
+            Update = new BoreholeBulkUpdate { SourceTypeCodelistIds = new() { sourceTypeIds[1], sourceTypeIds[3] } },
+            FieldsToUpdate = new() { "sourceTypeCodelistIds" },
+        };
+
+        ActionResultAssert.IsOk(await controller.BulkEditAsync(request));
+
+        foreach (var id in new[] { first, second })
+        {
+            var read = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
+            CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[3] }, read.SourceTypeCodelistIds!.ToArray());
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkEditWithEmptySourceTypesRemovesAll()
+    {
+        var sourceTypeIds = await GetSourceTypeIdsAsync();
+        var id = await CreateDisposableBoreholeAsync();
+        await EditSourceTypesAsync(id, new List<int> { sourceTypeIds[0] });
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { id },
+            Update = new BoreholeBulkUpdate { SourceTypeCodelistIds = new() },
+            FieldsToUpdate = new() { "sourceTypeCodelistIds" },
+        };
+
+        ActionResultAssert.IsOk(await controller.BulkEditAsync(request));
+        Assert.IsFalse(await context.Boreholes.Where(b => b.Id == id).SelectMany(b => b.BoreholeSourceTypeCodes!).AnyAsync());
+    }
+
+    [TestMethod]
+    public async Task BulkEditWithNullSourceTypesReturnsBadRequest()
+    {
+        var id = await CreateDisposableBoreholeAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { id },
+            Update = new BoreholeBulkUpdate { SourceTypeCodelistIds = null },
+            FieldsToUpdate = new() { "sourceTypeCodelistIds" },
+        };
+
+        ActionResultAssert.IsBadRequest(await controller.BulkEditAsync(request));
+    }
+
     [TestMethod]
     public void BulkEditableFieldsMatchBoreholeBulkUpdateProperties()
     {
