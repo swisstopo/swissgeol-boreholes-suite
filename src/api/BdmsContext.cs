@@ -46,6 +46,7 @@ public class BdmsContext : DbContext
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
         .Include(b => b.BoreholeCodelists)
+        .Include(b => b.BoreholeSourceTypeCodes)
         .Include(b => b.Workflow).ThenInclude(w => w.Changes)
         .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
@@ -420,6 +421,21 @@ public class BdmsContext : DbContext
                     .WithMany(b => b.BoreholeCodelists)
                     .HasForeignKey(bf => bf.BoreholeId),
                 j => j.HasKey(bf => bf.Id));
+
+        // Join table for borehole and codelists with schema name 'source_type'.
+        modelBuilder.Entity<Borehole>()
+            .HasMany(b => b.SourceTypeCodelists)
+            .WithMany()
+            .UsingEntity<BoreholeSourceTypeCodes>(
+                j => j
+                    .HasOne(sc => sc.Codelist)
+                    .WithMany(c => c.BoreholeSourceTypeCodes)
+                    .HasForeignKey(sc => sc.CodelistId),
+                j => j
+                    .HasOne(sc => sc.Borehole)
+                    .WithMany(b => b.BoreholeSourceTypeCodes)
+                    .HasForeignKey(sc => sc.BoreholeId),
+                j => j.HasKey(sc => new { sc.BoreholeId, sc.CodelistId }));
 
         modelBuilder.Entity<Borehole>().HasOne(l => l.ChronostratigraphyTopBedrock).WithMany().HasForeignKey(l => l.ChronostratigraphyTopBedrockId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Type).WithMany().HasForeignKey(l => l.TypeId);
