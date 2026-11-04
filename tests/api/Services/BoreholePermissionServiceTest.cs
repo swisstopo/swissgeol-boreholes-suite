@@ -278,6 +278,43 @@ public class BoreholePermissionServiceTest
     }
 
     [TestMethod]
+    public async Task GetBoreholeIdsUserCannotViewAsyncReturnsBoreholesOutsideTheUsersWorkgroups()
+    {
+        var hiddenBorehole = await AddBoreholeInWorkgroupWithoutReaderAsync();
+        var visibleBorehole = await context.Boreholes.FirstAsync();
+
+        var deniedIds = await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync(ReaderSubjectId, [visibleBorehole.Id, hiddenBorehole.Id]);
+
+        CollectionAssert.AreEqual(new[] { hiddenBorehole.Id }, deniedIds.ToArray());
+    }
+
+    [TestMethod]
+    public async Task GetBoreholeIdsUserCannotViewAsyncReturnsNothingForAdmin()
+    {
+        var hiddenBorehole = await AddBoreholeInWorkgroupWithoutReaderAsync();
+
+        var deniedIds = await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync(AdminSubjectId, [hiddenBorehole.Id]);
+
+        Assert.AreEqual(0, deniedIds.Count);
+    }
+
+    [TestMethod]
+    public async Task GetBoreholeIdsUserCannotViewAsyncWithUnknownUser()
+        => await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync("NON-EXISTENT-NAME", [1]));
+
+    private async Task<Borehole> AddBoreholeInWorkgroupWithoutReaderAsync()
+    {
+        var workgroup = new Workgroup { Name = "WORKGROUP_WITHOUT_READER" };
+        context.Workgroups.Add(workgroup);
+        await context.SaveChangesAsync();
+
+        var borehole = new Borehole { WorkgroupId = workgroup.Id };
+        context.Boreholes.Add(borehole);
+        await context.SaveChangesAsync();
+        return borehole;
+    }
+
+    [TestMethod]
     public void HasUserRoleOnWorkgroupNullUser()
     {
         Assert.ThrowsExactly<NullReferenceException>(() => boreholePermissionService.HasUserRoleOnWorkgroup(null, 1, Role.Editor));

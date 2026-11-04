@@ -57,6 +57,10 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     }
 
     /// <inheritdoc />
+    public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotViewAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanViewBorehole);
+
+    /// <inheritdoc />
     public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotEditAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
         => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanEditBorehole);
 
