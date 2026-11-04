@@ -53,7 +53,7 @@ export const CustomLayersComponent: FC<CustomLayersComponentProps> = ({
                   control={
                     <Checkbox
                       checked={layer.visibility}
-                      disabled={isFetching === true}
+                      disabled={isFetching}
                       onChange={() => {
                         toggleVisibility(layer);
                       }}
@@ -82,7 +82,7 @@ export const CustomLayersComponent: FC<CustomLayersComponentProps> = ({
                 <Box>
                   <IconButton
                     aria-label={"move-up"}
-                    disabled={idx === 0 || isFetching === true}
+                    disabled={idx === 0 || isFetching}
                     onClick={() => {
                       moveUp(layer);
                     }}
@@ -92,7 +92,7 @@ export const CustomLayersComponent: FC<CustomLayersComponentProps> = ({
 
                   <IconButton
                     aria-label={"move-up"}
-                    disabled={idx === len || isFetching === true}
+                    disabled={idx === len || isFetching}
                     onClick={() => {
                       moveDown(layer);
                     }}
