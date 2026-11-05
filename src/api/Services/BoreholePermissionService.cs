@@ -58,31 +58,34 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
 
     /// <inheritdoc />
     public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotViewAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
-        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanViewBorehole);
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, LoadBoreholeWorkgroupsAsync, CanViewBorehole);
 
     /// <inheritdoc />
     public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotEditAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
-        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanEditBorehole);
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, LoadBoreholesWithWorkflowAsync, CanEditBorehole);
 
     /// <inheritdoc />
     public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotManageAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
-        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanManageBorehole);
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, LoadBoreholesWithWorkflowAsync, CanManageBorehole);
 
     /// <summary>
     /// Shared batch permission gate: loads the user and all referenced boreholes once, then evaluates
     /// <paramref name="isAuthorized"/> in memory. Mirrors the single-id checks, so a borehole id that does not
     /// exist is treated as unauthorized (the per-id checks return <see langword="false"/> for a missing borehole).
     /// </summary>
-    private async Task<IReadOnlyList<int>> GetUnauthorizedBoreholeIdsAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds, Func<User, Borehole, bool> isAuthorized)
+    /// <param name="subjectId">The <see cref="User.SubjectId"/> of the current user.</param>
+    /// <param name="boreholeIds">The <see cref="Borehole.Id"/>s to check.</param>
+    /// <param name="loadBoreholesById">Loads the boreholes with the distinct ids, keyed by id, with every property <paramref name="isAuthorized"/> reads.</param>
+    /// <param name="isAuthorized">Decides whether the user is allowed to act on one borehole.</param>
+    private async Task<IReadOnlyList<int>> GetUnauthorizedBoreholeIdsAsync(
+        string? subjectId,
+        IReadOnlyCollection<int> boreholeIds,
+        Func<List<int>, Task<Dictionary<int, Borehole>>> loadBoreholesById,
+        Func<User, Borehole, bool> isAuthorized)
     {
         var distinctIds = boreholeIds.Distinct().ToList();
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
-        var boreholesById = await context.Boreholes
-            .Include(b => b.Workflow)
-            .AsNoTracking()
-            .Where(b => distinctIds.Contains(b.Id))
-            .ToDictionaryAsync(b => b.Id)
-            .ConfigureAwait(false);
+        var boreholesById = await loadBoreholesById(distinctIds).ConfigureAwait(false);
 
         return distinctIds
             .Where(id => !boreholesById.TryGetValue(id, out var borehole) || !isAuthorized(user, borehole))
@@ -209,6 +212,29 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Loads only the id and workgroup of each borehole, the two properties <see cref="CanViewBorehole"/> reads.
+    /// An export checks the view permission for thousands of boreholes it has already loaded itself, so loading
+    /// full entities here a second time would double its database work.
+    /// </summary>
+    private Task<Dictionary<int, Borehole>> LoadBoreholeWorkgroupsAsync(List<int> boreholeIds)
+    {
+        return context.Boreholes
+            .AsNoTracking()
+            .Where(b => boreholeIds.Contains(b.Id))
+            .Select(b => new Borehole { Id = b.Id, WorkgroupId = b.WorkgroupId })
+            .ToDictionaryAsync(b => b.Id);
+    }
+
+    private Task<Dictionary<int, Borehole>> LoadBoreholesWithWorkflowAsync(List<int> boreholeIds)
+    {
+        return context.Boreholes
+            .Include(b => b.Workflow)
+            .AsNoTracking()
+            .Where(b => boreholeIds.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id);
     }
 
     private async Task<Borehole?> GetBoreholeAsync(int? boreholeId)
