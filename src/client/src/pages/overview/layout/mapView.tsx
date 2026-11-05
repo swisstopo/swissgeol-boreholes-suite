@@ -31,7 +31,7 @@ const containSameIds = (ids: number[], otherIds: number[]) => {
 const noSelectableBoreholeIds: number[] = [];
 
 // JSON exports carry each borehole's full data, so they stay limited. The CSV export has no limit.
-const maxJsonExportCount = 100;
+const maxJsonExportCount = 500;
 
 const bulkExportFileName = () => `bulkexport_${new Date().toISOString().split("T")[0]}`;
 
@@ -146,7 +146,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const jsonExportIds = selectionModel.slice(0, maxJsonExportCount);
   const jsonExportConfirmation: ExportConfirmation | undefined =
     selectionModel.length > maxJsonExportCount
-      ? { message: "exportJsonLimitedTo100", confirmLabel: "exportFirst100" }
+      ? { message: "exportJsonLimitedTo500", confirmLabel: "exportFirst500" }
       : undefined;
 
   return (

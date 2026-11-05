@@ -94,7 +94,7 @@ const ConfirmingExportDialogHarness = ({ exportFunction }: { exportFunction: () 
             {
               label: "JSON",
               exportFunction,
-              confirmation: { message: "exportJsonLimitedTo100", confirmLabel: "exportFirst100" },
+              confirmation: { message: "exportJsonLimitedTo500", confirmLabel: "exportFirst500" },
             },
           ]}
         />
@@ -175,7 +175,7 @@ describe("export confirmation", () => {
 
     clickCy("json-button");
 
-    await waitFor(() => expect(byCy("prompt")?.textContent).toContain("exportJsonLimitedTo100"));
+    await waitFor(() => expect(byCy("prompt")?.textContent).toContain("exportJsonLimitedTo500"));
     expect(exportFunction).not.toHaveBeenCalled();
   });
 
@@ -196,9 +196,9 @@ describe("export confirmation", () => {
     const exportFunction = vi.fn(() => Promise.resolve());
     render(<ConfirmingExportDialogHarness exportFunction={exportFunction} />);
     clickCy("json-button");
-    await waitFor(() => expect(byPromptCy("exportfirst100-button")).not.toBeNull());
+    await waitFor(() => expect(byPromptCy("exportfirst500-button")).not.toBeNull());
 
-    clickPromptCy("exportfirst100-button");
+    clickPromptCy("exportfirst500-button");
 
     await waitFor(() => expect(exportFunction).toHaveBeenCalledTimes(1));
   });

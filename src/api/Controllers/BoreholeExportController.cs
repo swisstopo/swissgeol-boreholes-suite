@@ -22,9 +22,13 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BoreholeExportController : ControllerBase
 {
-    // Limit the maximum number of items per request to 100.
-    // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
-    private const int MaxPageSize = 100;
+    // Limit the maximum number of items per request to 500.
+    // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length:
+    // 500 ids of up to 8 digits keep the query of about 6.5 KB below the 8 KB request line that Kestrel and common proxies accept.
+    private const int MaxPageSize = 500;
+
+    // The GeoPackage export keeps the former limit of 100, as no raise was requested for it.
+    private const int MaxGeoPackageExportCount = 100;
     private const string ExportFileName = "boreholes_export";
     private const string NoBoreholesFoundMessage = "No borehole(s) found for the provided id(s).";
     private const string UserLacksPermissionsMessage = "The user lacks permissions to export the borehole(s).";
@@ -70,12 +74,12 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of up to <see cref="MaxGeoPackageExportCount"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     [HttpGet("gpkg")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MinLength(1)][MaxLength(MaxGeoPackageExportCount)] IEnumerable<int> ids)
     {
         var idList = ids.ToList();
         var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
@@ -303,7 +307,7 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets all <see cref="Borehole"/> with attachments filtered by ids.
+    /// Asynchronously gets up to <see cref="MaxPageSize"></see> <see cref="Borehole"/> with attachments filtered by ids.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     /// <param name="cancellationToken">Aborts the export once the client is gone. An export can transfer several gigabytes, so the work it triggers must not outlive the request.</param>

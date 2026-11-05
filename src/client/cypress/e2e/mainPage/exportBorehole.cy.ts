@@ -241,9 +241,10 @@ describe("Test for exporting boreholes.", () => {
     handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "delete");
   });
 
-  it("exports all selected boreholes as csv but at most 100 as json", () => {
+  it("exports more than 100 selected boreholes as csv and json", () => {
     // The seed contains exactly 100 boreholes, so we need to add a couple of extras
-    // to exceed the 100-entry cap the JSON export keeps.
+    // to exceed the former 100-entry cap. Crossing the JSON cap of 500 would need hundreds
+    // more boreholes, so its confirmation is covered by the export dialog unit tests.
     for (let i = 0; i < 5; i++) {
       createBorehole({ originalName: `EXPORT_CAP_TEST_${i}` });
     }
@@ -265,19 +266,13 @@ describe("Test for exporting boreholes.", () => {
       .then(fileContent => fileContent.split("\n"))
       .should("have.length", 107);
 
-    // JSON asks first; cancelling returns to the export dialog. The JSON button is clicked directly, because
-    // the export helper expects the export to start right away instead of the prompt.
-    const jsonLimitPrompt =
-      "JSON exports are limited to 100 boreholes. You have selected more than 100. Do you want to export the first 100?";
+    // JSON stays below its cap of 500, so it exports every selected borehole without asking as well.
     exportItem();
-    cy.dataCy("json-button").click();
-    handlePrompt(jsonLimitPrompt, "cancel");
-    cy.dataCy("csv-button").should("be.visible");
-    cy.dataCy("json-button").click();
-    handlePrompt(jsonLimitPrompt, "exportFirst100");
+    exportJsonItem();
+    cy.dataCy("prompt").should("not.exist");
     cy.wait("@borehole_export_json").its("response.statusCode").should("eq", 200);
     readDownloadedFile(jsonFileName);
-    cy.readFile<unknown[]>(prepareDownloadPath(jsonFileName)).should("have.length", 100);
+    cy.readFile<unknown[]>(prepareDownloadPath(jsonFileName)).should("have.length", 105);
 
     deleteDownloadedFile(csvFileName);
     deleteDownloadedFile(jsonFileName);

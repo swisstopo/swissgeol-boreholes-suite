@@ -904,7 +904,7 @@
             "in": "query",
             "description": "The required list of borehole ids to filter by.",
             "schema": {
-              "maxItems": 100,
+              "maxItems": 500,
               "minItems": 1,
               "type": "array",
               "items": {
@@ -934,7 +934,7 @@
         "tags": [
           "BoreholeExport"
         ],
-        "summary": "Exports the details of up to <see cref=\"F:BDMS.Controllers.BoreholeExportController.MaxPageSize\"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.",
+        "summary": "Exports the details of up to <see cref=\"F:BDMS.Controllers.BoreholeExportController.MaxGeoPackageExportCount\"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.",
         "parameters": [
           {
             "name": "ids",
@@ -1014,14 +1014,14 @@
         "tags": [
           "BoreholeExport"
         ],
-        "summary": "Asynchronously gets all BDMS.Models.Borehole with attachments filtered by ids.",
+        "summary": "Asynchronously gets up to <see cref=\"F:BDMS.Controllers.BoreholeExportController.MaxPageSize\"></see> BDMS.Models.Borehole with attachments filtered by ids.",
         "parameters": [
           {
             "name": "ids",
             "in": "query",
             "description": "The required list of borehole ids to filter by.",
             "schema": {
-              "maxItems": 100,
+              "maxItems": 500,
               "minItems": 1,
               "type": "array",
               "items": {
