@@ -56,12 +56,13 @@ public class BoreholeExportController : ControllerBase
     /// Exports the details of up to <see cref="BoreholeJsonExportRequest.MaxBoreholeCount"/> boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="request">The ids of the boreholes to export.</param>
+    /// <param name="cancellationToken">Aborts the export once the client is gone, so a cancelled export stops loading the boreholes with all their data.</param>
     [HttpPost("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportJsonAsync([FromBody] BoreholeJsonExportRequest request)
+    public async Task<ActionResult> ExportJsonAsync([FromBody] BoreholeJsonExportRequest request, CancellationToken cancellationToken)
     {
         var ids = request.Ids.ToList();
-        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync(cancellationToken).ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);

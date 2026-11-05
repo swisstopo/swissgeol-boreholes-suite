@@ -416,7 +416,7 @@ public class BoreholeExportControllerTest
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportJsonIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
-        var result = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = ids.ToList() }).ConfigureAwait(false);
+        var result = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = ids.ToList() }, CancellationToken.None).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
     }
@@ -463,7 +463,7 @@ public class BoreholeExportControllerTest
         context.Add(newBorehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var response = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = [newBorehole.Id] }).ConfigureAwait(false);
+        var response = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = [newBorehole.Id] }, CancellationToken.None).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
 
@@ -1041,7 +1041,7 @@ public class BoreholeExportControllerTest
 
     private async Task<Borehole> ExportSingleBoreholeAsync(int boreholeId)
     {
-        var response = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = [boreholeId] }).ConfigureAwait(false);
+        var response = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = [boreholeId] }, CancellationToken.None).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
         List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;

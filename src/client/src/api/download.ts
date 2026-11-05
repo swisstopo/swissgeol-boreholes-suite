@@ -73,11 +73,6 @@ export async function downloadPost(
   return response;
 }
 
-export const downloadData = (dataString: string, fileName: string, type: string) => {
-  const blob = new Blob([dataString], { type: type });
-  downloadDataFromBlob(blob, fileName);
-};
-
 const downloadDataFromBlob = (blob: Blob, fileName: string) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

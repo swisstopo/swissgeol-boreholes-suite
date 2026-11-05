@@ -167,7 +167,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           },
           {
             label: "JSON",
-            exportFunction: () => exportJsonBoreholes(jsonExportIds, bulkExportFileName()),
+            exportFunction: options => exportJsonBoreholes(jsonExportIds, bulkExportFileName(), options),
             confirmation: jsonExportConfirmation,
           },
           {

@@ -4,7 +4,7 @@ import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
-import { downloadData, downloadPost } from "./download.ts";
+import { downloadPost } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
 import { TransferOptions } from "./transferProgress.ts";
@@ -20,11 +20,11 @@ export interface Identifier extends BasicIdentifier {
   borehole?: Borehole | null;
 }
 
-export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel, fileName: string) => {
-  const exportJsonResponse = await fetchApiV2Legacy("boreholeexport/json", "POST", { ids: boreholeIds });
-  const jsonString = JSON.stringify(exportJsonResponse);
-  downloadData(jsonString, `${fileName}.json`, "application/json");
-};
+export const exportJsonBoreholes = async (
+  boreholeIds: number[] | GridRowSelectionModel,
+  fileName: string,
+  options?: TransferOptions,
+) => await downloadPost("boreholeexport/json", { ids: boreholeIds }, { ...options, fileName: `${fileName}.json` });
 
 export const importBoreholesCsv = async (workgroupId: number | null, combinedFormData: FormData) => {
   return await upload(`import/csv?workgroupId=${workgroupId}`, "POST", combinedFormData);

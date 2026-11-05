@@ -198,7 +198,8 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
           },
           {
             label: "JSON",
-            exportFunction: () => exportJsonBoreholes([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
+            exportFunction: options =>
+              exportJsonBoreholes([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export", options),
           },
           {
             label: "exportJsonProfile",
