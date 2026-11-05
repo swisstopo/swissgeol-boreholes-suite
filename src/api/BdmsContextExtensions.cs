@@ -42,6 +42,21 @@ public static class BdmsContextExtensions
     }
 
     /// <summary>
+    /// Gets the ids of all codelists in the <see cref="BoreholeSchemas.SourceTypeSchema"/> schema,
+    /// the only ids allowed in <see cref="Borehole.SourceTypeCodelistIds"/>.
+    /// </summary>
+    public static async Task<HashSet<int>> GetSourceTypeCodelistIdsAsync(this BdmsContext context)
+    {
+        var ids = await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .Select(c => c.Id)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return ids.ToHashSet();
+    }
+
+    /// <summary>
     /// Seed test data.
     /// </summary>
     [SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Accepted for test data seeding.")]

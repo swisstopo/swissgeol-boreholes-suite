@@ -15,11 +15,8 @@ public partial class AddCoreRepositoryStoredAndSourceType : Migration
             schema: "bdms",
             table: "borehole",
             type: "boolean",
-            nullable: true);
-
-        // The column is added without a default so existing boreholes stay null ("not specified").
-        // Only rows inserted afterwards get false.
-        migrationBuilder.Sql("ALTER TABLE bdms.borehole ALTER COLUMN core_repository_stored SET DEFAULT false;");
+            nullable: true,
+            defaultValue: false);
 
         migrationBuilder.CreateTable(
             name: "borehole_source_type_codelist",

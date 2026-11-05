@@ -83,7 +83,7 @@ public class ImportController : ControllerBase
                 .ConfigureAwait(false);
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile, identifierCodelists);
-            var sourceTypeIds = await GetSourceTypeCodelistIdsAsync().ConfigureAwait(false);
+            var sourceTypeIds = await context.GetSourceTypeCodelistIdsAsync().ConfigureAwait(false);
             ValidateBoreholeImports(boreholeImports, sourceTypeIds, ValidationErrorType.Csv);
 
             // If any validation error occured, return a bad request.
@@ -260,7 +260,7 @@ public class ImportController : ControllerBase
         if (user == null)
             return Unauthorized();
 
-        var sourceTypeIds = await GetSourceTypeCodelistIdsAsync().ConfigureAwait(false);
+        var sourceTypeIds = await context.GetSourceTypeCodelistIdsAsync().ConfigureAwait(false);
         ValidateBoreholeImports(boreholes, sourceTypeIds, ValidationErrorType.Json);
         if (!ModelState.IsValid)
             return ValidationProblem();
@@ -394,17 +394,6 @@ public class ImportController : ControllerBase
                      || c.Schema == HydrogeologySchemas.EvaluationMethodSchema)
             .ToListAsync()
             .ConfigureAwait(false);
-    }
-
-    private async Task<HashSet<int>> GetSourceTypeCodelistIdsAsync()
-    {
-        var ids = await context.Codelists
-            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
-            .Select(c => c.Id)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        return ids.ToHashSet();
     }
 
     // CSV rows carry the ids as text, JSON boreholes as numbers; both are validated as tokens.

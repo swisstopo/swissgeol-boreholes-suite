@@ -47,6 +47,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return Problem(errorMessage);
         }
 
+        var invalidSourceTypeIds = await GetInvalidSourceTypeCodelistIdsAsync(entity.SourceTypeCodelistIds).ConfigureAwait(false);
+        if (invalidSourceTypeIds.Count > 0)
+        {
+            return InvalidSourceTypeCodelistIdsBadRequest(invalidSourceTypeIds);
+        }
+
         if (entity.SourceTypeCodelistIds != null)
         {
             entity.SyncSourceTypeCodes(entity.SourceTypeCodelistIds);
@@ -97,6 +103,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             && !await CanEditInWorkgroupAsync(subjectId, entity.WorkgroupId).ConfigureAwait(false))
         {
             return Unauthorized();
+        }
+
+        var invalidSourceTypeIds = await GetInvalidSourceTypeCodelistIdsAsync(entity.SourceTypeCodelistIds).ConfigureAwait(false);
+        if (invalidSourceTypeIds.Count > 0)
+        {
+            return InvalidSourceTypeCodelistIdsBadRequest(invalidSourceTypeIds);
         }
 
         var workflow = existingBorehole.Workflow;
@@ -255,6 +267,15 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         if (fieldsWithoutValue.Count > 0)
         {
             return BadRequest($"A value is required for bulk edit field(s): {string.Join(", ", fieldsWithoutValue)}.");
+        }
+
+        if (request.FieldsToUpdate.Any(f => string.Equals(f, "sourceTypeCodelistIds", StringComparison.OrdinalIgnoreCase)))
+        {
+            var invalidSourceTypeIds = await GetInvalidSourceTypeCodelistIdsAsync(request.Update.SourceTypeCodelistIds).ConfigureAwait(false);
+            if (invalidSourceTypeIds.Count > 0)
+            {
+                return InvalidSourceTypeCodelistIdsBadRequest(invalidSourceTypeIds);
+            }
         }
 
         var unauthorizedBoreholeIds = await BoreholePermissionService
@@ -587,6 +608,25 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         ((ProblemDetails)result.Value!).Extensions["messageKey"] = messageKey;
         return result;
     }
+
+    /// <summary>
+    /// Gets the ids in <paramref name="sourceTypeCodelistIds"/> that are no codelists of the
+    /// <see cref="BoreholeSchemas.SourceTypeSchema"/> schema. Checked before saving, so an unknown id is rejected
+    /// instead of failing on the foreign key, and a codelist of another schema is never linked as a source type.
+    /// </summary>
+    private async Task<IReadOnlyList<int>> GetInvalidSourceTypeCodelistIdsAsync(ICollection<int>? sourceTypeCodelistIds)
+    {
+        if (sourceTypeCodelistIds is null || sourceTypeCodelistIds.Count == 0)
+        {
+            return [];
+        }
+
+        var validIds = await Context.GetSourceTypeCodelistIdsAsync().ConfigureAwait(false);
+        return sourceTypeCodelistIds.Where(id => !validIds.Contains(id)).Distinct().Order().ToList();
+    }
+
+    private BadRequestObjectResult InvalidSourceTypeCodelistIdsBadRequest(IReadOnlyList<int> invalidSourceTypeIds)
+        => BadRequest($"Invalid source type codelist id(s): {string.Join(", ", invalidSourceTypeIds)}.");
 
     private static readonly HashSet<string> LocationTabFields = new(StringComparer.OrdinalIgnoreCase)
     {

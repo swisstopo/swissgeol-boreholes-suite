@@ -9,7 +9,7 @@ public static class BoreholeExtensions
     /// Synchronizes <see cref="Borehole.BoreholeSourceTypeCodes"/> with <paramref name="sourceTypeCodelistIds"/>.
     /// Rows for ids that are no longer listed are removed and rows for new ids are added. Rows for unchanged ids
     /// are kept, so EF Core never tracks a deleted and an added row with the same composite key.
-    /// The ids are not checked against the 'source_type' schema, like the other n:m codelist fields.
+    /// The ids are not checked against the 'source_type' schema here; callers validate them before saving.
     /// </summary>
     /// <param name="borehole">The borehole whose source types are replaced.</param>
     /// <param name="sourceTypeCodelistIds">The complete set of source type codelist ids the borehole should have.</param>

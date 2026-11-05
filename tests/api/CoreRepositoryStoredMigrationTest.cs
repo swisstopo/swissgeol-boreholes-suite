@@ -32,10 +32,10 @@ public class CoreRepositoryStoredMigrationTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task ExistingBoreholeStaysNotSpecified()
+    public async Task ExistingBoreholeIsSetToFalse()
     {
         var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.OriginalName == ExistingBoreholeName);
-        Assert.IsNull(borehole.CoreRepositoryStored);
+        Assert.AreEqual(false, borehole.CoreRepositoryStored);
     }
 
     [TestMethod]

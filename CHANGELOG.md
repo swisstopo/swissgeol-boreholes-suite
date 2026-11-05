@@ -4,7 +4,7 @@
 
 ### Added
 - Lithological layer descriptions can be analyzed automatically. The lithology dialog offers an "Analyze" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein. It needs a data extraction service that offers the classification endpoint and runs with `BERT_ENABLED=true`, which the Helm chart now sets.
-- Boreholes have two new attributes in the restriction section of the General tab: "Stored in the drill core repository" (yes, no or not specified) and "Source document type" (any of driller's log, borehole profile, report, plan, other, not specified). New boreholes start at "no"; existing boreholes stay "not specified". Both attributes can be filtered, bulk edited, copied, imported and exported. The CSV columns are `CoreRepositoryStored` and `SourceTypeCodelistIds`, the latter as comma separated codelist ids.
+- Boreholes have two new attributes in the restriction section of the General tab: "Stored in the drill core repository" (yes, no or not specified) and "Source document type" (any of driller's log, borehole profile, report, plan, other, not specified). New and existing boreholes start at "no". Both attributes can be filtered, bulk edited, copied, imported and exported. The CSV columns are `CoreRepositoryStored` and `SourceTypeCodelistIds`, the latter as comma separated codelist ids.
 
 ### Changed
 - Dataextraction service was updated to 1.2.0-dev62.
