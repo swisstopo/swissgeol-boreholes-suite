@@ -1020,7 +1020,7 @@
         "tags": [
           "BoreholeExport"
         ],
-        "summary": "Asynchronously gets up to BDMS.Models.BoreholeJsonExportRequest.MaxBoreholeCount BDMS.Models.Borehole with attachments filtered by ids.",
+        "summary": "Asynchronously gets up to BDMS.Models.BoreholeJsonExportRequest.MaxBoreholeCountBDMS.Models.Borehole with attachments filtered by ids.",
         "parameters": [
           {
             "name": "version",
