@@ -1284,6 +1284,18 @@ public class ImportControllerTest
     }
 
     [TestMethod]
+    public async Task UploadJsonIgnoresSourceTypeCsvText()
+    {
+        var ids = await GetSourceTypeIdsAsync();
+        var json = $$"""[{ "originalName": "CORESTORE_JSON_TEXT", "locationX": 2600000, "locationY": 1200000, "observations": [], "completions": [], "sourceTypeCodelistIds": [{{ids[1]}}], "sourceTypeCodelistIdsText": "{{ids[2]}}" }]""";
+
+        ActionResultAssert.IsOk((await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByContent(json, "corestore_text.json"))).Result);
+
+        var imported = await GetImportedAsync("CORESTORE_JSON_TEXT");
+        CollectionAssert.AreEquivalent(new[] { ids[1] }, imported.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+    }
+
+    [TestMethod]
     public async Task UploadJsonWithUnknownSourceTypeReturnsValidationError()
     {
         var wrongSchemaId = await context.Codelists.Where(c => c.Schema == "restriction").Select(c => c.Id).FirstAsync();

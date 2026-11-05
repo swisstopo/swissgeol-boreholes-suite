@@ -213,6 +213,29 @@ describe("Test the borehole bulk edit feature.", () => {
     });
   });
 
+  it("leaves source types untouched when the multi-select is emptied", () => {
+    createBoreholes();
+    goToRouteAndAcceptTerms(`/`);
+    showTableAndWaitForData();
+    startBulkEditing();
+    cy.get('[data-cy="bulk-edit-accordion"] .MuiAccordionSummary-expandIconWrapper').click({
+      multiple: true,
+      force: true,
+    });
+
+    const sourceTypeResetButton = () =>
+      cy.contains('[data-cy="bulk-edit-accordion"]', "Source document type").find('[data-cy="bulk-edit-reset-button"]');
+
+    toggleMultiSelect("sourceType", [2]);
+    sourceTypeResetButton().should("have.css", "visibility", "visible");
+    cy.get('[data-cy="save-button"]').should("be.enabled");
+
+    toggleMultiSelect("sourceType", [0]);
+    evaluateMultiSelect("sourceType", []);
+    sourceTypeResetButton().should("have.css", "visibility", "hidden");
+    cy.get('[data-cy="save-button"]').should("be.disabled");
+  });
+
   it("cannot select locked boreholes for bulk edit", () => {
     createBorehole({ originalName: "AAA_JUNIORSOUFFLE", name: "AAA_JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {

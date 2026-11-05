@@ -101,7 +101,12 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
           <>
             {Array.isArray(values) && values.length > 0 ? (
               <Autocomplete
-                sx={{ ...(isReadOnly ? readonlyStyles : {}), flex: "1" }}
+                sx={{
+                  ...(isReadOnly ? readonlyStyles : {}),
+                  flex: "1",
+                  // A row of chips is as high as the text input, so the field keeps the height of the other inputs.
+                  "& .MuiAutocomplete-tag": { marginTop: "1px", marginBottom: "1px" },
+                }}
                 key={autocompleteKey}
                 multiple
                 options={menuItems}

@@ -131,6 +131,11 @@ export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps)
     const key = field.payloadKey;
     const updatedValue: BulkEditFormValue =
       field.type === FormValueType.Number ? Number.parseFloat(newValue as string) : newValue;
+    // An emptied multi-select leaves the field untouched instead of removing every value from the boreholes.
+    if (Array.isArray(updatedValue) && updatedValue.length === 0) {
+      setFieldsToUpdate(prev => prev.filter(([k]) => k !== key));
+      return;
+    }
     setFieldsToUpdate(prev => {
       const entryIndex = prev.findIndex(([k]) => k === key);
       if (entryIndex === -1) {
