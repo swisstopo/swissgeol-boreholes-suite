@@ -10,7 +10,11 @@ import {
   FormInputDisplayOnly,
   FormValueType,
 } from "../../../../components/form/form.ts";
-import { convertValueToBoolean, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import {
+  convertBooleanToSelectValue,
+  convertValueToBoolean,
+  parseFloatWithThousandsSeparator,
+} from "../../../../components/form/formUtils.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { BaseForm } from "../baseForm.tsx";
 import NameSegment from "../location/nameSegment.tsx";
@@ -34,6 +38,8 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
       restrictionId: borehole.restrictionId ?? null,
       restrictionUntil: borehole.restrictionUntil,
       nationalInterest: borehole.nationalInterest === true ? 1 : borehole.nationalInterest === false ? 0 : 2,
+      coreRepositoryStored: convertBooleanToSelectValue(borehole.coreRepositoryStored),
+      sourceTypeCodelistIds: borehole.sourceTypeCodelistIds ?? [],
       typeId: borehole.typeId ?? null,
       purposeId: borehole.purposeId ?? null,
       statusId: borehole.statusId ?? null,
@@ -60,6 +66,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
     data.restrictionId = data.restrictionId ?? null;
     data.restrictionUntil = data?.restrictionUntil ? data.restrictionUntil.toString() : null;
     data.nationalInterest = convertValueToBoolean(data?.nationalInterest);
+    data.coreRepositoryStored = convertValueToBoolean(data?.coreRepositoryStored);
     data.name = data?.name ?? data.originalName;
     data.totalDepth = parseFloatWithThousandsSeparator(data?.totalDepth);
     data.topBedrockFreshMd = parseFloatWithThousandsSeparator(data?.topBedrockFreshMd);

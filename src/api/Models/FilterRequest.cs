@@ -130,6 +130,13 @@ public class FilterRequest
     public IEnumerable<int>? LogToolTypeId { get; set; }
 
     /// <summary>
+    /// Gets or sets the source type codelist IDs filter. Boreholes match if they have at least one of these
+    /// source types in their <see cref="Borehole.BoreholeSourceTypeCodes"/>.
+    /// </summary>
+    [MaxLength(100)]
+    public IEnumerable<int>? SourceTypeId { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier type (codelist) IDs filter.
     /// Boreholes match if at least one <see cref="BoreholeCodelist"/> row has a
     /// <c>CodelistId</c> in this set; combined with <see cref="IdentifierValue"/>
@@ -147,6 +154,11 @@ public class FilterRequest
     /// Gets or sets the national interest filter.
     /// </summary>
     public NullableBooleanFilterValue? NationalInterest { get; set; }
+
+    /// <summary>
+    /// Gets or sets the core repository stored filter.
+    /// </summary>
+    public NullableBooleanFilterValue? CoreRepositoryStored { get; set; }
 
     /// <summary>
     /// Gets or sets the top bedrock intersected filter.

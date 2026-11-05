@@ -33,11 +33,17 @@ public class FilterStatsResponse
     /// <summary>Gets or sets counts grouped by log tool type codelist ID.</summary>
     public Dictionary<int, int> LogToolTypeId { get; set; } = new();
 
+    /// <summary>Gets or sets distinct borehole counts grouped by source type codelist ID.</summary>
+    public Dictionary<int, int> SourceTypeId { get; set; } = new();
+
     /// <summary>Gets or sets counts grouped by <see cref="Workflow.Status"/>.</summary>
     public Dictionary<WorkflowStatus, int> WorkflowStatusCount { get; set; } = new();
 
     /// <summary>Gets or sets counts for the nullable-boolean "national interest" dimension.</summary>
     public NullableBooleanCounts NationalInterest { get; set; } = new();
+
+    /// <summary>Gets or sets counts for the nullable-boolean "core repository stored" dimension.</summary>
+    public NullableBooleanCounts CoreRepositoryStored { get; set; } = new();
 
     /// <summary>Gets or sets counts for the nullable-boolean "top bedrock intersected" dimension.</summary>
     public NullableBooleanCounts TopBedrockIntersected { get; set; } = new();

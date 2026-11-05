@@ -1187,6 +1187,126 @@ public class ImportControllerTest
         ActionResultAssert.IsUnauthorized(response.Result);
     }
 
+    private async Task<List<int>> GetSourceTypeIdsAsync() =>
+        await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .OrderBy(c => c.Order)
+            .Select(c => c.Id)
+            .ToListAsync();
+
+    private async Task<Borehole> GetImportedAsync(string originalName) =>
+        await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.OriginalName == originalName);
+
+    [TestMethod]
+    public async Task UploadCsvWithoutNewColumnsDefaultsToFalseAndNoSourceTypes()
+    {
+        SetupHttpClientFactoryMock("600000", "200000", null, null, null);
+        var file = GetFormFileByContent("OriginalName;LocationX;LocationY\nCORESTORE_CSV_MISSING;2600000;1200000", "corestore_missing.csv");
+
+        ActionResultAssert.IsOk((await controller.UploadCsvFileAsync(workgroupId: 1, file)).Result);
+
+        var borehole = await GetImportedAsync("CORESTORE_CSV_MISSING");
+        Assert.AreEqual(false, borehole.CoreRepositoryStored);
+        Assert.AreEqual(0, borehole.BoreholeSourceTypeCodes!.Count);
+    }
+
+    [TestMethod]
+    public async Task UploadCsvWithEmptyCellsImportsNullAndNoSourceTypes()
+    {
+        SetupHttpClientFactoryMock("600000", "200000", null, null, null);
+        var file = GetFormFileByContent(
+            "OriginalName;LocationX;LocationY;CoreRepositoryStored;SourceTypeCodelistIds\nCORESTORE_CSV_EMPTY;2600000;1200000;;",
+            "corestore_empty.csv");
+
+        ActionResultAssert.IsOk((await controller.UploadCsvFileAsync(workgroupId: 1, file)).Result);
+
+        var borehole = await GetImportedAsync("CORESTORE_CSV_EMPTY");
+        Assert.IsNull(borehole.CoreRepositoryStored);
+        Assert.AreEqual(0, borehole.BoreholeSourceTypeCodes!.Count);
+    }
+
+    [TestMethod]
+    public async Task UploadCsvWithValuesImportsBoolAndTrimmedSourceTypeIds()
+    {
+        var ids = await GetSourceTypeIdsAsync();
+        SetupHttpClientFactoryMock("600000", "200000", null, null, null);
+        var file = GetFormFileByContent(
+            $"OriginalName;LocationX;LocationY;CoreRepositoryStored;SourceTypeCodelistIds\nCORESTORE_CSV_VALUES;2600000;1200000;true; {ids[0]} , {ids[4]},{ids[0]}",
+            "corestore_values.csv");
+
+        ActionResultAssert.IsOk((await controller.UploadCsvFileAsync(workgroupId: 1, file)).Result);
+
+        var borehole = await GetImportedAsync("CORESTORE_CSV_VALUES");
+        Assert.AreEqual(true, borehole.CoreRepositoryStored);
+        CollectionAssert.AreEquivalent(new[] { ids[0], ids[4] }, borehole.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+    }
+
+    [TestMethod]
+    public async Task UploadCsvWithUnknownSourceTypeReturnsValidationErrorPerRow()
+    {
+        var ids = await GetSourceTypeIdsAsync();
+        var wrongSchemaId = await context.Codelists.Where(c => c.Schema == "restriction").Select(c => c.Id).FirstAsync();
+        var file = GetFormFileByContent(
+            $"OriginalName;LocationX;LocationY;SourceTypeCodelistIds\nCORESTORE_OK;2600000;1200000;{ids[0]}\nCORESTORE_WRONG;2600000;1200000;{wrongSchemaId}\nCORESTORE_TEXT;2600000;1200000;abc",
+            "corestore_invalid.csv");
+
+        var response = await controller.UploadCsvFileAsync(workgroupId: 1, file);
+
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
+        Assert.AreEqual(2, problemDetails.Errors.Count);
+        CollectionAssert.AreEquivalent(new[] { $"Source type <{wrongSchemaId}> is not a valid 'source_type' codelist id." }, problemDetails.Errors["Row2"]);
+        CollectionAssert.AreEquivalent(new[] { "Source type <abc> is not a valid 'source_type' codelist id." }, problemDetails.Errors["Row3"]);
+    }
+
+    [TestMethod]
+    public async Task UploadJsonMapsCoreRepositoryStoredAndSourceTypes()
+    {
+        var ids = await GetSourceTypeIdsAsync();
+        var json = $$"""
+            [
+              { "originalName": "CORESTORE_JSON_MISSING", "locationX": 2600000, "locationY": 1200000, "observations": [], "completions": [] },
+              { "originalName": "CORESTORE_JSON_NULL", "locationX": 2600000, "locationY": 1200000, "observations": [], "completions": [], "coreRepositoryStored": null },
+              { "originalName": "CORESTORE_JSON_VALUES", "locationX": 2600000, "locationY": 1200000, "observations": [], "completions": [], "coreRepositoryStored": true, "sourceTypeCodelistIds": [{{ids[1]}}, {{ids[5]}}] }
+            ]
+            """;
+
+        ActionResultAssert.IsOk((await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByContent(json, "corestore.json"))).Result);
+
+        var missing = await GetImportedAsync("CORESTORE_JSON_MISSING");
+        Assert.AreEqual(false, missing.CoreRepositoryStored);
+        Assert.AreEqual(0, missing.BoreholeSourceTypeCodes!.Count);
+
+        Assert.IsNull((await GetImportedAsync("CORESTORE_JSON_NULL")).CoreRepositoryStored);
+
+        var values = await GetImportedAsync("CORESTORE_JSON_VALUES");
+        Assert.AreEqual(true, values.CoreRepositoryStored);
+        CollectionAssert.AreEquivalent(new[] { ids[1], ids[5] }, values.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+    }
+
+    [TestMethod]
+    public async Task UploadJsonIgnoresSourceTypeCsvText()
+    {
+        var ids = await GetSourceTypeIdsAsync();
+        var json = $$"""[{ "originalName": "CORESTORE_JSON_TEXT", "locationX": 2600000, "locationY": 1200000, "observations": [], "completions": [], "sourceTypeCodelistIds": [{{ids[1]}}], "sourceTypeCodelistIdsText": "{{ids[2]}}" }]""";
+
+        ActionResultAssert.IsOk((await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByContent(json, "corestore_text.json"))).Result);
+
+        var imported = await GetImportedAsync("CORESTORE_JSON_TEXT");
+        CollectionAssert.AreEquivalent(new[] { ids[1] }, imported.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+    }
+
+    [TestMethod]
+    public async Task UploadJsonWithUnknownSourceTypeReturnsValidationError()
+    {
+        var wrongSchemaId = await context.Codelists.Where(c => c.Schema == "restriction").Select(c => c.Id).FirstAsync();
+        var json = $$"""[{ "originalName": "CORESTORE_JSON_WRONG", "locationX": 2600000, "locationY": 1200000, "observations": [], "completions": [], "sourceTypeCodelistIds": [{{wrongSchemaId}}] }]""";
+
+        var response = await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByContent(json, "corestore_wrong.json"));
+
+        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
+        CollectionAssert.AreEquivalent(new[] { $"Source type <{wrongSchemaId}> is not a valid 'source_type' codelist id." }, problemDetails.Errors["Borehole0"]);
+    }
+
     private void SetupHttpClientFactoryMock(
         string coordEasting,
         string coordNorthing,

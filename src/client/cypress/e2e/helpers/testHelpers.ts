@@ -21,8 +21,11 @@ interface CreatedBorehole {
 }
 
 interface FilteredBoreholes {
-  filteredBoreholeIds: number[];
+  boreholes: { id: number }[];
 }
+
+const maxSeedBoreholeId = 1000099;
+const resetPageSize = 100;
 
 interface CreatedEntity {
   id: number;
@@ -418,6 +421,22 @@ export const createBorehole = (borehole: Record<string, unknown>) => {
   });
 };
 
+// Returns the ids of a codelist schema in display order.
+export const getCodelistIds = (schema: string) => {
+  return cy.get("@access_token").then(token => {
+    return cy
+      .request({
+        method: "GET",
+        url: `/api/v2/codelist?schema=${schema}`,
+        auth: bearerAuth(token),
+      })
+      .then(res => {
+        const codelists = res.body as { id: number; order: number | null }[];
+        return cy.wrap(codelists.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)).map(c => c.id));
+      });
+  });
+};
+
 export const createBoreholeWithCompleteDataset = () => {
   return createBorehole({
     originalName: "Complete Test Borehole",
@@ -559,22 +578,32 @@ export const deleteBorehole = (id: number | string) => {
   });
 };
 
+// Deletes every borehole a test created. The newest boreholes come first, so they fill the first pages; a page that
+// holds only created boreholes means more may follow on the next request.
+const deleteCreatedBoreholes = (token: string) => {
+  cy.request({
+    method: "POST",
+    url: "/api/v2/borehole/filter",
+    body: { orderBy: "id", direction: "DESC", pageSize: resetPageSize },
+    auth: bearerAuth(token),
+  }).then(response => {
+    const createdIds = (response.body as FilteredBoreholes).boreholes
+      .map(borehole => borehole.id)
+      .filter(id => id > maxSeedBoreholeId);
+    createdIds.forEach(id => {
+      deleteBorehole(id);
+    });
+    if (createdIds.length === resetPageSize) {
+      deleteCreatedBoreholes(token);
+    }
+  });
+};
+
 export const loginAndResetState = () => {
   loginAsAdmin();
   cy.get("@access_token").then(token => {
     // Reset boreholes
-    cy.request({
-      method: "POST",
-      url: "/api/v2/borehole/filter",
-      body: {},
-      auth: bearerAuth(token),
-    }).then(response => {
-      (response.body as FilteredBoreholes).filteredBoreholeIds
-        .filter(id => id > 1000099) // max id in seed data.
-        .forEach(id => {
-          deleteBorehole(id);
-        });
-    });
+    deleteCreatedBoreholes(token);
   });
 };
 

@@ -42,6 +42,21 @@ public static class BdmsContextExtensions
     }
 
     /// <summary>
+    /// Gets the ids of all codelists in the <see cref="BoreholeSchemas.SourceTypeSchema"/> schema,
+    /// the only ids allowed in <see cref="Borehole.SourceTypeCodelistIds"/>.
+    /// </summary>
+    public static async Task<HashSet<int>> GetSourceTypeCodelistIdsAsync(this BdmsContext context)
+    {
+        var ids = await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .Select(c => c.Id)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return ids.ToHashSet();
+    }
+
+    /// <summary>
     /// Seed test data.
     /// </summary>
     [SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Accepted for test data seeding.")]
@@ -91,6 +106,7 @@ public static class BdmsContextExtensions
         List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "reference_elevation_type").Select(s => s.Id).ToList();
         List<int> drillingMudTypeIds = codelists.Where(c => c.Schema == "drilling_mud_type").Select(s => s.Id).ToList();
         List<int> identifierIds = codelists.Where(c => c.Schema == "borehole_identifier").Select(s => s.Id).ToList();
+        List<int> sourceTypeIds = codelists.Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema).Select(s => s.Id).ToList();
 
         // Lithology codelists
         List<int> plasticityIds = codelists.Where(c => c.Schema == StratigraphySchemas.PlasticitySchema).Select(s => s.Id).ToList();
@@ -226,6 +242,18 @@ public static class BdmsContextExtensions
                return null;
            })
            .RuleFor(o => o.NationalInterest, f => borehole_ids % 10 == 9)
+
+           // The rules below must not draw from the faker's randomizer: every draw would shift the values of all
+           // later rules and change seeded data that tests assert on.
+           .RuleFor(o => o.CoreRepositoryStored, _ => (borehole_ids % 5) switch
+           {
+               0 => (bool?)null,
+               1 => true,
+               _ => false,
+           })
+           .RuleFor(o => o.SourceTypeCodelistIds, _ => null)
+           .RuleFor(o => o.SourceTypeCodelists, _ => new Collection<Codelist>())
+           .RuleFor(o => o.BoreholeSourceTypeCodes, _ => new List<BoreholeSourceTypeCodes>())
            .RuleFor(o => o.PrecisionLocationX, f => f.PickRandom(Enumerable.Range(0, 10)))
            .RuleFor(o => o.PrecisionLocationY, f => f.PickRandom(Enumerable.Range(0, 10)))
            .RuleFor(o => o.PrecisionLocationXLV03, f => f.PickRandom(Enumerable.Range(0, 10)))
@@ -279,6 +307,20 @@ public static class BdmsContextExtensions
         }
 
         SeedIdentifierCodeRelationships(identifierIds);
+
+        // Seed source types: zero, one or several per borehole, deterministic per borehole id.
+        var boreholeSourceTypeCodes = new List<BoreholeSourceTypeCodes>();
+        foreach (var boreholeId in boreholeRange)
+        {
+            var sourceTypeRandom = new Random(boreholeId);
+            var count = sourceTypeRandom.Next(0, 4);
+            boreholeSourceTypeCodes.AddRange(sourceTypeIds
+                .OrderBy(_ => sourceTypeRandom.Next())
+                .Take(count)
+                .Select(codelistId => new BoreholeSourceTypeCodes { BoreholeId = boreholeId, CodelistId = codelistId }));
+        }
+
+        context.BulkInsert(boreholeSourceTypeCodes, bulkConfig);
 
         // Seed a workflow for each borehole
         var tabStatus_ids = 3_000_000;

@@ -49,6 +49,7 @@ export const textMultiSelectOptions = (
 // Filter keys whose parser accepts "null" as a valid literal value (for the "Keine Angabe" option).
 export const nullableBooleanFilterKeys: ReadonlySet<FilterKey> = new Set([
   "nationalInterest",
+  "coreRepositoryStored",
   "topBedrockIntersected",
   "hasGroundwater",
 ]);

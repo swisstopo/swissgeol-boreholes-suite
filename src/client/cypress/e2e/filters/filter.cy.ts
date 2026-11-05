@@ -9,7 +9,15 @@ import {
   setAutocompleteText,
 } from "../helpers/filterHelpers.ts";
 import { setInput } from "../helpers/formHelpers";
-import { createBorehole, goToRouteAndAcceptTerms } from "../helpers/testHelpers";
+import { createBorehole, getCodelistIds, goToRouteAndAcceptTerms } from "../helpers/testHelpers";
+
+// Commits the typed name with Enter, which filters by the exact text even when it equals the only suggestion.
+function filterByOriginalName(value: string) {
+  cy.intercept("POST", "/api/v2/borehole/filter").as("filter_original_name");
+  cy.dataCy("originalName-formInput").click();
+  cy.focused().type(`${value}{enter}`, { delay: 10 });
+  cy.wait("@filter_original_name");
+}
 
 function testYesNoFilter(
   title: string,
@@ -144,6 +152,50 @@ describe("Search filter tests", () => {
   });
 
   // ─── BOREHOLE FILTERS ──────────────────────────────────────────────────────
+  it("filters boreholes by core repository stored", () => {
+    // Both share one name, so the name filter narrows the set to exactly these two.
+    createBorehole({ originalName: "CORESTORE_E2E", coreRepositoryStored: true });
+    createBorehole({ originalName: "CORESTORE_E2E", coreRepositoryStored: null });
+
+    openFilter("Borehole");
+    filterByOriginalName("CORESTORE_E2E");
+    cy.dataCy("boreholes-number-preview").should("have.text", "2");
+
+    toggleYesNoAndWaitForFilter("coreRepositoryStored", "yes", "filter_core_repository_yes");
+    cy.dataCy("boreholes-number-preview").should("have.text", "1");
+    cy.location("search").should("contain", "coreRepositoryStored=true");
+
+    toggleYesNoAndWaitForFilter("coreRepositoryStored", "not specified", "filter_core_repository_np");
+    cy.dataCy("boreholes-number-preview").should("have.text", "1");
+    checkFilterChipExistsAndRemove("coreRepositoryStored");
+    cy.dataCy("boreholes-number-preview").should("have.text", "2");
+  });
+
+  it("filters boreholes by source type", () => {
+    getCodelistIds("source_type").then(ids => {
+      createBorehole({ originalName: "SOURCETYPE_E2E", sourceTypeCodelistIds: [ids[0]] });
+      createBorehole({ originalName: "SOURCETYPE_E2E", sourceTypeCodelistIds: [ids[0], ids[1]] });
+      createBorehole({ originalName: "SOURCETYPE_E2E", sourceTypeCodelistIds: [ids[1]] });
+      createBorehole({ originalName: "SOURCETYPE_E2E", sourceTypeCodelistIds: [] });
+    });
+
+    openFilter("Borehole");
+    filterByOriginalName("SOURCETYPE_E2E");
+    cy.dataCy("boreholes-number-preview").should("have.text", "4");
+
+    // A borehole matches if it has any of the selected types.
+    clickDomainButtonByIndex("sourceTypeId", 0);
+    cy.dataCy("boreholes-number-preview").should("have.text", "2");
+    clickDomainButtonByIndex("sourceTypeId", 1);
+    cy.dataCy("boreholes-number-preview").should("have.text", "3");
+    cy.get('[data-cy^="filter-chip-sourceTypeId-"]').should("have.length", 2);
+
+    removeFirstMultiSelectChip("sourceTypeId");
+    removeFirstMultiSelectChip("sourceTypeId");
+    cy.get('[data-cy^="filter-chip-sourceTypeId-"]').should("not.exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "4");
+  });
+
   it("filters boreholes by national interest", () => {
     createBorehole({ originalName: "NI test 1", nationalInterest: false }).as("bh1");
     createBorehole({ originalName: "NI test 2", nationalInterest: false }).as("bh2");

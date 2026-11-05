@@ -47,6 +47,17 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return Problem(errorMessage);
         }
 
+        var invalidSourceTypeIds = await GetInvalidSourceTypeCodelistIdsAsync(entity.SourceTypeCodelistIds).ConfigureAwait(false);
+        if (invalidSourceTypeIds.Count > 0)
+        {
+            return InvalidSourceTypeCodelistIdsBadRequest(invalidSourceTypeIds);
+        }
+
+        if (entity.SourceTypeCodelistIds != null)
+        {
+            entity.SyncSourceTypeCodes(entity.SourceTypeCodelistIds);
+        }
+
         await Context.AddAsync(entity).ConfigureAwait(false);
         try
         {
@@ -72,6 +83,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var existingBorehole = await Context.Boreholes
             .Include(b => b.BoreholeCodelists)
+            .Include(b => b.BoreholeSourceTypeCodes)
             .Include(b => b.Workflow)
             .SingleOrDefaultAsync(l => l.Id == entity.Id)
             .ConfigureAwait(false);
@@ -91,6 +103,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             && !await CanEditInWorkgroupAsync(subjectId, entity.WorkgroupId).ConfigureAwait(false))
         {
             return Unauthorized();
+        }
+
+        var invalidSourceTypeIds = await GetInvalidSourceTypeCodelistIdsAsync(entity.SourceTypeCodelistIds).ConfigureAwait(false);
+        if (invalidSourceTypeIds.Count > 0)
+        {
+            return InvalidSourceTypeCodelistIdsBadRequest(invalidSourceTypeIds);
         }
 
         var workflow = existingBorehole.Workflow;
@@ -113,6 +131,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         if (entity.BoreholeCodelists != null)
         {
             existingBorehole.BoreholeCodelists = entity.BoreholeCodelists;
+        }
+
+        // Source types are only replaced when the client sends them, like the borehole identifiers above.
+        if (entity.SourceTypeCodelistIds != null)
+        {
+            existingBorehole.SyncSourceTypeCodes(entity.SourceTypeCodelistIds);
         }
 
         try
@@ -245,6 +269,15 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return BadRequest($"A value is required for bulk edit field(s): {string.Join(", ", fieldsWithoutValue)}.");
         }
 
+        if (request.FieldsToUpdate.Any(f => string.Equals(f, "sourceTypeCodelistIds", StringComparison.OrdinalIgnoreCase)))
+        {
+            var invalidSourceTypeIds = await GetInvalidSourceTypeCodelistIdsAsync(request.Update.SourceTypeCodelistIds).ConfigureAwait(false);
+            if (invalidSourceTypeIds.Count > 0)
+            {
+                return InvalidSourceTypeCodelistIdsBadRequest(invalidSourceTypeIds);
+            }
+        }
+
         var unauthorizedBoreholeIds = await BoreholePermissionService
             .GetBoreholeIdsUserCannotEditAsync(subjectId, request.BoreholeIds)
             .ConfigureAwait(false);
@@ -257,6 +290,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         var boreholes = await Context.Boreholes
             .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
             .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
+            .Include(b => b.BoreholeSourceTypeCodes)
             .Where(b => request.BoreholeIds.Contains(b.Id))
             .ToListAsync()
             .ConfigureAwait(false);
@@ -366,6 +400,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), id).ConfigureAwait(false)) return Unauthorized();
 
+        borehole.MapSourceTypeCodelistIds();
         return Ok(borehole);
     }
 
@@ -574,6 +609,25 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         return result;
     }
 
+    /// <summary>
+    /// Gets the ids in <paramref name="sourceTypeCodelistIds"/> that are no codelists of the
+    /// <see cref="BoreholeSchemas.SourceTypeSchema"/> schema. Checked before saving, so an unknown id is rejected
+    /// instead of failing on the foreign key, and a codelist of another schema is never linked as a source type.
+    /// </summary>
+    private async Task<IReadOnlyList<int>> GetInvalidSourceTypeCodelistIdsAsync(ICollection<int>? sourceTypeCodelistIds)
+    {
+        if (sourceTypeCodelistIds is null || sourceTypeCodelistIds.Count == 0)
+        {
+            return [];
+        }
+
+        var validIds = await Context.GetSourceTypeCodelistIdsAsync().ConfigureAwait(false);
+        return sourceTypeCodelistIds.Where(id => !validIds.Contains(id)).Distinct().Order().ToList();
+    }
+
+    private BadRequestObjectResult InvalidSourceTypeCodelistIdsBadRequest(IReadOnlyList<int> invalidSourceTypeIds)
+        => BadRequest($"Invalid source type codelist id(s): {string.Join(", ", invalidSourceTypeIds)}.");
+
     private static readonly HashSet<string> LocationTabFields = new(StringComparer.OrdinalIgnoreCase)
     {
         "locationPrecisionId", "elevationPrecisionId", "referenceElevationPrecisionId", "referenceElevationTypeId",
@@ -584,6 +638,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         "restrictionId", "restrictionUntil", "nationalInterest", "projectName", "typeId", "purposeId", "statusId",
         "depthPrecisionId", "totalDepth", "topBedrockFreshMd", "topBedrockWeatheredMd", "hasGroundwater",
         "lithologyTopBedrockId", "lithostratigraphyTopBedrockId", "chronostratigraphyTopBedrockId",
+        "coreRepositoryStored", "sourceTypeCodelistIds",
     };
 
     // All fields that may be bulk-edited: the union of the tab field sets plus workgroupId
@@ -637,6 +692,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             case "RESTRICTIONID": borehole.RestrictionId = update.RestrictionId; break;
             case "RESTRICTIONUNTIL": borehole.RestrictionUntil = update.RestrictionUntil; break;
             case "NATIONALINTEREST": borehole.NationalInterest = update.NationalInterest; break;
+            case "COREREPOSITORYSTORED": borehole.CoreRepositoryStored = update.CoreRepositoryStored; break;
+            case "SOURCETYPECODELISTIDS": borehole.SyncSourceTypeCodes(update.SourceTypeCodelistIds ?? []); break;
             case "PROJECTNAME": borehole.ProjectName = update.ProjectName; break;
             case "TYPEID": borehole.TypeId = update.TypeId; break;
             case "PURPOSEID": borehole.PurposeId = update.PurposeId; break;

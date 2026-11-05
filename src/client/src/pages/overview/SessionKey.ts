@@ -27,6 +27,7 @@ export const SessionKeys = {
   topBedrockWeatheredMdMin: "filter_topBedrockWeatheredMdMin",
   topBedrockWeatheredMdMax: "filter_topBedrockWeatheredMdMax",
   nationalInterest: "filter_nationalInterest",
+  coreRepositoryStored: "filter_coreRepositoryStored",
   topBedrockIntersected: "filter_topBedrockIntersected",
   hasGroundwater: "filter_hasGroundwater",
   hasGeometry: "filter_hasGeometry",
@@ -38,4 +39,5 @@ export const SessionKeys = {
   canton: "filter_canton",
   municipality: "filter_municipality",
   logToolTypeId: "filter_logToolTypeId",
+  sourceTypeId: "filter_sourceTypeId",
 } as const;
