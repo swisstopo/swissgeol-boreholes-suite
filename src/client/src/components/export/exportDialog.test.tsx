@@ -45,12 +45,15 @@ const controllableExport = () => {
     markStarted = resolve;
   });
 
+  // Rejects once aborted, with an error that is not an AbortError: the dialog must tell a cancelled
+  // export from its own signal, whatever reason the transfer rejects with.
   const exportFunction = (options?: TransferOptions) => {
     reportProgress = options?.onProgress ?? (() => {});
     receivedSignal = options?.signal;
     markStarted();
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve, reject) => {
       finish = resolve;
+      options?.signal?.addEventListener("abort", () => reject(new Error("The transfer was aborted.")));
     });
   };
 
@@ -165,6 +168,35 @@ describe("export progress", () => {
 
     expect(controllable.getSignal()?.aborted).toBe(true);
     await waitFor(() => expect(byCy("loading-backdrop-status")).toBeNull());
+  });
+
+  it("does not report a cancelled export as an error", async () => {
+    const controllable = controllableExport();
+    await startExport(controllable);
+
+    clickCy("loading-backdrop-cancel");
+
+    await waitFor(() => expect(byCy("loading-backdrop-status")).toBeNull());
+    await vi.runAllTimersAsync();
+    expect(showAlert).not.toHaveBeenCalled();
+  });
+
+  it("reports an export that fails on its own", async () => {
+    const exportFunction = vi.fn(() => Promise.reject(new Error("connection lost")));
+    render(<ExportDialogHarness exportFunction={exportFunction} />);
+
+    clickCy("exportjsonprofile-button");
+
+    await waitFor(() => expect(showAlert).toHaveBeenCalledWith("errorDuringExport", "error"));
+  });
+
+  it("cancels the running export when the dialog goes away", async () => {
+    const controllable = controllableExport();
+    await startExport(controllable);
+
+    cleanup();
+
+    expect(controllable.getSignal()?.aborted).toBe(true);
   });
 });
 

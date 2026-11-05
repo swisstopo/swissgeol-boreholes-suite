@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 import { ArrowDownToLine } from "lucide-react";
 import { ApiError } from "../../api/errorClasses.ts";
-import { formatBytes, isAbortError, progressRefreshIntervalMs, TransferOptions } from "../../api/transferProgress.ts";
+import { formatBytes, progressRefreshIntervalMs, TransferOptions } from "../../api/transferProgress.ts";
 import { theme } from "../../AppTheme.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
@@ -90,8 +90,9 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           },
         });
       } catch (error) {
-        // Aborted by user so it is not reported as a failure.
-        if (isAbortError(error)) return;
+        // Aborted by the user, so it is not reported as a failure. The own signal decides rather than the
+        // error's type, as a transfer may reject with whatever reason it got and still have been cancelled.
+        if (abortController.signal.aborted) return;
         if (error instanceof ApiError) {
           showAlert(t(error.message), "error");
         } else {

@@ -11,12 +11,13 @@ import {
 } from "../../../api/borehole.ts";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
-import { ExportConfirmation, ExportDialog } from "../../../components/export/exportDialog.tsx";
+import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import { MapComponent } from "../../../components/map/mapComponent";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { PolygonFilterContext } from "../sidePanelContent/filter/polygonFilterContext.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
+import { getJsonExportSelection } from "./jsonExportSelection.ts";
 
 interface MapViewProps {
   displayErrorMessage: (message: string) => void;
@@ -29,10 +30,6 @@ const containSameIds = (ids: number[], otherIds: number[]) => {
 
 // A stable empty array, so the fallback response does not count as new data on every render.
 const noSelectableBoreholeIds: number[] = [];
-
-// JSON exports carry each borehole's full data, so they stay limited. The CSV export has no limit.
-// Must match BoreholeJsonExportRequest.MaxBoreholeCount in the API, which rejects larger requests.
-const maxJsonExportCount = 500;
 
 const bulkExportFileName = () => `bulkexport_${new Date().toISOString().split("T")[0]}`;
 
@@ -144,11 +141,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     if (!containSameIds(selectableBoreholeIds, selectionScope)) setSelectionModel([]);
   }
 
-  const jsonExportIds = selectionModel.slice(0, maxJsonExportCount);
-  const jsonExportConfirmation: ExportConfirmation | undefined =
-    selectionModel.length > maxJsonExportCount
-      ? { message: "exportJsonLimitedTo500", confirmLabel: "exportFirst500" }
-      : undefined;
+  const jsonExport = getJsonExportSelection(selectionModel);
 
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
@@ -167,13 +160,13 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           },
           {
             label: "JSON",
-            exportFunction: options => exportJsonBoreholes(jsonExportIds, bulkExportFileName(), options),
-            confirmation: jsonExportConfirmation,
+            exportFunction: options => exportJsonBoreholes(jsonExport.ids, bulkExportFileName(), options),
+            confirmation: jsonExport.confirmation,
           },
           {
             label: "exportJsonProfile",
-            exportFunction: options => exportJsonWithAttachmentsBorehole(jsonExportIds, options),
-            confirmation: jsonExportConfirmation,
+            exportFunction: options => exportJsonWithAttachmentsBorehole(jsonExport.ids, options),
+            confirmation: jsonExport.confirmation,
           },
         ]}
       />
