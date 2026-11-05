@@ -34,6 +34,7 @@ public class BoreholeExportControllerTest
     private const string TestCsvString = "text/csv";
     private const string ExportFileName = "boreholes_export";
     private const int TestBoreholeId = 1000068;
+    private const int OtherTestBoreholeId = 1_000_057;
     private BdmsContext context;
     private ProfileCloudService profileCloudService;
     private BoreholeExportController controller;
@@ -704,7 +705,7 @@ public class BoreholeExportControllerTest
     [TestMethod]
     public async Task DownloadCsvWithDuplicateIdsWritesEachBoreholeOnceAtItsFirstPosition()
     {
-        var otherBoreholeId = TestBoreholeId + 1;
+        var otherBoreholeId = OtherTestBoreholeId;
         var ids = new List<int> { otherBoreholeId, TestBoreholeId, otherBoreholeId };
 
         var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as FileContentResult;
@@ -715,19 +716,26 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    public async Task DownloadCsvWithOneDeniedBoreholeReturnsBadRequest()
+    public async Task ExportControllerMethodsRejectASelectionWithOneDeniedBorehole()
     {
-        var deniedBoreholeId = TestBoreholeId + 1;
+        var deniedBoreholeId = OtherTestBoreholeId;
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
             .ReturnsAsync((string? _, IReadOnlyCollection<int> boreholeIds) => boreholeIds.Where(id => id == deniedBoreholeId).ToList());
         controller = new BoreholeExportController(context, profileCloudService, new Mock<ILogger<BoreholeExportController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [TestBoreholeId, deniedBoreholeId] }, CancellationToken.None) as BadRequestObjectResult;
+        var exportMethods = GetExportMethods();
+        Assert.AreEqual(4, exportMethods.Count);
 
-        Assert.IsNotNull(result);
-        Assert.AreEqual("The user lacks permissions to export the borehole(s).", result.Value);
+        foreach (var method in exportMethods)
+        {
+            var result = await InvokeExportMethodAsync(method, [TestBoreholeId, deniedBoreholeId]);
+
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult, $"Method {method.Name} exported a selection that holds a borehole the user cannot view.");
+            Assert.AreEqual("The user lacks permissions to export the borehole(s).", badRequestResult.Value);
+        }
     }
 
     [TestMethod]
@@ -807,37 +815,47 @@ public class BoreholeExportControllerTest
         var loggerMock = new Mock<ILogger<BoreholeExportController>>();
         controller = new BoreholeExportController(context, profileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
-        // Get all export methods from ExportController
-        var exportMethods = typeof(BoreholeExportController)
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
-            .Where(m => !m.IsConstructor && m.Name.Contains("export", StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
+        var exportMethods = GetExportMethods();
         Assert.AreEqual(4, exportMethods.Count);
 
-        // Invoke each export method and check if the user permissions are validated.
-        // The export methods take the borehole ids (all but the GeoPackage export as a request body), and some a cancellation token as well.
         foreach (var method in exportMethods)
         {
-            var arguments = method.GetParameters()
-                .Select(parameter => parameter.ParameterType switch
-                {
-                    Type type when type == typeof(CancellationToken) => (object)CancellationToken.None,
-                    Type type when type == typeof(BoreholeExportRequest) => new BoreholeExportRequest { Ids = [1_000_057] },
-                    Type type when type == typeof(BoreholeJsonExportRequest) => new BoreholeJsonExportRequest { Ids = [1_000_057] },
-                    _ => new List<int>() { 1_000_057 },
-                })
-                .ToArray();
-
-            var resultTask = method.Invoke(controller, arguments) as Task;
-            await resultTask.ConfigureAwait(false);
-
-            var result = (resultTask as dynamic).Result;
+            var result = await InvokeExportMethodAsync(method, [OtherTestBoreholeId]);
 
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult, $"Method {method.Name} did not return BadRequestObjectResult");
             Assert.AreEqual("The user lacks permissions to export the borehole(s).", badRequestResult.Value);
         }
+    }
+
+    private static List<MethodInfo> GetExportMethods()
+    {
+        return typeof(BoreholeExportController)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .Where(m => !m.IsConstructor && m.Name.Contains("export", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Invokes an export method with <paramref name="ids"/>. The export methods take the borehole ids (all but the
+    /// GeoPackage export as a request body), and some a cancellation token as well.
+    /// </summary>
+    private async Task<object?> InvokeExportMethodAsync(MethodInfo method, List<int> ids)
+    {
+        var arguments = method.GetParameters()
+            .Select(parameter => parameter.ParameterType switch
+            {
+                Type type when type == typeof(CancellationToken) => (object)CancellationToken.None,
+                Type type when type == typeof(BoreholeExportRequest) => new BoreholeExportRequest { Ids = ids },
+                Type type when type == typeof(BoreholeJsonExportRequest) => new BoreholeJsonExportRequest { Ids = ids },
+                _ => ids,
+            })
+            .ToArray();
+
+        var resultTask = method.Invoke(controller, arguments) as Task;
+        await resultTask.ConfigureAwait(false);
+
+        return (resultTask as dynamic).Result;
     }
 
     private static void AssertEntitiesEqualByIncludeInExportAttribute(object? expected, object? actual, ISet<object?> visited, bool ignoreNonImportableProps = false)
