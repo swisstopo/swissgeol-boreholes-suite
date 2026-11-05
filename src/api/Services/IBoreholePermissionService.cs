@@ -65,4 +65,14 @@ public interface IBoreholePermissionService
     /// <param name="boreholeIds">The <see cref="Borehole.Id"/>s to check.</param>
     /// <returns>The distinct ids the user is not allowed to manage; empty if the user may manage all of them.</returns>
     Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotManageAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds);
+
+    /// <summary>
+    /// Batch equivalent of <see cref="CanViewBoreholeAsync"/>: returns the subset of <paramref name="boreholeIds"/>
+    /// that the <see cref="User"/> with <paramref name="subjectId"/> cannot view, fetching the user and all boreholes
+    /// in a single round-trip each. A borehole id that does not exist is treated as not viewable.
+    /// </summary>
+    /// <param name="subjectId">The <see cref="User.SubjectId"/> of the current user.</param>
+    /// <param name="boreholeIds">The <see cref="Borehole.Id"/>s to check.</param>
+    /// <returns>The distinct ids the user is not allowed to view; empty if the user may view all of them.</returns>
+    Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotViewAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds);
 }

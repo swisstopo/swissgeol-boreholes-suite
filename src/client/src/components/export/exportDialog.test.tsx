@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TransferOptions, TransferProgressCallback } from "../../api/transferProgress.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { AlertContextInterface } from "../alert/alertInterfaces";
+import { Prompt } from "../prompt/prompt.tsx";
+import { PromptProvider } from "../prompt/promptContext.tsx";
 import { ExportDialog } from "./exportDialog.tsx";
 
 vi.mock("react-i18next", () => ({
@@ -43,12 +45,15 @@ const controllableExport = () => {
     markStarted = resolve;
   });
 
+  // Rejects once aborted, with an error that is not an AbortError: the dialog must tell a cancelled
+  // export from its own signal, whatever reason the transfer rejects with.
   const exportFunction = (options?: TransferOptions) => {
     reportProgress = options?.onProgress ?? (() => {});
     receivedSignal = options?.signal;
     markStarted();
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve, reject) => {
       finish = resolve;
+      options?.signal?.addEventListener("abort", () => reject(new Error("The transfer was aborted.")));
     });
   };
 
@@ -78,6 +83,36 @@ const startExport = async (controllable: ReturnType<typeof controllableExport>) 
   render(<ExportDialogHarness exportFunction={options => controllable.exportFunction(options)} />);
   clickCy("exportjsonprofile-button");
   await controllable.started;
+};
+
+const ConfirmingExportDialogHarness = ({ exportFunction }: { exportFunction: () => Promise<void> }) => {
+  const [isExporting, setIsExporting] = useState(true);
+  return (
+    <AlertContext.Provider value={alertContext}>
+      <PromptProvider>
+        <ExportDialog
+          isExporting={isExporting}
+          setIsExporting={setIsExporting}
+          exportItems={[
+            {
+              label: "JSON",
+              exportFunction,
+              confirmation: { message: "exportJsonLimitedTo500", confirmLabel: "exportFirst500" },
+            },
+          ]}
+        />
+        <Prompt />
+      </PromptProvider>
+    </AlertContext.Provider>
+  );
+};
+
+const byPromptCy = (name: string) => document.querySelector<HTMLElement>(`[data-cy="prompt"] [data-cy="${name}"]`);
+
+const clickPromptCy = (name: string) => {
+  const element = byPromptCy(name);
+  if (!element) throw new Error(`No prompt element marked '${name}' to click.`);
+  fireEvent.click(element);
 };
 
 beforeEach(() => {
@@ -133,5 +168,70 @@ describe("export progress", () => {
 
     expect(controllable.getSignal()?.aborted).toBe(true);
     await waitFor(() => expect(byCy("loading-backdrop-status")).toBeNull());
+  });
+
+  it("does not report a cancelled export as an error", async () => {
+    const controllable = controllableExport();
+    await startExport(controllable);
+
+    clickCy("loading-backdrop-cancel");
+
+    await waitFor(() => expect(byCy("loading-backdrop-status")).toBeNull());
+    await vi.runAllTimersAsync();
+    expect(showAlert).not.toHaveBeenCalled();
+  });
+
+  it("reports an export that fails on its own", async () => {
+    const exportFunction = vi.fn(() => Promise.reject(new Error("connection lost")));
+    render(<ExportDialogHarness exportFunction={exportFunction} />);
+
+    clickCy("exportjsonprofile-button");
+
+    await waitFor(() => expect(showAlert).toHaveBeenCalledWith("errorDuringExport", "error"));
+  });
+
+  it("cancels the running export when the dialog goes away", async () => {
+    const controllable = controllableExport();
+    await startExport(controllable);
+
+    cleanup();
+
+    expect(controllable.getSignal()?.aborted).toBe(true);
+  });
+});
+
+describe("export confirmation", () => {
+  it("asks before running an export that needs confirmation", async () => {
+    const exportFunction = vi.fn(() => Promise.resolve());
+    render(<ConfirmingExportDialogHarness exportFunction={exportFunction} />);
+
+    clickCy("json-button");
+
+    await waitFor(() => expect(byCy("prompt")?.textContent).toContain("exportJsonLimitedTo500"));
+    expect(exportFunction).not.toHaveBeenCalled();
+  });
+
+  it("returns to the export dialog when the confirmation is cancelled", async () => {
+    const exportFunction = vi.fn(() => Promise.resolve());
+    render(<ConfirmingExportDialogHarness exportFunction={exportFunction} />);
+    clickCy("json-button");
+    await waitFor(() => expect(byPromptCy("cancel-button")).not.toBeNull());
+
+    clickPromptCy("cancel-button");
+
+    await waitFor(() => expect(byCy("prompt")).toBeNull());
+    expect(byCy("json-button")).not.toBeNull();
+    expect(exportFunction).not.toHaveBeenCalled();
+  });
+
+  it("runs the export once confirmed", async () => {
+    const exportFunction = vi.fn(() => Promise.resolve());
+    render(<ConfirmingExportDialogHarness exportFunction={exportFunction} />);
+    clickCy("json-button");
+    await waitFor(() => expect(byPromptCy("exportfirst500-button")).not.toBeNull());
+
+    clickPromptCy("exportfirst500-button");
+
+    await waitFor(() => expect(exportFunction).toHaveBeenCalledTimes(1));
   });
 });

@@ -22,9 +22,9 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BoreholeExportController : ControllerBase
 {
-    // Limit the maximum number of items per request to 100.
-    // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
-    private const int MaxPageSize = 100;
+    // The GeoPackage export takes its ids in the query, so their number is limited to ensure the URL length
+    // does not exceed the maximum allowed length. The other exports take their ids in the request body.
+    private const int MaxGeoPackageExportCount = 100;
     private const string ExportFileName = "boreholes_export";
     private const string NoBoreholesFoundMessage = "No borehole(s) found for the provided id(s).";
     private const string UserLacksPermissionsMessage = "The user lacks permissions to export the borehole(s).";
@@ -53,14 +53,16 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of up to <see cref="BoreholeJsonExportRequest.MaxBoreholeCount"/> boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
-    /// <param name="ids">The required list of borehole ids to filter by.</param>
-    [HttpGet("json")]
+    /// <param name="request">The ids of the boreholes to export.</param>
+    /// <param name="cancellationToken">Aborts the export once the client is gone, so a cancelled export stops loading the boreholes with all their data.</param>
+    [HttpPost("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportJsonAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<ActionResult> ExportJsonAsync([FromBody] BoreholeJsonExportRequest request, CancellationToken cancellationToken)
     {
-        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var ids = request.Ids.ToList();
+        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync(cancellationToken).ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
@@ -70,12 +72,12 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of up to <see cref="MaxGeoPackageExportCount"></see> boreholes as a GeoPackage file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     [HttpGet("gpkg")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MinLength(1)][MaxLength(MaxGeoPackageExportCount)] IEnumerable<int> ids)
     {
         var idList = ids.ToList();
         var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
@@ -85,7 +87,7 @@ public class BoreholeExportController : ControllerBase
 
         try
         {
-            var boreholeGeometries = await GetBoreholeGeometriesAsync(idList).ConfigureAwait(false);
+            var boreholeGeometries = await GetBoreholeGeometriesAsync(idList, CancellationToken.None).ConfigureAwait(false);
 
             foreach (var borehole in boreholes)
             {
@@ -166,25 +168,32 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a CSV file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of the requested boreholes as a CSV file. Unlike the other export formats, the number of
+    /// boreholes is not limited: a CSV row is flat and cheap to produce, and a selection is bounded by the boreholes
+    /// a user can filter for. Only the request body is capped, at <see cref="BoreholeExportRequest.MaxRequestBodySize"/>
+    /// bytes, so a request with an absurd number of ids is answered with 413 before it reaches the database.
     /// </summary>
-    /// <param name="ids">The list of ids for the boreholes to be exported.</param>
+    /// <param name="request">The ids of the boreholes to export, in the order their rows are written.</param>
+    /// <param name="cancellationToken">Aborts the export once the client is gone, so a cancelled export of thousands of boreholes stops loading them.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
-    [HttpGet("csv")]
+    [HttpPost("csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> ExportCsvAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    [RequestSizeLimit(BoreholeExportRequest.MaxRequestBodySize)]
+    public async Task<IActionResult> ExportCsvAsync([FromBody] BoreholeExportRequest request, CancellationToken cancellationToken)
     {
-        var idList = ids.ToList();
-        var boreholes = await context.Boreholes
+        var idList = request.Ids.ToList();
+        var loadedBoreholes = await context.Boreholes
             .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
+            .AsNoTracking()
             .Where(borehole => idList.Contains(borehole.Id))
-            .OrderBy(b => idList.IndexOf(b.Id))
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
+        if (loadedBoreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
-        if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+        if (!await HasViewPermissionsForAllBoreholes(loadedBoreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
+
+        var boreholes = OrderByRequestedIds(loadedBoreholes, idList);
 
         using var stringWriter = new StringWriter();
         using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
@@ -241,7 +250,7 @@ public class BoreholeExportController : ControllerBase
         // Move to the next line
         await csvWriter.NextRecordAsync().ConfigureAwait(false);
 
-        var boreholeGeometries = await GetBoreholeGeometriesAsync(idList).ConfigureAwait(false);
+        var boreholeGeometries = await GetBoreholeGeometriesAsync(idList, cancellationToken).ConfigureAwait(false);
 
         // Write data for standard fields
         foreach (var b in boreholes)
@@ -299,15 +308,16 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets all <see cref="Borehole"/> with attachments filtered by ids.
+    /// Asynchronously gets up to <see cref="BoreholeJsonExportRequest.MaxBoreholeCount"/> <see cref="Borehole"/> with attachments filtered by ids.
     /// </summary>
-    /// <param name="ids">The required list of borehole ids to filter by.</param>
+    /// <param name="request">The ids of the boreholes to export.</param>
     /// <param name="cancellationToken">Aborts the export once the client is gone. An export can transfer several gigabytes, so the work it triggers must not outlive the request.</param>
     /// <returns>A ZIP file including the borehole data as JSON and all corresponding attachments.</returns>
-    [HttpGet("zip")]
+    [HttpPost("zip")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids, CancellationToken cancellationToken)
+    public async Task<IActionResult> ExportJsonWithAttachmentsAsync([FromBody] BoreholeJsonExportRequest request, CancellationToken cancellationToken)
     {
+        var ids = request.Ids.ToList();
         var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync(cancellationToken).ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
@@ -322,7 +332,7 @@ public class BoreholeExportController : ControllerBase
 
             // If only one borehole is exported, use its name as the file name.
             // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the borehole name.
-            if (ids.Count() == 1)
+            if (ids.Count == 1)
             {
                 fileName = FileHelper.SanitizeZipEntryFileName(boreholes.Single().Name, fileName);
             }
@@ -391,17 +401,34 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
+    /// Orders <paramref name="boreholes"/> by the position of their id in <paramref name="requestedIds"/>. For a
+    /// duplicated id the first position counts. Sorting by list position inside the database query scans the id
+    /// array once per row, which does not scale to selections of thousands of boreholes.
+    /// </summary>
+    private static List<Borehole> OrderByRequestedIds(IEnumerable<Borehole> boreholes, List<int> requestedIds)
+    {
+        var positionById = new Dictionary<int, int>();
+        for (var position = 0; position < requestedIds.Count; position++)
+        {
+            positionById.TryAdd(requestedIds[position], position);
+        }
+
+        return boreholes.OrderBy(borehole => positionById[borehole.Id]).ToList();
+    }
+
+    /// <summary>
     /// Fetches borehole geometries for the provided borehole IDs.
     /// </summary>
     /// <param name="boreholeIds"></param>
+    /// <param name="cancellationToken">Aborts loading the geometries.</param>
     /// <returns>A dictionary of borehole geometries keyed by borehole ID.</returns>
-    private async Task<Dictionary<int, List<BoreholeGeometryElement>>> GetBoreholeGeometriesAsync(List<int> boreholeIds)
+    private async Task<Dictionary<int, List<BoreholeGeometryElement>>> GetBoreholeGeometriesAsync(List<int> boreholeIds, CancellationToken cancellationToken)
     {
         return await context.BoreholeGeometry
             .AsNoTracking()
             .Where(g => boreholeIds.Contains(g.BoreholeId))
             .GroupBy(g => g.BoreholeId)
-            .ToDictionaryAsync(group => group.Key, group => group.ToList())
+            .ToDictionaryAsync(group => group.Key, group => group.ToList(), cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -473,14 +500,8 @@ public class BoreholeExportController : ControllerBase
     /// <returns><see langword="true"/> if the user has permissions for all boreholes; otherwise, <see langword="false"/>.</returns>
     private async Task<bool> HasViewPermissionsForAllBoreholes(List<Borehole> boreholes)
     {
-        foreach (var borehole in boreholes)
-        {
-            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), borehole.Id).ConfigureAwait(false))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        var boreholeIds = boreholes.Select(borehole => borehole.Id).ToList();
+        var deniedIds = await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync(HttpContext.GetUserSubjectId(), boreholeIds).ConfigureAwait(false);
+        return deniedIds.Count == 0;
     }
 }
