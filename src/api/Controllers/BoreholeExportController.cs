@@ -22,12 +22,8 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BoreholeExportController : ControllerBase
 {
-    // Limit the maximum number of items per request to 500.
-    // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length:
-    // 500 ids of up to 8 digits keep the query of about 6.5 KB below the 8 KB request line that Kestrel and common proxies accept.
-    private const int MaxPageSize = 500;
-
-    // The GeoPackage export keeps the former limit of 100, as no raise was requested for it.
+    // The GeoPackage export takes its ids in the query, so their number is limited to ensure the URL length
+    // does not exceed the maximum allowed length. The other exports take their ids in the request body.
     private const int MaxGeoPackageExportCount = 100;
     private const string ExportFileName = "boreholes_export";
     private const string NoBoreholesFoundMessage = "No borehole(s) found for the provided id(s).";
@@ -57,13 +53,14 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
-    /// Exports the details of up to <see cref="MaxPageSize"></see> boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.
+    /// Exports the details of up to <see cref="BoreholeJsonExportRequest.MaxBoreholeCount"/> boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.
     /// </summary>
-    /// <param name="ids">The required list of borehole ids to filter by.</param>
-    [HttpGet("json")]
+    /// <param name="request">The ids of the boreholes to export.</param>
+    [HttpPost("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportJsonAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<ActionResult> ExportJsonAsync([FromBody] BoreholeJsonExportRequest request)
     {
+        var ids = request.Ids.ToList();
         var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
@@ -307,15 +304,16 @@ public class BoreholeExportController : ControllerBase
     }
 
     /// <summary>
-    /// Asynchronously gets up to <see cref="MaxPageSize"></see> <see cref="Borehole"/> with attachments filtered by ids.
+    /// Asynchronously gets up to <see cref="BoreholeJsonExportRequest.MaxBoreholeCount"/> <see cref="Borehole"/> with attachments filtered by ids.
     /// </summary>
-    /// <param name="ids">The required list of borehole ids to filter by.</param>
+    /// <param name="request">The ids of the boreholes to export.</param>
     /// <param name="cancellationToken">Aborts the export once the client is gone. An export can transfer several gigabytes, so the work it triggers must not outlive the request.</param>
     /// <returns>A ZIP file including the borehole data as JSON and all corresponding attachments.</returns>
-    [HttpGet("zip")]
+    [HttpPost("zip")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids, CancellationToken cancellationToken)
+    public async Task<IActionResult> ExportJsonWithAttachmentsAsync([FromBody] BoreholeJsonExportRequest request, CancellationToken cancellationToken)
     {
+        var ids = request.Ids.ToList();
         var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync(cancellationToken).ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
@@ -330,7 +328,7 @@ public class BoreholeExportController : ControllerBase
 
             // If only one borehole is exported, use its name as the file name.
             // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the borehole name.
-            if (ids.Count() == 1)
+            if (ids.Count == 1)
             {
                 fileName = FileHelper.SanitizeZipEntryFileName(boreholes.Single().Name, fileName);
             }

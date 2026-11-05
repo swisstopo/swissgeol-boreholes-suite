@@ -4,7 +4,7 @@ import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
-import { download, downloadData, downloadPost } from "./download.ts";
+import { downloadData, downloadPost } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
 import { TransferOptions } from "./transferProgress.ts";
@@ -20,10 +20,8 @@ export interface Identifier extends BasicIdentifier {
   borehole?: Borehole | null;
 }
 
-const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
-
 export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel, fileName: string) => {
-  const exportJsonResponse = await fetchApiV2Legacy(`boreholeexport/json?${getIdQuery(boreholeIds)}`, "GET");
+  const exportJsonResponse = await fetchApiV2Legacy("boreholeexport/json", "POST", { ids: boreholeIds });
   const jsonString = JSON.stringify(exportJsonResponse);
   downloadData(jsonString, `${fileName}.json`, "application/json");
 };
@@ -64,7 +62,7 @@ export const exportJsonWithAttachmentsBorehole = async (
   boreholeIds: number[] | GridRowSelectionModel,
   options?: TransferOptions,
 ) => {
-  return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`, options);
+  return await downloadPost("boreholeexport/zip", { ids: boreholeIds }, options);
 };
 
 const fetchBoreholeById = async (id: number): Promise<Borehole> => {

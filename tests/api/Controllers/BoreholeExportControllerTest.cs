@@ -344,7 +344,7 @@ public class BoreholeExportControllerTest
         context.Photos.Add(photo);
         Assert.IsNotNull(newBorehole.Photos);
 
-        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id], CancellationToken.None).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new BoreholeJsonExportRequest { Ids = [newBorehole.Id] }, CancellationToken.None).ConfigureAwait(false);
 
         var streamedZipResult = result as StreamedZipResult;
         Assert.IsNotNull(streamedZipResult);
@@ -393,7 +393,7 @@ public class BoreholeExportControllerTest
         context.Add(profileWithoutAttachment);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id], CancellationToken.None).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new BoreholeJsonExportRequest { Ids = [newBorehole.Id] }, CancellationToken.None).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, typeof(ObjectResult));
         ObjectResult objectResult = (ObjectResult)result;
@@ -416,7 +416,7 @@ public class BoreholeExportControllerTest
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportJsonIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
-        var result = await controller.ExportJsonAsync(ids).ConfigureAwait(false);
+        var result = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = ids.ToList() }).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
     }
@@ -444,14 +444,14 @@ public class BoreholeExportControllerTest
         context.Boreholes.AddRange(b1, b2);
         await context.SaveChangesAsync();
 
-        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { b1.Id, b2.Id }, CancellationToken.None).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new BoreholeJsonExportRequest { Ids = [b1.Id, b2.Id] }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(result, typeof(StreamedZipResult));
     }
 
     [TestMethod]
     public async Task ExportJsonWithAttachmentsIdsValidationNotFound()
     {
-        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { 1, 2 }, CancellationToken.None).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new BoreholeJsonExportRequest { Ids = [1, 2] }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
     }
 
@@ -463,7 +463,7 @@ public class BoreholeExportControllerTest
         context.Add(newBorehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var response = await controller.ExportJsonAsync([newBorehole.Id]).ConfigureAwait(false);
+        var response = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = [newBorehole.Id] }).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
 
@@ -718,6 +718,18 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
+    [DataRow(1, true, DisplayName = "One id.")]
+    [DataRow(BoreholeJsonExportRequest.MaxBoreholeCount, true, DisplayName = "As many ids as allowed.")]
+    [DataRow(0, false, DisplayName = "No ids.")]
+    [DataRow(BoreholeJsonExportRequest.MaxBoreholeCount + 1, false, DisplayName = "One id more than allowed.")]
+    public void BoreholeJsonExportRequestLimitsTheNumberOfIds(int idCount, bool isValid)
+    {
+        var request = new BoreholeJsonExportRequest { Ids = Enumerable.Range(1, idCount).ToList() };
+
+        Assert.AreEqual(isValid, Validator.TryValidateObject(request, new ValidationContext(request), new List<ValidationResult>(), validateAllProperties: true));
+    }
+
+    [TestMethod]
     public async Task ExportControllerMethodsShouldValidateUserHasPermissions()
     {
         // Override return value of HasUserWorkgroupPermissions in this specific test
@@ -744,7 +756,7 @@ public class BoreholeExportControllerTest
         Assert.AreEqual(4, exportMethods.Count);
 
         // Invoke each export method and check if the user permissions are validated.
-        // The export methods take the borehole ids (the CSV export as a request body), and some a cancellation token as well.
+        // The export methods take the borehole ids (all but the GeoPackage export as a request body), and some a cancellation token as well.
         foreach (var method in exportMethods)
         {
             var arguments = method.GetParameters()
@@ -752,6 +764,7 @@ public class BoreholeExportControllerTest
                 {
                     Type type when type == typeof(CancellationToken) => (object)CancellationToken.None,
                     Type type when type == typeof(BoreholeExportRequest) => new BoreholeExportRequest { Ids = [1_000_057] },
+                    Type type when type == typeof(BoreholeJsonExportRequest) => new BoreholeJsonExportRequest { Ids = [1_000_057] },
                     _ => new List<int>() { 1_000_057 },
                 })
                 .ToArray();
@@ -968,7 +981,7 @@ public class BoreholeExportControllerTest
 
     private async Task<Borehole> ExportSingleBoreholeAsync(int boreholeId)
     {
-        var response = await controller.ExportJsonAsync([boreholeId]).ConfigureAwait(false);
+        var response = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = [boreholeId] }).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
         List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;

@@ -438,7 +438,7 @@ describe("Test for exporting boreholes.", () => {
     checkTwoFirstRows();
     exportItem();
 
-    stubCloudStorageError("/api/v2/boreholeexport/zip?**", "exportZipError");
+    stubCloudStorageError("/api/v2/boreholeexport/zip", "exportZipError", "POST");
 
     exportZipItem();
     cy.get(".MuiAlert-message").contains("An error occurred while fetching a file from the cloud storage.");

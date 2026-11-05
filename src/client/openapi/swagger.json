@@ -893,26 +893,12 @@
       }
     },
     "/api/v{version}/boreholeexport/json": {
-      "get": {
+      "post": {
         "tags": [
           "BoreholeExport"
         ],
-        "summary": "Exports the details of up to <see cref=\"F:BDMS.Controllers.BoreholeExportController.MaxPageSize\"></see> boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.",
+        "summary": "Exports the details of up to BDMS.Models.BoreholeJsonExportRequest.MaxBoreholeCount boreholes as a JSON file. Filters the boreholes based on the provided list of IDs.",
         "parameters": [
-          {
-            "name": "ids",
-            "in": "query",
-            "description": "The required list of borehole ids to filter by.",
-            "schema": {
-              "maxItems": 500,
-              "minItems": 1,
-              "type": "array",
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          },
           {
             "name": "version",
             "in": "path",
@@ -922,6 +908,26 @@
             }
           }
         ],
+        "requestBody": {
+          "description": "The ids of the boreholes to export.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeJsonExportRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeJsonExportRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeJsonExportRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -1010,26 +1016,12 @@
       }
     },
     "/api/v{version}/boreholeexport/zip": {
-      "get": {
+      "post": {
         "tags": [
           "BoreholeExport"
         ],
-        "summary": "Asynchronously gets up to <see cref=\"F:BDMS.Controllers.BoreholeExportController.MaxPageSize\"></see> BDMS.Models.Borehole with attachments filtered by ids.",
+        "summary": "Asynchronously gets up to BDMS.Models.BoreholeJsonExportRequest.MaxBoreholeCount BDMS.Models.Borehole with attachments filtered by ids.",
         "parameters": [
-          {
-            "name": "ids",
-            "in": "query",
-            "description": "The required list of borehole ids to filter by.",
-            "schema": {
-              "maxItems": 500,
-              "minItems": 1,
-              "type": "array",
-              "items": {
-                "type": "integer",
-                "format": "int32"
-              }
-            }
-          },
           {
             "name": "version",
             "in": "path",
@@ -1039,6 +1031,26 @@
             }
           }
         ],
+        "requestBody": {
+          "description": "The ids of the boreholes to export.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeJsonExportRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeJsonExportRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeJsonExportRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -7784,6 +7796,26 @@
           }
         },
         "additionalProperties": false
+      },
+      "BoreholeJsonExportRequest": {
+        "required": [
+          "ids"
+        ],
+        "type": "object",
+        "properties": {
+          "ids": {
+            "maxItems": 500,
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "The ids of the boreholes to export. At least one and at most BDMS.Models.BoreholeJsonExportRequest.MaxBoreholeCount ids are required."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Selects the boreholes for the JSON exports, with or without attachments. Each borehole is exported with\r\nall its data, so the number of boreholes is limited to BDMS.Models.BoreholeJsonExportRequest.MaxBoreholeCount. The ids travel in\r\nthe request body, as that many ids no longer fit into a URL reliably."
       },
       "BoreholeListItem": {
         "required": [

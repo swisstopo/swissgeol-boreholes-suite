@@ -441,6 +441,18 @@ export type BoreholeGeometryElement = {
 };
 
 /**
+ * Selects the boreholes for the JSON exports, with or without attachments. Each borehole is exported with
+ * all its data, so the number of boreholes is limited to BDMS.Models.BoreholeJsonExportRequest.MaxBoreholeCount. The ids travel in
+ * the request body, as that many ids no longer fit into a URL reliably.
+ */
+export type BoreholeJsonExportRequest = {
+  /**
+   * The ids of the boreholes to export. At least one and at most BDMS.Models.BoreholeJsonExportRequest.MaxBoreholeCount ids are required.
+   */
+  ids: Array<number>;
+};
+
+/**
  * Represents a lightweight borehole for displaying in boreholes table.
  */
 export type BoreholeListItem = {
@@ -5948,21 +5960,19 @@ export type PostApiVbyVersionBoreholeBulkdeleteResponses = {
   200: unknown;
 };
 
-export type GetApiVbyVersionBoreholeexportJsonData = {
-  body?: never;
+export type PostApiVbyVersionBoreholeexportJsonData = {
+  /**
+   * The ids of the boreholes to export.
+   */
+  body?: BoreholeJsonExportRequest;
   path: {
     version: string;
   };
-  query?: {
-    /**
-     * The required list of borehole ids to filter by.
-     */
-    ids?: Array<number>;
-  };
+  query?: never;
   url: "/api/v{version}/boreholeexport/json";
 };
 
-export type GetApiVbyVersionBoreholeexportJsonResponses = {
+export type PostApiVbyVersionBoreholeexportJsonResponses = {
   /**
    * OK
    */
@@ -6009,21 +6019,19 @@ export type PostApiVbyVersionBoreholeexportCsvResponses = {
   200: unknown;
 };
 
-export type GetApiVbyVersionBoreholeexportZipData = {
-  body?: never;
+export type PostApiVbyVersionBoreholeexportZipData = {
+  /**
+   * The ids of the boreholes to export.
+   */
+  body?: BoreholeJsonExportRequest;
   path: {
     version: string;
   };
-  query?: {
-    /**
-     * The required list of borehole ids to filter by.
-     */
-    ids?: Array<number>;
-  };
+  query?: never;
   url: "/api/v{version}/boreholeexport/zip";
 };
 
-export type GetApiVbyVersionBoreholeexportZipResponses = {
+export type PostApiVbyVersionBoreholeexportZipResponses = {
   /**
    * OK
    */
