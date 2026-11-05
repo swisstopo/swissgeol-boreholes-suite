@@ -31,6 +31,7 @@ const containSameIds = (ids: number[], otherIds: number[]) => {
 const noSelectableBoreholeIds: number[] = [];
 
 // JSON exports carry each borehole's full data, so they stay limited. The CSV export has no limit.
+// Must match BoreholeJsonExportRequest.MaxBoreholeCount in the API, which rejects larger requests.
 const maxJsonExportCount = 500;
 
 const bulkExportFileName = () => `bulkexport_${new Date().toISOString().split("T")[0]}`;

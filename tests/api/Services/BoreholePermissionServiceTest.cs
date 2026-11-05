@@ -299,6 +299,35 @@ public class BoreholePermissionServiceTest
     }
 
     [TestMethod]
+    public async Task GetBoreholeIdsUserCannotViewAsyncReturnsEachDeniedIdOnce()
+    {
+        var hiddenBorehole = await AddBoreholeInWorkgroupWithoutReaderAsync();
+        var visibleBorehole = await context.Boreholes.FirstAsync();
+
+        var deniedIds = await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync(ReaderSubjectId, [hiddenBorehole.Id, visibleBorehole.Id, hiddenBorehole.Id, visibleBorehole.Id]);
+
+        CollectionAssert.AreEqual(new[] { hiddenBorehole.Id }, deniedIds.ToArray());
+    }
+
+    [TestMethod]
+    public async Task GetBoreholeIdsUserCannotViewAsyncDeniesBoreholesThatDoNotExist()
+    {
+        var missingBoreholeId = await context.Boreholes.MaxAsync(b => b.Id) + 1;
+
+        var deniedIds = await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync(AdminSubjectId, [missingBoreholeId]);
+
+        CollectionAssert.AreEqual(new[] { missingBoreholeId }, deniedIds.ToArray());
+    }
+
+    [TestMethod]
+    public async Task GetBoreholeIdsUserCannotViewAsyncWithoutIdsReturnsNothing()
+    {
+        var deniedIds = await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync(ReaderSubjectId, []);
+
+        Assert.AreEqual(0, deniedIds.Count);
+    }
+
+    [TestMethod]
     public async Task GetBoreholeIdsUserCannotViewAsyncWithUnknownUser()
         => await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.GetBoreholeIdsUserCannotViewAsync("NON-EXISTENT-NAME", [1]));
 

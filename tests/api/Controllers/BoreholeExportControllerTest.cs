@@ -702,11 +702,71 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
+    public async Task DownloadCsvWithDuplicateIdsWritesEachBoreholeOnceAtItsFirstPosition()
+    {
+        var otherBoreholeId = TestBoreholeId + 1;
+        var ids = new List<int> { otherBoreholeId, TestBoreholeId, otherBoreholeId };
+
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        var exportedIds = GetRecordsFromFileContent(result).Select(record => (string)record.Id).ToList();
+        CollectionAssert.AreEqual(new[] { otherBoreholeId, TestBoreholeId }.Select(id => id.ToString(CultureInfo.InvariantCulture)).ToList(), exportedIds);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithOneDeniedBoreholeReturnsBadRequest()
+    {
+        var deniedBoreholeId = TestBoreholeId + 1;
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync((string? _, IReadOnlyCollection<int> boreholeIds) => boreholeIds.Where(id => id == deniedBoreholeId).ToList());
+        controller = new BoreholeExportController(context, profileCloudService, new Mock<ILogger<BoreholeExportController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [TestBoreholeId, deniedBoreholeId] }, CancellationToken.None) as BadRequestObjectResult;
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual("The user lacks permissions to export the borehole(s).", result.Value);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvChecksPermissionsOnlyForBoreholesThatExist()
+    {
+        IReadOnlyCollection<int>? checkedIds = null;
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .Callback((string? _, IReadOnlyCollection<int> boreholeIds) => checkedIds = boreholeIds)
+            .ReturnsAsync([]);
+        controller = new BoreholeExportController(context, profileCloudService, new Mock<ILogger<BoreholeExportController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [0, TestBoreholeId, 87] }, CancellationToken.None) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(checkedIds);
+        CollectionAssert.AreEqual(new[] { TestBoreholeId }, checkedIds.ToArray());
+    }
+
+    [TestMethod]
     public void BoreholeExportRequestAcceptsMoreThanHundredIds()
     {
         var request = new BoreholeExportRequest { Ids = Enumerable.Range(1, 150).ToList() };
 
         Assert.IsTrue(Validator.TryValidateObject(request, new ValidationContext(request), new List<ValidationResult>(), validateAllProperties: true));
+    }
+
+    [TestMethod]
+    public void CsvExportRequestBodyLimitFitsHundredThousandIds()
+    {
+        var sizeLimit = typeof(BoreholeExportController).GetMethod(nameof(BoreholeExportController.ExportCsvAsync))?.GetCustomAttribute<RequestSizeLimitAttribute>();
+        Assert.IsNotNull(sizeLimit);
+
+        // Eight-digit ids, one digit more than the seeded ones, leave room for the database to grow.
+        var request = new BoreholeExportRequest { Ids = Enumerable.Range(10_000_000, 100_000).ToList() };
+        var body = JsonSerializer.SerializeToUtf8Bytes(request, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+        Assert.IsLessThan(BoreholeExportRequest.MaxRequestBodySize, body.Length);
     }
 
     [TestMethod]

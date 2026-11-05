@@ -120,7 +120,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
     [hideProgress, setIsExporting, showAlert, t],
   );
 
-  // The prompt only closes itself on cancel, so the export dialog stays open for another choice.
+  // The prompt opens on top of the export dialog, so cancelling it leaves the dialog open for another choice.
   const startExport = (item: ExportItem) => {
     const { confirmation } = item;
     if (!confirmation) {

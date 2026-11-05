@@ -169,18 +169,21 @@ public class BoreholeExportController : ControllerBase
     /// <summary>
     /// Exports the details of the requested boreholes as a CSV file. Unlike the other export formats, the number of
     /// boreholes is not limited: a CSV row is flat and cheap to produce, and a selection is bounded by the boreholes
-    /// a user can filter for.
+    /// a user can filter for. Only the request body is capped, at <see cref="BoreholeExportRequest.MaxRequestBodySize"/>
+    /// bytes, so a request with an absurd number of ids is answered with 413 before it reaches the database.
     /// </summary>
     /// <param name="request">The ids of the boreholes to export, in the order their rows are written.</param>
     /// <param name="cancellationToken">Aborts the export once the client is gone, so a cancelled export of thousands of boreholes stops loading them.</param>
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
     [HttpPost("csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(BoreholeExportRequest.MaxRequestBodySize)]
     public async Task<IActionResult> ExportCsvAsync([FromBody] BoreholeExportRequest request, CancellationToken cancellationToken)
     {
         var idList = request.Ids.ToList();
         var loadedBoreholes = await context.Boreholes
             .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
+            .AsNoTracking()
             .Where(borehole => idList.Contains(borehole.Id))
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
