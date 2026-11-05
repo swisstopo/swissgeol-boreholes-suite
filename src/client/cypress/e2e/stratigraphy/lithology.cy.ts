@@ -756,7 +756,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
           colorSecondaryId: 5,
           componentConParticleCodelistIds: [1, 4],
           componentConMineralCodelistIds: [2],
-          grainSizeId: 3,
+          grainSizeId: 5,
           grainAngularityId: 1,
           gradationId: 4,
           cementationId: 7,
@@ -811,7 +811,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
         {
           lithologyConId: 3,
           colorPrimaryId: 3,
-          grainSizeId: 6,
+          grainSizeId: 9,
           grainAngularityId: 8,
         },
         {
