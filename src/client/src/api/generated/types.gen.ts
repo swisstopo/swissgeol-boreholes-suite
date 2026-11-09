@@ -357,10 +357,6 @@ export type Borehole = {
    * Filled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.
    */
   sourceTypeCodelistIds?: Array<number> | null;
-  /**
-   * Gets the BDMS.Models.Codelists with schema name 'source_type' used by the BDMS.Models.Borehole.
-   */
-  sourceTypeCodelists?: Array<Codelist> | null;
 };
 
 /**
@@ -3564,10 +3560,6 @@ export type BoreholeWritable = {
    * Filled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.
    */
   sourceTypeCodelistIds?: Array<number> | null;
-  /**
-   * Gets the BDMS.Models.Codelists with schema name 'source_type' used by the BDMS.Models.Borehole.
-   */
-  sourceTypeCodelists?: Array<CodelistWritable> | null;
 };
 
 /**

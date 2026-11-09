@@ -7560,14 +7560,6 @@
             },
             "description": "Gets or sets the codelist ids with schema name 'source_type' of the BDMS.Models.Borehole's source documents.\r\nFilled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.",
             "nullable": true
-          },
-          "sourceTypeCodelists": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Codelist"
-            },
-            "description": "Gets the BDMS.Models.Codelists with schema name 'source_type' used by the BDMS.Models.Borehole.",
-            "nullable": true
           }
         },
         "additionalProperties": false,

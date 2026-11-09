@@ -513,7 +513,9 @@ public class Borehole : IChangeTracking, IIdentifyable
 
     /// <summary>
     /// Gets the <see cref="Codelist"/>s with schema name 'source_type' used by the <see cref="Borehole"/>.
+    /// Not serialized, so a request cannot create codelists through it; clients use <see cref="SourceTypeCodelistIds"/>.
     /// </summary>
+    [JsonIgnore]
     public ICollection<Codelist>? SourceTypeCodelists { get; set; }
 
     /// <summary>
