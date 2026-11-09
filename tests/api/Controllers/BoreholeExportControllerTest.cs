@@ -89,10 +89,6 @@ public class BoreholeExportControllerTest
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string>(), It.IsAny<int>()))
-            .ReturnsAsync(true);
-
-        boreholePermissionServiceMock
             .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
             .ReturnsAsync(Array.Empty<int>());
 
@@ -799,11 +795,8 @@ public class BoreholeExportControllerTest
     [TestMethod]
     public async Task ExportControllerMethodsShouldValidateUserHasPermissions()
     {
-        // Override return value of HasUserWorkgroupPermissions in this specific test
+        // Deny viewing every borehole in this specific test
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Loose);
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string>(), It.IsAny<int>()))
-            .ReturnsAsync(false);
         boreholePermissionServiceMock
             .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
             .ReturnsAsync((string? _, IReadOnlyCollection<int> boreholeIds) => boreholeIds.ToList());
