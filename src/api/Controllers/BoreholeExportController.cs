@@ -59,6 +59,7 @@ public class BoreholeExportController : ControllerBase
     /// <param name="cancellationToken">Aborts the export once the client is gone, so a cancelled export stops loading the boreholes with all their data.</param>
     [HttpPost("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(BoreholeExportRequest.MaxRequestBodySize)]
     public async Task<ActionResult> ExportJsonAsync([FromBody] BoreholeJsonExportRequest request, CancellationToken cancellationToken)
     {
         var ids = request.Ids.ToList();
@@ -327,6 +328,7 @@ public class BoreholeExportController : ControllerBase
     /// <returns>A ZIP file including the borehole data as JSON and all corresponding attachments.</returns>
     [HttpPost("zip")]
     [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(BoreholeExportRequest.MaxRequestBodySize)]
     public async Task<IActionResult> ExportJsonWithAttachmentsAsync([FromBody] BoreholeJsonExportRequest request, CancellationToken cancellationToken)
     {
         var ids = request.Ids.ToList();

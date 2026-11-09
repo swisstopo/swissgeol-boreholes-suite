@@ -16,6 +16,8 @@ namespace BDMS.Controllers;
 public class BoreholeExportEndpointTest
 {
     private const string CsvExportPath = "/api/v2/boreholeexport/csv";
+    private const string JsonExportPath = "/api/v2/boreholeexport/json";
+    private const string ZipExportPath = "/api/v2/boreholeexport/zip";
     private const int ExportedBoreholeId = 1_000_068;
     private static BdmsWebApplicationFactory factory;
 
@@ -31,21 +33,27 @@ public class BoreholeExportEndpointTest
     public static void ClassCleanup() => factory?.Dispose();
 
     [TestMethod]
-    public async Task CsvExportRefusesABodyOverTheLimitAsTooLarge()
+    [DataRow(CsvExportPath, DisplayName = "CSV")]
+    [DataRow(JsonExportPath, DisplayName = "JSON")]
+    [DataRow(ZipExportPath, DisplayName = "JSON + profile")]
+    public async Task ExportRefusesABodyOverTheLimitAsTooLarge(string exportPath)
     {
         using var client = CreateAdminClient();
 
-        using var response = await client.PostAsync(CsvExportPath, CreateCsvExportBody(BoreholeExportRequest.MaxRequestBodySize + 1));
+        using var response = await client.PostAsync(exportPath, CreateExportBody(BoreholeExportRequest.MaxRequestBodySize + 1));
 
         Assert.AreEqual(HttpStatusCode.RequestEntityTooLarge, response.StatusCode);
     }
 
     [TestMethod]
-    public async Task CsvExportAcceptsABodyAtTheLimit()
+    [DataRow(CsvExportPath, DisplayName = "CSV")]
+    [DataRow(JsonExportPath, DisplayName = "JSON")]
+    [DataRow(ZipExportPath, DisplayName = "JSON + profile")]
+    public async Task ExportAcceptsABodyAtTheLimit(string exportPath)
     {
         using var client = CreateAdminClient();
 
-        using var response = await client.PostAsync(CsvExportPath, CreateCsvExportBody(BoreholeExportRequest.MaxRequestBodySize));
+        using var response = await client.PostAsync(exportPath, CreateExportBody(BoreholeExportRequest.MaxRequestBodySize));
 
         // The requested borehole does not exist, so a body that passes the limit is answered with 404.
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode, await response.Content.ReadAsStringAsync());
@@ -69,10 +77,10 @@ public class BoreholeExportEndpointTest
     }
 
     /// <summary>
-    /// Creates a CSV export request body of exactly <paramref name="size"/> bytes. It asks for one borehole id
+    /// Creates an export request body of exactly <paramref name="size"/> bytes. It asks for one borehole id
     /// that does not exist and is padded with whitespace, so reaching the size costs no database work.
     /// </summary>
-    private static ByteArrayContent CreateCsvExportBody(int size)
+    private static ByteArrayContent CreateExportBody(int size)
     {
         const string start = "{\"ids\":[1]";
         const string end = "}";
