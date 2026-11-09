@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.Text;
 
 namespace BDMS.Services;
@@ -17,7 +18,7 @@ public class StreamedCsvResultTest
         using var body = new MemoryStream();
         httpContext.Response.Body = body;
 
-        await new StreamedCsvResult(CsvFileName, WriteTwoRecordsAsync).ExecuteResultAsync(CreateActionContext(httpContext));
+        await new StreamedCsvResult(CsvFileName, WriteTwoRecordsAsync, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         var content = body.ToArray();
         CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, content.Take(3).ToArray());
@@ -31,7 +32,7 @@ public class StreamedCsvResultTest
         using var body = new MemoryStream();
         httpContext.Response.Body = body;
 
-        await new StreamedCsvResult(CsvFileName, WriteTwoRecordsAsync).ExecuteResultAsync(CreateActionContext(httpContext));
+        await new StreamedCsvResult(CsvFileName, WriteTwoRecordsAsync, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         var contentDisposition = httpContext.Response.Headers.ContentDisposition.ToString();
         Assert.AreEqual("text/csv", httpContext.Response.ContentType);
@@ -58,7 +59,7 @@ public class StreamedCsvResultTest
                 csvWriter.WriteField(longRemark);
                 await csvWriter.NextRecordAsync();
             }
-        }).ExecuteResultAsync(CreateActionContext(httpContext));
+        }, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         Assert.AreEqual(3 + (3 * (1 + 1 + longRemark.Length + 2)), body.WrittenLength);
     }
@@ -76,9 +77,59 @@ public class StreamedCsvResultTest
         {
             observedToken = token;
             return Task.CompletedTask;
-        }).ExecuteResultAsync(CreateActionContext(httpContext));
+        }, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         Assert.AreEqual(clientGone.Token, observedToken);
+    }
+
+    [TestMethod]
+    public async Task ExecuteResultAsyncKeepsTheCancellationWhenTheConnectionIsGone()
+    {
+        // A client that gives up leaves a dead connection behind, so flushing the buffered rest of the
+        // file fails as well. That failure must not replace the cancellation, or a normal abort would
+        // be logged as a failed export.
+        using var clientGone = new CancellationTokenSource();
+        var httpContext = new DefaultHttpContext { RequestAborted = clientGone.Token };
+        using var body = new BreakableStream();
+        httpContext.Response.Body = body;
+
+        var result = new StreamedCsvResult(
+            CsvFileName,
+            async (csvWriter, token) =>
+            {
+                await WriteTwoRecordsAsync(csvWriter, token);
+                body.Break();
+                await clientGone.CancelAsync();
+                token.ThrowIfCancellationRequested();
+            },
+            NullLogger.Instance);
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() => result.ExecuteResultAsync(CreateActionContext(httpContext)));
+    }
+
+    [TestMethod]
+    public async Task ExecuteResultAsyncSurfacesTheWriteFailureWithTheFileName()
+    {
+        // Once the response has started, the exception is the only record of a failed export, so it
+        // names the file and keeps the original failure rather than the one from flushing to a broken stream.
+        var httpContext = new DefaultHttpContext();
+        using var body = new BreakableStream();
+        httpContext.Response.Body = body;
+
+        var result = new StreamedCsvResult(
+            CsvFileName,
+            async (csvWriter, token) =>
+            {
+                await WriteTwoRecordsAsync(csvWriter, token);
+                body.Break();
+                throw new InvalidOperationException("borehole data gone");
+            },
+            NullLogger.Instance);
+
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => result.ExecuteResultAsync(CreateActionContext(httpContext)));
+
+        StringAssert.Contains(exception.Message, CsvFileName);
+        Assert.AreEqual("borehole data gone", exception.InnerException?.Message);
     }
 
     private static async Task WriteTwoRecordsAsync(CsvWriter csvWriter, CancellationToken cancellationToken)
@@ -151,5 +202,66 @@ public class StreamedCsvResultTest
 
         private static InvalidOperationException SynchronousOperationException() =>
             new("Synchronous operations are disallowed. Call WriteAsync or FlushAsync instead.");
+    }
+
+    /// <summary>
+    /// Accepts asynchronous writes until <see cref="Break"/> is called, after which every write and flush
+    /// fails the way a dead client connection would.
+    /// </summary>
+    private sealed class BreakableStream : Stream
+    {
+        private bool broken;
+
+        public override bool CanRead => false;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => true;
+
+        public override long Length => throw new NotSupportedException();
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        internal void Break() => broken = true;
+
+        public override void Flush() => ThrowIfBroken();
+
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count) => ThrowIfBroken();
+
+        public override Task FlushAsync(CancellationToken cancellationToken)
+        {
+            ThrowIfBroken();
+            return Task.CompletedTask;
+        }
+
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            ThrowIfBroken();
+            return Task.CompletedTask;
+        }
+
+        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            ThrowIfBroken();
+            return ValueTask.CompletedTask;
+        }
+
+        private void ThrowIfBroken()
+        {
+            if (broken)
+            {
+                throw new IOException("The response stream is no longer writable.");
+            }
+        }
     }
 }

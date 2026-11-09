@@ -200,7 +200,8 @@ public class BoreholeExportController : ControllerBase
 
         return new StreamedCsvResult(
             $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv",
-            (csvWriter, writeCancellationToken) => WriteBoreholesCsvAsync(csvWriter, boreholes, boreholeGeometries, writeCancellationToken));
+            (csvWriter, writeCancellationToken) => WriteBoreholesCsvAsync(csvWriter, boreholes, boreholeGeometries, writeCancellationToken),
+            logger);
     }
 
     /// <summary>
