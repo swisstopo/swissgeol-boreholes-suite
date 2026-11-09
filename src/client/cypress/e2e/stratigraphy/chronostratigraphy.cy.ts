@@ -19,7 +19,7 @@ describe("Tests for the chronostratigraphy editor.", () => {
 
     cy.get('.MuiPaper-elevation [role="listbox"]').find('[role="option"]').eq(1).click();
     cy.wait("@chronostratigraphy_PUT");
-    cy.get('[data-cy="layer-card"] [data-testid="CloseIcon"]').click();
+    cy.get('[data-cy="layer-card"] button[aria-label="Close"]').click();
 
     // delete chronostratigraphy
     cy.get('[data-cy="layer-card"] [data-testid="DeleteIcon"]').click();
