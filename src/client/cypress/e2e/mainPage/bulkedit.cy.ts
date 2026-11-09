@@ -32,6 +32,10 @@ function startBulkEditing() {
   cy.contains("button", "Bulk editing").click();
 }
 
+function expandBulkEditAccordion(title: string) {
+  cy.contains('[data-cy="bulk-edit-accordion"]', title).find(".MuiAccordionSummary-root").click();
+}
+
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
     giveAdminUser1workgroup();
@@ -195,10 +199,8 @@ describe("Test the borehole bulk edit feature.", () => {
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     startBulkEditing();
-    cy.get('[data-cy="bulk-edit-accordion"] .MuiAccordionSummary-expandIconWrapper').click({
-      multiple: true,
-      force: true,
-    });
+    expandBulkEditAccordion("Stored in the drill core repository");
+    expandBulkEditAccordion("Source document type");
 
     setSelect("coreRepositoryStored", 0);
     toggleMultiSelect("sourceType", [2]);
@@ -218,10 +220,7 @@ describe("Test the borehole bulk edit feature.", () => {
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
     startBulkEditing();
-    cy.get('[data-cy="bulk-edit-accordion"] .MuiAccordionSummary-expandIconWrapper').click({
-      multiple: true,
-      force: true,
-    });
+    expandBulkEditAccordion("Source document type");
 
     const sourceTypeResetButton = () =>
       cy.contains('[data-cy="bulk-edit-accordion"]', "Source document type").find('[data-cy="bulk-edit-reset-button"]');
