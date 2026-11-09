@@ -12,7 +12,7 @@ export interface PromptAction {
 }
 
 /** A translation key together with the values its text interpolates. */
-export interface TranslationWithValues {
+interface TranslationWithValues {
   key: string;
   values: TOptions;
 }
