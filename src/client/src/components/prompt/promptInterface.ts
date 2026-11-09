@@ -1,17 +1,28 @@
 import { ReactElement, ReactNode } from "react";
+import { TOptions } from "i18next";
 
 export interface PromptAction {
+  // A translation key. The prompt translates it, so an already translated text must not be passed.
   label: string;
-  // Needed when the label is an already translated text, which would make the derived data-cy depend on the language.
-  dataCy?: string;
+  labelValues?: TOptions;
   disabled?: boolean;
   action?: () => void;
   variant?: "text" | "contained" | "outlined";
   icon?: ReactNode;
 }
 
-/** A translation key, or an element for a message that needs markup the key cannot carry. */
-export type PromptMessage = string | ReactElement;
+/** A translation key together with the values its text interpolates. */
+export interface TranslationWithValues {
+  key: string;
+  values: TOptions;
+}
+
+/**
+ * A translation key, a key with the values it interpolates, or an element for a message a key cannot carry, such as
+ * one with markup. The prompt translates keys itself, so an already translated text must not be passed as a string:
+ * it would be looked up as a key a second time.
+ */
+export type PromptMessage = string | TranslationWithValues | ReactElement;
 
 export type ShowPrompt = (message: PromptMessage, actions: PromptAction[], dialogContent?: ReactNode) => void;
 

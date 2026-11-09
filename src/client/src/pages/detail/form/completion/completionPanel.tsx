@@ -236,7 +236,7 @@ export const CompletionPanel = () => {
   };
 
   const deleteSelectedCompletion = () => {
-    showPrompt(t("deleteCompletionMessage"), [
+    showPrompt("deleteCompletionMessage", [
       {
         label: "cancel",
         action: undefined,

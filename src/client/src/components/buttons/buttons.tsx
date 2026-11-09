@@ -9,7 +9,7 @@ import { theme } from "../../AppTheme.ts";
 import { useCapitalizedTranslation } from "../../hooks/useCapitalizedTranslation.ts";
 import { ButtonProps } from "./buttonsInterface";
 
-export const BoreholesBaseButton: FC<ButtonProps> = props => {
+export const BoreholesBaseButton: FC<ButtonProps> = ({ labelValues, ...props }) => {
   const ct = useCapitalizedTranslation();
   // As of now there is no variant "contained" with color "secondary" in the design system, fallback to "primary".
   const color = props.variant === "contained" ? "primary" : (props.color ?? "primary");
@@ -20,7 +20,7 @@ export const BoreholesBaseButton: FC<ButtonProps> = props => {
       color={color}
       endIcon={props.icon}
       sx={{ height: "36px", ...props.sx }}>
-      {props.label && ct(props.label)}
+      {props.label && ct(props.label, labelValues)}
     </Button>
   );
 };

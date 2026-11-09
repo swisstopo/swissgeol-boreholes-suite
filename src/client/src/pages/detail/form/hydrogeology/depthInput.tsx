@@ -81,15 +81,15 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
       return;
     }
 
-    showPrompt(t("changingVerticalReferenceSystemResetsValues"), [
+    showPrompt("changingVerticalReferenceSystemResetsValues", [
       {
-        label: t("cancel"),
+        label: "cancel",
         icon: <X />,
         variant: "outlined",
         action: () => onCancelDepthUnitChange(newDepthUnit),
       },
       {
-        label: t("confirm"),
+        label: "confirm",
         icon: <Check />,
         variant: "contained",
         action: clearDepthValues,

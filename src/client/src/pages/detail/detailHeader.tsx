@@ -165,7 +165,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
                 <DeleteButton
                   label="deleteBorehole"
                   onClick={() =>
-                    showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
+                    showPrompt({ key: "deleteBoreholesMessage", values: { count: 1 } }, [
                       {
                         label: "cancel",
                       },

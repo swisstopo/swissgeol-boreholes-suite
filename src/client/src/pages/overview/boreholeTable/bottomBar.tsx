@@ -80,7 +80,7 @@ const BottomBar = ({
             <DeleteButton
               color="secondary"
               onClick={() =>
-                showPrompt(t("deleteBoreholesMessage", { count: selectionModel.length }), [
+                showPrompt({ key: "deleteBoreholesMessage", values: { count: selectionModel.length } }, [
                   {
                     label: "cancel",
                   },

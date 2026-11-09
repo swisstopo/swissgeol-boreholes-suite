@@ -134,11 +134,11 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
     }
 
     const translationValues = { count: confirmation.exportedCount };
-    showPrompt(t(confirmation.message, translationValues), [
+    showPrompt({ key: confirmation.message, values: translationValues }, [
       { label: "cancel" },
       {
-        label: t(confirmation.confirmLabel, translationValues),
-        dataCy: "confirm-export-button",
+        label: confirmation.confirmLabel,
+        labelValues: translationValues,
         icon: <ArrowDownToLine />,
         variant: "contained",
         action: () => void handleExport(item.exportFunction),

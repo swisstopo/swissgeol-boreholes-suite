@@ -209,7 +209,7 @@ describe("export confirmation", () => {
 
     await waitFor(() => expect(byCy("prompt")?.textContent).toContain('exportJsonLimited:{"count":500}'));
     // The button capitalizes its label, so the key's first letter is compared case-insensitively.
-    expect(byPromptCy("confirm-export-button")?.textContent).toMatch(/^exportFirstCount:\{"count":500\}$/i);
+    expect(byPromptCy("exportfirstcount-button")?.textContent).toMatch(/^exportFirstCount:\{"count":500\}$/i);
     expect(exportFunction).not.toHaveBeenCalled();
   });
 
@@ -230,9 +230,9 @@ describe("export confirmation", () => {
     const exportFunction = vi.fn(() => Promise.resolve());
     render(<ConfirmingExportDialogHarness exportFunction={exportFunction} />);
     clickCy("json-button");
-    await waitFor(() => expect(byPromptCy("confirm-export-button")).not.toBeNull());
+    await waitFor(() => expect(byPromptCy("exportfirstcount-button")).not.toBeNull());
 
-    clickPromptCy("confirm-export-button");
+    clickPromptCy("exportfirstcount-button");
 
     await waitFor(() => expect(exportFunction).toHaveBeenCalledTimes(1));
   });
