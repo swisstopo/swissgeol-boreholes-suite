@@ -51,15 +51,20 @@ public class StreamedCsvResultTest
         httpContext.Response.Body = body;
         var longRemark = new string('x', 64 * 1024);
 
-        await new StreamedCsvResult(CsvFileName, async (csvWriter, _) =>
-        {
-            for (var record = 0; record < 3; record++)
+        var result = new StreamedCsvResult(
+            CsvFileName,
+            async (csvWriter, _) =>
             {
-                csvWriter.WriteField(record);
-                csvWriter.WriteField(longRemark);
-                await csvWriter.NextRecordAsync();
-            }
-        }, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
+                for (var record = 0; record < 3; record++)
+                {
+                    csvWriter.WriteField(record);
+                    csvWriter.WriteField(longRemark);
+                    await csvWriter.NextRecordAsync();
+                }
+            },
+            NullLogger.Instance);
+
+        await result.ExecuteResultAsync(CreateActionContext(httpContext));
 
         Assert.AreEqual(3 + (3 * (1 + 1 + longRemark.Length + 2)), body.WrittenLength);
     }
@@ -73,11 +78,16 @@ public class StreamedCsvResultTest
         httpContext.Response.Body = body;
 
         CancellationToken observedToken = default;
-        await new StreamedCsvResult(CsvFileName, (_, token) =>
-        {
-            observedToken = token;
-            return Task.CompletedTask;
-        }, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
+        var result = new StreamedCsvResult(
+            CsvFileName,
+            (_, token) =>
+            {
+                observedToken = token;
+                return Task.CompletedTask;
+            },
+            NullLogger.Instance);
+
+        await result.ExecuteResultAsync(CreateActionContext(httpContext));
 
         Assert.AreEqual(clientGone.Token, observedToken);
     }
