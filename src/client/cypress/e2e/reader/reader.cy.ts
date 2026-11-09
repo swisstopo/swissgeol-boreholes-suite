@@ -31,7 +31,7 @@ describe("Reader tests", () => {
     navigateInSidebar(SidebarMenuItem.borehole);
     // verify all text inputs are readonly on Borehole tab
     cy.get(".MuiFormControl-root")
-      .should("have.length", 23)
+      .should("have.length", 25)
       .each(i => {
         cy.wrap(i).should("have.class", "readonly", "readonly");
       });

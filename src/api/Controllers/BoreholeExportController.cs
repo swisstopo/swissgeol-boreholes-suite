@@ -187,6 +187,7 @@ public class BoreholeExportController : ControllerBase
         var idList = request.Ids.ToList();
         var loadedBoreholes = await context.Boreholes
             .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
+            .Include(b => b.BoreholeSourceTypeCodes)
             .AsNoTracking()
             .Where(borehole => idList.Contains(borehole.Id))
             .ToListAsync(cancellationToken)
@@ -223,6 +224,8 @@ public class BoreholeExportController : ControllerBase
         csvWriter.WriteField(nameof(Borehole.RestrictionId));
         csvWriter.WriteField(nameof(Borehole.RestrictionUntil));
         csvWriter.WriteField(nameof(Borehole.NationalInterest));
+        csvWriter.WriteField(nameof(Borehole.CoreRepositoryStored));
+        csvWriter.WriteField(nameof(Borehole.SourceTypeCodelistIds));
         csvWriter.WriteField(nameof(Borehole.LocationX));
         csvWriter.WriteField(nameof(Borehole.LocationY));
         csvWriter.WriteField(nameof(Borehole.LocationXLV03));
@@ -280,6 +283,11 @@ public class BoreholeExportController : ControllerBase
             csvWriter.WriteField(b.RestrictionId);
             csvWriter.WriteField(b.RestrictionUntil);
             csvWriter.WriteField(b.NationalInterest);
+            csvWriter.WriteField(b.CoreRepositoryStored);
+
+            // The CSV delimiter is ';', so the comma separated ids need no quoting.
+            b.MapSourceTypeCodelistIds();
+            csvWriter.WriteField(string.Join(",", b.SourceTypeCodelistIds ?? []));
             csvWriter.WriteField(b.LocationX);
             csvWriter.WriteField(b.LocationY);
             csvWriter.WriteField(b.LocationXLV03);
@@ -450,6 +458,7 @@ public class BoreholeExportController : ControllerBase
     {
         foreach (var borehole in boreholes)
         {
+            borehole.MapSourceTypeCodelistIds();
             MapLithologyCodelists(borehole);
             MapHydrotestCodelists(borehole);
             MapLogFileCodelists(borehole);

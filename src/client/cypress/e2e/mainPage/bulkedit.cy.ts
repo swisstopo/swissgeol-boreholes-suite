@@ -1,6 +1,14 @@
 import { saveForm } from "../helpers/buttonHelpers";
 import { checkAllVisibleRows, checkRowWithText, showTableAndWaitForData } from "../helpers/dataGridHelpers";
-import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
+import {
+  evaluateInput,
+  evaluateMultiSelect,
+  evaluateSelect,
+  evaluateYesNoSelect,
+  setInput,
+  setSelect,
+  toggleMultiSelect,
+} from "../helpers/formHelpers";
 import {
   createBorehole,
   giveAdminUser1workgroup,
@@ -24,6 +32,10 @@ function startBulkEditing() {
   cy.contains("button", "Bulk editing").click();
 }
 
+function expandBulkEditAccordion(title: string) {
+  cy.contains('[data-cy="bulk-edit-accordion"]', title).find(".MuiAccordionSummary-root").click();
+}
+
 describe("Test the borehole bulk edit feature.", () => {
   it("opens the bulk edit dialog with all boreholes selected", () => {
     giveAdminUser1workgroup();
@@ -40,8 +52,8 @@ describe("Test the borehole bulk edit feature.", () => {
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-    // With a single workgroup the workgroup accordion is hidden, leaving 19 of the 20 fields.
-    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 19);
+    // With a single workgroup the workgroup accordion is hidden, leaving 21 of the 22 fields.
+    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 21);
 
     giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);
@@ -49,7 +61,7 @@ describe("Test the borehole bulk edit feature.", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
+    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 22);
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
     cy.get('[data-cy="workgroup-formSelect"]').should("have.length", 1);
@@ -132,11 +144,12 @@ describe("Test the borehole bulk edit feature.", () => {
       cy.wrap($input).should("have.value", "");
     });
 
-    cy.get('[data-cy$="-formSelect"] input[type=text]').should("have.length", 14);
+    cy.get('[data-cy$="-formSelect"] input[type=text]').should("have.length", 15);
     cy.get('[data-cy$="-formSelect"] input[type=text]').each($input => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).should("have.value", "");
     });
+    evaluateMultiSelect("sourceType", []);
   });
 
   it("can reset bulkedit fields", () => {
@@ -179,6 +192,47 @@ describe("Test the borehole bulk edit feature.", () => {
     evaluateSelect("restriction", "");
     evaluateSelect("workgroup", "");
     evaluateSelect("nationalInterest", "");
+  });
+
+  it("bulk edits core repository stored and source types", () => {
+    createBoreholes();
+    goToRouteAndAcceptTerms(`/`);
+    showTableAndWaitForData();
+    startBulkEditing();
+    expandBulkEditAccordion("Stored in the drill core repository");
+    expandBulkEditAccordion("Source document type");
+
+    setSelect("coreRepositoryStored", 0);
+    toggleMultiSelect("sourceType", [2]);
+    evaluateMultiSelect("sourceType", ["borehole profile"]);
+    saveForm();
+    cy.wait("@bulk-edit").its("response.statusCode").should("eq", 200);
+
+    cy.get("@borehole_id_2").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+      evaluateYesNoSelect("coreRepositoryStored", "yes");
+      evaluateMultiSelect("sourceTypeCodelistIds", ["borehole profile"]);
+    });
+  });
+
+  it("leaves source types untouched when the multi-select is emptied", () => {
+    createBoreholes();
+    goToRouteAndAcceptTerms(`/`);
+    showTableAndWaitForData();
+    startBulkEditing();
+    expandBulkEditAccordion("Source document type");
+
+    const sourceTypeResetButton = () =>
+      cy.contains('[data-cy="bulk-edit-accordion"]', "Source document type").find('[data-cy="bulk-edit-reset-button"]');
+
+    toggleMultiSelect("sourceType", [2]);
+    sourceTypeResetButton().should("have.css", "visibility", "visible");
+    cy.get('[data-cy="save-button"]').should("be.enabled");
+
+    toggleMultiSelect("sourceType", [0]);
+    evaluateMultiSelect("sourceType", []);
+    sourceTypeResetButton().should("have.css", "visibility", "hidden");
+    cy.get('[data-cy="save-button"]').should("be.disabled");
   });
 
   it("cannot select locked boreholes for bulk edit", () => {

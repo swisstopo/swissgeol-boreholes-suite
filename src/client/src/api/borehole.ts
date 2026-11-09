@@ -83,7 +83,7 @@ const unlockBorehole = async (id: number): Promise<void> => {
 
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
-type BulkEditValue = string | number | boolean | null | undefined;
+type BulkEditValue = string | number | boolean | number[] | null | undefined;
 
 export const buildBulkEditRequest = (
   boreholeIds: number[],
@@ -294,7 +294,7 @@ enum BooleanFilter {
   true,
 }
 
-type BooleanFilterValue = "true" | "false" | undefined;
+type BooleanFilterValue = "true" | "false";
 type NullableBooleanFilterValue = BooleanFilterValue | "null";
 
 interface BaseFilterRequest {
@@ -311,6 +311,7 @@ interface BaseFilterRequest {
   canton?: string[] | null;
   municipality?: string[] | null;
   logToolTypeId?: number[] | null;
+  sourceTypeId?: number[] | null;
   identifierTypeId?: number[] | null;
   identifierValue?: string | null;
   restrictionUntilFrom?: string | null;
@@ -330,6 +331,7 @@ interface BaseFilterRequest {
 
 export interface FilterRequest extends BaseFilterRequest {
   nationalInterest?: NullableBooleanFilterValue;
+  coreRepositoryStored?: NullableBooleanFilterValue;
   topBedrockIntersected?: NullableBooleanFilterValue;
   hasGroundwater?: NullableBooleanFilterValue;
   hasGeometry?: BooleanFilterValue;
@@ -341,6 +343,7 @@ export interface FilterRequest extends BaseFilterRequest {
 
 interface FilterRequestSubmission extends BaseFilterRequest {
   nationalInterest?: NullableBooleanFilter;
+  coreRepositoryStored?: NullableBooleanFilter;
   topBedrockIntersected?: NullableBooleanFilter;
   hasGroundwater?: NullableBooleanFilter;
   hasGeometry?: BooleanFilter;
@@ -357,7 +360,6 @@ export interface FilterResponse {
   totalPages: number;
   boreholes: BoreholeListItem[];
   geoJson: FeatureCollection | null;
-  filteredBoreholeIds: number[];
   selectableBoreholeIds: number[];
 }
 
@@ -382,8 +384,10 @@ export interface FilterStatsResponse {
   canton: Record<string, number>;
   municipality: Record<string, number>;
   logToolTypeId: Record<number, number>;
+  sourceTypeId: Record<number, number>;
   workflowStatusCount: Record<string, number>;
   nationalInterest: NullableBooleanCounts;
+  coreRepositoryStored: NullableBooleanCounts;
   topBedrockIntersected: NullableBooleanCounts;
   hasGroundwater: NullableBooleanCounts;
   hasGeometry: BooleanCounts;
@@ -450,6 +454,7 @@ export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterR
   hasGroundwater: parseNullableBooleanFilter(filterRequest.hasGroundwater),
   topBedrockIntersected: parseNullableBooleanFilter(filterRequest.topBedrockIntersected),
   nationalInterest: parseNullableBooleanFilter(filterRequest.nationalInterest),
+  coreRepositoryStored: parseNullableBooleanFilter(filterRequest.coreRepositoryStored),
   hasGeometry: parseBooleanFilter(filterRequest.hasGeometry),
   hasLogs: parseBooleanFilter(filterRequest.hasLogs),
   hasProfiles: parseBooleanFilter(filterRequest.hasProfiles),
@@ -497,6 +502,7 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
     topBedrockWeatheredMdMin: getFloat(SessionKeys.topBedrockWeatheredMdMin),
     topBedrockWeatheredMdMax: getFloat(SessionKeys.topBedrockWeatheredMdMax),
     nationalInterest: get(SessionKeys.nationalInterest) as NullableBooleanFilterValue,
+    coreRepositoryStored: get(SessionKeys.coreRepositoryStored) as NullableBooleanFilterValue,
     topBedrockIntersected: get(SessionKeys.topBedrockIntersected) as NullableBooleanFilterValue,
     hasGroundwater: get(SessionKeys.hasGroundwater) as NullableBooleanFilterValue,
     hasGeometry: get(SessionKeys.hasGeometry) as BooleanFilterValue,

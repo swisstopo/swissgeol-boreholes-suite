@@ -46,6 +46,8 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | RestrictionId                 | ID (Codeliste) | Nein        | Beschränkung                                                                          |
 | RestrictionUntil              | Datum          | Nein        | Ablaufdatum der Beschränkung                                                          |
 | NationalInterest              | True/False     | Nein        | Nationales Interesse                                                                  |
+| CoreRepositoryStored          | True/False     | Nein        | Im Bohrkernlager eingelagert (siehe [Im Bohrkernlager eingelagert](#im-bohrkernlager-eingelagert)) |
+| SourceTypeCodelistIds         | IDs (Codeliste)| Nein        | Quelldokumenttyp (siehe [Quelldokumenttyp](#quelldokumenttyp))                         |
 | LocationX                     | Dezimalzahl    | Ja          | Koordinate Ost in LV95 oder LV03                                                      |
 | LocationY                     | Dezimalzahl    | Ja          | Koordinate Nord in LV95 oder LV03                                                     |
 | LocationPrecisionId           | ID (Codeliste) | Nein        | +/- Koordinaten [m]                                                                   |
@@ -77,6 +79,14 @@ Mehrere IDs des gleichen ID Typs können importiert werden, indem mehrere Spalte
 ### Koordinaten
 
 Koordinaten können in LV95 oder LV03 importiert werden, das räumliche Bezugssystem wird aus den Koordinaten erkannt und abgespeichert.
+
+### Im Bohrkernlager eingelagert
+
+Fehlt die Spalte `CoreRepositoryStored`, wird für alle Bohrungen "Nein" gesetzt. Eine leere Zelle bedeutet "keine Angabe".
+
+### Quelldokumenttyp
+
+Die Spalte `SourceTypeCodelistIds` enthält eine oder mehrere IDs der Codeliste `source_type`, mit Komma getrennt, z.B. `100001,100003`. Leerzeichen um die IDs werden ignoriert. Eine leere Zelle oder eine fehlende Spalte bedeutet, dass kein Quelldokumenttyp gesetzt wird. Enthält eine Zeile eine ID, die nicht zur Codeliste `source_type` gehört, wird für diese Zeile ein Validierungsfehler gemeldet.
 
 ## Validierung
 
@@ -118,6 +128,8 @@ Die JSON-Datei muss den folgenden Anforderungen entsprechen, damit sie erfolgrei
 - Die Datei muss im UTF-8-Format gespeichert sein.
 - Die JSON-Datei muss ein Array von Objekten enthalten. Jedes Objekt entspricht einem Bohrloch. Auch ein einzelnes Bohrloch muss als Array von einem Objekt definiert werden.
 - Die JSON-Datei eines Bohrlochexports kann als valide Vorlage für den Import betrachtet werden.
+- Fehlt die Eigenschaft `coreRepositoryStored`, wird "Nein" gesetzt; der Wert `null` bedeutet "keine Angabe".
+- `sourceTypeCodelistIds` ist ein Array von IDs der Codeliste `source_type`, z.B. `[100001, 100003]`.
 - Codelistenschlüssel: [https://boreholes.swissgeol.ch/api/v2/codelist/csv](https://boreholes.swissgeol.ch/api/v2/codelist/csv)
 
 ## Anleitung JSON + Profil-Import

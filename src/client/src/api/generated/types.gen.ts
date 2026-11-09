@@ -192,6 +192,11 @@ export type Borehole = {
    */
   nationalInterest?: boolean | null;
   /**
+   * Gets or sets whether the BDMS.Models.Borehole's cores are stored in the drill core repository.
+   * null means "not specified". Boreholes created without the property start at false.
+   */
+  coreRepositoryStored?: boolean | null;
+  /**
    * Gets or sets the BDMS.Models.Borehole's original name.
    */
   originalName?: string | null;
@@ -347,6 +352,11 @@ export type Borehole = {
    * Gets theBDMS.Models.BoreholeCodelist join table entities.
    */
   boreholeCodelists?: Array<BoreholeCodelist> | null;
+  /**
+   * Gets or sets the codelist ids with schema name 'source_type' of the BDMS.Models.Borehole's source documents.
+   * Filled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.
+   */
+  sourceTypeCodelistIds?: Array<number> | null;
 };
 
 /**
@@ -355,12 +365,19 @@ export type Borehole = {
  * them are actually written is controlled by BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate.
  * A masked field must carry a value; a null value is rejected (clearing is not supported),
  * except nullable booleans where null is the deliberate "not specified" state.
+ * Collections must not be null; an empty collection clears the field.
  */
 export type BoreholeBulkUpdate = {
   workgroupId?: number | null;
   restrictionId?: number | null;
   restrictionUntil?: string | null;
   nationalInterest?: boolean | null;
+  coreRepositoryStored?: boolean | null;
+  /**
+   * Gets or sets the source type codelist ids that replace the whole set on every selected borehole.
+   * An empty collection removes all source types.
+   */
+  sourceTypeCodelistIds?: Array<number> | null;
   projectName?: string | null;
   typeId?: number | null;
   purposeId?: number | null;
@@ -1060,6 +1077,11 @@ export type FilterRequest = {
    */
   logToolTypeId?: Array<number> | null;
   /**
+   * Gets or sets the source type codelist IDs filter. Boreholes match if they have at least one of these
+   * source types in their BDMS.Models.Borehole.BoreholeSourceTypeCodes.
+   */
+  sourceTypeId?: Array<number> | null;
+  /**
    * Gets or sets the identifier type (codelist) IDs filter.
    * Boreholes match if at least one BDMS.Models.BoreholeCodelist row has a
    * `CodelistId` in this set; combined with BDMS.Models.FilterRequest.IdentifierValue
@@ -1071,6 +1093,7 @@ export type FilterRequest = {
    */
   identifierValue?: string | null;
   nationalInterest?: NullableBooleanFilterValue;
+  coreRepositoryStored?: NullableBooleanFilterValue;
   topBedrockIntersected?: NullableBooleanFilterValue;
   hasGroundwater?: NullableBooleanFilterValue;
   hasGeometry?: BooleanFilterValue;
@@ -1118,10 +1141,6 @@ export type FilterResponse = {
    * The GeoJSON feature collection for map display.
    */
   geoJson?: Array<IFeature> | null;
-  /**
-   * The IDs of all filtered boreholes.
-   */
-  filteredBoreholeIds?: Array<number>;
   /**
    * The IDs of all unlocked filtered boreholes.
    */
@@ -1188,6 +1207,12 @@ export type FilterStatsResponse = {
     [key: string]: number;
   };
   /**
+   * Gets or sets distinct borehole counts grouped by source type codelist ID.
+   */
+  sourceTypeId?: {
+    [key: string]: number;
+  };
+  /**
    * Gets or sets counts grouped by BDMS.Models.Workflow.Status.
    */
   workflowStatusCount?: {
@@ -1197,6 +1222,7 @@ export type FilterStatsResponse = {
     Published?: number;
   };
   nationalInterest?: NullableBooleanCounts;
+  coreRepositoryStored?: NullableBooleanCounts;
   topBedrockIntersected?: NullableBooleanCounts;
   hasGroundwater?: NullableBooleanCounts;
   hasGeometry?: BooleanCounts;
@@ -3396,6 +3422,11 @@ export type BoreholeWritable = {
    */
   nationalInterest?: boolean | null;
   /**
+   * Gets or sets whether the BDMS.Models.Borehole's cores are stored in the drill core repository.
+   * null means "not specified". Boreholes created without the property start at false.
+   */
+  coreRepositoryStored?: boolean | null;
+  /**
    * Gets or sets the BDMS.Models.Borehole's original name.
    */
   originalName?: string | null;
@@ -3547,6 +3578,11 @@ export type BoreholeWritable = {
    * Gets theBDMS.Models.BoreholeCodelist join table entities.
    */
   boreholeCodelists?: Array<BoreholeCodelist> | null;
+  /**
+   * Gets or sets the codelist ids with schema name 'source_type' of the BDMS.Models.Borehole's source documents.
+   * Filled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.
+   */
+  sourceTypeCodelistIds?: Array<number> | null;
 };
 
 /**
@@ -4031,6 +4067,11 @@ export type FilterRequestWritable = {
    */
   logToolTypeId?: Array<number> | null;
   /**
+   * Gets or sets the source type codelist IDs filter. Boreholes match if they have at least one of these
+   * source types in their BDMS.Models.Borehole.BoreholeSourceTypeCodes.
+   */
+  sourceTypeId?: Array<number> | null;
+  /**
    * Gets or sets the identifier type (codelist) IDs filter.
    * Boreholes match if at least one BDMS.Models.BoreholeCodelist row has a
    * `CodelistId` in this set; combined with BDMS.Models.FilterRequest.IdentifierValue
@@ -4042,6 +4083,7 @@ export type FilterRequestWritable = {
    */
   identifierValue?: string | null;
   nationalInterest?: NullableBooleanFilterValue;
+  coreRepositoryStored?: NullableBooleanFilterValue;
   topBedrockIntersected?: NullableBooleanFilterValue;
   hasGroundwater?: NullableBooleanFilterValue;
   hasGeometry?: BooleanFilterValue;
@@ -4089,10 +4131,6 @@ export type FilterResponseWritable = {
    * The GeoJSON feature collection for map display.
    */
   geoJson?: Array<IFeatureWritable> | null;
-  /**
-   * The IDs of all filtered boreholes.
-   */
-  filteredBoreholeIds?: Array<number>;
   /**
    * The IDs of all unlocked filtered boreholes.
    */

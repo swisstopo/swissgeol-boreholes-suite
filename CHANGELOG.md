@@ -4,9 +4,12 @@
 
 ### Added
 - Lithological layer descriptions can be analyzed automatically. The lithology dialog offers an "Analyze" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein. It needs a data extraction service that offers the classification endpoint and runs with `BERT_ENABLED=true`, which the Helm chart now sets.
+- Boreholes have two new attributes in the restriction section of the General tab: "Stored in the drill core repository" (yes, no or not specified) and "Source document type" (any of driller's log, borehole profile, report, plan, other, not specified). New and existing boreholes start at "no". Both attributes can be filtered, bulk edited, copied, imported and exported. The CSV columns are `CoreRepositoryStored` and `SourceTypeCodelistIds`, the latter as comma separated codelist ids.
+- The grain size of a lithology description can now also be set to the ranges fine-medium, fine-coarse and medium-coarse.
 
 ### Changed
 - Dataextraction service was updated to 1.2.0-dev62.
+- The borehole filter endpoint no longer returns `filteredBoreholeIds` and needs fewer database queries. Boreholes with equal sort values are now paged in a stable order, so no borehole is skipped or repeated between pages.
 - Several users can be added to a workgroup, or a user to several workgroups, in one step. The dialog lists them with checkboxes and a "Select all" option and gives all of them the chosen role.
 - A user now has exactly one role per workgroup. Assigning a role to a user who already has one in that workgroup replaces it. Users who had several roles in a workgroup keep only the highest one, so their permissions stay the same.
 - The Validator role is removed because it granted no permissions beyond Reviewer. Users who were Validators are now Reviewers.

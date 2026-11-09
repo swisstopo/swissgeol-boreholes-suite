@@ -126,7 +126,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     totalPages: 0,
     boreholes: [],
     geoJson: null,
-    filteredBoreholeIds: [],
     selectableBoreholeIds: noSelectableBoreholeIds,
   };
   const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);

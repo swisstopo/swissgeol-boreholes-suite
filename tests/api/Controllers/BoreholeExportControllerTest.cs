@@ -976,6 +976,39 @@ public class BoreholeExportControllerTest
         }
     }
 
+    [TestMethod]
+    public async Task DownloadCsvWritesCoreRepositoryStoredAndSourceTypes()
+    {
+        var sourceTypeIds = await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .OrderBy(c => c.Order)
+            .Select(c => c.Id)
+            .ToListAsync();
+
+        var withTypes = new Borehole { OriginalName = "CORESTORE_CSV_TYPES", WorkgroupId = 1, CoreRepositoryStored = true };
+        withTypes.SyncSourceTypeCodes(new[] { sourceTypeIds[2], sourceTypeIds[0] });
+        var withoutTypes = new Borehole { OriginalName = "CORESTORE_CSV_NONE", WorkgroupId = 1, CoreRepositoryStored = null };
+        context.AddRange(withTypes, withoutTypes);
+        await context.SaveChangesAsync();
+
+        var result = await controller.ExportCsvAsync(new[] { withTypes.Id, withoutTypes.Id }) as FileContentResult;
+        Assert.IsNotNull(result);
+        var records = GetRecordsFromFileContent(result);
+
+        var headers = ((IDictionary<string, object>)records[0]).Keys.ToList();
+        var nationalInterestIndex = headers.IndexOf(nameof(Borehole.NationalInterest));
+        Assert.AreEqual(nameof(Borehole.CoreRepositoryStored), headers[nationalInterestIndex + 1]);
+        Assert.AreEqual(nameof(Borehole.SourceTypeCodelistIds), headers[nationalInterestIndex + 2]);
+
+        var first = records.Single(r => r.Id == withTypes.Id.ToString(CultureInfo.InvariantCulture));
+        Assert.AreEqual("True", first.CoreRepositoryStored);
+        Assert.AreEqual($"{sourceTypeIds[0]},{sourceTypeIds[2]}", first.SourceTypeCodelistIds);
+
+        var second = records.Single(r => r.Id == withoutTypes.Id.ToString(CultureInfo.InvariantCulture));
+        Assert.AreEqual("", second.CoreRepositoryStored);
+        Assert.AreEqual("", second.SourceTypeCodelistIds);
+    }
+
     private static List<dynamic> GetRecordsFromFileContent(byte[] fileContent)
     {
         var memoryStream = new MemoryStream(fileContent);
@@ -987,6 +1020,7 @@ public class BoreholeExportControllerTest
     private static void PopulateCodelistCollectionsFromJoinTables(Borehole newBorehole)
     {
         // Make sure all CodelistId collections are populated so they can be compared, to the export.
+        newBorehole.MapSourceTypeCodelistIds();
         foreach (var strat in newBorehole.Stratigraphies ?? [])
         {
             foreach (var lithology in strat.Lithologies)
@@ -1034,6 +1068,9 @@ public class BoreholeExportControllerTest
     {
         borehole.Observations = borehole.Observations?.Where(o => o.Type != ObservationType.None).OrderBy(o => o.Type).ToList();
         borehole.Completions = borehole.Completions?.OrderBy(o => o.Name).ToList();
+
+        // The database returns the identifier rows in no particular order, and the order can differ between two reads.
+        borehole.BoreholeCodelists = borehole.BoreholeCodelists?.OrderBy(c => c.CodelistId).ThenBy(c => c.Value).ToList();
 
         foreach (var completion in borehole.Completions ?? [])
         {
