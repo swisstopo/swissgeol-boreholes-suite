@@ -977,7 +977,7 @@
         "tags": [
           "BoreholeExport"
         ],
-        "summary": "Exports the details of the requested boreholes as a CSV file. Unlike the other export formats, the number of\r\nboreholes is not limited: a CSV row is flat and cheap to produce, and a selection is bounded by the boreholes\r\na user can filter for. Only the request body is capped, at BDMS.Models.BoreholeExportRequest.MaxRequestBodySize\r\nbytes, so a request with an absurd number of ids is answered with 413 before it reaches the database.",
+        "summary": "Exports the details of the requested boreholes as a CSV file. Unlike the other export formats, the number of\r\nboreholes is not limited: a CSV row is flat and cheap to produce, and a selection is bounded by the boreholes\r\na user can filter for. Only the request body is capped, at BDMS.Models.BoreholeExportRequest.MaxRequestBodySize\r\nbytes, so a request with an absurd number of ids is answered with 413 before it reaches the database.\r\nThe file is streamed to the client record by record rather than built in memory. Everything the database\r\nprovides is loaded before streaming starts, so a failure there can still be answered with an error status.",
         "parameters": [
           {
             "name": "version",
