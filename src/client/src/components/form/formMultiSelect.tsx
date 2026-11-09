@@ -205,7 +205,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                 error={!!formFieldError}
                 helperText={formFieldError?.message ? t(formFieldError.message) : ""}
                 sx={{ ...sx }}
-                className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
+                className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
                 label={labelWithTooltip}
                 {...register(fieldName, {
                   required: required || false,
