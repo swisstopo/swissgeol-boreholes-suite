@@ -1207,7 +1207,7 @@ public class ImportControllerTest
 
         var borehole = await GetImportedAsync("CORESTORE_CSV_MISSING");
         Assert.AreEqual(false, borehole.CoreRepositoryStored);
-        Assert.AreEqual(0, borehole.BoreholeSourceTypeCodes!.Count);
+        Assert.AreEqual(0, borehole.BoreholeSourceTypeCodes.Count);
     }
 
     [TestMethod]
@@ -1222,7 +1222,7 @@ public class ImportControllerTest
 
         var borehole = await GetImportedAsync("CORESTORE_CSV_EMPTY");
         Assert.IsNull(borehole.CoreRepositoryStored);
-        Assert.AreEqual(0, borehole.BoreholeSourceTypeCodes!.Count);
+        Assert.AreEqual(0, borehole.BoreholeSourceTypeCodes.Count);
     }
 
     [TestMethod]
@@ -1238,7 +1238,7 @@ public class ImportControllerTest
 
         var borehole = await GetImportedAsync("CORESTORE_CSV_VALUES");
         Assert.AreEqual(true, borehole.CoreRepositoryStored);
-        CollectionAssert.AreEquivalent(new[] { ids[0], ids[4] }, borehole.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+        CollectionAssert.AreEquivalent(new[] { ids[0], ids[4] }, borehole.BoreholeSourceTypeCodes.Select(c => c.CodelistId).ToArray());
     }
 
     [TestMethod]
@@ -1274,13 +1274,13 @@ public class ImportControllerTest
 
         var missing = await GetImportedAsync("CORESTORE_JSON_MISSING");
         Assert.AreEqual(false, missing.CoreRepositoryStored);
-        Assert.AreEqual(0, missing.BoreholeSourceTypeCodes!.Count);
+        Assert.AreEqual(0, missing.BoreholeSourceTypeCodes.Count);
 
         Assert.IsNull((await GetImportedAsync("CORESTORE_JSON_NULL")).CoreRepositoryStored);
 
         var values = await GetImportedAsync("CORESTORE_JSON_VALUES");
         Assert.AreEqual(true, values.CoreRepositoryStored);
-        CollectionAssert.AreEquivalent(new[] { ids[1], ids[5] }, values.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+        CollectionAssert.AreEquivalent(new[] { ids[1], ids[5] }, values.BoreholeSourceTypeCodes.Select(c => c.CodelistId).ToArray());
     }
 
     [TestMethod]
@@ -1292,7 +1292,7 @@ public class ImportControllerTest
         ActionResultAssert.IsOk((await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByContent(json, "corestore_text.json"))).Result);
 
         var imported = await GetImportedAsync("CORESTORE_JSON_TEXT");
-        CollectionAssert.AreEquivalent(new[] { ids[1] }, imported.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+        CollectionAssert.AreEquivalent(new[] { ids[1] }, imported.BoreholeSourceTypeCodes.Select(c => c.CodelistId).ToArray());
     }
 
     [TestMethod]

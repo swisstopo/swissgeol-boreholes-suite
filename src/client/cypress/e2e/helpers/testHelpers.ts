@@ -423,18 +423,19 @@ export const createBorehole = (borehole: Record<string, unknown>) => {
 
 // Returns the ids of a codelist schema in display order.
 export const getCodelistIds = (schema: string) => {
-  return cy.get("@access_token").then(token => {
-    return cy
-      .request({
+  return cy
+    .get("@access_token")
+    .then(token =>
+      cy.request({
         method: "GET",
         url: `/api/v2/codelist?schema=${schema}`,
         auth: bearerAuth(token),
-      })
-      .then(res => {
-        const codelists = res.body as { id: number; order: number | null }[];
-        return cy.wrap(codelists.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)).map(c => c.id));
-      });
-  });
+      }),
+    )
+    .then(res => {
+      const codelists = res.body as { id: number; order: number | null }[];
+      return cy.wrap(codelists.toSorted((a, b) => (a.order ?? 0) - (b.order ?? 0)).map(c => c.id));
+    });
 };
 
 export const createBoreholeWithCompleteDataset = () => {

@@ -293,7 +293,7 @@ enum BooleanFilter {
   true,
 }
 
-type BooleanFilterValue = "true" | "false" | undefined;
+type BooleanFilterValue = "true" | "false";
 type NullableBooleanFilterValue = BooleanFilterValue | "null";
 
 interface BaseFilterRequest {

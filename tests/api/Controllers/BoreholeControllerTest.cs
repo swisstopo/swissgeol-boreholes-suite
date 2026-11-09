@@ -17,6 +17,7 @@ public class BoreholeControllerTest
     private const string AdminSubjectId = "sub_admin";
     private const string EditorSubjectId = "sub_editor";
     private const int DefaultWorkgroupId = 1;
+    private const string SourceTypeCodelistIdsField = "sourceTypeCodelistIds";
     private int boreholeId;
 
     private BdmsContext context;
@@ -1571,7 +1572,7 @@ public class BoreholeControllerTest
         var id = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.CreateAsync(borehole)).Result).Id;
 
         var read = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
-        CollectionAssert.AreEqual(new[] { sourceTypeIds[0], sourceTypeIds[2] }, read.SourceTypeCodelistIds!.ToArray());
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[0], sourceTypeIds[2] }, read.SourceTypeCodelistIds.ToArray());
     }
 
     [TestMethod]
@@ -1581,16 +1582,16 @@ public class BoreholeControllerTest
         var id = await CreateDisposableBoreholeAsync();
 
         var added = await EditSourceTypesAsync(id, new List<int> { sourceTypeIds[0], sourceTypeIds[1] });
-        CollectionAssert.AreEqual(new[] { sourceTypeIds[0], sourceTypeIds[1] }, added.SourceTypeCodelistIds!.ToArray());
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[0], sourceTypeIds[1] }, added.SourceTypeCodelistIds.ToArray());
 
         var replaced = await EditSourceTypesAsync(id, new List<int> { sourceTypeIds[1], sourceTypeIds[2] });
-        CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[2] }, replaced.SourceTypeCodelistIds!.ToArray());
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[2] }, replaced.SourceTypeCodelistIds.ToArray());
 
         var omitted = await EditSourceTypesAsync(id, null);
-        CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[2] }, omitted.SourceTypeCodelistIds!.ToArray(), "null leaves the source types unchanged.");
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[2] }, omitted.SourceTypeCodelistIds.ToArray(), "null leaves the source types unchanged.");
 
         var cleared = await EditSourceTypesAsync(id, new List<int>());
-        Assert.AreEqual(0, cleared.SourceTypeCodelistIds!.Count);
+        Assert.AreEqual(0, cleared.SourceTypeCodelistIds.Count);
     }
 
     private async Task<int> GetCodelistIdOfAnotherSchemaAsync() =>
@@ -1626,7 +1627,7 @@ public class BoreholeControllerTest
 
         ActionResultAssert.IsBadRequest(result.Result);
         var unchanged = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
-        CollectionAssert.AreEqual(new[] { sourceTypeIds[0] }, unchanged.SourceTypeCodelistIds!.ToArray());
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[0] }, unchanged.SourceTypeCodelistIds.ToArray());
     }
 
     [TestMethod]
@@ -1640,12 +1641,12 @@ public class BoreholeControllerTest
         {
             BoreholeIds = new() { id },
             Update = new BoreholeBulkUpdate { SourceTypeCodelistIds = new() { sourceTypeIds[1], int.MaxValue } },
-            FieldsToUpdate = new() { "sourceTypeCodelistIds" },
+            FieldsToUpdate = new() { SourceTypeCodelistIdsField },
         };
 
         ActionResultAssert.IsBadRequest(await controller.BulkEditAsync(request));
         var unchanged = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
-        CollectionAssert.AreEqual(new[] { sourceTypeIds[0] }, unchanged.SourceTypeCodelistIds!.ToArray());
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[0] }, unchanged.SourceTypeCodelistIds.ToArray());
     }
 
     [TestMethod]
@@ -1673,14 +1674,16 @@ public class BoreholeControllerTest
 
         var result = await controller.CopyAsync(originalId, workgroupId: DefaultWorkgroupId);
         ActionResultAssert.IsOk(result.Result);
-        var copiedId = (int)((OkObjectResult)result.Result!).Value!;
+        var copiedId = ((OkObjectResult?)result.Result)?.Value;
+        Assert.IsNotNull(copiedId);
+        Assert.IsInstanceOfType(copiedId, typeof(int));
 
-        var copied = GetBorehole(copiedId);
+        var copied = GetBorehole((int)copiedId);
         Assert.IsNull(copied.CoreRepositoryStored);
-        CollectionAssert.AreEquivalent(new[] { sourceTypeIds[0], sourceTypeIds[3] }, copied.BoreholeSourceTypeCodes!.Select(c => c.CodelistId).ToArray());
+        CollectionAssert.AreEquivalent(new[] { sourceTypeIds[0], sourceTypeIds[3] }, copied.BoreholeSourceTypeCodes.Select(c => c.CodelistId).ToArray());
 
         var unchangedOriginal = GetBorehole(originalId);
-        Assert.AreEqual(2, unchangedOriginal.BoreholeSourceTypeCodes!.Count, "The original keeps its source types.");
+        Assert.AreEqual(2, unchangedOriginal.BoreholeSourceTypeCodes.Count, "The original keeps its source types.");
     }
 
     [TestMethod]
@@ -1713,7 +1716,7 @@ public class BoreholeControllerTest
         {
             BoreholeIds = new() { first, second },
             Update = new BoreholeBulkUpdate { SourceTypeCodelistIds = new() { sourceTypeIds[1], sourceTypeIds[3] } },
-            FieldsToUpdate = new() { "sourceTypeCodelistIds" },
+            FieldsToUpdate = new() { SourceTypeCodelistIdsField },
         };
 
         ActionResultAssert.IsOk(await controller.BulkEditAsync(request));
@@ -1721,7 +1724,7 @@ public class BoreholeControllerTest
         foreach (var id in new[] { first, second })
         {
             var read = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
-            CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[3] }, read.SourceTypeCodelistIds!.ToArray());
+            CollectionAssert.AreEqual(new[] { sourceTypeIds[1], sourceTypeIds[3] }, read.SourceTypeCodelistIds.ToArray());
         }
     }
 
@@ -1736,11 +1739,11 @@ public class BoreholeControllerTest
         {
             BoreholeIds = new() { id },
             Update = new BoreholeBulkUpdate { SourceTypeCodelistIds = new() },
-            FieldsToUpdate = new() { "sourceTypeCodelistIds" },
+            FieldsToUpdate = new() { SourceTypeCodelistIdsField },
         };
 
         ActionResultAssert.IsOk(await controller.BulkEditAsync(request));
-        Assert.IsFalse(await context.Boreholes.Where(b => b.Id == id).SelectMany(b => b.BoreholeSourceTypeCodes!).AnyAsync());
+        Assert.IsFalse(await context.Set<BoreholeSourceTypeCodes>().AnyAsync(c => c.BoreholeId == id));
     }
 
     [TestMethod]
@@ -1752,7 +1755,7 @@ public class BoreholeControllerTest
         {
             BoreholeIds = new() { id },
             Update = new BoreholeBulkUpdate { SourceTypeCodelistIds = null },
-            FieldsToUpdate = new() { "sourceTypeCodelistIds" },
+            FieldsToUpdate = new() { SourceTypeCodelistIdsField },
         };
 
         ActionResultAssert.IsBadRequest(await controller.BulkEditAsync(request));
