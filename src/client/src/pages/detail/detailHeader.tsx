@@ -194,7 +194,8 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
         exportItems={[
           {
             label: "CSV",
-            exportFunction: () => exportCSVBorehole([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
+            exportFunction: options =>
+              exportCSVBorehole([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export", options),
           },
           {
             label: "JSON",
