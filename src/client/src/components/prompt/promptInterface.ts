@@ -2,6 +2,8 @@ import { ReactElement, ReactNode } from "react";
 
 export interface PromptAction {
   label: string;
+  // Needed when the label is an already translated text, which would make the derived data-cy depend on the language.
+  dataCy?: string;
   disabled?: boolean;
   action?: () => void;
   variant?: "text" | "contained" | "outlined";

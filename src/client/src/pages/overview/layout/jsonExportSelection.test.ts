@@ -19,6 +19,10 @@ describe("getJsonExportSelection", () => {
     const { ids, confirmation } = getJsonExportSelection(selection);
 
     expect(ids).toEqual(selection.slice(0, maxJsonExportCount));
-    expect(confirmation).toEqual({ message: "exportJsonLimitedTo500", confirmLabel: "exportFirst500" });
+    expect(confirmation).toEqual({
+      message: "exportJsonLimited",
+      confirmLabel: "exportFirstCount",
+      exportedCount: maxJsonExportCount,
+    });
   });
 });

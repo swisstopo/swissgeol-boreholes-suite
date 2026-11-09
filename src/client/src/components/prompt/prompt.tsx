@@ -29,6 +29,7 @@ export const Prompt = () => {
             {actions?.map((action, index) => (
               <BoreholesButton
                 label={action.label}
+                dataCy={action.dataCy}
                 key={index}
                 onClick={() => {
                   if (action.action != null) {

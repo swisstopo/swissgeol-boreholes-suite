@@ -10,10 +10,14 @@ import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 import { LoadingBackdrop } from "../loadingBackdrop.tsx";
 import { PromptContext } from "../prompt/promptContext.tsx";
 
-/** Asks before an export runs, for exports that will not deliver everything the user selected. */
+/**
+ * Asks before an export runs, for exports that will not deliver everything the user selected. The message and the
+ * confirm label are translation keys that receive the number of exported entries as `count`.
+ */
 export interface ExportConfirmation {
   message: string;
   confirmLabel: string;
+  exportedCount: number;
 }
 
 export interface ExportItem {
@@ -129,10 +133,12 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
       return;
     }
 
-    showPrompt(confirmation.message, [
+    const translationValues = { count: confirmation.exportedCount };
+    showPrompt(t(confirmation.message, translationValues), [
       { label: "cancel" },
       {
-        label: confirmation.confirmLabel,
+        label: t(confirmation.confirmLabel, translationValues),
+        dataCy: "confirm-export-button",
         icon: <ArrowDownToLine />,
         variant: "contained",
         action: () => void handleExport(item.exportFunction),

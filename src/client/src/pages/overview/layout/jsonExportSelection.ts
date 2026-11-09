@@ -3,6 +3,7 @@ import { ExportConfirmation } from "../../../components/export/exportDialog.tsx"
 
 // JSON exports carry each borehole's full data, so they stay limited. The CSV export has no limit.
 // Must match BoreholeJsonExportRequest.MaxBoreholeCount in the API, which rejects larger requests.
+// The client's only copy of the limit: the confirmation texts receive it as a parameter.
 export const maxJsonExportCount = 500;
 
 interface JsonExportSelection {
@@ -18,6 +19,6 @@ export const getJsonExportSelection = (selection: GridRowSelectionModel): JsonEx
   ids: selection.slice(0, maxJsonExportCount),
   confirmation:
     selection.length > maxJsonExportCount
-      ? { message: "exportJsonLimitedTo500", confirmLabel: "exportFirst500" }
+      ? { message: "exportJsonLimited", confirmLabel: "exportFirstCount", exportedCount: maxJsonExportCount }
       : undefined,
 });
