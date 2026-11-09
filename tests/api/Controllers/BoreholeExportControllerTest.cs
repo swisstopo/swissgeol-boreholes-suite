@@ -31,7 +31,6 @@ namespace BDMS.Controllers;
 [TestClass]
 public class BoreholeExportControllerTest
 {
-    private const string TestCsvString = "text/csv";
     private const string ExportFileName = "boreholes_export";
     private const int TestBoreholeId = 1000068;
     private const int OtherTestBoreholeId = 1_000_057;
@@ -489,7 +488,7 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { 1_000_057, 1_000_058 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1_000_057, 1_000_058 }, typeof(StreamedCsvResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportCsvIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
@@ -513,12 +512,11 @@ public class BoreholeExportControllerTest
              .Take(3).Select(b => b.Id).ToListAsync();
 
         var boreholeIds = boreholeIdsWithoutGeometry.Concat(boreholeIdsWithGeometry);
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = boreholeIds.ToList() }, CancellationToken.None) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = boreholeIds.ToList() }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
-        var records = GetRecordsFromFileContent(result);
+        Assert.AreEqual(ExportFileName, result.FileName[0..16]);
+        var records = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result));
 
         foreach (var record in records)
         {
@@ -614,12 +612,11 @@ public class BoreholeExportControllerTest
 
         var ids = new List<int> { firstBoreholeId, secondBoreholeId };
 
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as StreamedCsvResult;
         Assert.IsNotNull(result);
-        Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
+        Assert.AreEqual(ExportFileName, result.FileName[0..16]);
 
-        var records = GetRecordsFromFileContent(result);
+        var records = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result));
 
         var firstBorehole = records.Find(r => r.Id == firstBoreholeId.ToString());
         Assert.IsNotNull(firstBorehole);
@@ -650,12 +647,11 @@ public class BoreholeExportControllerTest
     {
         var ids = new List<int> { 9, 8, 0, TestBoreholeId };
 
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
-        var csvData = Encoding.UTF8.GetString(result.FileContents);
+        Assert.AreEqual(ExportFileName, result.FileName[0..16]);
+        var csvData = Encoding.UTF8.GetString(await ExecuteCsvResultAsync(result));
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2;
         Assert.AreEqual(recordCount, 1);
@@ -664,12 +660,15 @@ public class BoreholeExportControllerTest
     [TestMethod]
     public async Task DownloadCsvStartsWithUtf8Bom()
     {
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [TestBoreholeId] }, CancellationToken.None) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [TestBoreholeId] }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
+        var fileContent = await ExecuteCsvResultAsync(result);
 
         // Without the byte order mark Excel opens the file as Windows-1252 and renders "é" as "Ã©".
-        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, result.FileContents.Take(3).ToArray());
+        // A second mark would show up as a stray character in the first header cell.
+        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, fileContent.Take(3).ToArray());
+        CollectionAssert.AreNotEqual(new byte[] { 0xEF, 0xBB, 0xBF }, fileContent.Skip(3).Take(3).ToArray());
     }
 
     [TestMethod]
@@ -679,10 +678,10 @@ public class BoreholeExportControllerTest
         borehole.OriginalName = "Forêt de Bière";
         await context.SaveChangesAsync();
 
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [TestBoreholeId] }, CancellationToken.None) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [TestBoreholeId] }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
-        StringAssert.Contains(Encoding.UTF8.GetString(result.FileContents), "Forêt de Bière");
+        StringAssert.Contains(Encoding.UTF8.GetString(await ExecuteCsvResultAsync(result)), "Forêt de Bière");
     }
 
     [TestMethod]
@@ -695,10 +694,10 @@ public class BoreholeExportControllerTest
         var ids = await context.Boreholes.OrderByDescending(b => b.Id).Select(b => b.Id).ToListAsync();
         Assert.IsGreaterThan(100, ids.Count);
 
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
-        var exportedIds = GetRecordsFromFileContent(result).Select(record => (string)record.Id).ToList();
+        var exportedIds = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result)).Select(record => (string)record.Id).ToList();
         CollectionAssert.AreEqual(ids.Select(id => id.ToString(CultureInfo.InvariantCulture)).ToList(), exportedIds);
     }
 
@@ -708,10 +707,10 @@ public class BoreholeExportControllerTest
         var otherBoreholeId = OtherTestBoreholeId;
         var ids = new List<int> { otherBoreholeId, TestBoreholeId, otherBoreholeId };
 
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
-        var exportedIds = GetRecordsFromFileContent(result).Select(record => (string)record.Id).ToList();
+        var exportedIds = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result)).Select(record => (string)record.Id).ToList();
         CollectionAssert.AreEqual(new[] { otherBoreholeId, TestBoreholeId }.Select(id => id.ToString(CultureInfo.InvariantCulture)).ToList(), exportedIds);
     }
 
@@ -749,7 +748,7 @@ public class BoreholeExportControllerTest
             .ReturnsAsync([]);
         controller = new BoreholeExportController(context, profileCloudService, new Mock<ILogger<BoreholeExportController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
-        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [0, TestBoreholeId, 87] }, CancellationToken.None) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [0, TestBoreholeId, 87] }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
         Assert.IsNotNull(checkedIds);
@@ -984,9 +983,9 @@ public class BoreholeExportControllerTest
         }
     }
 
-    private static List<dynamic> GetRecordsFromFileContent(FileContentResult result)
+    private static List<dynamic> GetRecordsFromFileContent(byte[] fileContent)
     {
-        var memoryStream = new MemoryStream(result.FileContents);
+        var memoryStream = new MemoryStream(fileContent);
         var reader = new StreamReader(memoryStream);
         var csv = new CsvReader(reader, CsvConfigHelper.CsvWriteConfig);
         return csv.GetRecords<dynamic>().ToList();

@@ -172,6 +172,8 @@ public class BoreholeExportController : ControllerBase
     /// boreholes is not limited: a CSV row is flat and cheap to produce, and a selection is bounded by the boreholes
     /// a user can filter for. Only the request body is capped, at <see cref="BoreholeExportRequest.MaxRequestBodySize"/>
     /// bytes, so a request with an absurd number of ids is answered with 413 before it reaches the database.
+    /// The file is streamed to the client record by record rather than built in memory. Everything the database
+    /// provides is loaded before streaming starts, so a failure there can still be answered with an error status.
     /// </summary>
     /// <param name="request">The ids of the boreholes to export, in the order their rows are written.</param>
     /// <param name="cancellationToken">Aborts the export once the client is gone, so a cancelled export of thousands of boreholes stops loading them.</param>
@@ -194,10 +196,23 @@ public class BoreholeExportController : ControllerBase
         if (!await HasViewPermissionsForAllBoreholes(loadedBoreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
         var boreholes = OrderByRequestedIds(loadedBoreholes, idList);
+        var boreholeGeometries = await GetBoreholeGeometriesAsync(idList, cancellationToken).ConfigureAwait(false);
 
-        using var stringWriter = new StringWriter();
-        using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
+        return new StreamedCsvResult(
+            $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv",
+            (csvWriter, writeCancellationToken) => WriteBoreholesCsvAsync(csvWriter, boreholes, boreholeGeometries, writeCancellationToken));
+    }
 
+    /// <summary>
+    /// Writes the CSV export of <paramref name="boreholes"/>: a header with the standard fields and one column for each
+    /// custom id any of them has, then one record per borehole in the given order.
+    /// </summary>
+    /// <param name="csvWriter">The writer that streams the file to the client.</param>
+    /// <param name="boreholes">The boreholes to export, with their codelists.</param>
+    /// <param name="boreholeGeometries">The geometries of the boreholes, keyed by borehole id, to derive the TVD values.</param>
+    /// <param name="cancellationToken">Stops writing once the client is gone.</param>
+    private static async Task WriteBoreholesCsvAsync(CsvWriter csvWriter, IReadOnlyList<Borehole> boreholes, Dictionary<int, List<BoreholeGeometryElement>> boreholeGeometries, CancellationToken cancellationToken)
+    {
         // Write headers for standard fields
         csvWriter.WriteField(nameof(Borehole.Id));
         csvWriter.WriteField(nameof(Borehole.OriginalName));
@@ -250,11 +265,10 @@ public class BoreholeExportController : ControllerBase
         // Move to the next line
         await csvWriter.NextRecordAsync().ConfigureAwait(false);
 
-        var boreholeGeometries = await GetBoreholeGeometriesAsync(idList, cancellationToken).ConfigureAwait(false);
-
         // Write data for standard fields
         foreach (var b in boreholes)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             b.SetTvdValues(boreholeGeometries);
 
             csvWriter.WriteField(b.Id);
@@ -302,9 +316,6 @@ public class BoreholeExportController : ControllerBase
             // Move to the next line
             await csvWriter.NextRecordAsync().ConfigureAwait(false);
         }
-
-        await csvWriter.FlushAsync().ConfigureAwait(false);
-        return File(CsvEncoding.ToUtf8BomBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
     }
 
     /// <summary>

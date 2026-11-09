@@ -2,18 +2,21 @@
 using BDMS.Models;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace BDMS.Controllers;
 
 /// <summary>
 /// Sends export requests through a real Kestrel server. The in-memory test server ignores request body
-/// size limits, so only Kestrel shows whether an oversized request is refused.
+/// size limits, so only Kestrel shows whether an oversized request is refused. Kestrel also rejects
+/// synchronous writes to the response body, which a streamed export must not make.
 /// </summary>
 [TestClass]
 public class BoreholeExportEndpointTest
 {
     private const string CsvExportPath = "/api/v2/boreholeexport/csv";
+    private const int ExportedBoreholeId = 1_000_068;
     private static BdmsWebApplicationFactory factory;
 
     [ClassInitialize]
@@ -46,6 +49,23 @@ public class BoreholeExportEndpointTest
 
         // The requested borehole does not exist, so a body that passes the limit is answered with 404.
         Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode, await response.Content.ReadAsStringAsync());
+    }
+
+    [TestMethod]
+    public async Task CsvExportStreamsTheFileThroughKestrel()
+    {
+        // Kestrel rejects synchronous writes to the response body, so this fails if any part of the
+        // streamed file is written or flushed synchronously.
+        using var client = CreateAdminClient();
+        using var body = JsonContent.Create(new BoreholeExportRequest { Ids = [ExportedBoreholeId] });
+
+        using var response = await client.PostAsync(CsvExportPath, body);
+
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, await response.Content.ReadAsStringAsync());
+        Assert.AreEqual("text/csv", response.Content.Headers.ContentType?.MediaType);
+        var fileContent = await response.Content.ReadAsByteArrayAsync();
+        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, fileContent.Take(3).ToArray());
+        StringAssert.Contains(Encoding.UTF8.GetString(fileContent), $"\r\n{ExportedBoreholeId};");
     }
 
     /// <summary>
