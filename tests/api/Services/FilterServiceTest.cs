@@ -1232,7 +1232,6 @@ public class FilterServiceTest
         Assert.AreEqual(originalBorehole.Updated, filteredBorehole.Updated);
         Assert.AreEqual(originalBorehole.Locked, filteredBorehole.Locked);
         Assert.AreEqual(originalBorehole.WorkgroupId, filteredBorehole.WorkgroupId);
-        Assert.AreEqual(originalBorehole.IsPublic, filteredBorehole.IsPublic);
         Assert.AreEqual(originalBorehole.TypeId, filteredBorehole.TypeId);
         Assert.AreEqual(originalBorehole.LocationX, filteredBorehole.LocationX);
         Assert.AreEqual(originalBorehole.LocationY, filteredBorehole.LocationY);

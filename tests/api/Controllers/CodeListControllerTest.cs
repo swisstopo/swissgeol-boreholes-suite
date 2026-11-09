@@ -53,7 +53,6 @@ public class CodeListControllerTest
         Assert.AreEqual(15001070, codeListToTest.Id);
         Assert.AreEqual(15001070, codeListToTest.Geolcode);
         Assert.AreEqual("{\"color\":[128,207,216]}", codeListToTest.Conf);
-        Assert.AreEqual(false, codeListToTest.IsDefault);
         Assert.AreEqual("chronostratigraphy", codeListToTest.Schema);
         Assert.AreEqual("Mittlerer Jura", codeListToTest.De);
         Assert.AreEqual("Middle Jurassic", codeListToTest.En);

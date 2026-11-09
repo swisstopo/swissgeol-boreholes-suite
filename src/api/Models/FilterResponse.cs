@@ -80,9 +80,6 @@ public class BoreholeListItem
     /// <inheritdoc cref="Borehole.Updated"/>
     public DateTime? Updated { get; set; }
 
-    /// <inheritdoc cref="Borehole.IsPublic"/>
-    public bool? IsPublic { get; set; }
-
     /// <inheritdoc cref="Borehole.Locked"/>
     public DateTime? Locked { get; set; }
 }

@@ -153,10 +153,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("hrs_id");
 
-                    b.Property<bool?>("IsPublic")
-                        .HasColumnType("boolean")
-                        .HasColumnName("public");
-
                     b.Property<int?>("LithologyTopBedrockId")
                         .HasColumnType("integer")
                         .HasColumnName("lithology_top_bedrock_id");
@@ -624,10 +620,6 @@ namespace BDMS.Migrations
                     b.Property<int?>("Geolcode")
                         .HasColumnType("integer")
                         .HasColumnName("geolcode");
-
-                    b.Property<bool?>("IsDefault")
-                        .HasColumnType("boolean")
-                        .HasColumnName("default");
 
                     b.Property<string>("It")
                         .HasColumnType("text")

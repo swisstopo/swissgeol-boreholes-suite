@@ -547,7 +547,6 @@ public class ImportController : ControllerBase
             Map(m => m.Locked).Optional();
             Map(m => m.LockedById).Optional();
             Map(m => m.WorkgroupId).Optional();
-            Map(m => m.IsPublic).Optional();
             Map(m => m.TypeId).Optional();
             Map(m => m.ElevationZ).Optional();
             Map(m => m.HrsId).Optional();

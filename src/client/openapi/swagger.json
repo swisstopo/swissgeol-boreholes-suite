@@ -7169,11 +7169,6 @@
           "workgroup": {
             "$ref": "#/components/schemas/Workgroup"
           },
-          "isPublic": {
-            "type": "boolean",
-            "description": "Gets or sets whether the BDMS.Models.Borehole is public.",
-            "nullable": true
-          },
           "typeId": {
             "type": "integer",
             "description": "Gets or sets the BDMS.Models.Borehole's type id.",
@@ -7846,10 +7841,6 @@
             "format": "date-time",
             "nullable": true
           },
-          "isPublic": {
-            "type": "boolean",
-            "nullable": true
-          },
           "locked": {
             "type": "string",
             "format": "date-time",
@@ -8219,11 +8210,6 @@
           "conf": {
             "type": "string",
             "description": "Gets or sets the BDMS.Models.Codelist's configuration.",
-            "nullable": true
-          },
-          "isDefault": {
-            "type": "boolean",
-            "description": "Gets or sets whether the BDMS.Models.Codelist is default.",
             "nullable": true
           },
           "path": {
