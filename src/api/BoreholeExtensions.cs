@@ -6,6 +6,44 @@ namespace BDMS;
 public static class BoreholeExtensions
 {
     /// <summary>
+    /// Synchronizes <see cref="Borehole.BoreholeSourceTypeCodes"/> with <paramref name="sourceTypeCodelistIds"/>.
+    /// Rows for ids that are no longer listed are removed and rows for new ids are added. Rows for unchanged ids
+    /// are kept, so EF Core never tracks a deleted and an added row with the same composite key.
+    /// The ids are not checked against the 'source_type' schema here; callers validate them before saving.
+    /// </summary>
+    /// <param name="borehole">The borehole whose source types are replaced.</param>
+    /// <param name="sourceTypeCodelistIds">The complete set of source type codelist ids the borehole should have.</param>
+    public static void SyncSourceTypeCodes(this Borehole borehole, IEnumerable<int> sourceTypeCodelistIds)
+    {
+        var targetIds = sourceTypeCodelistIds.ToHashSet();
+        borehole.BoreholeSourceTypeCodes ??= new List<BoreholeSourceTypeCodes>();
+        var codes = borehole.BoreholeSourceTypeCodes;
+
+        foreach (var obsolete in codes.Where(c => !targetIds.Contains(c.CodelistId)).ToList())
+        {
+            codes.Remove(obsolete);
+        }
+
+        var existingIds = codes.Select(c => c.CodelistId).ToHashSet();
+        foreach (var id in targetIds.Where(id => !existingIds.Contains(id)).Order())
+        {
+            codes.Add(new BoreholeSourceTypeCodes { BoreholeId = borehole.Id, CodelistId = id });
+        }
+    }
+
+    /// <summary>
+    /// Fills <see cref="Borehole.SourceTypeCodelistIds"/> in ascending order from the loaded <see cref="Borehole.BoreholeSourceTypeCodes"/>.
+    /// </summary>
+    /// <param name="borehole">The borehole to update.</param>
+    public static void MapSourceTypeCodelistIds(this Borehole borehole)
+    {
+        borehole.SourceTypeCodelistIds = borehole.BoreholeSourceTypeCodes?
+            .Select(c => c.CodelistId)
+            .Order()
+            .ToList() ?? new List<int>();
+    }
+
+    /// <summary>
     /// Updates the borehole's TVD properties based on the provided borehole geometries.
     /// </summary>
     /// <param name="borehole">The borehole object to update.</param>
@@ -135,6 +173,13 @@ public static class BoreholeExtensions
 
         borehole.MapCasingReferences();
         borehole.BoreholeCodelists?.MarkAsNew();
+
+        // BoreholeId is part of the composite primary key, so it is reset like the hydrotest and lithology codes.
+        foreach (var sourceTypeCode in borehole.BoreholeSourceTypeCodes ?? [])
+        {
+            sourceTypeCode.BoreholeId = 0;
+        }
+
         borehole.Stratigraphies?.MarkAsNew();
         borehole.Completions?.MarkAsNew();
         borehole.Sections?.MarkAsNew();

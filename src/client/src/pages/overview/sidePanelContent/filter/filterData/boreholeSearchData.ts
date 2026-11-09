@@ -49,27 +49,40 @@ export const boreholeSearchData: SearchData[] = [
   },
   {
     id: 7,
+    type: "NullableBoolean",
+    label: "coreRepositoryStored",
+    key: "coreRepositoryStored",
+  },
+  {
+    id: 8,
+    type: "Dropdown",
+    label: "sourceType",
+    key: "sourceTypeId",
+    schema: "source_type",
+  },
+  {
+    id: 9,
     type: "Dropdown",
     label: "boreholeType",
     key: "typeId",
     schema: "borehole_type",
   },
   {
-    id: 8,
+    id: 10,
     type: "Dropdown",
     label: "purpose",
     key: "purposeId",
     schema: "drilling_purpose",
   },
   {
-    id: 9,
+    id: 11,
     type: "Dropdown",
     label: "boreholeStatus",
     key: "statusId",
     schema: "borehole_status",
   },
   {
-    id: 10,
+    id: 12,
     type: "Input",
     label: "totalDepth",
     key: "totalDepthMin",
@@ -77,7 +90,7 @@ export const boreholeSearchData: SearchData[] = [
     placeholder: "from",
   },
   {
-    id: 11,
+    id: 13,
     type: "Input",
     label: "",
     key: "totalDepthMax",
@@ -85,7 +98,7 @@ export const boreholeSearchData: SearchData[] = [
     placeholder: "to",
   },
   {
-    id: 12,
+    id: 14,
     type: "Input",
     label: "topBedrockFreshMd",
     key: "topBedrockFreshMdMin",
@@ -93,7 +106,7 @@ export const boreholeSearchData: SearchData[] = [
     placeholder: "from",
   },
   {
-    id: 13,
+    id: 15,
     type: "Input",
     label: "",
     key: "topBedrockFreshMdMax",
@@ -101,7 +114,7 @@ export const boreholeSearchData: SearchData[] = [
     placeholder: "to",
   },
   {
-    id: 14,
+    id: 16,
     type: "Input",
     label: "topBedrockWeatheredMd",
     key: "topBedrockWeatheredMdMin",
@@ -109,7 +122,7 @@ export const boreholeSearchData: SearchData[] = [
     placeholder: "from",
   },
   {
-    id: 15,
+    id: 17,
     type: "Input",
     label: "",
     key: "topBedrockWeatheredMdMax",
@@ -118,19 +131,19 @@ export const boreholeSearchData: SearchData[] = [
   },
 
   {
-    id: 16,
+    id: 18,
     type: "NullableBoolean",
     label: "hasGroundwater",
     key: "hasGroundwater",
   },
   {
-    id: 17,
+    id: 19,
     type: "NullableBoolean",
     label: "topBedrockIntersected",
     key: "topBedrockIntersected",
   },
   {
-    id: 18,
+    id: 20,
     type: "Boolean",
     label: "hasGeometry",
     key: "hasGeometry",
