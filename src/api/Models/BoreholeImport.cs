@@ -1,4 +1,6 @@
-﻿namespace BDMS.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace BDMS.Models;
 
 /// <summary>
 /// Represents a borehole from the csv import.
@@ -23,4 +25,12 @@ public class BoreholeImport : Borehole
     /// e.g. "borehole_1.pdf,borehole_2.pdf".
     /// </summary>
     public string Attachments { get; set; }
+
+    /// <summary>
+    /// Gets or sets the raw CSV cell of <see cref="Borehole.SourceTypeCodelistIds"/>: comma separated codelist ids,
+    /// e.g. "100001,100003". Kept as text so a token that is not a number fails validation per row
+    /// instead of aborting the whole file. Not part of the JSON import.
+    /// </summary>
+    [JsonIgnore]
+    public string? SourceTypeCodelistIdsText { get; set; }
 }

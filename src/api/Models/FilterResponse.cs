@@ -12,7 +12,6 @@ namespace BDMS.Models;
 /// <param name="TotalPages">The total number of pages.</param>
 /// <param name="Boreholes">The borehole list items for the current page.</param>
 /// <param name="GeoJson">The GeoJSON feature collection for map display.</param>
-/// <param name="FilteredBoreholeIds">The IDs of all filtered boreholes.</param>
 /// <param name="SelectableBoreholeIds">The IDs of all unlocked filtered boreholes.</param>
 public record FilterResponse(
     int TotalCount,
@@ -21,7 +20,6 @@ public record FilterResponse(
     int TotalPages,
     IEnumerable<BoreholeListItem> Boreholes,
     FeatureCollection? GeoJson,
-    IEnumerable<int> FilteredBoreholeIds,
     IEnumerable<int> SelectableBoreholeIds);
 
 /// <summary>

@@ -7281,6 +7281,11 @@
             "description": "Gets or sets the BDMS.Models.Borehole's national interest.",
             "nullable": true
           },
+          "coreRepositoryStored": {
+            "type": "boolean",
+            "description": "Gets or sets whether the BDMS.Models.Borehole's cores are stored in the drill core repository.\r\nnull means \"not specified\". Boreholes created without the property start at false.",
+            "nullable": true
+          },
           "originalName": {
             "type": "string",
             "description": "Gets or sets the BDMS.Models.Borehole's original name.",
@@ -7546,6 +7551,15 @@
             },
             "description": "Gets theBDMS.Models.BoreholeCodelist join table entities.",
             "nullable": true
+          },
+          "sourceTypeCodelistIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the codelist ids with schema name 'source_type' of the BDMS.Models.Borehole's source documents.\r\nFilled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
@@ -7571,6 +7585,19 @@
           },
           "nationalInterest": {
             "type": "boolean",
+            "nullable": true
+          },
+          "coreRepositoryStored": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "sourceTypeCodelistIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the source type codelist ids that replace the whole set on every selected borehole.\r\nAn empty collection removes all source types.",
             "nullable": true
           },
           "projectName": {
@@ -7653,7 +7680,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "The typed set of borehole fields that can be changed through bulk edit.\r\nEach property is nullable to mirror the corresponding borehole column; which of\r\nthem are actually written is controlled by BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate.\r\nA masked field must carry a value; a null value is rejected (clearing is not supported),\r\nexcept nullable booleans where null is the deliberate \"not specified\" state."
+        "description": "The typed set of borehole fields that can be changed through bulk edit.\r\nEach property is nullable to mirror the corresponding borehole column; which of\r\nthem are actually written is controlled by BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate.\r\nA masked field must carry a value; a null value is rejected (clearing is not supported),\r\nexcept nullable booleans where null is the deliberate \"not specified\" state.\r\nCollections must not be null; an empty collection clears the field."
       },
       "BoreholeBulkUpdateRequest": {
         "required": [
@@ -9049,6 +9076,16 @@
             "description": "Gets or sets the log tool type codelist IDs filter. Boreholes match if any of their log files\r\nhave at least one of these tool type codelist IDs in their BDMS.Models.LogFile.LogFileToolTypeCodes.",
             "nullable": true
           },
+          "sourceTypeId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the source type codelist IDs filter. Boreholes match if they have at least one of these\r\nsource types in their BDMS.Models.Borehole.BoreholeSourceTypeCodes.",
+            "nullable": true
+          },
           "identifierTypeId": {
             "maxItems": 100,
             "type": "array",
@@ -9065,6 +9102,9 @@
             "nullable": true
           },
           "nationalInterest": {
+            "$ref": "#/components/schemas/NullableBooleanFilterValue"
+          },
+          "coreRepositoryStored": {
             "$ref": "#/components/schemas/NullableBooleanFilterValue"
           },
           "topBedrockIntersected": {
@@ -9149,14 +9189,6 @@
             },
             "description": "The GeoJSON feature collection for map display.",
             "nullable": true
-          },
-          "filteredBoreholeIds": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "The IDs of all filtered boreholes."
           },
           "selectableBoreholeIds": {
             "type": "array",
@@ -9245,6 +9277,14 @@
             },
             "description": "Gets or sets counts grouped by log tool type codelist ID."
           },
+          "sourceTypeId": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets distinct borehole counts grouped by source type codelist ID."
+          },
           "workflowStatusCount": {
             "type": "object",
             "properties": {
@@ -9269,6 +9309,9 @@
             "description": "Gets or sets counts grouped by BDMS.Models.Workflow.Status."
           },
           "nationalInterest": {
+            "$ref": "#/components/schemas/NullableBooleanCounts"
+          },
+          "coreRepositoryStored": {
             "$ref": "#/components/schemas/NullableBooleanCounts"
           },
           "topBedrockIntersected": {

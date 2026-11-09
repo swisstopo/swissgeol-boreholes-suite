@@ -376,7 +376,7 @@ public class FilterServiceTest
     }
 
     [TestMethod]
-    public async Task FilterBoreholesAsyncReturnsSelectableAndFilteredBoreholeIds()
+    public async Task FilterBoreholesAsyncReturnsSelectableBoreholeIdsAndTotalCount()
     {
         // Add locked borehole
         var lockedBorehole = new Borehole
@@ -397,12 +397,10 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.IsNotNull(result.FilteredBoreholeIds);
-        Assert.IsTrue(result.FilteredBoreholeIds.Any());
         Assert.AreEqual(5, result.Boreholes.Count());
 
         // should contain all results, not just paginated ones
-        Assert.AreEqual(101, result.FilteredBoreholeIds.Count()); // all boreholes
+        Assert.AreEqual(101, result.TotalCount); // all boreholes
         Assert.AreEqual(100, result.SelectableBoreholeIds.Count()); // unlocked boreholes
     }
 
@@ -844,7 +842,7 @@ public class FilterServiceTest
         }
 
         // Verify our test boreholes
-        var returnedIds = result.FilteredBoreholeIds;
+        var returnedIds = result.SelectableBoreholeIds;
         Assert.IsTrue(returnedIds.Contains(testBoreholes[0].Id), "Borehole before limit should be included");
         Assert.IsTrue(returnedIds.Contains(testBoreholes[1].Id), "Borehole on limit should be included");
         Assert.IsFalse(returnedIds.Contains(testBoreholes[2].Id), "Borehole after limit should not be included");
@@ -1541,7 +1539,7 @@ public class FilterServiceTest
         Assert.AreEqual(100, result.PageSize);
         Assert.AreEqual(1, result.PageNumber);
         Assert.AreEqual(100, result.TotalCount);
-        Assert.AreEqual(100, result.FilteredBoreholeIds.Count());
+        Assert.AreEqual(100, result.SelectableBoreholeIds.Count());
 
         var expectedGeoJsonCount = await context.Boreholes
             .AsNoTracking()
@@ -1668,7 +1666,7 @@ public class FilterServiceTest
         };
 
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
-        var ids = result.FilteredBoreholeIds.ToHashSet();
+        var ids = result.SelectableBoreholeIds.ToHashSet();
 
         Assert.IsTrue(ids.Contains(matchingId), "Borehole with typeA row must be returned.");
         Assert.IsTrue(ids.Contains(crossRowId), "Borehole that also has a typeA row must be returned.");
@@ -1687,7 +1685,7 @@ public class FilterServiceTest
         };
 
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
-        var ids = result.FilteredBoreholeIds.ToHashSet();
+        var ids = result.SelectableBoreholeIds.ToHashSet();
 
         Assert.IsTrue(ids.Contains(matchingId), "FOO_ABC_BAR matches case-insensitively.");
         Assert.IsTrue(ids.Contains(crossRowId), "OTHER_ABC_VALUE matches case-insensitively.");
@@ -1707,7 +1705,7 @@ public class FilterServiceTest
         };
 
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
-        var ids = result.FilteredBoreholeIds.ToHashSet();
+        var ids = result.SelectableBoreholeIds.ToHashSet();
 
         Assert.IsTrue(ids.Contains(matchingId), "typeA + ABC on the same row must match.");
         Assert.IsFalse(ids.Contains(crossRowId), "Strict same-row semantics: borehole with typeA on one row and 'ABC' on a different row must NOT match.");
@@ -1738,6 +1736,7 @@ public class FilterServiceTest
 
         // Nullable boolean dimensions must partition the full set across true/false/null.
         Assert.AreEqual(totalBoreholes, result.NationalInterest.True + result.NationalInterest.False + result.NationalInterest.Null);
+        Assert.AreEqual(totalBoreholes, result.CoreRepositoryStored.True + result.CoreRepositoryStored.False + result.CoreRepositoryStored.Null);
         Assert.AreEqual(totalBoreholes, result.TopBedrockIntersected.True + result.TopBedrockIntersected.False + result.TopBedrockIntersected.Null);
         Assert.AreEqual(totalBoreholes, result.HasGroundwater.True + result.HasGroundwater.False + result.HasGroundwater.Null);
 
@@ -1819,8 +1818,8 @@ public class FilterServiceTest
         var combined = await filterService.FilterBoreholesAsync(
             new FilterRequest { IdentifierTypeId = new[] { typeA }, IdentifierValue = "abc", PageNumber = 1, PageSize = 100 },
             adminUser);
-        Assert.IsTrue(combined.FilteredBoreholeIds.Contains(matchingId));
-        Assert.IsFalse(combined.FilteredBoreholeIds.Contains(crossRowId));
+        Assert.IsTrue(combined.SelectableBoreholeIds.Contains(matchingId));
+        Assert.IsFalse(combined.SelectableBoreholeIds.Contains(crossRowId));
     }
 
     [TestMethod]
@@ -2251,5 +2250,114 @@ public class FilterServiceTest
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return borehole;
+    }
+
+    private async Task<List<int>> GetSourceTypeIdsAsync() =>
+        await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .OrderBy(c => c.Order)
+            .Select(c => c.Id)
+            .ToListAsync();
+
+    private Borehole NewBoreholeWithSourceTypes(string originalName, bool? coreRepositoryStored, params int[] sourceTypeIds)
+    {
+        var borehole = new Borehole { OriginalName = originalName, WorkgroupId = 1, CoreRepositoryStored = coreRepositoryStored };
+        borehole.SyncSourceTypeCodes(sourceTypeIds);
+        context.Boreholes.Add(borehole);
+        return borehole;
+    }
+
+    [TestMethod]
+    [DataRow(NullableBooleanFilterValue.True)]
+    [DataRow(NullableBooleanFilterValue.False)]
+    [DataRow(NullableBooleanFilterValue.Null)]
+    public async Task FilterBoreholesByCoreRepositoryStored(NullableBooleanFilterValue value)
+    {
+        var storedTrue = NewBoreholeWithSourceTypes("CORESTORE_FILTER_TRUE", true);
+        var storedFalse = NewBoreholeWithSourceTypes("CORESTORE_FILTER_FALSE", false);
+        var storedNull = NewBoreholeWithSourceTypes("CORESTORE_FILTER_NULL", null);
+        await context.SaveChangesAsync();
+
+        bool? expectedValue = value switch
+        {
+            NullableBooleanFilterValue.True => true,
+            NullableBooleanFilterValue.False => false,
+            _ => null,
+        };
+        var expectedId = value switch
+        {
+            NullableBooleanFilterValue.True => storedTrue.Id,
+            NullableBooleanFilterValue.False => storedFalse.Id,
+            _ => storedNull.Id,
+        };
+
+        var narrowed = await filterService.FilterBoreholesAsync(
+            new FilterRequest { CoreRepositoryStored = value, OriginalName = "CORESTORE_FILTER_", PageSize = 100 }, adminUser);
+        CollectionAssert.AreEqual(new[] { expectedId }, narrowed.Boreholes.Select(b => b.Id).ToArray());
+
+        var all = await filterService.FilterBoreholesAsync(new FilterRequest { CoreRepositoryStored = value }, adminUser);
+        Assert.AreEqual(await context.Boreholes.CountAsync(b => b.CoreRepositoryStored == expectedValue), all.TotalCount);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesBySourceTypeMatchesAnyOfTheSelectedTypes()
+    {
+        var ids = await GetSourceTypeIdsAsync();
+        NewBoreholeWithSourceTypes("SOURCETYPE_FILTER_A", false, ids[0]);
+        var bothAAndB = NewBoreholeWithSourceTypes("SOURCETYPE_FILTER_AB", false, ids[0], ids[1]);
+        var onlyC = NewBoreholeWithSourceTypes("SOURCETYPE_FILTER_C", false, ids[2]);
+        NewBoreholeWithSourceTypes("SOURCETYPE_FILTER_NONE", false);
+        await context.SaveChangesAsync();
+
+        var result = await filterService.FilterBoreholesAsync(
+            new FilterRequest { SourceTypeId = new[] { ids[1], ids[2] }, OriginalName = "SOURCETYPE_FILTER_", PageSize = 100 }, adminUser);
+
+        CollectionAssert.AreEquivalent(new[] { bothAAndB.Id, onlyC.Id }, result.Boreholes.Select(b => b.Id).ToArray());
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsCountsCoreRepositoryStoredAndDistinctBoreholesPerSourceType()
+    {
+        var ids = await GetSourceTypeIdsAsync();
+        NewBoreholeWithSourceTypes("SOURCETYPE_STATS_AB", null, ids[0], ids[1]);
+        NewBoreholeWithSourceTypes("SOURCETYPE_STATS_A", true, ids[0]);
+        await context.SaveChangesAsync();
+
+        var result = await filterService.GetFilterStatsAsync(new FilterRequest { OriginalName = "SOURCETYPE_STATS_" }, adminUser);
+
+        Assert.AreEqual(2, result.SourceTypeId[ids[0]]);
+        Assert.AreEqual(1, result.SourceTypeId[ids[1]]);
+        Assert.IsFalse(result.SourceTypeId.ContainsKey(ids[2]));
+        Assert.AreEqual(1, result.CoreRepositoryStored.True);
+        Assert.AreEqual(0, result.CoreRepositoryStored.False);
+        Assert.AreEqual(1, result.CoreRepositoryStored.Null);
+
+        // Self-exclusion: the source type filter does not narrow its own counts, but narrows the others.
+        var filtered = await filterService.GetFilterStatsAsync(
+            new FilterRequest { OriginalName = "SOURCETYPE_STATS_", SourceTypeId = new[] { ids[1] } }, adminUser);
+        Assert.AreEqual(2, filtered.SourceTypeId[ids[0]]);
+        Assert.AreEqual(0, filtered.CoreRepositoryStored.True);
+        Assert.AreEqual(1, filtered.CoreRepositoryStored.Null);
+    }
+
+    [TestMethod]
+    public async Task PagesDoNotSkipOrRepeatBoreholesWithEqualSortKeys()
+    {
+        var boreholes = Enumerable.Range(0, 5)
+            .Select(_ => new Borehole { OriginalName = "SAME_SORT_KEY", Name = "SAME_SORT_KEY", WorkgroupId = 1 })
+            .ToList();
+        context.Boreholes.AddRange(boreholes);
+        await context.SaveChangesAsync();
+
+        var seen = new List<int>();
+        for (var page = 1; page <= 3; page++)
+        {
+            var result = await filterService.FilterBoreholesAsync(
+                new FilterRequest { OriginalName = "SAME_SORT_KEY", OrderBy = BoreholeOrderBy.Name, Direction = OrderDirection.Desc, PageNumber = page, PageSize = 2 },
+                adminUser);
+            seen.AddRange(result.Boreholes.Select(b => b.Id));
+        }
+
+        CollectionAssert.AreEqual(boreholes.Select(b => b.Id).OrderByDescending(id => id).ToArray(), seen.ToArray());
     }
 }

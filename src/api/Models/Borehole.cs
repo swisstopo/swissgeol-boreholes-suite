@@ -2,6 +2,7 @@
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -198,6 +199,14 @@ public class Borehole : IChangeTracking, IIdentifyable
     [IncludeInExport]
     [Column("national_interest")]
     public bool? NationalInterest { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether the <see cref="Borehole"/>'s cores are stored in the drill core repository.
+    /// <see langword="null"/> means "not specified". Boreholes created without the property start at <see langword="false"/>.
+    /// </summary>
+    [IncludeInExport]
+    [Column("core_repository_stored")]
+    public bool? CoreRepositoryStored { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s original name.
@@ -493,4 +502,25 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// </summary>
     [IncludeInExport]
     public IList<BoreholeCodelist>? BoreholeCodelists { get; set; } = new List<BoreholeCodelist>();
+
+    /// <summary>
+    /// Gets or sets the codelist ids with schema name 'source_type' of the <see cref="Borehole"/>'s source documents.
+    /// Filled from <see cref="BoreholeSourceTypeCodes"/> on read and written to it on create, update, bulk edit and import.
+    /// </summary>
+    [NotMapped]
+    [IncludeInExport]
+    public ICollection<int>? SourceTypeCodelistIds { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="Codelist"/>s with schema name 'source_type' used by the <see cref="Borehole"/>.
+    /// Not serialized, so a request cannot create codelists through it; clients use <see cref="SourceTypeCodelistIds"/>.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<Codelist>? SourceTypeCodelists { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="BoreholeSourceTypeCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public IList<BoreholeSourceTypeCodes>? BoreholeSourceTypeCodes { get; set; }
 }
