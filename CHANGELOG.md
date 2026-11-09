@@ -7,7 +7,7 @@
 - The grain size of a lithology description can now also be set to the ranges fine-medium, fine-coarse and medium-coarse.
 
 ### Changed
-- Dataextraction service was updated to 1.2.0-dev62.
+- Dataextraction service was updated to v1.2.0.
 - Several users can be added to a workgroup, or a user to several workgroups, in one step. The dialog lists them with checkboxes and a "Select all" option and gives all of them the chosen role.
 - A user now has exactly one role per workgroup. Assigning a role to a user who already has one in that workgroup replaces it. Users who had several roles in a workgroup keep only the highest one, so their permissions stay the same.
 - The Validator role is removed because it granted no permissions beyond Reviewer. Users who were Validators are now Reviewers.
