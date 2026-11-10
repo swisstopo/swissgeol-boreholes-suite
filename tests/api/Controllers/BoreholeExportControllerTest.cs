@@ -991,9 +991,9 @@ public class BoreholeExportControllerTest
         context.AddRange(withTypes, withoutTypes);
         await context.SaveChangesAsync();
 
-        var result = await controller.ExportCsvAsync(new[] { withTypes.Id, withoutTypes.Id }) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [withTypes.Id, withoutTypes.Id] }, CancellationToken.None) as StreamedCsvResult;
         Assert.IsNotNull(result);
-        var records = GetRecordsFromFileContent(result);
+        var records = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result));
 
         var headers = ((IDictionary<string, object>)records[0]).Keys.ToList();
         var nationalInterestIndex = headers.IndexOf(nameof(Borehole.NationalInterest));
