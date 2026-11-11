@@ -51,7 +51,7 @@ public class ProfileCloudService : CloudServiceBase
             fileName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
 
             // S3 first: if upload fails we have no DB row pointing at a missing object.
-            await UploadObject(fileStream, nameUuid, contentType).ConfigureAwait(false);
+            await UploadObject(fileStream, nameUuid, contentType, CancellationToken.None).ConfigureAwait(false);
 
             var isOcrEligible = IsOcrEligible(contentType);
             var profile = new Profile
@@ -66,7 +66,7 @@ public class ProfileCloudService : CloudServiceBase
             };
 
             await context.Profiles.AddAsync(profile, CancellationToken.None).ConfigureAwait(false);
-            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
+            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, CancellationToken.None).ConfigureAwait(false);
 
             if (transaction != null) await transaction.CommitAsync(CancellationToken.None).ConfigureAwait(false);
 
