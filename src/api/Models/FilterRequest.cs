@@ -64,11 +64,6 @@ public class FilterRequest
     public IEnumerable<int>? WorkgroupId { get; set; }
 
     /// <summary>
-    /// Gets or sets multiple borehole IDs filter.
-    /// </summary>
-    public IEnumerable<int>? Ids { get; set; }
-
-    /// <summary>
     /// Gets or sets the restriction until date start filter.
     /// </summary>
     public DateOnly? RestrictionUntilFrom { get; set; }

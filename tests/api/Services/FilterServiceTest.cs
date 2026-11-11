@@ -87,29 +87,6 @@ public class FilterServiceTest
     }
 
     [TestMethod]
-    public async Task FilterBoreholesWithIdsFilterReturnsMultipleBoreholes()
-    {
-        var testIds = new List<int> { 1_000_010, 1_000_040, 1_000_070 };
-        var filterRequest = new FilterRequest
-        {
-            Ids = testIds,
-            PageNumber = 1,
-            PageSize = 100,
-        };
-
-        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(testIds.Count, result.TotalCount);
-        Assert.AreEqual(testIds.Count, result.Boreholes.Count());
-
-        foreach (var borehole in result.Boreholes)
-        {
-            Assert.IsTrue(testIds.Contains(borehole.Id));
-        }
-    }
-
-    [TestMethod]
     public async Task FilterBoreholesWithOriginalNameFilterReturnsMatchingBoreholes()
     {
         var existingBoreholeName = "Luther Littel";
@@ -1284,7 +1261,6 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            Ids = new List<int> { 1_000_010 },
             PageNumber = 1,
             PageSize = 1,
         };
@@ -1292,7 +1268,6 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.TotalCount);
         Assert.AreEqual(1, result.Boreholes.Count());
 
         var filteredBorehole = result.Boreholes.First();
@@ -1567,7 +1542,7 @@ public class FilterServiceTest
     }
 
     [TestMethod]
-    public async Task FilterBoreholesWithIdsFilterRespectsWorkgroupPermissions()
+    public async Task FilterBoreholesRespectsWorkgroupPermissions()
     {
         // Add a new borehole with workgroup that editor doesn't have access to
         var newBorehole = new Borehole
@@ -1581,7 +1556,7 @@ public class FilterServiceTest
 
         var filterRequest = new FilterRequest
         {
-            Ids = new List<int> { newBorehole.Id },
+            Name = newBorehole.Name,
             PageNumber = 1,
             PageSize = 100,
         };

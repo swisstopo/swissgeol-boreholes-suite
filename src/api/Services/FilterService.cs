@@ -368,7 +368,6 @@ public class FilterService : IFilterService
         PurposeId = src.PurposeId,
         WorkflowStatus = src.WorkflowStatus,
         WorkgroupId = src.WorkgroupId,
-        Ids = src.Ids,
         RestrictionUntilFrom = src.RestrictionUntilFrom,
         RestrictionUntilTo = src.RestrictionUntilTo,
         TotalDepthMin = src.TotalDepthMin,
@@ -421,11 +420,6 @@ public class FilterService : IFilterService
         if (!string.IsNullOrWhiteSpace(filterRequest.Name))
         {
             query = query.Where(b => b.Name != null && EF.Functions.ILike(b.Name, $"%{filterRequest.Name}%"));
-        }
-
-        if (filterRequest.Ids != null && filterRequest.Ids.Any())
-        {
-            query = query.Where(b => filterRequest.Ids.Contains(b.Id));
         }
 
         // Simple property filters
