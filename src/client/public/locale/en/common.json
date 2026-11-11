@@ -429,6 +429,7 @@
   "msgLithologyEmpty": "No lithology available",
   "msgNoBoreholesInSelection": "There are no boreholes in the selection",
   "msgNoStratigraphyExtracted": "The extraction has completed, but no stratigraphy was found in the profile.",
+  "msgPolygonOutsideMapExtent": "The polygon must lie entirely within the map area",
   "msgReenablingUserTip": "You can deactivate the user and re-enable them again at any time",
   "msgReenablingWorkgroupTip": "You can deactivate the workgroup and re-enable it again at any time",
   "msgSectionsEmpty": "No section available",

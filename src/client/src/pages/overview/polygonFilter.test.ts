@@ -1,7 +1,14 @@
 // @vitest-environment jsdom
 import OlPolygon from "ol/geom/Polygon";
 import { describe, expect, it } from "vitest";
-import { parseAsPolygon, PolygonVertices, toOlPolygon, toPolygonGeometry, toPolygonVertices } from "./polygonFilter.ts";
+import {
+  isWithinMapExtent,
+  parseAsPolygon,
+  PolygonVertices,
+  toOlPolygon,
+  toPolygonGeometry,
+  toPolygonVertices,
+} from "./polygonFilter.ts";
 
 const vertices: PolygonVertices = [
   [2600000, 1200000],
@@ -23,6 +30,8 @@ describe("parseAsPolygon", () => {
     ["fewer than three vertices", "2600000,1200000,2610000,1200000"],
     ["a value that is not a number", "2600000,1200000,2610000,abc,2610000,1210000"],
     ["an empty value", ""],
+    ["a vertex outside the map extent", "2600000,1200000,2610000,1200000,2950000,1210000"],
+    ["WGS84 coordinates", "7.4,46.9,7.5,46.9,7.5,47"],
   ])("rejects %s", (_, value) => {
     expect(parseAsPolygon.parse(value)).toBeNull();
   });
@@ -39,6 +48,22 @@ describe("parseAsPolygon", () => {
       ),
     ).toBe(true);
     expect(parseAsPolygon.eq(vertices, vertices.slice(0, 2))).toBe(false);
+  });
+});
+
+describe("isWithinMapExtent", () => {
+  it("accepts vertices within the map extent, including its boundary", () => {
+    expect(
+      isWithinMapExtent([
+        [2420000, 1030000],
+        [2900000, 1030000],
+        [2900000, 1350000],
+      ]),
+    ).toBe(true);
+  });
+
+  it("rejects a polygon with one vertex outside the map extent", () => {
+    expect(isWithinMapExtent([...vertices, [2600000, 1350001]])).toBe(false);
   });
 });
 

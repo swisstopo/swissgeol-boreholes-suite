@@ -19,7 +19,12 @@ import { Cluster } from "ol/source";
 import VectorSource from "ol/source/Vector";
 import { StyleFunction } from "ol/style/Style";
 import { theme } from "../../AppTheme";
-import { parseAsPolygon, toOlPolygon, toPolygonVertices } from "../../pages/overview/polygonFilter.ts";
+import {
+  isWithinMapExtent,
+  parseAsPolygon,
+  toOlPolygon,
+  toPolygonVertices,
+} from "../../pages/overview/polygonFilter.ts";
 import { SessionKeys } from "../../pages/overview/SessionKey";
 import { BasemapContext } from "../basemapSelector/basemapContext";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps";
@@ -346,15 +351,22 @@ export const MapComponent: FC<MapComponentProps> = ({
         }
       });
 
-      const drawnPolygon = drawnFeature.getGeometry();
-      if (intersectingFeatures.length > 0 && drawnPolygon instanceof OlPolygon) {
-        currentPoints.clear();
-        currentPoints.addFeatures(intersectingFeatures);
-        callbacksRef.current.setFilterPolygon(toPolygonVertices(drawnPolygon));
-      } else {
-        callbacksRef.current.displayErrorMessage(callbacksRef.current.t("msgNoBoreholesInSelection"));
+      const rejectDrawnPolygon = (messageKey: string) => {
+        callbacksRef.current.displayErrorMessage(callbacksRef.current.t(messageKey));
         callbacksRef.current.setFilterPolygon(null);
         drawSource.clear();
+      };
+
+      const drawnPolygon = drawnFeature.getGeometry();
+      const vertices = drawnPolygon instanceof OlPolygon ? toPolygonVertices(drawnPolygon) : null;
+      if (vertices === null || intersectingFeatures.length === 0) {
+        rejectDrawnPolygon("msgNoBoreholesInSelection");
+      } else if (isWithinMapExtent(vertices)) {
+        currentPoints.clear();
+        currentPoints.addFeatures(intersectingFeatures);
+        callbacksRef.current.setFilterPolygon(vertices);
+      } else {
+        rejectDrawnPolygon("msgPolygonOutsideMapExtent");
       }
 
       callbacksRef.current.setPolygonSelectionEnabled(false);

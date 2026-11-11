@@ -429,6 +429,7 @@
   "msgLithologyEmpty": "Aucune lithologie disponible",
   "msgNoBoreholesInSelection": "Il n'y a pas de forages dans la sélection",
   "msgNoStratigraphyExtracted": "L'extraction est terminée, mais aucune stratigraphie n'a été trouvée dans le profil.",
+  "msgPolygonOutsideMapExtent": "Le polygone doit se trouver entièrement dans la zone de la carte",
   "msgReenablingUserTip": "Vous pourrez déactiver l'utilisateur et le réactiver plus tard",
   "msgReenablingWorkgroupTip": "Vous pourrez désactiver le groupe de travail et le réactiver plus tard",
   "msgSectionsEmpty": "Aucune sections disponible",
