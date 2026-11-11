@@ -105,6 +105,17 @@ export const convertValueToBoolean = (value: NullableBooleanSelect): boolean | n
   return null;
 };
 
+/**
+ * Convert a boolean to the select value, the inverse of convertValueToBoolean.
+ * @param value The boolean to convert from.
+ * @returns 1 for yes, 0 for no and 2 for not specified.
+ */
+export const convertBooleanToSelectValue = (value: boolean | null | undefined): NullableBooleanSelect => {
+  if (value === true) return 1;
+  if (value === false) return 0;
+  return 2;
+};
+
 export const validateDepths = (values: Lithology | LogRun, errors: FormErrors) => {
   const fromDepth = parseFloatWithThousandsSeparator(values.fromDepth);
   const toDepth = parseFloatWithThousandsSeparator(values.toDepth);

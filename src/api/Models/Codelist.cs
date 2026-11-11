@@ -197,4 +197,10 @@ public class Codelist : IIdentifyable
     /// </summary>
     [JsonIgnore]
     public ICollection<LogFileToolTypeCodes>? LogFileToolTypeCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="BoreholeSourceTypeCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<BoreholeSourceTypeCodes>? BoreholeSourceTypeCodes { get; set; }
 }

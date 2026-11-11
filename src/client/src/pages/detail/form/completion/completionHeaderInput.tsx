@@ -62,7 +62,7 @@ const CompletionHeaderInput = ({
   useEffect(() => {
     if (trySwitchTab) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
-        showPrompt(t("unsavedChangesMessage", { where: t("completion") }), [
+        showPrompt({ key: "unsavedChangesMessage", values: { where: t("completion") } }, [
           {
             label: "cancel",
             action: () => {
@@ -77,7 +77,7 @@ const CompletionHeaderInput = ({
             },
           },
           {
-            label: t("save"),
+            label: "save",
             disabled: !formMethods.formState.isValid,
             action: () => {
               // Not awaited: the prompt action returns void and handleSubmit reports errors

@@ -17,6 +17,7 @@ import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { PolygonFilterContext } from "../sidePanelContent/filter/polygonFilterContext.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
+import { getJsonExportSelection } from "./jsonExportSelection.ts";
 
 interface MapViewProps {
   displayErrorMessage: (message: string) => void;
@@ -29,6 +30,8 @@ const containSameIds = (ids: number[], otherIds: number[]) => {
 
 // A stable empty array, so the fallback response does not count as new data on every render.
 const noSelectableBoreholeIds: number[] = [];
+
+const bulkExportFileName = () => `bulkexport_${new Date().toISOString().split("T")[0]}`;
 
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
@@ -123,7 +126,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     totalPages: 0,
     boreholes: [],
     geoJson: null,
-    filteredBoreholeIds: [],
     selectableBoreholeIds: noSelectableBoreholeIds,
   };
   const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
@@ -138,6 +140,8 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     if (!containSameIds(selectableBoreholeIds, selectionScope)) setSelectionModel([]);
   }
 
+  const jsonExport = getJsonExportSelection(selectionModel);
+
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
       <BulkEditDialog
@@ -151,17 +155,17 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         exportItems={[
           {
             label: "CSV",
-            exportFunction: () =>
-              exportCSVBorehole(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+            exportFunction: options => exportCSVBorehole(selectionModel, bulkExportFileName(), options),
           },
           {
             label: "JSON",
-            exportFunction: () =>
-              exportJsonBoreholes(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+            exportFunction: options => exportJsonBoreholes(jsonExport.ids, bulkExportFileName(), options),
+            confirmation: jsonExport.confirmation,
           },
           {
             label: "exportJsonProfile",
-            exportFunction: options => exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100), options),
+            exportFunction: options => exportJsonWithAttachmentsBorehole(jsonExport.ids, options),
+            confirmation: jsonExport.confirmation,
           },
         ]}
       />

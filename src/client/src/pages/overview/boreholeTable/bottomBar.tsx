@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { ArrowDownToLine, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { isEditorUser, useCurrentUser } from "../../../api/user.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -61,30 +61,6 @@ const BottomBar = ({
     );
   };
 
-  const showPromptExportMoreThan100 = (callback: () => void) => {
-    showPrompt("exportMoreThan100", [
-      {
-        label: "cancel",
-      },
-      {
-        label: "exportFirst100",
-        icon: <ArrowDownToLine />,
-        variant: "contained",
-        action: callback,
-      },
-    ]);
-  };
-
-  const onExportMultiple = () => {
-    if (selectionModel.length > 100) {
-      showPromptExportMoreThan100(() => {
-        setIsExporting(true);
-      });
-    } else {
-      setIsExporting(true);
-    }
-  };
-
   const showAllTableActions = !auth.anonymousModeEnabled && userIsEditor;
 
   return (
@@ -104,7 +80,7 @@ const BottomBar = ({
             <DeleteButton
               color="secondary"
               onClick={() =>
-                showPrompt(t("deleteBoreholesMessage", { count: selectionModel.length }), [
+                showPrompt({ key: "deleteBoreholesMessage", values: { count: selectionModel.length } }, [
                   {
                     label: "cancel",
                   },
@@ -122,7 +98,7 @@ const BottomBar = ({
             <CopyButton color="secondary" onClick={showCopyPrompt} />
           )}
           {showAllTableActions && <BulkEditButton label={"bulkEditing"} onClick={onBulkEdit} />}
-          <ExportButton label={"export"} onClick={() => onExportMultiple()} />
+          <ExportButton label={"export"} onClick={() => setIsExporting(true)} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
       ) : (

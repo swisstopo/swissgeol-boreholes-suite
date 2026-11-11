@@ -70,8 +70,9 @@ const useDeleteEntityPrompts = (deleteEntity: UseMutateFunction<unknown, unknown
     }
   };
 
+  // The messages are composed of translated texts, so they are passed as elements, which the prompt shows as they are.
   const showNotDeletablePrompt = (entity: User | Workgroup) => {
-    showPrompt(getNotDeletableMessage(entity), [
+    showPrompt(<>{getNotDeletableMessage(entity)}</>, [
       {
         label: "cancel",
         icon: <X />,
@@ -80,7 +81,7 @@ const useDeleteEntityPrompts = (deleteEntity: UseMutateFunction<unknown, unknown
   };
 
   const showDeletablePrompt = (entity: User | Workgroup) => {
-    showPrompt(getDeletableMessage(entity), [
+    showPrompt(<>{getDeletableMessage(entity)}</>, [
       {
         label: "cancel",
         icon: <X />,

@@ -209,7 +209,7 @@ describe("Test for importing boreholes.", () => {
     verifyRowContains("COLDWATERBATH", 0);
     verifyRowContains("COLDWATERDRINK", 1);
 
-    cy.intercept("/api/v2/boreholeexport/zip?**").as("borehole_export_zip");
+    cy.intercept("POST", "/api/v2/boreholeexport/zip").as("borehole_export_zip");
     checkAllVisibleRows();
     exportItem();
     exportZipItem();

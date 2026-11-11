@@ -44,6 +44,24 @@ internal static class Helpers
         return new ZipArchive(body, ZipArchiveMode.Read);
     }
 
+    /// <summary>
+    /// Executes a streamed CSV result against an in-memory response body and returns the bytes written,
+    /// so assertions can read the file the client receives.
+    /// </summary>
+    internal static async Task<byte[]> ExecuteCsvResultAsync(StreamedCsvResult streamedCsvResult)
+    {
+        var httpContext = new DefaultHttpContext();
+        using var body = new MemoryStream();
+        httpContext.Response.Body = body;
+
+        // ExecuteResultAsync only reads HttpContext.Response, so the other ActionContext
+        // members are deliberately left unset.
+        await streamedCsvResult.ExecuteResultAsync(new ActionContext { HttpContext = httpContext });
+
+        Assert.AreEqual("text/csv", httpContext.Response.ContentType);
+        return body.ToArray();
+    }
+
     internal static ControllerContext GetControllerContext(string subjectId, string role)
         => new() { HttpContext = new DefaultHttpContext().SetClaimsPrincipal(subjectId, role) };
 

@@ -141,6 +141,7 @@ internal static class TestSyncContextExtensions
         borehole.BoreholeGeometry = borehole.BoreholeGeometry?.OrderBy(g => g.MD).ToList();
         borehole.Observations = borehole.Observations?.OrderBy(o => o.FromDepthM).ToList();
         borehole.BoreholeCodelists = borehole.BoreholeCodelists?.OrderBy(bc => bc.CodelistId).ToList();
+        borehole.BoreholeSourceTypeCodes = borehole.BoreholeSourceTypeCodes?.OrderBy(sc => sc.CodelistId).ToList();
 
         foreach (var observation in borehole.Observations?.OfType<Hydrotest>() ?? Enumerable.Empty<Hydrotest>())
         {

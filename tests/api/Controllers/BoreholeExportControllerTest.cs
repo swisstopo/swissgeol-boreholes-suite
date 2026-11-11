@@ -12,7 +12,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NetTopologySuite.IO.Converters;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
@@ -29,9 +31,9 @@ namespace BDMS.Controllers;
 [TestClass]
 public class BoreholeExportControllerTest
 {
-    private const string TestCsvString = "text/csv";
     private const string ExportFileName = "boreholes_export";
     private const int TestBoreholeId = 1000068;
+    private const int OtherTestBoreholeId = 1_000_057;
     private BdmsContext context;
     private ProfileCloudService profileCloudService;
     private BoreholeExportController controller;
@@ -87,8 +89,8 @@ public class BoreholeExportControllerTest
             .ReturnsAsync(true);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string>(), It.IsAny<int>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(Array.Empty<int>());
 
         boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>()))
@@ -338,7 +340,7 @@ public class BoreholeExportControllerTest
         context.Photos.Add(photo);
         Assert.IsNotNull(newBorehole.Photos);
 
-        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id], CancellationToken.None).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new BoreholeJsonExportRequest { Ids = [newBorehole.Id] }, CancellationToken.None).ConfigureAwait(false);
 
         var streamedZipResult = result as StreamedZipResult;
         Assert.IsNotNull(streamedZipResult);
@@ -387,7 +389,7 @@ public class BoreholeExportControllerTest
         context.Add(profileWithoutAttachment);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id], CancellationToken.None).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new BoreholeJsonExportRequest { Ids = [newBorehole.Id] }, CancellationToken.None).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, typeof(ObjectResult));
         ObjectResult objectResult = (ObjectResult)result;
@@ -410,7 +412,7 @@ public class BoreholeExportControllerTest
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportJsonIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
-        var result = await controller.ExportJsonAsync(ids).ConfigureAwait(false);
+        var result = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = ids.ToList() }, CancellationToken.None).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
     }
@@ -438,14 +440,14 @@ public class BoreholeExportControllerTest
         context.Boreholes.AddRange(b1, b2);
         await context.SaveChangesAsync();
 
-        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { b1.Id, b2.Id }, CancellationToken.None).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new BoreholeJsonExportRequest { Ids = [b1.Id, b2.Id] }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(result, typeof(StreamedZipResult));
     }
 
     [TestMethod]
     public async Task ExportJsonWithAttachmentsIdsValidationNotFound()
     {
-        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { 1, 2 }, CancellationToken.None).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new BoreholeJsonExportRequest { Ids = [1, 2] }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
     }
 
@@ -457,7 +459,7 @@ public class BoreholeExportControllerTest
         context.Add(newBorehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var response = await controller.ExportJsonAsync([newBorehole.Id]).ConfigureAwait(false);
+        var response = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = [newBorehole.Id] }, CancellationToken.None).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
 
@@ -482,11 +484,11 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { 1_000_057, 1_000_058 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1_000_057, 1_000_058 }, typeof(StreamedCsvResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportCsvIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
-        var result = await controller.ExportCsvAsync(ids).ConfigureAwait(false);
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids.ToList() }, CancellationToken.None).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
     }
@@ -506,12 +508,11 @@ public class BoreholeExportControllerTest
              .Take(3).Select(b => b.Id).ToListAsync();
 
         var boreholeIds = boreholeIdsWithoutGeometry.Concat(boreholeIdsWithGeometry);
-        var result = await controller.ExportCsvAsync(boreholeIds) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = boreholeIds.ToList() }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
-        var records = GetRecordsFromFileContent(result);
+        Assert.AreEqual(ExportFileName, result.FileName[0..16]);
+        var records = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result));
 
         foreach (var record in records)
         {
@@ -607,12 +608,11 @@ public class BoreholeExportControllerTest
 
         var ids = new List<int> { firstBoreholeId, secondBoreholeId };
 
-        var result = await controller.ExportCsvAsync(ids) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as StreamedCsvResult;
         Assert.IsNotNull(result);
-        Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
+        Assert.AreEqual(ExportFileName, result.FileName[0..16]);
 
-        var records = GetRecordsFromFileContent(result);
+        var records = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result));
 
         var firstBorehole = records.Find(r => r.Id == firstBoreholeId.ToString());
         Assert.IsNotNull(firstBorehole);
@@ -632,7 +632,7 @@ public class BoreholeExportControllerTest
     {
         var ids = new List<int> { 8, 2, 11, 87 };
 
-        var result = await controller.ExportCsvAsync(ids) as NotFoundObjectResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as NotFoundObjectResult;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("No borehole(s) found for the provided id(s).", result.Value);
@@ -643,12 +643,11 @@ public class BoreholeExportControllerTest
     {
         var ids = new List<int> { 9, 8, 0, TestBoreholeId };
 
-        var result = await controller.ExportCsvAsync(ids) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(TestCsvString, result.ContentType);
-        Assert.AreEqual(ExportFileName, result.FileDownloadName[0..16]);
-        var csvData = Encoding.UTF8.GetString(result.FileContents);
+        Assert.AreEqual(ExportFileName, result.FileName[0..16]);
+        var csvData = Encoding.UTF8.GetString(await ExecuteCsvResultAsync(result));
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2;
         Assert.AreEqual(recordCount, 1);
@@ -657,12 +656,15 @@ public class BoreholeExportControllerTest
     [TestMethod]
     public async Task DownloadCsvStartsWithUtf8Bom()
     {
-        var result = await controller.ExportCsvAsync(new List<int> { TestBoreholeId }) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [TestBoreholeId] }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
+        var fileContent = await ExecuteCsvResultAsync(result);
 
         // Without the byte order mark Excel opens the file as Windows-1252 and renders "é" as "Ã©".
-        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, result.FileContents.Take(3).ToArray());
+        // A second mark would show up as a stray character in the first header cell.
+        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, fileContent.Take(3).ToArray());
+        CollectionAssert.AreNotEqual(new byte[] { 0xEF, 0xBB, 0xBF }, fileContent.Skip(3).Take(3).ToArray());
     }
 
     [TestMethod]
@@ -672,20 +674,132 @@ public class BoreholeExportControllerTest
         borehole.OriginalName = "Forêt de Bière";
         await context.SaveChangesAsync();
 
-        var result = await controller.ExportCsvAsync(new List<int> { TestBoreholeId }) as FileContentResult;
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [TestBoreholeId] }, CancellationToken.None) as StreamedCsvResult;
 
         Assert.IsNotNull(result);
-        StringAssert.Contains(Encoding.UTF8.GetString(result.FileContents), "Forêt de Bière");
+        StringAssert.Contains(Encoding.UTF8.GetString(await ExecuteCsvResultAsync(result)), "Forêt de Bière");
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithMoreThanHundredBoreholesKeepsRequestedOrder()
+    {
+        // The seed holds 100 boreholes, so add more to exceed the limit the other formats keep.
+        context.Boreholes.AddRange(Enumerable.Range(0, 50).Select(i => new Borehole { Name = $"CSV_EXPORT_{i}" }));
+        await context.SaveChangesAsync();
+
+        var ids = await context.Boreholes.OrderByDescending(b => b.Id).Select(b => b.Id).ToListAsync();
+        Assert.IsGreaterThan(100, ids.Count);
+
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as StreamedCsvResult;
+
+        Assert.IsNotNull(result);
+        var exportedIds = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result)).Select(record => (string)record.Id).ToList();
+        CollectionAssert.AreEqual(ids.Select(id => id.ToString(CultureInfo.InvariantCulture)).ToList(), exportedIds);
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvWithDuplicateIdsWritesEachBoreholeOnceAtItsFirstPosition()
+    {
+        var otherBoreholeId = OtherTestBoreholeId;
+        var ids = new List<int> { otherBoreholeId, TestBoreholeId, otherBoreholeId };
+
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = ids }, CancellationToken.None) as StreamedCsvResult;
+
+        Assert.IsNotNull(result);
+        var exportedIds = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result)).Select(record => (string)record.Id).ToList();
+        CollectionAssert.AreEqual(new[] { otherBoreholeId, TestBoreholeId }.Select(id => id.ToString(CultureInfo.InvariantCulture)).ToList(), exportedIds);
+    }
+
+    [TestMethod]
+    public async Task ExportControllerMethodsRejectASelectionWithOneDeniedBorehole()
+    {
+        var deniedBoreholeId = OtherTestBoreholeId;
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync((string? _, IReadOnlyCollection<int> boreholeIds) => boreholeIds.Where(id => id == deniedBoreholeId).ToList());
+        controller = new BoreholeExportController(context, profileCloudService, new Mock<ILogger<BoreholeExportController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var exportMethods = GetExportMethods();
+        Assert.AreEqual(4, exportMethods.Count);
+
+        foreach (var method in exportMethods)
+        {
+            var result = await InvokeExportMethodAsync(method, [TestBoreholeId, deniedBoreholeId]);
+
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult, $"Method {method.Name} exported a selection that holds a borehole the user cannot view.");
+            Assert.AreEqual("The user lacks permissions to export the borehole(s).", badRequestResult.Value);
+        }
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvChecksPermissionsOnlyForBoreholesThatExist()
+    {
+        IReadOnlyCollection<int>? checkedIds = null;
+        var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .Callback((string? _, IReadOnlyCollection<int> boreholeIds) => checkedIds = boreholeIds)
+            .ReturnsAsync([]);
+        controller = new BoreholeExportController(context, profileCloudService, new Mock<ILogger<BoreholeExportController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [0, TestBoreholeId, 87] }, CancellationToken.None) as StreamedCsvResult;
+
+        Assert.IsNotNull(result);
+        Assert.IsNotNull(checkedIds);
+        CollectionAssert.AreEqual(new[] { TestBoreholeId }, checkedIds.ToArray());
+    }
+
+    [TestMethod]
+    public void BoreholeExportRequestAcceptsMoreThanHundredIds()
+    {
+        var request = new BoreholeExportRequest { Ids = Enumerable.Range(1, 150).ToList() };
+
+        Assert.IsTrue(Validator.TryValidateObject(request, new ValidationContext(request), new List<ValidationResult>(), validateAllProperties: true));
+    }
+
+    [TestMethod]
+    public void CsvExportRequestBodyLimitFitsHundredThousandIds()
+    {
+        var sizeLimit = typeof(BoreholeExportController).GetMethod(nameof(BoreholeExportController.ExportCsvAsync))?.GetCustomAttribute<RequestSizeLimitAttribute>();
+        Assert.IsNotNull(sizeLimit);
+
+        // Eight-digit ids, one digit more than the seeded ones, leave room for the database to grow.
+        var request = new BoreholeExportRequest { Ids = Enumerable.Range(10_000_000, 100_000).ToList() };
+        var body = JsonSerializer.SerializeToUtf8Bytes(request, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+        Assert.IsLessThan(BoreholeExportRequest.MaxRequestBodySize, body.Length);
+    }
+
+    [TestMethod]
+    public void BoreholeExportRequestRejectsEmptyIds()
+    {
+        var request = new BoreholeExportRequest { Ids = [] };
+
+        Assert.IsFalse(Validator.TryValidateObject(request, new ValidationContext(request), new List<ValidationResult>(), validateAllProperties: true));
+    }
+
+    [TestMethod]
+    [DataRow(1, true, DisplayName = "One id.")]
+    [DataRow(BoreholeJsonExportRequest.MaxBoreholeCount, true, DisplayName = "As many ids as allowed.")]
+    [DataRow(0, false, DisplayName = "No ids.")]
+    [DataRow(BoreholeJsonExportRequest.MaxBoreholeCount + 1, false, DisplayName = "One id more than allowed.")]
+    public void BoreholeJsonExportRequestLimitsTheNumberOfIds(int idCount, bool isValid)
+    {
+        var request = new BoreholeJsonExportRequest { Ids = Enumerable.Range(1, idCount).ToList() };
+
+        Assert.AreEqual(isValid, Validator.TryValidateObject(request, new ValidationContext(request), new List<ValidationResult>(), validateAllProperties: true));
     }
 
     [TestMethod]
     public async Task ExportControllerMethodsShouldValidateUserHasPermissions()
     {
-        // Override return value of HasUserWorkgroupPermissions in this specific test
+        // Deny viewing every borehole in this specific test
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Loose);
         boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string>(), It.IsAny<int>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.GetBoreholeIdsUserCannotViewAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync((string? _, IReadOnlyCollection<int> boreholeIds) => boreholeIds.ToList());
 
         var profileControllerLoggerMock = new Mock<ILogger<ProfileController>>(MockBehavior.Strict);
         profileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
@@ -693,33 +807,47 @@ public class BoreholeExportControllerTest
         var loggerMock = new Mock<ILogger<BoreholeExportController>>();
         controller = new BoreholeExportController(context, profileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
-        // Get all export methods from ExportController
-        var exportMethods = typeof(BoreholeExportController)
-            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
-            .Where(m => !m.IsConstructor && m.Name.Contains("export", StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
+        var exportMethods = GetExportMethods();
         Assert.AreEqual(4, exportMethods.Count);
 
-        // Invoke each export method and check if the user permissions are validated.
-        // The export methods take the borehole ids, and the streamed ones a cancellation token as well.
         foreach (var method in exportMethods)
         {
-            var arguments = method.GetParameters()
-                .Select(parameter => parameter.ParameterType == typeof(CancellationToken)
-                    ? (object)CancellationToken.None
-                    : new List<int>() { 1_000_057 })
-                .ToArray();
-
-            var resultTask = method.Invoke(controller, arguments) as Task;
-            await resultTask.ConfigureAwait(false);
-
-            var result = (resultTask as dynamic).Result;
+            var result = await InvokeExportMethodAsync(method, [OtherTestBoreholeId]);
 
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult, $"Method {method.Name} did not return BadRequestObjectResult");
             Assert.AreEqual("The user lacks permissions to export the borehole(s).", badRequestResult.Value);
         }
+    }
+
+    private static List<MethodInfo> GetExportMethods()
+    {
+        return typeof(BoreholeExportController)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .Where(m => !m.IsConstructor && m.Name.Contains("export", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Invokes an export method with <paramref name="ids"/>. The export methods take the borehole ids (all but the
+    /// GeoPackage export as a request body), and some a cancellation token as well.
+    /// </summary>
+    private async Task<object?> InvokeExportMethodAsync(MethodInfo method, List<int> ids)
+    {
+        var arguments = method.GetParameters()
+            .Select(parameter => parameter.ParameterType switch
+            {
+                Type type when type == typeof(CancellationToken) => (object)CancellationToken.None,
+                Type type when type == typeof(BoreholeExportRequest) => new BoreholeExportRequest { Ids = ids },
+                Type type when type == typeof(BoreholeJsonExportRequest) => new BoreholeJsonExportRequest { Ids = ids },
+                _ => ids,
+            })
+            .ToArray();
+
+        var resultTask = method.Invoke(controller, arguments) as Task;
+        await resultTask.ConfigureAwait(false);
+
+        return (resultTask as dynamic).Result;
     }
 
     private static void AssertEntitiesEqualByIncludeInExportAttribute(object? expected, object? actual, ISet<object?> visited, bool ignoreNonImportableProps = false)
@@ -848,9 +976,42 @@ public class BoreholeExportControllerTest
         }
     }
 
-    private static List<dynamic> GetRecordsFromFileContent(FileContentResult result)
+    [TestMethod]
+    public async Task DownloadCsvWritesCoreRepositoryStoredAndSourceTypes()
     {
-        var memoryStream = new MemoryStream(result.FileContents);
+        var sourceTypeIds = await context.Codelists
+            .Where(c => c.Schema == BoreholeSchemas.SourceTypeSchema)
+            .OrderBy(c => c.Order)
+            .Select(c => c.Id)
+            .ToListAsync();
+
+        var withTypes = new Borehole { OriginalName = "CORESTORE_CSV_TYPES", WorkgroupId = 1, CoreRepositoryStored = true };
+        withTypes.SyncSourceTypeCodes(new[] { sourceTypeIds[2], sourceTypeIds[0] });
+        var withoutTypes = new Borehole { OriginalName = "CORESTORE_CSV_NONE", WorkgroupId = 1, CoreRepositoryStored = null };
+        context.AddRange(withTypes, withoutTypes);
+        await context.SaveChangesAsync();
+
+        var result = await controller.ExportCsvAsync(new BoreholeExportRequest { Ids = [withTypes.Id, withoutTypes.Id] }, CancellationToken.None) as StreamedCsvResult;
+        Assert.IsNotNull(result);
+        var records = GetRecordsFromFileContent(await ExecuteCsvResultAsync(result));
+
+        var headers = ((IDictionary<string, object>)records[0]).Keys.ToList();
+        var nationalInterestIndex = headers.IndexOf(nameof(Borehole.NationalInterest));
+        Assert.AreEqual(nameof(Borehole.CoreRepositoryStored), headers[nationalInterestIndex + 1]);
+        Assert.AreEqual(nameof(Borehole.SourceTypeCodelistIds), headers[nationalInterestIndex + 2]);
+
+        var first = records.Single(r => r.Id == withTypes.Id.ToString(CultureInfo.InvariantCulture));
+        Assert.AreEqual("True", first.CoreRepositoryStored);
+        Assert.AreEqual($"{sourceTypeIds[0]},{sourceTypeIds[2]}", first.SourceTypeCodelistIds);
+
+        var second = records.Single(r => r.Id == withoutTypes.Id.ToString(CultureInfo.InvariantCulture));
+        Assert.AreEqual("", second.CoreRepositoryStored);
+        Assert.AreEqual("", second.SourceTypeCodelistIds);
+    }
+
+    private static List<dynamic> GetRecordsFromFileContent(byte[] fileContent)
+    {
+        var memoryStream = new MemoryStream(fileContent);
         var reader = new StreamReader(memoryStream);
         var csv = new CsvReader(reader, CsvConfigHelper.CsvWriteConfig);
         return csv.GetRecords<dynamic>().ToList();
@@ -859,6 +1020,7 @@ public class BoreholeExportControllerTest
     private static void PopulateCodelistCollectionsFromJoinTables(Borehole newBorehole)
     {
         // Make sure all CodelistId collections are populated so they can be compared, to the export.
+        newBorehole.MapSourceTypeCodelistIds();
         foreach (var strat in newBorehole.Stratigraphies ?? [])
         {
             foreach (var lithology in strat.Lithologies)
@@ -907,6 +1069,9 @@ public class BoreholeExportControllerTest
         borehole.Observations = borehole.Observations?.Where(o => o.Type != ObservationType.None).OrderBy(o => o.Type).ToList();
         borehole.Completions = borehole.Completions?.OrderBy(o => o.Name).ToList();
 
+        // The database returns the identifier rows in no particular order, and the order can differ between two reads.
+        borehole.BoreholeCodelists = borehole.BoreholeCodelists?.OrderBy(c => c.CodelistId).ThenBy(c => c.Value).ToList();
+
         foreach (var completion in borehole.Completions ?? [])
         {
             completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
@@ -923,7 +1088,7 @@ public class BoreholeExportControllerTest
 
     private async Task<Borehole> ExportSingleBoreholeAsync(int boreholeId)
     {
-        var response = await controller.ExportJsonAsync([boreholeId]).ConfigureAwait(false);
+        var response = await controller.ExportJsonAsync(new BoreholeJsonExportRequest { Ids = [boreholeId] }, CancellationToken.None).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
         List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;

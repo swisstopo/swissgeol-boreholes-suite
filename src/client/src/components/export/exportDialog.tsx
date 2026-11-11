@@ -1,16 +1,29 @@
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
+import { ArrowDownToLine } from "lucide-react";
 import { ApiError } from "../../api/errorClasses.ts";
-import { formatBytes, isAbortError, progressRefreshIntervalMs, TransferOptions } from "../../api/transferProgress.ts";
+import { formatBytes, progressRefreshIntervalMs, TransferOptions } from "../../api/transferProgress.ts";
 import { theme } from "../../AppTheme.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 import { LoadingBackdrop } from "../loadingBackdrop.tsx";
+import { PromptContext } from "../prompt/promptContext.tsx";
+
+/**
+ * Asks before an export runs, for exports that will not deliver everything the user selected. The message and the
+ * confirm label are translation keys that receive the number of exported entries as `count`.
+ */
+export interface ExportConfirmation {
+  message: string;
+  confirmLabel: string;
+  exportedCount: number;
+}
 
 export interface ExportItem {
   label: string;
   exportFunction: (options?: TransferOptions) => Promise<Response | void>;
+  confirmation?: ExportConfirmation;
 }
 
 interface ExportDialogProps {
@@ -27,6 +40,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
   const runningExport = useRef<AbortController | null>(null);
   const minimumDisplayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { showAlert } = useContext(AlertContext);
+  const { showPrompt } = useContext(PromptContext);
 
   const closeExportDialog = useCallback(() => {
     setIsExporting(false);
@@ -80,8 +94,9 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           },
         });
       } catch (error) {
-        // Aborted by user so it is not reported as a failure.
-        if (isAbortError(error)) return;
+        // Aborted by the user, so it is not reported as a failure. The own signal decides rather than the
+        // error's type, as a transfer may reject with whatever reason it got and still have been cancelled.
+        if (abortController.signal.aborted) return;
         if (error instanceof ApiError) {
           showAlert(t(error.message), "error");
         } else {
@@ -110,6 +125,27 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
     [hideProgress, setIsExporting, showAlert, t],
   );
 
+  // The prompt opens on top of the export dialog, so cancelling it leaves the dialog open for another choice.
+  const startExport = (item: ExportItem) => {
+    const { confirmation } = item;
+    if (!confirmation) {
+      void handleExport(item.exportFunction);
+      return;
+    }
+
+    const translationValues = { count: confirmation.exportedCount };
+    showPrompt({ key: confirmation.message, values: translationValues }, [
+      { label: "cancel" },
+      {
+        label: confirmation.confirmLabel,
+        labelValues: translationValues,
+        icon: <ArrowDownToLine />,
+        variant: "contained",
+        action: () => void handleExport(item.exportFunction),
+      },
+    ]);
+  };
+
   return (
     <>
       <Dialog open={isExporting}>
@@ -118,11 +154,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           <DialogContent>
             <Stack gap={1} sx={{ mt: 3 }}>
               {exportItems.map(item => (
-                <ExportButton
-                  key={`export-${item.label}`}
-                  label={item.label}
-                  onClick={() => void handleExport(item.exportFunction)}
-                />
+                <ExportButton key={`export-${item.label}`} label={item.label} onClick={() => startExport(item)} />
               ))}
             </Stack>
           </DialogContent>

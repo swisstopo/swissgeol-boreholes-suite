@@ -13,6 +13,11 @@ namespace BDMS;
 /// </summary>
 internal static class CsvEncoding
 {
+    /// <summary>
+    /// The byte order mark, as the character that encodes to it in UTF-8.
+    /// </summary>
+    internal const char ByteOrderMark = '﻿';
+
     private const int ProbeBufferSize = 8192;
 
     private static readonly Encoding ansiFallback = CreateAnsiFallback();
@@ -31,7 +36,7 @@ internal static class CsvEncoding
     /// Prefixes <paramref name="csv"/> with U+FEFF, for results that encode the string themselves.
     /// </summary>
     /// <param name="csv">The CSV content to prefix.</param>
-    internal static string WithUtf8Bom(string csv) => $"\uFEFF{csv}";
+    internal static string WithUtf8Bom(string csv) => $"{ByteOrderMark}{csv}";
 
     /// <summary>
     /// Opens <paramref name="file"/> for reading, decoding it as UTF-8 when its bytes are valid

@@ -27,9 +27,7 @@ public class FilterService : IFilterService
         var lockExpiryTime = DateTime.UtcNow.AddMinutes(-LockTimeoutMinutes);
 
         // Base query
-        var query = context.Boreholes
-            .Include(b => b.Workgroup)
-            .AsNoTracking();
+        var query = context.Boreholes.AsNoTracking();
 
         // Apply permission filtering by workgroup
         if (!user.IsAdmin)
@@ -41,33 +39,35 @@ public class FilterService : IFilterService
         // Default pagination
         var pageSize = MaxPageSize;
         var skip = 0;
+        var orderedQuery = query;
 
         if (filterRequest != null)
         {
             query = ApplyFilters(query, filterRequest);
-            query = ApplyOrdering(query, filterRequest.OrderBy, filterRequest.Direction);
+            orderedQuery = ApplyOrdering(query, filterRequest.OrderBy, filterRequest.Direction);
 
             // Pagination from filterRequest
             pageSize = Math.Min(MaxPageSize, Math.Max(1, filterRequest.PageSize));
             skip = (filterRequest.PageNumber - 1) * pageSize;
         }
 
-        var allFilteredBoreholeIds = await query
-            .Select(b => b.Id)
+        // One unordered query over the whole filtered set feeds the selectable ids, the map and the total count.
+        var filteredBoreholes = await query
+            .Select(b => new FilteredBoreholeRow(b.Id, b.Name, b.TypeId, b.RestrictionId, b.LocationX, b.LocationY, b.Locked))
             .ToListAsync()
             .ConfigureAwait(false);
+        filteredBoreholes.Sort((a, b) => a.Id.CompareTo(b.Id));
 
-        // Get all selectable borehole IDs (unlocked only) for client-side use (e.g., bulk selection in table)
-        var allSelectableBoreholeIds = await query
+        // Selectable boreholes (unlocked only) for client-side use (e.g., bulk selection in table)
+        var allSelectableBoreholeIds = filteredBoreholes
             .Where(b => b.Locked == null || b.Locked < lockExpiryTime)
             .Select(b => b.Id)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        var paginatedQuery = query.Skip(skip).Take(pageSize);
+            .ToList();
 
         // Execute query and map to list items
-        var boreholes = await paginatedQuery
+        var boreholes = await orderedQuery
+            .Skip(skip)
+            .Take(pageSize)
             .Select(b => new BoreholeListItem
             {
                 Id = b.Id,
@@ -92,10 +92,7 @@ public class FilterService : IFilterService
             .ToListAsync()
             .ConfigureAwait(false);
 
-        // Build GeoJSON feature collection for map from all filtered boreholes
-        var geoJson = await BuildGeoJsonAsync(query).ConfigureAwait(false);
-        var totalCount = await query.CountAsync().ConfigureAwait(false);
-
+        var totalCount = filteredBoreholes.Count;
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
         return new FilterResponse(
@@ -104,8 +101,7 @@ public class FilterService : IFilterService
             pageSize,
             totalPages,
             boreholes,
-            geoJson,
-            allFilteredBoreholeIds,
+            BuildGeoJson(filteredBoreholes),
             allSelectableBoreholeIds);
     }
 
@@ -140,44 +136,29 @@ public class FilterService : IFilterService
             RestrictionId = await CountByIntAsync(QueryExcluding(r => r.RestrictionId = null), b => b.RestrictionId).ConfigureAwait(false),
             IdentifierTypeId = await CountByIdentifierTypesAsync(QueryExcluding(r => r.IdentifierTypeId = null), req.IdentifierValue).ConfigureAwait(false),
             WorkflowStatusCount = await CountByWorkflowStatusAsync(QueryExcluding(r => r.WorkflowStatus = null)).ConfigureAwait(false),
-            NationalInterest = await CountByNullableBoolAsync(
-                QueryExcluding(r => r.NationalInterest = null),
-                b => b.NationalInterest == true,
-                b => b.NationalInterest == false,
-                b => b.NationalInterest == null).ConfigureAwait(false),
-            TopBedrockIntersected = await CountByNullableBoolAsync(
-                QueryExcluding(r => r.TopBedrockIntersected = null),
-                b => b.TopBedrockIntersected == true,
-                b => b.TopBedrockIntersected == false,
-                b => b.TopBedrockIntersected == null).ConfigureAwait(false),
-            HasGroundwater = await CountByNullableBoolAsync(
-                QueryExcluding(r => r.HasGroundwater = null),
-                b => b.HasGroundwater == true,
-                b => b.HasGroundwater == false,
-                b => b.HasGroundwater == null).ConfigureAwait(false),
+            NationalInterest = await CountByNullableBoolAsync(QueryExcluding(r => r.NationalInterest = null), b => b.NationalInterest).ConfigureAwait(false),
+            CoreRepositoryStored = await CountByNullableBoolAsync(QueryExcluding(r => r.CoreRepositoryStored = null), b => b.CoreRepositoryStored).ConfigureAwait(false),
+            TopBedrockIntersected = await CountByNullableBoolAsync(QueryExcluding(r => r.TopBedrockIntersected = null), b => b.TopBedrockIntersected).ConfigureAwait(false),
+            HasGroundwater = await CountByNullableBoolAsync(QueryExcluding(r => r.HasGroundwater = null), b => b.HasGroundwater).ConfigureAwait(false),
             HasGeometry = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasGeometry = null),
-                b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any(),
-                b => b.BoreholeGeometry == null || !b.BoreholeGeometry.Any()).ConfigureAwait(false),
+                b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any()).ConfigureAwait(false),
             HasLogs = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasLogs = null),
-                b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id),
-                b => !context.LogRuns.Any(lr => lr.BoreholeId == b.Id)).ConfigureAwait(false),
+                b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id)).ConfigureAwait(false),
             HasProfiles = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasProfiles = null),
-                b => context.Profiles.Any(bf => bf.BoreholeId == b.Id),
-                b => !context.Profiles.Any(bf => bf.BoreholeId == b.Id)).ConfigureAwait(false),
+                b => context.Profiles.Any(bf => bf.BoreholeId == b.Id)).ConfigureAwait(false),
             HasPhotos = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasPhotos = null),
-                b => context.Photos.Any(p => p.BoreholeId == b.Id),
-                b => !context.Photos.Any(p => p.BoreholeId == b.Id)).ConfigureAwait(false),
+                b => context.Photos.Any(p => p.BoreholeId == b.Id)).ConfigureAwait(false),
             HasDocuments = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasDocuments = null),
-                b => context.Documents.Any(d => d.BoreholeId == b.Id),
-                b => !context.Documents.Any(d => d.BoreholeId == b.Id)).ConfigureAwait(false),
+                b => context.Documents.Any(d => d.BoreholeId == b.Id)).ConfigureAwait(false),
             Canton = await CountByStringAsync(QueryExcluding(r => r.Canton = null), b => b.Canton).ConfigureAwait(false),
             Municipality = await CountByStringAsync(QueryExcluding(r => r.Municipality = null), b => b.Municipality).ConfigureAwait(false),
             LogToolTypeId = await CountByLogToolTypeAsync(QueryExcluding(r => r.LogToolTypeId = null)).ConfigureAwait(false),
+            SourceTypeId = await CountBySourceTypeAsync(QueryExcluding(r => r.SourceTypeId = null)).ConfigureAwait(false),
         };
     }
 
@@ -308,29 +289,53 @@ public class FilterService : IFilterService
         return grouped.ToDictionary(x => x.Key, x => x.Count);
     }
 
+    private static async Task<Dictionary<int, int>> CountBySourceTypeAsync(IQueryable<Borehole> boreholeQuery)
+    {
+        // The join table's primary key is (borehole_id, codelist_id), so each row is a distinct borehole per type.
+        var grouped = await boreholeQuery
+            .SelectMany(b => b.BoreholeSourceTypeCodes!.Select(c => c.CodelistId))
+            .GroupBy(codelistId => codelistId)
+            .Select(g => new { Key = g.Key, Count = g.Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return grouped.ToDictionary(x => x.Key, x => x.Count);
+    }
+
     private static async Task<BooleanCounts> CountByBooleanAsync(
         IQueryable<Borehole> query,
-        Expression<Func<Borehole, bool>> isTrue,
-        Expression<Func<Borehole, bool>> isFalse)
+        Expression<Func<Borehole, bool>> isTrue)
     {
+        var grouped = await query
+            .Select(isTrue)
+            .GroupBy(value => value)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
         return new BooleanCounts
         {
-            True = await query.CountAsync(isTrue).ConfigureAwait(false),
-            False = await query.CountAsync(isFalse).ConfigureAwait(false),
+            True = grouped.FirstOrDefault(g => g.Key)?.Count ?? 0,
+            False = grouped.FirstOrDefault(g => !g.Key)?.Count ?? 0,
         };
     }
 
     private static async Task<NullableBooleanCounts> CountByNullableBoolAsync(
         IQueryable<Borehole> query,
-        Expression<Func<Borehole, bool>> isTrue,
-        Expression<Func<Borehole, bool>> isFalse,
-        Expression<Func<Borehole, bool>> isNull)
+        Expression<Func<Borehole, bool?>> selector)
     {
+        var grouped = await query
+            .Select(selector)
+            .GroupBy(value => value)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
         return new NullableBooleanCounts
         {
-            True = await query.CountAsync(isTrue).ConfigureAwait(false),
-            False = await query.CountAsync(isFalse).ConfigureAwait(false),
-            Null = await query.CountAsync(isNull).ConfigureAwait(false),
+            True = grouped.FirstOrDefault(g => g.Key == true)?.Count ?? 0,
+            False = grouped.FirstOrDefault(g => g.Key == false)?.Count ?? 0,
+            Null = grouped.FirstOrDefault(g => g.Key == null)?.Count ?? 0,
         };
     }
 
@@ -377,7 +382,9 @@ public class FilterService : IFilterService
         Canton = src.Canton,
         Municipality = src.Municipality,
         LogToolTypeId = src.LogToolTypeId,
+        SourceTypeId = src.SourceTypeId,
         NationalInterest = src.NationalInterest,
+        CoreRepositoryStored = src.CoreRepositoryStored,
         TopBedrockIntersected = src.TopBedrockIntersected,
         HasGroundwater = src.HasGroundwater,
         HasGeometry = src.HasGeometry,
@@ -465,6 +472,11 @@ public class FilterService : IFilterService
                         && lf.LogFileToolTypeCodes!.Any(t => filterRequest.LogToolTypeId.Contains(t.CodelistId)))));
         }
 
+        if (filterRequest.SourceTypeId != null && filterRequest.SourceTypeId.Any())
+        {
+            query = query.Where(b => b.BoreholeSourceTypeCodes!.Any(c => filterRequest.SourceTypeId.Contains(c.CodelistId)));
+        }
+
         // Identifier filters — strict same-row semantics: when both type and value
         // are present, both predicates must hold on the *same* BoreholeCodelist row.
         var hasIdentifierTypes = filterRequest.IdentifierTypeId != null && filterRequest.IdentifierTypeId.Any();
@@ -536,6 +548,14 @@ public class FilterService : IFilterService
                 query = query.Where(b => b.NationalInterest == (filterRequest.NationalInterest == NullableBooleanFilterValue.True));
         }
 
+        if (filterRequest.CoreRepositoryStored != null)
+        {
+            if (filterRequest.CoreRepositoryStored == NullableBooleanFilterValue.Null)
+                query = query.Where(b => b.CoreRepositoryStored == null);
+            else
+                query = query.Where(b => b.CoreRepositoryStored == (filterRequest.CoreRepositoryStored == NullableBooleanFilterValue.True));
+        }
+
         if (filterRequest.TopBedrockIntersected != null)
         {
             if (filterRequest.TopBedrockIntersected == NullableBooleanFilterValue.Null)
@@ -600,9 +620,12 @@ public class FilterService : IFilterService
     {
         var isDescending = direction == OrderDirection.Desc;
 
+        // The id tiebreaker keeps pages from skipping or repeating boreholes with equal sort keys.
         if (orderBy is null)
         {
-            return isDescending ? query.OrderByDescending(b => b.Name) : query.OrderBy(b => b.Name);
+            return isDescending
+                ? query.OrderByDescending(b => b.Name).ThenByDescending(b => b.Id)
+                : query.OrderBy(b => b.Name).ThenBy(b => b.Id);
         }
 
         Expression<Func<Borehole, object>> orderExpression = orderBy switch
@@ -621,24 +644,13 @@ public class FilterService : IFilterService
             _ => b => b.Name ?? string.Empty,
         };
 
-        return isDescending ? query.OrderByDescending(orderExpression) : query.OrderBy(orderExpression);
+        return isDescending
+            ? query.OrderByDescending(orderExpression).ThenByDescending(b => b.Id)
+            : query.OrderBy(orderExpression).ThenBy(b => b.Id);
     }
 
-    private static async Task<FeatureCollection> BuildGeoJsonAsync(IQueryable<Borehole> query)
+    private static FeatureCollection BuildGeoJson(IEnumerable<FilteredBoreholeRow> boreholes)
     {
-        // Get all filtered boreholes' location data for GeoJSON
-        var boreholes = await query.Select(b => new
-        {
-            b.Id,
-            b.Name,
-            b.TypeId,
-            b.RestrictionId,
-            b.LocationX,
-            b.LocationY,
-        })
-            .ToListAsync()
-            .ConfigureAwait(false);
-
         var featureCollection = new FeatureCollection();
 
         foreach (var borehole in boreholes)
@@ -662,4 +674,6 @@ public class FilterService : IFilterService
 
         return featureCollection;
     }
+
+    private sealed record FilteredBoreholeRow(int Id, string? Name, int? TypeId, int? RestrictionId, double? LocationX, double? LocationY, DateTime? Locked);
 }

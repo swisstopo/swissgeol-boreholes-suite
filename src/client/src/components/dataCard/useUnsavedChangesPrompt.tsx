@@ -25,7 +25,7 @@ export const useUnsavedChangesPrompt = <T extends FieldValues>({
   useEffect(() => {
     if (checkIsDirty) {
       if (hasChanges) {
-        showPrompt(t("unsavedChangesMessage", { where: t(translationKey) }), [
+        showPrompt({ key: "unsavedChangesMessage", values: { where: t(translationKey) } }, [
           {
             label: "cancel",
             action: () => leaveInput(false),

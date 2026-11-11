@@ -16,6 +16,8 @@ const mockTranslationFunction = ((key: string) => {
     topBedrockFreshMd: "Top bedrock fresh",
     topBedrockWeatheredMd: "Top bedrock weathered",
     nationalInterest: "National interest",
+    coreRepositoryStored: "Stored in the drill core repository",
+    sourceType: "Source document type",
     topBedrockIntersected: "Top bedrock intersected",
     hasGroundwater: "Has groundwater",
     hasGeometry: "Has geometry",
@@ -569,6 +571,41 @@ describe("codelist-multiselect chips for log tool type", () => {
     expect(descriptors).toHaveLength(1);
     expect(descriptors[0].label).toBe("Gamma Ray");
     expect(descriptors[0].tooltip).toBe("Tool type: Gamma Ray");
+  });
+});
+
+describe("chips for core repository and source type", () => {
+  it("renders coreRepositoryStored Keine Angabe chip", () => {
+    const [desc] = buildFilterChipDescriptors({
+      ...baseInputs,
+      activeFilters: { coreRepositoryStored: "null" },
+    });
+    expect(desc.id).toBe("coreRepositoryStored");
+    expect(desc.label).toBe("Stored in the drill core repository: Keine Angabe");
+  });
+
+  it("renders one chip per selected source type with codelist labels", () => {
+    const sourceTypeCodelists = [
+      {
+        id: 501,
+        schema: "source_type",
+        order: 3,
+        code: "",
+        de: "Bericht",
+        en: "report",
+        fr: "rapport",
+        it: "rapporto",
+      },
+      { id: 502, schema: "source_type", order: 4, code: "", de: "Plan", en: "plan", fr: "plan", it: "piano" },
+    ] as unknown as ChipDescriptorInputs["codelists"];
+    const descriptors = buildFilterChipDescriptors({
+      ...baseInputs,
+      activeFilters: { sourceTypeId: [501, 502] },
+      codelists: sourceTypeCodelists,
+      getCodelistLabel,
+    });
+    expect(descriptors.map(d => d.label)).toEqual(["report", "plan"]);
+    expect(descriptors[0].tooltip).toBe("Source document type: report");
   });
 });
 

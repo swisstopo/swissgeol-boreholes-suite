@@ -15,6 +15,7 @@ import {
 import {
   clearInput,
   evaluateInput,
+  evaluateMultiSelect,
   evaluateSelect,
   evaluateTextarea,
   evaluateYesNoSelect,
@@ -23,6 +24,7 @@ import {
   setOriginalName,
   setSelect,
   setYesNoSelect,
+  toggleMultiSelect,
 } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 import {
@@ -83,6 +85,12 @@ describe("Test for the borehole form.", () => {
     setSelect("restrictionId", 3);
     isDisabled("restrictionUntil", false);
     setYesNoSelect("nationalInterest", "not specified");
+    // New boreholes start at "no".
+    evaluateYesNoSelect("coreRepositoryStored", "no");
+    setYesNoSelect("coreRepositoryStored", "yes");
+    toggleMultiSelect("sourceTypeCodelistIds", [2, 3]);
+    evaluateYesNoSelect("coreRepositoryStored", "yes");
+    evaluateMultiSelect("sourceTypeCodelistIds", ["borehole profile", "report"]);
     setSelect("purposeId", 1);
     setSelect("typeId", 1);
     setSelect("depthPrecisionId", 1);
@@ -105,6 +113,8 @@ describe("Test for the borehole form.", () => {
 
     evaluateSelect("restrictionId", "restricted until"); //20111003
     evaluateYesNoSelect("nationalInterest", "not specified");
+    evaluateYesNoSelect("coreRepositoryStored", "yes");
+    evaluateMultiSelect("sourceTypeCodelistIds", ["borehole profile", "report"]);
     evaluateSelect("purposeId", "geotechnics"); //22103001
     evaluateSelect("typeId", "borehole"); //20101001
     evaluateSelect("depthPrecisionId", "2"); //22108001

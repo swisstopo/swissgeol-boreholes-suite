@@ -4,10 +4,12 @@
 
 ### Added
 - Lithological layer descriptions can be analyzed automatically. The lithology dialog offers an "Analyze" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein. It needs a data extraction service that offers the classification endpoint and runs with `BERT_ENABLED=true`, which the Helm chart now sets.
+- Boreholes have two new attributes in the restriction section of the General tab: "Stored in the drill core repository" (yes, no or not specified) and "Source document type" (any of driller's log, borehole profile, report, plan, other, not specified). New and existing boreholes start at "no". Both attributes can be filtered, bulk edited, copied, imported and exported. The CSV columns are `CoreRepositoryStored` and `SourceTypeCodelistIds`, the latter as comma separated codelist ids.
 - The grain size of a lithology description can now also be set to the ranges fine-medium, fine-coarse and medium-coarse.
 
 ### Changed
-- Dataextraction service was updated to 1.2.0-dev62.
+- Dataextraction service was updated to v1.2.0.
+- The borehole filter endpoint no longer returns `filteredBoreholeIds` and needs fewer database queries. Boreholes with equal sort values are now paged in a stable order, so no borehole is skipped or repeated between pages.
 - Several users can be added to a workgroup, or a user to several workgroups, in one step. The dialog lists them with checkboxes and a "Select all" option and gives all of them the chosen role.
 - A user now has exactly one role per workgroup. Assigning a role to a user who already has one in that workgroup replaces it. Users who had several roles in a workgroup keep only the highest one, so their permissions stay the same.
 - The Validator role is removed because it granted no permissions beyond Reviewer. Users who were Validators are now Reviewers.
@@ -15,6 +17,7 @@
 - Setting workgroup roles through the API with an unknown role now returns 400 Bad Request, and with a user or workgroup that does not exist 404 Not Found, instead of a server error.
 - The role of a user in a workgroup is now shown as a dropdown in the user and workgroup administration and can be changed there directly.
 - The dialogs for adding users to a workgroup and workgroups to a user no longer offer users or workgroups that already have a role there. Their role is changed in the table instead.
+- The CSV export of boreholes is no longer limited to 100 boreholes. The JSON exports (JSON and JSON + profile) are now limited to 500 boreholes instead of 100.
 
 ### Fixed
 - Extracting a stratigraphy from a newly uploaded scanned profile now waits until text recognition (OCR) of the profile has finished and shows a note while it runs. Before, the extraction started right away and found no stratigraphy. If text recognition failed, the dialog says so instead of extracting and explains how to repeat it. Closing the dialog also discards the result, so selecting the profile again extracts anew.

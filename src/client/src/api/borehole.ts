@@ -4,7 +4,7 @@ import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
-import { download, downloadData } from "./download.ts";
+import { downloadPost } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
 import { TransferOptions } from "./transferProgress.ts";
@@ -20,13 +20,11 @@ export interface Identifier extends BasicIdentifier {
   borehole?: Borehole | null;
 }
 
-const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
-
-export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel, fileName: string) => {
-  const exportJsonResponse = await fetchApiV2Legacy(`boreholeexport/json?${getIdQuery(boreholeIds)}`, "GET");
-  const jsonString = JSON.stringify(exportJsonResponse);
-  downloadData(jsonString, `${fileName}.json`, "application/json");
-};
+export const exportJsonBoreholes = async (
+  boreholeIds: number[] | GridRowSelectionModel,
+  fileName: string,
+  options?: TransferOptions,
+) => await downloadPost("boreholeexport/json", { ids: boreholeIds }, { ...options, fileName: `${fileName}.json` });
 
 export const importBoreholesCsv = async (workgroupId: number | null, combinedFormData: FormData) => {
   return await upload(`import/csv?workgroupId=${workgroupId}`, "POST", combinedFormData);
@@ -54,14 +52,17 @@ const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: numb
 
 // Saves the response body verbatim. Reading it as text first would strip the UTF-8 byte order mark
 // that tells Excel how to decode the accented characters.
-export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, fileName: string) =>
-  await download(`boreholeexport/csv?${getIdQuery(boreholeIds)}`, { fileName: `${fileName}.csv` });
+export const exportCSVBorehole = async (
+  boreholeIds: GridRowSelectionModel,
+  fileName: string,
+  options?: TransferOptions,
+) => await downloadPost("boreholeexport/csv", { ids: boreholeIds }, { ...options, fileName: `${fileName}.csv` });
 
 export const exportJsonWithAttachmentsBorehole = async (
   boreholeIds: number[] | GridRowSelectionModel,
   options?: TransferOptions,
 ) => {
-  return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`, options);
+  return await downloadPost("boreholeexport/zip", { ids: boreholeIds }, options);
 };
 
 const fetchBoreholeById = async (id: number): Promise<Borehole> => {
@@ -82,7 +83,7 @@ const unlockBorehole = async (id: number): Promise<void> => {
 
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
-type BulkEditValue = string | number | boolean | null | undefined;
+type BulkEditValue = string | number | boolean | number[] | null | undefined;
 
 export const buildBulkEditRequest = (
   boreholeIds: number[],
@@ -292,7 +293,7 @@ enum BooleanFilter {
   true,
 }
 
-type BooleanFilterValue = "true" | "false" | undefined;
+type BooleanFilterValue = "true" | "false";
 type NullableBooleanFilterValue = BooleanFilterValue | "null";
 
 interface BaseFilterRequest {
@@ -309,6 +310,7 @@ interface BaseFilterRequest {
   canton?: string[] | null;
   municipality?: string[] | null;
   logToolTypeId?: number[] | null;
+  sourceTypeId?: number[] | null;
   identifierTypeId?: number[] | null;
   identifierValue?: string | null;
   restrictionUntilFrom?: string | null;
@@ -328,6 +330,7 @@ interface BaseFilterRequest {
 
 export interface FilterRequest extends BaseFilterRequest {
   nationalInterest?: NullableBooleanFilterValue;
+  coreRepositoryStored?: NullableBooleanFilterValue;
   topBedrockIntersected?: NullableBooleanFilterValue;
   hasGroundwater?: NullableBooleanFilterValue;
   hasGeometry?: BooleanFilterValue;
@@ -339,6 +342,7 @@ export interface FilterRequest extends BaseFilterRequest {
 
 interface FilterRequestSubmission extends BaseFilterRequest {
   nationalInterest?: NullableBooleanFilter;
+  coreRepositoryStored?: NullableBooleanFilter;
   topBedrockIntersected?: NullableBooleanFilter;
   hasGroundwater?: NullableBooleanFilter;
   hasGeometry?: BooleanFilter;
@@ -355,7 +359,6 @@ export interface FilterResponse {
   totalPages: number;
   boreholes: BoreholeListItem[];
   geoJson: FeatureCollection | null;
-  filteredBoreholeIds: number[];
   selectableBoreholeIds: number[];
 }
 
@@ -380,8 +383,10 @@ export interface FilterStatsResponse {
   canton: Record<string, number>;
   municipality: Record<string, number>;
   logToolTypeId: Record<number, number>;
+  sourceTypeId: Record<number, number>;
   workflowStatusCount: Record<string, number>;
   nationalInterest: NullableBooleanCounts;
+  coreRepositoryStored: NullableBooleanCounts;
   topBedrockIntersected: NullableBooleanCounts;
   hasGroundwater: NullableBooleanCounts;
   hasGeometry: BooleanCounts;
@@ -448,6 +453,7 @@ export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterR
   hasGroundwater: parseNullableBooleanFilter(filterRequest.hasGroundwater),
   topBedrockIntersected: parseNullableBooleanFilter(filterRequest.topBedrockIntersected),
   nationalInterest: parseNullableBooleanFilter(filterRequest.nationalInterest),
+  coreRepositoryStored: parseNullableBooleanFilter(filterRequest.coreRepositoryStored),
   hasGeometry: parseBooleanFilter(filterRequest.hasGeometry),
   hasLogs: parseBooleanFilter(filterRequest.hasLogs),
   hasProfiles: parseBooleanFilter(filterRequest.hasProfiles),
@@ -495,6 +501,7 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
     topBedrockWeatheredMdMin: getFloat(SessionKeys.topBedrockWeatheredMdMin),
     topBedrockWeatheredMdMax: getFloat(SessionKeys.topBedrockWeatheredMdMax),
     nationalInterest: get(SessionKeys.nationalInterest) as NullableBooleanFilterValue,
+    coreRepositoryStored: get(SessionKeys.coreRepositoryStored) as NullableBooleanFilterValue,
     topBedrockIntersected: get(SessionKeys.topBedrockIntersected) as NullableBooleanFilterValue,
     hasGroundwater: get(SessionKeys.hasGroundwater) as NullableBooleanFilterValue,
     hasGeometry: get(SessionKeys.hasGeometry) as BooleanFilterValue,

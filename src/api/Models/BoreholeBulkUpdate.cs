@@ -9,6 +9,7 @@ namespace BDMS.Models;
 /// them are actually written is controlled by <see cref="BoreholeBulkUpdateRequest.FieldsToUpdate"/>.
 /// A masked field must carry a value; a <see langword="null"/> value is rejected (clearing is not supported),
 /// except nullable booleans where <see langword="null"/> is the deliberate "not specified" state.
+/// Collections must not be <see langword="null"/>; an empty collection clears the field.
 /// </summary>
 public class BoreholeBulkUpdate
 {
@@ -19,6 +20,14 @@ public class BoreholeBulkUpdate
     public DateOnly? RestrictionUntil { get; set; }
 
     public bool? NationalInterest { get; set; }
+
+    public bool? CoreRepositoryStored { get; set; }
+
+    /// <summary>
+    /// Gets or sets the source type codelist ids that replace the whole set on every selected borehole.
+    /// An empty collection removes all source types.
+    /// </summary>
+    public Collection<int>? SourceTypeCodelistIds { get; set; }
 
     public string? ProjectName { get; set; }
 

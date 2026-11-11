@@ -117,6 +117,10 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("chronostratigraphy_top_bedrock_id");
 
+                    b.Property<bool?>("CoreRepositoryStored")
+                        .HasColumnType("boolean")
+                        .HasColumnName("core_repository_stored");
+
                     b.Property<string>("Country")
                         .HasColumnType("text")
                         .HasColumnName("country");
@@ -405,6 +409,23 @@ namespace BDMS.Migrations
                     b.HasIndex("BoreholeId");
 
                     b.ToTable("borehole_geometry", "bdms");
+                });
+
+            modelBuilder.Entity("BDMS.Models.BoreholeSourceTypeCodes", b =>
+                {
+                    b.Property<int>("BoreholeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("borehole_id");
+
+                    b.Property<int>("CodelistId")
+                        .HasColumnType("integer")
+                        .HasColumnName("codelist_id");
+
+                    b.HasKey("BoreholeId", "CodelistId");
+
+                    b.HasIndex("CodelistId");
+
+                    b.ToTable("borehole_source_type_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Casing", b =>
@@ -2852,6 +2873,25 @@ namespace BDMS.Migrations
                     b.Navigation("Borehole");
                 });
 
+            modelBuilder.Entity("BDMS.Models.BoreholeSourceTypeCodes", b =>
+                {
+                    b.HasOne("BDMS.Models.Borehole", "Borehole")
+                        .WithMany("BoreholeSourceTypeCodes")
+                        .HasForeignKey("BoreholeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.Codelist", "Codelist")
+                        .WithMany("BoreholeSourceTypeCodes")
+                        .HasForeignKey("CodelistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Borehole");
+
+                    b.Navigation("Codelist");
+                });
+
             modelBuilder.Entity("BDMS.Models.Casing", b =>
                 {
                     b.HasOne("BDMS.Models.Completion", "Completion")
@@ -4056,6 +4096,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("BoreholeGeometry");
 
+                    b.Navigation("BoreholeSourceTypeCodes");
+
                     b.Navigation("Completions");
 
                     b.Navigation("Documents");
@@ -4089,6 +4131,8 @@ namespace BDMS.Migrations
             modelBuilder.Entity("BDMS.Models.Codelist", b =>
                 {
                     b.Navigation("BoreholeCodelists");
+
+                    b.Navigation("BoreholeSourceTypeCodes");
 
                     b.Navigation("HydrotestEvaluationMethodCodes");
 
