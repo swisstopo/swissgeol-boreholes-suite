@@ -46,6 +46,7 @@ describe("Polygon filter tests", () => {
     assertPolygonFilterActive();
     drawPolygon();
     assertIsFilteredByPolygon();
+    cy.location("search").should("contain", "polygon=");
 
     // click delete icon
     cy.get('[data-cy="polygon-filter-chip"]').children().eq(1).click();
@@ -68,16 +69,20 @@ describe("Polygon filter tests", () => {
   });
 
   it("keeps the polygon in the URL and restores its boreholes when another filter is removed", () => {
-    goToRouteAndAcceptTerms("/");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(5000);
-    cy.wait("@borehole_filter");
+    // Only requests with a polygon get the alias: the prefetch after login reads the filters from the empty session.
+    const aliasRequestsWithPolygon = (alias: string) => (req: { body: unknown; alias?: string }) => {
+      // The request body is untyped JSON.
+      if ((req.body as { polygon?: unknown }).polygon) req.alias = alias;
+    };
+    cy.intercept({ method: "POST", pathname: "/api/v2/borehole/filter" }, aliasRequestsWithPolygon("polygon_filter"));
+    cy.intercept(
+      { method: "POST", pathname: "/api/v2/borehole/filter/stats" },
+      aliasRequestsWithPolygon("polygon_filter_stats"),
+    );
+    // The western half of the seed data, a fixed area unlike a drawn polygon: some but not all of its boreholes
+    // have national interest.
+    goToRouteAndAcceptTerms("/?polygon=2480000,1070000,2650000,1070000,2650000,1310000,2480000,1310000");
     cy.get('[data-cy="show-filter-button"]').click();
-
-    cy.intercept({ method: "POST", pathname: "/api/v2/borehole/filter" }).as("polygon_filter");
-    cy.intercept({ method: "POST", pathname: "/api/v2/borehole/filter/stats" }).as("polygon_filter_stats");
-    cy.get('[data-cy="polygon-filter-button"]').click();
-    drawPolygon();
     assertIsFilteredByPolygon();
     cy.wait("@polygon_filter")
       .its("request.body")
@@ -87,27 +92,21 @@ describe("Polygon filter tests", () => {
       });
     cy.wait("@polygon_filter_stats").its("request.body.polygon.type").should("equal", "Polygon");
     cy.location("search").should("contain", "polygon=");
-    cy.get('[data-cy="boreholes-number-preview"]').invoke("text").as("polygonCount");
+    cy.dataCy("boreholes-number-preview").should("have.text", "33");
 
     cy.contains("Borehole").click();
     clickYesNoButton("nationalInterest", "yes");
     cy.dataCy("filter-chip-nationalInterest").should("exist");
     cy.wait("@borehole_filter");
-    cy.get("@polygonCount").then(polygonCount => {
-      cy.get('[data-cy="boreholes-number-preview"]').should("not.have.text", polygonCount);
-    });
+    cy.dataCy("boreholes-number-preview").should("have.text", "3");
 
     checkFilterChipExistsAndRemove("nationalInterest");
 
-    cy.get("@polygonCount").then(polygonCount => {
-      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", polygonCount);
-    });
+    cy.dataCy("boreholes-number-preview").should("have.text", "33");
     cy.get('[data-cy="polygon-filter-chip"]').should("exist");
 
     cy.reload();
     cy.wait("@polygon_filter").its("request.body.polygon.type").should("equal", "Polygon");
-    cy.get("@polygonCount").then(polygonCount => {
-      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", polygonCount);
-    });
+    cy.dataCy("boreholes-number-preview").should("have.text", "33");
   });
 });
