@@ -1259,8 +1259,11 @@ public class FilterServiceTest
     [TestMethod]
     public async Task FilterBoreholesAssertsAllBoreholeProperties()
     {
+        // The GeoJSON holds every filtered borehole, not only the page, so the filter must match a single one.
+        var originalBorehole = await context.Boreholes.SingleAsync(b => b.Id == 1_000_010);
         var filterRequest = new FilterRequest
         {
+            OriginalName = originalBorehole.OriginalName,
             PageNumber = 1,
             PageSize = 1,
         };
@@ -1268,10 +1271,10 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.TotalCount);
         Assert.AreEqual(1, result.Boreholes.Count());
 
         var filteredBorehole = result.Boreholes.First();
-        var originalBorehole = await context.Boreholes.SingleAsync(b => b.Id.Equals(filteredBorehole.Id));
 
         // Assert all Borehole properties
         Assert.AreEqual(originalBorehole.Id, filteredBorehole.Id);
