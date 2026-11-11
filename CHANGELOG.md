@@ -33,6 +33,10 @@
 - In edit mode, the checkbox in the header of the "Public" column of the attachment and LOG file tables now follows the rows. It could appear checked although no row was public, for example after adding the first photo to a borehole.
 - When saving a LOG run fails, the message now says which run or file it is about and is shown in the user's language, also when a file upload fails for a technical reason or a run number is already taken.
 
+### Removed
+- The unused borehole attribute `IsPublic` is removed from the database, the API and the CSV and JSON exports. Files that still contain it can be imported as before; the value is ignored.
+- The unused `isDefault` attribute of codelist entries is removed from the database and the API.
+
 ## v2.2.57 - 2026-10-08
 
 ### Added

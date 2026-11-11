@@ -87,7 +87,6 @@ public class FilterService : IFilterService
                 TotalDepth = b.TotalDepth,
                 Created = b.Created,
                 Updated = b.Updated,
-                IsPublic = b.IsPublic,
                 Locked = b.Locked != null && b.Locked >= lockExpiryTime ? b.Locked : null,
             })
             .ToListAsync()

@@ -120,10 +120,6 @@ export type Borehole = {
   workgroupId?: number | null;
   workgroup?: Workgroup;
   /**
-   * Gets or sets whether the BDMS.Models.Borehole is public.
-   */
-  isPublic?: boolean | null;
-  /**
    * Gets or sets the BDMS.Models.Borehole's type id.
    */
   typeId?: number | null;
@@ -490,7 +486,6 @@ export type BoreholeListItem = {
   totalDepth?: number | null;
   created?: string | null;
   updated?: string | null;
-  isPublic?: boolean | null;
   locked?: string | null;
 };
 
@@ -691,10 +686,6 @@ export type Codelist = {
    * Gets or sets the BDMS.Models.Codelist's configuration.
    */
   conf?: string | null;
-  /**
-   * Gets or sets whether the BDMS.Models.Codelist is default.
-   */
-  isDefault?: boolean | null;
   path?: LTree;
 };
 
@@ -3350,10 +3341,6 @@ export type BoreholeWritable = {
   workgroupId?: number | null;
   workgroup?: WorkgroupWritable;
   /**
-   * Gets or sets whether the BDMS.Models.Borehole is public.
-   */
-  isPublic?: boolean | null;
-  /**
    * Gets or sets the BDMS.Models.Borehole's type id.
    */
   typeId?: number | null;
@@ -3734,10 +3721,6 @@ export type CodelistWritable = {
    * Gets or sets the BDMS.Models.Codelist's configuration.
    */
   conf?: string | null;
-  /**
-   * Gets or sets whether the BDMS.Models.Codelist is default.
-   */
-  isDefault?: boolean | null;
 };
 
 /**

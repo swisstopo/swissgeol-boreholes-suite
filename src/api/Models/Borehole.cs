@@ -71,13 +71,6 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Workgroup? Workgroup { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the <see cref="Borehole"/> is public.
-    /// </summary>
-    [IncludeInExport]
-    [Column("public")]
-    public bool? IsPublic { get; set; }
-
-    /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s type id.
     /// </summary>
     [IncludeInExport]

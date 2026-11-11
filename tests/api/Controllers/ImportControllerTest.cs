@@ -115,7 +115,6 @@ public class ImportControllerTest
         Assert.IsNull(borehole.Locked, nameof(Borehole.Locked).ShouldBeNullMessage());
         Assert.AreEqual(1, borehole.WorkgroupId, nameof(Borehole.WorkgroupId));
         Assert.IsNotNull(borehole.Workgroup, nameof(Borehole.Workgroup).ShouldNotBeNullMessage());
-        Assert.IsTrue(borehole.IsPublic, nameof(Borehole.IsPublic));
         Assert.IsNull(borehole.TypeId, nameof(Borehole.TypeId).ShouldBeNullMessage());
         Assert.IsNull(borehole.Type, nameof(Borehole.Type).ShouldBeNullMessage());
         Assert.AreEqual(2739000, borehole.LocationX, nameof(Borehole.LocationX));
@@ -692,7 +691,6 @@ public class ImportControllerTest
         var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6").ConfigureAwait(false);
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_6_a", borehole.Name);
-        Assert.AreEqual(null, borehole.IsPublic);
         Assert.AreEqual(new DateOnly(2024, 06, 15), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
         Assert.AreEqual("Projekt 6", borehole.ProjectName);
@@ -739,7 +737,6 @@ public class ImportControllerTest
         var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2").ConfigureAwait(false);
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual(null, borehole.Name);
-        Assert.AreEqual(null, borehole.IsPublic);
         Assert.AreEqual(null, borehole.RestrictionUntil);
         Assert.AreEqual(null, borehole.TotalDepth);
         Assert.AreEqual(null, borehole.ProjectName);
