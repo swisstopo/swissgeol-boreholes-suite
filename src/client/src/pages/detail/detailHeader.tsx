@@ -165,7 +165,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
                 <DeleteButton
                   label="deleteBorehole"
                   onClick={() =>
-                    showPrompt(t("deleteBoreholesMessage", { count: 1 }), [
+                    showPrompt({ key: "deleteBoreholesMessage", values: { count: 1 } }, [
                       {
                         label: "cancel",
                       },
@@ -194,11 +194,13 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
         exportItems={[
           {
             label: "CSV",
-            exportFunction: () => exportCSVBorehole([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
+            exportFunction: options =>
+              exportCSVBorehole([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export", options),
           },
           {
             label: "JSON",
-            exportFunction: () => exportJsonBoreholes([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
+            exportFunction: options =>
+              exportJsonBoreholes([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export", options),
           },
           {
             label: "exportJsonProfile",

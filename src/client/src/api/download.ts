@@ -62,21 +62,16 @@ export async function download(url: string, { onProgress, signal, fileName }: Do
 export async function downloadPost(
   url: string,
   body: object,
-  { onProgress, signal }: TransferOptions = {},
+  { onProgress, signal, fileName }: DownloadOptions = {},
 ): Promise<Response> {
   const response = await fetchApiV2Base(url, "POST", JSON.stringify(body), "application/json", signal);
   if (!response.ok) {
     throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
   const blob = await readBlobWithProgress(response, onProgress);
-  downloadDataFromBlob(blob, getFileName(response, getFallbackFileName(url)));
+  downloadDataFromBlob(blob, fileName ?? getFileName(response, getFallbackFileName(url)));
   return response;
 }
-
-export const downloadData = (dataString: string, fileName: string, type: string) => {
-  const blob = new Blob([dataString], { type: type });
-  downloadDataFromBlob(blob, fileName);
-};
 
 const downloadDataFromBlob = (blob: Blob, fileName: string) => {
   const url = URL.createObjectURL(blob);

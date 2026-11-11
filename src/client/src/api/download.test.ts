@@ -106,6 +106,21 @@ describe("download progress", () => {
     await expect(downloadPost("log/export", { logRunIds: [1] }, { onProgress })).rejects.toThrow();
     expect(onProgress).not.toHaveBeenCalled();
   });
+
+  it("saves a posted export under the given name instead of the suggested one", async () => {
+    fetchApiV2Base.mockResolvedValue(
+      streamedResponse(["a;b"], { "content-disposition": "attachment; filename=boreholes_export.csv" }),
+    );
+    const savedNames: string[] = [];
+    const click = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+      savedNames.push(this.download);
+    });
+
+    await downloadPost("boreholeexport/csv", { ids: [1] }, { fileName: "bulkexport.csv" });
+
+    expect(savedNames).toEqual(["bulkexport.csv"]);
+    click.mockRestore();
+  });
 });
 
 describe("download cancellation", () => {

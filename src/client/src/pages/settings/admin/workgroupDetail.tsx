@@ -75,7 +75,7 @@ export const WorkgroupDetail: FC = () => {
     event.stopPropagation();
     const user = users?.find(user => user.id === id);
     if (!user) return;
-    showPrompt(t("confirmRemoveRole", { name: user.name, workgroupName: selectedWorkgroup.name }), [
+    showPrompt({ key: "confirmRemoveRole", values: { name: user.name, workgroupName: selectedWorkgroup.name } }, [
       {
         label: "cancel",
         icon: <X />,

@@ -2,11 +2,13 @@ import { ReactNode, Ref } from "react";
 import { Theme } from "@mui/material";
 import { ButtonProps as MuiButtonProps } from "@mui/material/Button";
 import { SystemStyleObject } from "@mui/system";
+import { TOptions } from "i18next";
 
 export interface ButtonProps extends Omit<MuiButtonProps, "sx"> {
   sx?: SystemStyleObject<Theme>;
   onClick: () => void;
   label?: string;
+  labelValues?: TOptions;
   icon?: ReactNode;
   dataCy?: string;
   ref?: Ref<HTMLButtonElement>;

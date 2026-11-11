@@ -148,7 +148,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
     };
 
     if (lithologicalDescriptionChanged && sharedLithologyCount > 1) {
-      showPrompt(t("confirmEditSharedLithologicalDescription", { count: sharedLithologyCount }), [
+      showPrompt({ key: "confirmEditSharedLithologicalDescription", values: { count: sharedLithologyCount } }, [
         { label: "cancel", action: () => {} },
         { label: "continue", variant: "contained", action: updateLithologyWithLithologicalDesciption },
       ]);
@@ -220,10 +220,13 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
             if (newToggleValue === null) return; // user clicked the active button — ignore deselect
             const newValue: boolean | null = newToggleValue === "unspecified" ? null : newToggleValue;
             showPrompt(
-              t("switchUnconsolidatedMessage", {
-                current: t(labelKey(field.value)),
-                new: t(labelKey(newToggleValue)),
-              }),
+              {
+                key: "switchUnconsolidatedMessage",
+                values: {
+                  current: t(labelKey(field.value)),
+                  new: t(labelKey(newToggleValue)),
+                },
+              },
               [
                 { label: "cancel", action: () => {} },
                 {
