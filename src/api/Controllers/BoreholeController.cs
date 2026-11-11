@@ -328,8 +328,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <returns>A paginated response with filtered boreholes, GeoJSON for map display, and all selectable (unlocked) IDs.</returns>
     [HttpPost("filter")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public Task<ActionResult<FilterResponse>> FilterAsync([FromBody] FilterRequest filterRequest) =>
-        ExecuteAsAuthenticatedUserAsync("filtering boreholes", user => filterService.FilterBoreholesAsync(filterRequest, user));
+    public async Task<ActionResult<FilterResponse>> FilterAsync([FromBody] FilterRequest filterRequest)
+    {
+        if (ValidateFilterPolygon(filterRequest) is { } invalidPolygon) return invalidPolygon;
+
+        return await ExecuteAsAuthenticatedUserAsync("filtering boreholes", user => filterService.FilterBoreholesAsync(filterRequest, user)).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Computes per-option filter counts under the active filter request,
@@ -340,8 +344,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <returns>A <see cref="FilterStatsResponse"/> with counts for every filterable dimension.</returns>
     [HttpPost("filter/stats")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public Task<ActionResult<FilterStatsResponse>> FilterStatsAsync([FromBody] FilterRequest? filterRequest) =>
-        ExecuteAsAuthenticatedUserAsync("computing filter stats", user => filterService.GetFilterStatsAsync(filterRequest, user));
+    public async Task<ActionResult<FilterStatsResponse>> FilterStatsAsync([FromBody] FilterRequest? filterRequest)
+    {
+        if (ValidateFilterPolygon(filterRequest) is { } invalidPolygon) return invalidPolygon;
+
+        return await ExecuteAsAuthenticatedUserAsync("computing filter stats", user => filterService.GetFilterStatsAsync(filterRequest, user)).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// Returns autocomplete suggestions for a borehole text column. When a
@@ -374,6 +382,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         {
             return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid limit", detail: $"'limit' must be between 1 and {maxLimit}.");
         }
+
+        if (ValidateFilterPolygon(filterRequest) is { } invalidPolygon) return invalidPolygon;
 
         return await ExecuteAsAuthenticatedUserAsync(
             "computing borehole suggestions",
@@ -574,6 +584,28 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             Logger.LogWarning(ex, "Unexpected error {Operation}", operationDescription);
             return Problem($"An unexpected error occurred while {operationDescription}.");
         }
+    }
+
+    // LV95 (EPSG:2056) valid area, the same extent the client map is limited to. Coordinates outside it
+    // come from another coordinate system (WGS84, LV03) and would silently match no borehole.
+    private static readonly Envelope Lv95ValidArea = new(2_420_000, 2_900_000, 1_030_000, 1_350_000);
+
+    private ObjectResult? ValidateFilterPolygon(FilterRequest? filterRequest)
+    {
+        var polygon = filterRequest?.Polygon;
+        if (polygon is null) return null;
+
+        if (polygon is not Polygon)
+        {
+            return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid polygon", detail: $"'polygon' must be a Polygon, not a {polygon.GeometryType}.");
+        }
+
+        if (!Lv95ValidArea.Contains(polygon.EnvelopeInternal))
+        {
+            return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid polygon", detail: "'polygon' must have LV95 (EPSG:2056) coordinates within East 2420000 to 2900000 and North 1030000 to 1350000.");
+        }
+
+        return null;
     }
 
     /// <summary>
