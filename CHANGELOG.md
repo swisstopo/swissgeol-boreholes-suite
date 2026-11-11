@@ -8,6 +8,7 @@
 - The grain size of a lithology description can now also be set to the ranges fine-medium, fine-coarse and medium-coarse.
 
 ### Changed
+- The overview loads faster on slow connections. API responses are now compressed and no longer indented, which cuts the data downloaded for the map and the table to about 7 percent of its previous size.
 - Dataextraction service was updated to v1.2.0.
 - The borehole filter endpoint no longer returns `filteredBoreholeIds` and needs fewer database queries. Boreholes with equal sort values are now paged in a stable order, so no borehole is skipped or repeated between pages.
 - Several users can be added to a workgroup, or a user to several workgroups, in one step. The dialog lists them with checkboxes and a "Select all" option and gives all of them the chosen role.
