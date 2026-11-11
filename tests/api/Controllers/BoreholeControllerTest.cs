@@ -1032,6 +1032,35 @@ public class BoreholeControllerTest
         await AssertFilterEndpointsRejectAsync(filterRequest);
     }
 
+    [TestMethod]
+    [DataRow(2600000.0, 1200000.0, 1000.0, DisplayName = "Inside LV95")]
+    [DataRow(2580000.0, 1190000.0, 160000.0, DisplayName = "On the LV95 boundary")]
+    public async Task FilterEndpointsForwardPolygonInsideLv95(double centerX, double centerY, double halfSize)
+    {
+        var polygon = CreateSquare(centerX, centerY, halfSize);
+        var filterRequest = new FilterRequest { Polygon = polygon, PageNumber = 1, PageSize = 10 };
+
+        filterServiceMock
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()))
+            .ReturnsAsync(new FilterResponse(0, 1, 10, 0, new List<BoreholeListItem>(), null, new List<int>()));
+        filterServiceMock
+            .Setup(x => x.GetFilterStatsAsync(It.IsAny<FilterRequest?>(), It.IsAny<User>()))
+            .ReturnsAsync(new FilterStatsResponse());
+        filterServiceMock
+            .Setup(x => x.GetSuggestionsAsync(BoreholeSuggestionField.OriginalName, "test", 10, It.IsAny<FilterRequest?>(), It.IsAny<User>()))
+            .ReturnsAsync(new List<BoreholeSuggestion>());
+
+        ActionResultAssert.IsOk((await controller.FilterAsync(filterRequest)).Result);
+        ActionResultAssert.IsOk((await controller.FilterStatsAsync(filterRequest)).Result);
+        ActionResultAssert.IsOk((await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "test", limit: 10, filterRequest)).Result);
+
+        filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.Is<FilterRequest>(r => r.Polygon == polygon), It.IsAny<User>()), Times.Once);
+        filterServiceMock.Verify(x => x.GetFilterStatsAsync(It.Is<FilterRequest?>(r => r != null && r.Polygon == polygon), It.IsAny<User>()), Times.Once);
+        filterServiceMock.Verify(
+            x => x.GetSuggestionsAsync(BoreholeSuggestionField.OriginalName, "test", 10, It.Is<FilterRequest?>(r => r != null && r.Polygon == polygon), It.IsAny<User>()),
+            Times.Once);
+    }
+
     private async Task AssertFilterEndpointsRejectAsync(FilterRequest filterRequest)
     {
         ActionResultAssert.IsBadRequest((await controller.FilterAsync(filterRequest)).Result);
