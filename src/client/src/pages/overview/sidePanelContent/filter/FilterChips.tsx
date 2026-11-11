@@ -11,9 +11,8 @@ import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 
 const FilterChips = () => {
   const { t } = useTranslation();
-  const { filterPolygon, setFilterPolygon, setFeatureIds, setPolygonSelectionEnabled } =
-    useContext(PolygonFilterContext);
-  const { setFilterField, clearFilterField, activeFilters } = useBoreholeUrlParams();
+  const { setPolygonSelectionEnabled } = useContext(PolygonFilterContext);
+  const { setFilterField, clearFilterField, activeFilters, filterPolygon } = useBoreholeUrlParams();
   const { data: codelists } = useCodelists();
   const getCodelistLabel = useCodelistLabel(CodelistLabelStyle.TextOnly);
   const { data: workgroups } = useWorkgroups();
@@ -60,8 +59,7 @@ const FilterChips = () => {
           label={<PolygonIcon style={{ marginTop: "5px", width: "14px", height: "14px" }} />}
           onDelete={() => {
             setPolygonSelectionEnabled(false);
-            setFilterPolygon(null);
-            setFeatureIds([]);
+            clearFilterField("polygon");
           }}
           deleteIcon={<CircleX style={{ width: "16px", height: "16px" }} />}
         />

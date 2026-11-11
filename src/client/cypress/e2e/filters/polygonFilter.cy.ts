@@ -1,3 +1,4 @@
+import { checkFilterChipExistsAndRemove, clickYesNoButton } from "../helpers/filterHelpers";
 import { goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
 const buttonInactiveColor = "rgb(255, 255, 255)";
@@ -64,5 +65,49 @@ describe("Polygon filter tests", () => {
     cy.get('[data-cy="reset-filter-button"]').click();
     assertPolygonFilterInactive();
     cy.get('[data-cy="polygon-filter-button"]').should("have.css", "background-color", buttonInactiveColor);
+  });
+
+  it("keeps the polygon in the URL and restores its boreholes when another filter is removed", () => {
+    goToRouteAndAcceptTerms("/");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(5000);
+    cy.wait("@borehole_filter");
+    cy.get('[data-cy="show-filter-button"]').click();
+
+    cy.intercept({ method: "POST", pathname: "/api/v2/borehole/filter" }).as("polygon_filter");
+    cy.intercept({ method: "POST", pathname: "/api/v2/borehole/filter/stats" }).as("polygon_filter_stats");
+    cy.get('[data-cy="polygon-filter-button"]').click();
+    drawPolygon();
+    assertIsFilteredByPolygon();
+    cy.wait("@polygon_filter")
+      .its("request.body")
+      .should((body: { polygon?: { type: string } }) => {
+        expect(body.polygon?.type).to.equal("Polygon");
+        expect(body).not.to.have.property("ids");
+      });
+    cy.wait("@polygon_filter_stats").its("request.body.polygon.type").should("equal", "Polygon");
+    cy.location("search").should("contain", "polygon=");
+    cy.get('[data-cy="boreholes-number-preview"]').invoke("text").as("polygonCount");
+
+    cy.contains("Borehole").click();
+    clickYesNoButton("nationalInterest", "yes");
+    cy.dataCy("filter-chip-nationalInterest").should("exist");
+    cy.wait("@borehole_filter");
+    cy.get("@polygonCount").then(polygonCount => {
+      cy.get('[data-cy="boreholes-number-preview"]').should("not.have.text", polygonCount);
+    });
+
+    checkFilterChipExistsAndRemove("nationalInterest");
+
+    cy.get("@polygonCount").then(polygonCount => {
+      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", polygonCount);
+    });
+    cy.get('[data-cy="polygon-filter-chip"]').should("exist");
+
+    cy.reload();
+    cy.wait("@polygon_filter").its("request.body.polygon.type").should("equal", "Polygon");
+    cy.get("@polygonCount").then(polygonCount => {
+      cy.get('[data-cy="boreholes-number-preview"]').should("have.text", polygonCount);
+    });
   });
 });
