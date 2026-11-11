@@ -1,6 +1,9 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO.Converters;
+using Npgsql;
+using System.Text.Json;
 
 namespace BDMS.Services;
 
@@ -218,6 +221,77 @@ public class FilterServiceTest
 
         // Verify that the borehole we used to create the polygon is in the results
         CollectionAssert.Contains(result.Boreholes.Select(b => b.Id).ToList(), existingBorehole.Id, $"Expected borehole with ID {existingBorehole.Id} to be in the filtered results");
+    }
+
+    [TestMethod]
+    public void FilterRequestReadsPolygonAsLv95()
+    {
+        var filterRequest = DeserializeFilterRequestWithSquare(2600000, 1200000, 10000);
+
+        Assert.IsNotNull(filterRequest.Polygon);
+        Assert.AreEqual(SpatialReferenceIdentifier.LV95, filterRequest.Polygon.SRID);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithPolygonFromJsonReturnsMatchingBoreholes()
+    {
+        var existingBorehole = await context.Boreholes
+            .Where(b => b.LocationX != null && b.LocationY != null && b.Geometry != null)
+            .FirstAsync();
+        var filterRequest = DeserializeFilterRequestWithSquare(existingBorehole.LocationX.Value, existingBorehole.LocationY.Value, 10000);
+        filterRequest.PageNumber = 1;
+        filterRequest.PageSize = 100;
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.IsTrue(result.TotalCount > 0);
+        CollectionAssert.Contains(result.Boreholes.Select(b => b.Id).ToList(), existingBorehole.Id);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithWgs84SridPolygonFailsInPostGis()
+    {
+        // Control for FilterRequestReadsPolygonAsLv95: the global converter reads GeoJSON as SRID 4326,
+        // which PostGIS refuses to intersect with the LV95 borehole points.
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web) { Converters = { new GeoJsonConverterFactory() } };
+        var polygon = JsonSerializer.Deserialize<Geometry>(SquareGeoJson(2600000, 1200000, 10000), options);
+        Assert.IsNotNull(polygon);
+        Assert.AreEqual(4326, polygon.SRID);
+
+        await Assert.ThrowsAsync<PostgresException>(
+            () => filterService.FilterBoreholesAsync(new FilterRequest { Polygon = polygon, PageNumber = 1, PageSize = 100 }, adminUser));
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsWithPolygonCountsOnlyBoreholesInPolygon()
+    {
+        var existingBorehole = await context.Boreholes
+            .Where(b => b.LocationX != null && b.LocationY != null && b.Geometry != null)
+            .FirstAsync();
+        var filterRequest = DeserializeFilterRequestWithSquare(existingBorehole.LocationX.Value, existingBorehole.LocationY.Value, 10000);
+        var totalBoreholes = await context.Boreholes.CountAsync();
+
+        var filtered = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+        var stats = await filterService.GetFilterStatsAsync(filterRequest, adminUser);
+
+        Assert.IsTrue(filtered.TotalCount < totalBoreholes, "The test polygon must exclude some boreholes to prove the stats honour it.");
+        Assert.AreEqual(filtered.TotalCount, stats.HasLogs.True + stats.HasLogs.False);
+    }
+
+    // Deserializes like the API does: the global converter as registered in Program.cs, plus whatever
+    // FilterRequest declares on its properties.
+    private static FilterRequest DeserializeFilterRequestWithSquare(double centerX, double centerY, double halfSize)
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web) { Converters = { new GeoJsonConverterFactory() } };
+        return JsonSerializer.Deserialize<FilterRequest>($$"""{"polygon":{{SquareGeoJson(centerX, centerY, halfSize)}}}""", options)
+            ?? throw new InvalidOperationException("The JSON did not contain a filter request.");
+    }
+
+    private static string SquareGeoJson(double centerX, double centerY, double halfSize)
+    {
+        var (minX, minY, maxX, maxY) = (centerX - halfSize, centerY - halfSize, centerX + halfSize, centerY + halfSize);
+        return FormattableString.Invariant(
+            $$"""{"type":"Polygon","coordinates":[[[{{minX}},{{minY}}],[{{maxX}},{{minY}}],[{{maxX}},{{maxY}}],[{{minX}},{{maxY}}],[{{minX}},{{minY}}]]]}""");
     }
 
     [TestMethod]

@@ -1,5 +1,7 @@
-﻿using NetTopologySuite.Geometries;
+﻿using BDMS.Json;
+using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -11,7 +13,9 @@ public class FilterRequest
     /// <summary>
     /// Gets or sets the polygon geometry filter for spatial filtering.
     /// Boreholes within this geometry will be included.
+    /// The coordinates are LV95 (EPSG:2056), unlike plain GeoJSON which defines WGS84.
     /// </summary>
+    [JsonConverter(typeof(Lv95GeoJsonConverterFactory))]
     public Geometry? Polygon { get; set; }
 
     /// <summary>
