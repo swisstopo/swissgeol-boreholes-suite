@@ -1009,6 +1009,51 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    [DataRow(7.4, 46.9, 0.1, DisplayName = "WGS84 coordinates")]
+    [DataRow(600000.0, 200000.0, 1000.0, DisplayName = "LV03 coordinates")]
+    [DataRow(2899000.0, 1200000.0, 5000.0, DisplayName = "Partly outside LV95")]
+    public async Task FilterEndpointsRejectPolygonOutsideLv95(double centerX, double centerY, double halfSize)
+    {
+        var filterRequest = new FilterRequest { Polygon = CreateSquare(centerX, centerY, halfSize), PageNumber = 1, PageSize = 10 };
+
+        await AssertFilterEndpointsRejectAsync(filterRequest);
+    }
+
+    [TestMethod]
+    public async Task FilterEndpointsRejectNonPolygonGeometry()
+    {
+        var filterRequest = new FilterRequest
+        {
+            Polygon = new Point(2600000, 1200000) { SRID = SpatialReferenceIdentifier.LV95 },
+            PageNumber = 1,
+            PageSize = 10,
+        };
+
+        await AssertFilterEndpointsRejectAsync(filterRequest);
+    }
+
+    private async Task AssertFilterEndpointsRejectAsync(FilterRequest filterRequest)
+    {
+        ActionResultAssert.IsBadRequest((await controller.FilterAsync(filterRequest)).Result);
+        ActionResultAssert.IsBadRequest((await controller.FilterStatsAsync(filterRequest)).Result);
+        ActionResultAssert.IsBadRequest((await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "test", limit: 10, filterRequest)).Result);
+
+        filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()), Times.Never);
+        filterServiceMock.Verify(x => x.GetFilterStatsAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()), Times.Never);
+    }
+
+    private static Polygon CreateSquare(double centerX, double centerY, double halfSize) =>
+        new(new LinearRing(new[]
+        {
+            new Coordinate(centerX - halfSize, centerY - halfSize),
+            new Coordinate(centerX + halfSize, centerY - halfSize),
+            new Coordinate(centerX + halfSize, centerY + halfSize),
+            new Coordinate(centerX - halfSize, centerY + halfSize),
+            new Coordinate(centerX - halfSize, centerY - halfSize),
+        }))
+        { SRID = SpatialReferenceIdentifier.LV95 };
+
+    [TestMethod]
     public async Task FilterBoreholesAsyncWithViewerRoleReturnsOkResult()
     {
         controller.HttpContext.SetClaimsPrincipal(EditorSubjectId, PolicyNames.Viewer);
