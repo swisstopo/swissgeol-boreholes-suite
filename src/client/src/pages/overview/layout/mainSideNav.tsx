@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
@@ -9,7 +9,6 @@ import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
-import { PolygonFilterContext } from "../sidePanelContent/filter/polygonFilterContext.tsx";
 import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialog.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
 import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
@@ -37,7 +36,6 @@ const MainSideNav = ({
   const menuRef = useRef(null);
   const { t } = useTranslation();
   const auth = useAuth();
-  const { filterPolygon } = useContext(PolygonFilterContext);
   const { editableWorkgroups } = useUserWorkgroups();
   const { activeFilterCount } = useBoreholeUrlParams();
 
@@ -74,7 +72,6 @@ const MainSideNav = ({
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
   const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
   const editingDisabled = editableWorkgroups.length === 0;
-  const totalActiveFilterCount = activeFilterCount + (filterPolygon === null ? 0 : 1);
 
   return (
     <Stack
@@ -92,7 +89,7 @@ const MainSideNav = ({
           padding: "1em",
           flex: "1 1 100%",
         }}>
-        {totalActiveFilterCount > 0 && <Badge sx={{ margin: "1px" }} badgeContent={totalActiveFilterCount}></Badge>}
+        {activeFilterCount > 0 && <Badge sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
         <NavButton
           data-cy="show-filter-button"
           icon={<Filter />}

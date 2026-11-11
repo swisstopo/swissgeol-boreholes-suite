@@ -1,6 +1,7 @@
 ﻿import type { TFunction } from "i18next";
 import type { Codelist, Workgroup } from "../../../../api/generated";
 import { capitalizeFirstLetter } from "../../../../utils";
+import { PolygonVertices } from "../../polygonFilter.ts";
 import { FilterKey } from "../../useBoreholeUrlParams.ts";
 
 type ChipDescriptor = {
@@ -26,7 +27,8 @@ type FilterFieldMeta =
     }
   | { type: "rangeMin"; labelKey: string; boundLabel: "min" | "from" }
   | { type: "rangeMax"; labelKey: string; boundLabel: "max" | "to" }
-  | { type: "nullableBoolean"; labelKey: string; allowNull: boolean };
+  | { type: "nullableBoolean"; labelKey: string; allowNull: boolean }
+  | { type: "polygon" };
 
 type FilterValueByType = {
   multiSelectCodelist: number[];
@@ -36,6 +38,7 @@ type FilterValueByType = {
   rangeMin: number | string; // types for dates and numeric ranges.
   rangeMax: number | string;
   nullableBoolean: "true" | "false" | "null";
+  polygon: PolygonVertices;
 };
 
 type FilterTypeOf<K extends FilterKey> = (typeof FilterFieldMetaData)[K]["type"];
@@ -101,6 +104,7 @@ export const FilterFieldMetaData = {
     labelKey: "workflowStatus",
     translateValue: (v: string, t: TFunction) => capitalizeFirstLetter(t(`statuses.${v}`)),
   },
+  polygon: { type: "polygon" },
 } as const satisfies Record<FilterKey, FilterFieldMeta>; // Adding a new parser without adding a meta entry here fails the TypeScript build.
 
 // Order in which chips render. Uses the declaration order of FilterFieldMetaData.
@@ -302,6 +306,9 @@ export function buildFilterChipDescriptors(inputs: ChipDescriptorInputs): ChipDe
         if (descriptor) result.push(descriptor);
         break;
       }
+      case "polygon":
+        // FilterChips renders the polygon chip itself, with the polygon icon.
+        break;
       default:
         // Exhaustiveness — every type in FilterFieldMeta should be handled.
         meta satisfies never;

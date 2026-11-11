@@ -8,6 +8,7 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
+import { parseAsPolygon, PolygonVertices } from "./polygonFilter.ts";
 import { SessionKeys } from "./SessionKey.ts";
 import { nullableBooleanFilterKeys } from "./sidePanelContent/filter/filterUtils.ts";
 
@@ -62,6 +63,7 @@ export const filterParsers = {
   hasPhotos: parseAsStringLiteral(["true", "false", "null"] as const),
   hasDocuments: parseAsStringLiteral(["true", "false", "null"] as const),
   workflowStatus: parseAsArrayOf(parseAsString),
+  polygon: parseAsPolygon,
 };
 
 export type FilterKey = keyof typeof filterParsers;
@@ -97,7 +99,7 @@ export const useBoreholeUrlParamsState = () => {
   // Encodes a filter value into the form `setQueryState` expects, with the special-cases for
   // booleans and nullable-boolean keys.
   const encodeFilterValue = useCallback(
-    (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined): unknown => {
+    (key: FilterKey, value: string | string[] | number[] | PolygonVertices | boolean | null | undefined): unknown => {
       if (value === true) return "true";
       if (value === false) return "false";
       // Preserve the "null" literal ("Keine Angabe") for nullable boolean filter keys.
@@ -115,7 +117,7 @@ export const useBoreholeUrlParamsState = () => {
   // The setQueryState promises below are deliberately not awaited: they resolve once the router
   // transition has finished, and none of these setters report that back to their callers.
   const setFilterField = useCallback(
-    (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
+    (key: FilterKey, value: string | string[] | number[] | PolygonVertices | boolean | null | undefined) => {
       void setQueryState({ [key]: encodeFilterValue(key, value), page: 0 });
     },
     [encodeFilterValue, setQueryState],
@@ -232,6 +234,7 @@ export const useBoreholeUrlParamsState = () => {
 
   return {
     activeFilters,
+    filterPolygon: queryState.polygon,
     setFilterField,
     clearFilterField,
     resetFilter,

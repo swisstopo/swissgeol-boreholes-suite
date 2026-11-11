@@ -3,11 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { Map, View } from "ol";
 import { defaults as defaultControls } from "ol/control";
-import { click, pointerMove } from "ol/events/condition";
+import { click, never, pointerMove } from "ol/events/condition";
 import { createEmpty, extend } from "ol/extent";
 import Feature, { FeatureLike } from "ol/Feature";
 import GeoJSON from "ol/format/GeoJSON";
 import Point from "ol/geom/Point";
+import OlPolygon from "ol/geom/Polygon";
 import Draw from "ol/interaction/Draw";
 import Select from "ol/interaction/Select";
 import TileLayer from "ol/layer/Tile";
@@ -18,29 +19,16 @@ import { Cluster } from "ol/source";
 import VectorSource from "ol/source/Vector";
 import { StyleFunction } from "ol/style/Style";
 import { theme } from "../../AppTheme";
+import { parseAsPolygon, toOlPolygon, toPolygonVertices } from "../../pages/overview/polygonFilter.ts";
 import { SessionKeys } from "../../pages/overview/SessionKey";
 import { BasemapContext } from "../basemapSelector/basemapContext";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps";
 import { BasemapSelector } from "../basemapSelector/basemapSelector";
 import MapControls from "../buttons/mapControls";
 import { ClickablePopup } from "./clickablePopup";
-import {
-  addWMSLayerToMap,
-  addWMTSLayerToMap,
-  filterFeaturesByPolygon,
-  getDrawSource,
-  MapComponentProps,
-  SRS,
-} from "./map.ts";
+import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
 import "./mapProjections";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
-
-const arraysEqualSorted = (a: number[], b: number[]): boolean => {
-  if (a.length !== b.length) return false;
-  const sa = [...a].sort((x, y) => x - y);
-  const sb = [...b].sort((x, y) => x - y);
-  return sa.every((v, i) => v === sb[i]);
-};
 
 export const MapComponent: FC<MapComponentProps> = ({
   geoJson,
@@ -48,8 +36,6 @@ export const MapComponent: FC<MapComponentProps> = ({
   hover,
   layers,
   selected,
-  setFeatureIds,
-  featureIds,
   polygonSelectionEnabled,
   setPolygonSelectionEnabled,
   filterPolygon,
@@ -82,14 +68,11 @@ export const MapComponent: FC<MapComponentProps> = ({
   // ── Refs for latest prop values (accessed by OL event handlers registered at mount) ──
   const highlightedRef = useRef(highlighted);
   const polygonSelectionEnabledRef = useRef(polygonSelectionEnabled);
-  const filterPolygonRef = useRef(filterPolygon);
-  const featureIdsRef = useRef(featureIds);
   const callbacksRef = useRef({
     hover,
     selected,
     setFilterPolygon,
     setPolygonSelectionEnabled,
-    setFeatureIds,
     displayErrorMessage,
     t,
   });
@@ -98,14 +81,11 @@ export const MapComponent: FC<MapComponentProps> = ({
   useEffect(() => {
     highlightedRef.current = highlighted;
     polygonSelectionEnabledRef.current = polygonSelectionEnabled;
-    filterPolygonRef.current = filterPolygon;
-    featureIdsRef.current = featureIds;
     callbacksRef.current = {
       hover,
       selected,
       setFilterPolygon,
       setPolygonSelectionEnabled,
-      setFeatureIds,
       displayErrorMessage,
       t,
     };
@@ -347,7 +327,8 @@ export const MapComponent: FC<MapComponentProps> = ({
     });
 
     // ── Draw interaction (created once, added/removed dynamically) ──
-    const draw = new Draw({ source: drawSource, type: "Polygon" });
+    // No freehand: it adds a vertex per mouse move, and the polygon is stored in the URL.
+    const draw = new Draw({ source: drawSource, type: "Polygon", freehandCondition: never });
 
     draw.on("drawstart", () => {
       drawSource.clear();
@@ -365,10 +346,11 @@ export const MapComponent: FC<MapComponentProps> = ({
         }
       });
 
-      if (intersectingFeatures.length > 0) {
+      const drawnPolygon = drawnFeature.getGeometry();
+      if (intersectingFeatures.length > 0 && drawnPolygon instanceof OlPolygon) {
         currentPoints.clear();
         currentPoints.addFeatures(intersectingFeatures);
-        callbacksRef.current.setFilterPolygon(drawnFeature);
+        callbacksRef.current.setFilterPolygon(toPolygonVertices(drawnPolygon));
       } else {
         callbacksRef.current.displayErrorMessage(callbacksRef.current.t("msgNoBoreholesInSelection"));
         callbacksRef.current.setFilterPolygon(null);
@@ -376,7 +358,6 @@ export const MapComponent: FC<MapComponentProps> = ({
       }
 
       callbacksRef.current.setPolygonSelectionEnabled(false);
-      callbacksRef.current.setFeatureIds(intersectingFeatures.map(f => f.get("id") as number));
     });
 
     drawRef.current = draw;
@@ -392,14 +373,6 @@ export const MapComponent: FC<MapComponentProps> = ({
       if (resolution !== undefined) {
         sessionStorage.setItem(SessionKeys.mapResolution, String(resolution));
       }
-
-      // Persist polygon filter state
-      const polygon = filterPolygonRef.current;
-      if (polygon) {
-        setFilterPolygon(polygon);
-      }
-      const ids = featureIdsRef.current;
-      setFeatureIds(ids);
       map.setTarget(undefined);
     };
     // oxlint-disable-next-line react-hooks/exhaustive-deps
@@ -459,27 +432,13 @@ export const MapComponent: FC<MapComponentProps> = ({
     const points = pointsRef.current;
     if (!geoJson || !points) return;
 
-    const allFeatures = new GeoJSON().readFeatures(geoJson);
-    const { filtered, ids } = filterFeaturesByPolygon(allFeatures, filterPolygonRef.current);
-    if (!arraysEqualSorted(ids, featureIdsRef.current)) {
-      callbacksRef.current.setFeatureIds(ids);
-    }
+    // The backend already applied the polygon and all other filters.
     points.clear();
-    points.addFeatures(filtered);
+    points.addFeatures(new GeoJSON().readFeatures(geoJson));
 
     // Refresh click selection and force style recomputation
     selectClickRef.current?.getFeatures().clear();
     points.changed();
-
-    // Restore polygon drawing if a filter polygon exists
-    if (filterPolygonRef.current) {
-      const drawSource = mapRef.current ? getDrawSource(mapRef.current) : null;
-      if (drawSource?.getFeatures().length === 0) {
-        // Clone the feature so it is not tied to a previous map's draw source.
-        const clone = filterPolygonRef.current.clone();
-        drawSource.addFeature(clone);
-      }
-    }
 
     // Fit map to feature extent — but skip on initial mount when a saved
     // center/resolution was restored (matches old componentDidUpdate behaviour
@@ -546,12 +505,21 @@ export const MapComponent: FC<MapComponentProps> = ({
       map.addInteraction(draw);
       drawActiveRef.current = true;
     }
+  }, [polygonSelectionEnabled]);
 
-    // Clear draw source when polygon filter is removed
-    if (!filterPolygon) {
-      getDrawSource(map)?.clear();
-    }
-  }, [polygonSelectionEnabled, filterPolygon]);
+  // ────────────────────── Effect: Filter polygon from the URL ──────────────────────
+
+  // Keyed on the URL value, so the effect runs when the polygon changes, not when it is parsed again.
+  const filterPolygonKey = filterPolygon === null ? null : parseAsPolygon.serialize(filterPolygon);
+
+  useEffect(() => {
+    const drawSource = mapRef.current ? getDrawSource(mapRef.current) : null;
+    if (!drawSource) return;
+
+    drawSource.clear();
+    const vertices = filterPolygonKey === null ? null : parseAsPolygon.parse(filterPolygonKey);
+    if (vertices !== null) drawSource.addFeature(new Feature(toOlPolygon(vertices)));
+  }, [filterPolygonKey]);
 
   // ────────────────────── Render ──────────────────────
 

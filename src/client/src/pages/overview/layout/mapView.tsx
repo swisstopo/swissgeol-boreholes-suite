@@ -16,6 +16,7 @@ import { MapComponent } from "../../../components/map/mapComponent";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { PolygonFilterContext } from "../sidePanelContent/filter/polygonFilterContext.tsx";
+import { useActiveFilterRequest } from "../sidePanelContent/filter/useActiveFilterRequest.ts";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
 import { getJsonExportSelection } from "./jsonExportSelection.ts";
 
@@ -41,16 +42,10 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
   const { navigateTo } = useBoreholesNavigate();
+  const { polygonSelectionEnabled, setPolygonSelectionEnabled } = useContext(PolygonFilterContext);
   const {
     filterPolygon,
-    setFilterPolygon,
-    polygonSelectionEnabled,
-    setPolygonSelectionEnabled,
-    featureIds,
-    setFeatureIds,
-  } = useContext(PolygonFilterContext);
-  const {
-    activeFilters,
+    setFilterField,
     tableState,
     setQueryState,
     mapResolution,
@@ -61,6 +56,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
   } = useBoreholeUrlParams();
+  const activeFilterRequest = useActiveFilterRequest();
 
   useEffect(() => {
     // Not awaited: the effect returns its cleanup synchronously, the flag follows once the URL holds the restored params.
@@ -111,8 +107,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
 
   // Assemble the full FilterRequest from URL params
   const filterRequest: FilterRequest = {
-    ...activeFilters,
-    ids: featureIds?.length > 0 ? featureIds : undefined,
+    ...activeFilterRequest,
     pageNumber: tableState.page + 1,
     pageSize: tableState.pageSize,
     orderBy: tableState.orderBy,
@@ -183,9 +178,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           polygonSelectionEnabled={polygonSelectionEnabled}
           setPolygonSelectionEnabled={setPolygonSelectionEnabled}
           filterPolygon={filterPolygon}
-          setFilterPolygon={setFilterPolygon}
-          featureIds={featureIds}
-          setFeatureIds={setFeatureIds}
+          setFilterPolygon={vertices => setFilterField("polygon", vertices)}
           displayErrorMessage={displayErrorMessage}
         />
       )}
