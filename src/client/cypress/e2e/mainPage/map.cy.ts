@@ -1,10 +1,11 @@
+import { showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import { loginAsEditor, returnToOverview } from "../helpers/testHelpers";
 import { WindowWithMaps } from "../helpers/window.ts";
 
 describe("Map tests", () => {
   it("map preserves zoom level and center", () => {
     loginAsEditor();
-    cy.wait("@borehole_filter");
+    cy.wait("@borehole_filter_map");
     cy.get(".ol-viewport");
 
     // zoom in twice
@@ -45,5 +46,33 @@ describe("Map tests", () => {
         expect(mapCenter).to.deep.equal(resetMapCenter);
       });
     });
+  });
+
+  it("keeps the map view and data when the table is sorted", () => {
+    const mapView = (win: Window) => (win as WindowWithMaps).olMap?.getView();
+
+    loginAsEditor();
+    cy.wait("@borehole_filter_map");
+    showTableAndWaitForData();
+
+    cy.get('[data-cy="zoom-in-button"]').click();
+    cy.get('[data-cy="zoom-in-button"]').click();
+    cy.window()
+      .then(win => mapView(win)?.getResolution())
+      .as("resolution");
+    cy.window()
+      .then(win => mapView(win)?.getCenter())
+      .as("center");
+
+    sortBy("Name");
+    cy.wait("@borehole_filter");
+
+    cy.get<number>("@resolution").then(resolution => {
+      cy.window().should(win => expect(mapView(win)?.getResolution()).to.equal(resolution));
+    });
+    cy.get<number[]>("@center").then(center => {
+      cy.window().should(win => expect(mapView(win)?.getCenter()).to.deep.equal(center));
+    });
+    cy.get("@borehole_filter_map.all").should("have.length", 1);
   });
 });
