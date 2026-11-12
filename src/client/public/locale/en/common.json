@@ -63,6 +63,8 @@
   "bitSize": "Bit size [mm]",
   "borehole": "Borehole",
   "boreholeCount": "Borehole count",
+  "boreholeCountLoading": "Loading the borehole count",
+  "boreholeCountNotLoaded": "could not be loaded",
   "boreholeGeometryFormat": "Borehole trajectory format",
   "boreholeGeometryImport": "Import borehole trajectory",
   "boreholeGeometryReplace": "Replace borehole trajectory",

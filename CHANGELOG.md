@@ -4,6 +4,7 @@
 
 ### Changed
 - The overview loads faster on slow connections. API responses are now compressed and no longer indented, which cuts the data downloaded for the map and the table to about 7 percent of its previous size.
+- The overview shows a loading indicator instead of "Boreholes: 0" while the boreholes load, and says so when they could not be loaded. It loads the filter statistics only while the filter panel is open. It keeps loaded results for five minutes, so switching browser tabs, returning from a borehole or paging back no longer downloads them again. Changes made in the same browser tab show at once, changes from other tabs or other users within five minutes.
 
 ## v2.2.107 - 2026-11-11
 

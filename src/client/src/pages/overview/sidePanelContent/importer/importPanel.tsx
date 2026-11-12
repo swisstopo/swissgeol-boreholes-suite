@@ -2,15 +2,11 @@ import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Link, Stack } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  boreholeQueryKey,
-  importBoreholesCsv,
-  importBoreholesJson,
-  importBoreholesZip,
-} from "../../../../api/borehole.ts";
+import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
 import { downloadCodelistCsv } from "../../../../api/download.ts";
 import { ErrorResponse, isErrorResponse } from "../../../../api/errorClasses.ts";
 import { isJsonContentType } from "../../../../api/fetchApiV2.ts";
+import { boreholeQueryKey } from "../../../../api/queryKeys.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { LoadingBackdrop } from "../../../../components/loadingBackdrop.tsx";

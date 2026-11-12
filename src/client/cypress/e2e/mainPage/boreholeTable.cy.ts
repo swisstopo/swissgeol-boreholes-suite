@@ -168,7 +168,6 @@ describe("Borehole editor table tests", () => {
     cy.get('[aria-label="previous page"]').scrollIntoView();
     cy.get('[aria-label="previous page"]').click();
     waitForTableData();
-    cy.wait("@borehole_filter");
     cy.contains("1 selected").should("be.visible");
 
     // Toggle all on, then off, from a page where the single selection is not visible

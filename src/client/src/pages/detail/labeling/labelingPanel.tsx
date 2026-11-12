@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
+import { useMarkOverviewStale } from "../../../api/borehole.ts";
 import { useFileInfo } from "../../../api/dataextraction.ts";
 import {
   ExtractionState,
@@ -73,6 +74,7 @@ const LabelingPanel: FC = () => {
   const { data: image, isLoading: isLoadingImage } = usePhotoImage(selectedPhoto?.id);
   const reloadProfiles = useReloadProfiles(boreholeId);
   const reloadPhotos = useReloadPhotos(boreholeId);
+  const markOverviewStale = useMarkOverviewStale();
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (alertIsOpen && autoHideDuration !== undefined) {
@@ -110,11 +112,12 @@ const LabelingPanel: FC = () => {
           setSelectedAttachment(photoResponse);
           reloadPhotos();
         }
+        markOverviewStale();
       } catch (error) {
         showAlert(t((error as Error).message), "error");
       }
     },
-    [boreholeId, reloadProfiles, panelTab, reloadPhotos, showAlert, t],
+    [boreholeId, reloadProfiles, panelTab, reloadPhotos, markOverviewStale, showAlert, t],
   );
 
   const isExtractionLoading = extractionState === ExtractionState.loading;

@@ -14,6 +14,7 @@ import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import { MapComponent } from "../../../components/map/mapComponent";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
+import { BoreholeCountState } from "../boreholeTable/boreholeNumbersPreview.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { PolygonFilterContext } from "../sidePanelContent/filter/polygonFilterContext.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
@@ -32,6 +33,13 @@ const containSameIds = (ids: number[], otherIds: number[]) => {
 const noSelectableBoreholeIds: number[] = [];
 
 const bulkExportFileName = () => `bulkexport_${new Date().toISOString().split("T")[0]}`;
+
+// isPending, not isLoading: the query waits for the restored session before it starts, and the count must not
+// show 0 meanwhile. A query that is no longer pending and has no data has failed.
+const getBoreholeCountState = (isPending: boolean, hasData: boolean): BoreholeCountState => {
+  if (isPending) return "loading";
+  return hasData ? "loaded" : "failed";
+};
 
 export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
@@ -128,7 +136,9 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     geoJson: null,
     selectableBoreholeIds: noSelectableBoreholeIds,
   };
-  const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
+  const { data, isPending } = useFilterBoreholes(filterRequest, sessionRestored);
+  const filterResponse = data ?? emptyFilterResponse;
+  const countState = getBoreholeCountState(isPending, data !== undefined);
 
   // The selection is cleared only when the selectable boreholes change and not whenever the boreholes
   // change, which also happens on every pagination and order event (server side pagination/ordering).
@@ -192,6 +202,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       <BottomBarContainer
         boreholes={filterResponse.boreholes}
         totalCount={filterResponse.totalCount}
+        countState={countState}
         selectableBoreholeIds={filterResponse.selectableBoreholeIds}
         onBulkEdit={() => setBulkEditDialogOpen(true)}
         selectionModel={selectionModel}

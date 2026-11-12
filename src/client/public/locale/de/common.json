@@ -63,6 +63,8 @@
   "bitSize": "Bohrmeissel-Durchmesser [mm]",
   "borehole": "Bohrung",
   "boreholeCount": "Anzahl Bohrungen",
+  "boreholeCountLoading": "Anzahl Bohrungen wird geladen",
+  "boreholeCountNotLoaded": "konnten nicht geladen werden",
   "boreholeGeometryFormat": "Bohrlochpfadformat",
   "boreholeGeometryImport": "Bohrlochpfad importieren",
   "boreholeGeometryReplace": "Bohrlochpfad ersetzen",

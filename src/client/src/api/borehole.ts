@@ -1,5 +1,6 @@
+import { useCallback } from "react";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
@@ -7,6 +8,7 @@ import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { downloadPost } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
+import { boreholeQueryKey, markOverviewStale, overviewQueryKey } from "./queryKeys.ts";
 import { TransferOptions } from "./transferProgress.ts";
 import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
@@ -110,7 +112,18 @@ const canUserEditBorehole = async (id: number) =>
 const canUserManageBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canmanage?boreholeId=${id}`, "GET");
 
-export const boreholeQueryKey = "boreholes";
+// The overview downloads every filtered borehole, about 1 MB for 38,500 of them even compressed. Its results stay
+// fresh for five minutes, so switching browser tabs, returning from a borehole or paging back shows them without
+// downloading them again. Changes made in this app mark them stale at once (see markOverviewStale); changes in
+// other browser tabs or by other users show after at most five minutes.
+const overviewStaleTime = 5 * 60 * 1000;
+
+/** {@link markOverviewStale} for components, stable across renders. */
+export const useMarkOverviewStale = () => {
+  const queryClient = useQueryClient();
+  // Not awaited: with refetchType "none" nothing is downloaded, so there is nothing to wait for.
+  return useCallback(() => void markOverviewStale(queryClient), [queryClient]);
+};
 
 export const useBorehole = (id: number) => {
   const getCodelistName = useCodelistDisplayValues();
@@ -407,11 +420,11 @@ interface BoreholeSuggestion {
   count: number;
 }
 
-export const filterBoreholes = async (filterRequest: FilterRequestSubmission): Promise<FilterResponse> => {
+const filterBoreholes = async (filterRequest: FilterRequestSubmission): Promise<FilterResponse> => {
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
-export const fetchFilterStats = async (filterRequest: FilterRequestSubmission): Promise<FilterStatsResponse> => {
+const fetchFilterStats = async (filterRequest: FilterRequestSubmission): Promise<FilterStatsResponse> => {
   return await fetchApiV2WithApiError<FilterStatsResponse>("borehole/filter/stats", "POST", filterRequest);
 };
 
@@ -448,7 +461,7 @@ const parseNullableBooleanFilter = (
   return undefined;
 };
 
-export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestSubmission => ({
+const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestSubmission => ({
   ...filterRequest,
   hasGroundwater: parseNullableBooleanFilter(filterRequest.hasGroundwater),
   topBedrockIntersected: parseNullableBooleanFilter(filterRequest.topBedrockIntersected),
@@ -514,23 +527,37 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
   return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
 }
 
-export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) => {
+/**
+ * The boreholes the overview lists, for the hook and for the prefetch after login, so both use the same key.
+ * @param filterRequest The filters, page and sort order of the overview.
+ */
+export const filterBoreholesQueryOptions = (filterRequest: FilterRequest) => {
   const filterRequestSubmission = toFilterRequestSubmission(filterRequest);
 
-  return useQuery({
-    queryKey: [boreholeQueryKey, filterRequestSubmission],
+  return queryOptions({
+    queryKey: [...overviewQueryKey, "filter", filterRequestSubmission],
     queryFn: () => filterBoreholes(filterRequestSubmission),
-    enabled,
-    placeholderData: keepPreviousData,
+    staleTime: overviewStaleTime,
   });
 };
 
-export const useFilterStats = (filterRequest: FilterRequest) => {
+export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) =>
+  useQuery({ ...filterBoreholesQueryOptions(filterRequest), enabled, placeholderData: keepPreviousData });
+
+/**
+ * The counts shown next to the filter options. One request runs many database queries, so the filter drawer
+ * enables it only while it is open.
+ * @param filterRequest The active filters.
+ * @param enabled Whether the statistics may be requested.
+ */
+export const useFilterStats = (filterRequest: FilterRequest, enabled: boolean) => {
   const filterRequestSubmission = toFilterRequestSubmission(filterRequest);
 
   return useQuery({
-    queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
+    queryKey: [...overviewQueryKey, "stats", filterRequestSubmission],
     queryFn: () => fetchFilterStats(filterRequestSubmission),
+    staleTime: overviewStaleTime,
+    enabled,
     placeholderData: keepPreviousData,
   });
 };
