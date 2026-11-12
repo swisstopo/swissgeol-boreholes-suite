@@ -3,11 +3,13 @@ import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { Map, View } from "ol";
 import { defaults as defaultControls } from "ol/control";
-import { click, pointerMove } from "ol/events/condition";
+import { click, never, pointerMove } from "ol/events/condition";
 import { createEmpty, extend } from "ol/extent";
 import Feature, { FeatureLike } from "ol/Feature";
 import GeoJSON from "ol/format/GeoJSON";
 import Point from "ol/geom/Point";
+import OlPolygon from "ol/geom/Polygon";
+import { defaults as defaultInteractions } from "ol/interaction";
 import Draw from "ol/interaction/Draw";
 import Select from "ol/interaction/Select";
 import TileLayer from "ol/layer/Tile";
@@ -18,29 +20,24 @@ import { Cluster } from "ol/source";
 import VectorSource from "ol/source/Vector";
 import { StyleFunction } from "ol/style/Style";
 import { theme } from "../../AppTheme";
+import {
+  isWithinMapExtent,
+  parseAsPolygon,
+  toOlPolygon,
+  toPolygonVertices,
+} from "../../pages/overview/polygonFilter.ts";
 import { SessionKeys } from "../../pages/overview/SessionKey";
 import { BasemapContext } from "../basemapSelector/basemapContext";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps";
 import { BasemapSelector } from "../basemapSelector/basemapSelector";
 import MapControls from "../buttons/mapControls";
 import { ClickablePopup } from "./clickablePopup";
-import {
-  addWMSLayerToMap,
-  addWMTSLayerToMap,
-  filterFeaturesByPolygon,
-  getDrawSource,
-  MapComponentProps,
-  SRS,
-} from "./map.ts";
+import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
 import "./mapProjections";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
 
-const arraysEqualSorted = (a: number[], b: number[]): boolean => {
-  if (a.length !== b.length) return false;
-  const sa = [...a].sort((x, y) => x - y);
-  const sb = [...b].sort((x, y) => x - y);
-  return sa.every((v, i) => v === sb[i]);
-};
+// The longest time between the two clicks of a double-click, a little above the 250 ms OpenLayers uses.
+const doubleClickInterval = 500;
 
 export const MapComponent: FC<MapComponentProps> = ({
   geoJson,
@@ -48,8 +45,6 @@ export const MapComponent: FC<MapComponentProps> = ({
   hover,
   layers,
   selected,
-  setFeatureIds,
-  featureIds,
   polygonSelectionEnabled,
   setPolygonSelectionEnabled,
   filterPolygon,
@@ -83,13 +78,11 @@ export const MapComponent: FC<MapComponentProps> = ({
   const highlightedRef = useRef(highlighted);
   const polygonSelectionEnabledRef = useRef(polygonSelectionEnabled);
   const filterPolygonRef = useRef(filterPolygon);
-  const featureIdsRef = useRef(featureIds);
   const callbacksRef = useRef({
     hover,
     selected,
     setFilterPolygon,
     setPolygonSelectionEnabled,
-    setFeatureIds,
     displayErrorMessage,
     t,
   });
@@ -99,13 +92,11 @@ export const MapComponent: FC<MapComponentProps> = ({
     highlightedRef.current = highlighted;
     polygonSelectionEnabledRef.current = polygonSelectionEnabled;
     filterPolygonRef.current = filterPolygon;
-    featureIdsRef.current = featureIds;
     callbacksRef.current = {
       hover,
       selected,
       setFilterPolygon,
       setPolygonSelectionEnabled,
-      setFeatureIds,
       displayErrorMessage,
       t,
     };
@@ -146,6 +137,8 @@ export const MapComponent: FC<MapComponentProps> = ({
     projection.setExtent(swissExtent);
 
     const map = new Map({
+      // No double-click zoom: a polygon is often finished with a double-click, which would zoom the map.
+      interactions: defaultInteractions({ doubleClickZoom: false }),
       controls: defaultControls({
         attribution: true,
         zoom: false,
@@ -321,9 +314,14 @@ export const MapComponent: FC<MapComponentProps> = ({
       });
     }
 
+    // A polygon is often finished with a double-click, whose first click already ends the drawing. Its second
+    // click must not zoom into a cluster.
+    let drawEndedAt = Number.NEGATIVE_INFINITY;
+    const isClickFinishingDrawing = () => Date.now() - drawEndedAt < doubleClickInterval;
+
     // Zoom to cluster on click
     map.on("click", event => {
-      if (pointsRef.current && !polygonSelectionEnabledRef.current) {
+      if (pointsRef.current && !polygonSelectionEnabledRef.current && !isClickFinishingDrawing()) {
         const clickFeatures = map.getFeaturesAtPixel(event.pixel, {
           layerFilter: layer => layer.get("name") === "clusters",
         });
@@ -347,13 +345,26 @@ export const MapComponent: FC<MapComponentProps> = ({
     });
 
     // ── Draw interaction (created once, added/removed dynamically) ──
-    const draw = new Draw({ source: drawSource, type: "Polygon" });
+    // No freehand: it adds a vertex per mouse move, and the polygon is stored in the URL.
+    // No source: Draw would add the drawn feature after drawend, so a rejected polygon would stay on the map.
+    // drawend adds an accepted polygon itself.
+    const draw = new Draw({ type: "Polygon", freehandCondition: never });
 
+    // The current polygon is hidden while a new one is drawn, and shown again when the drawing is aborted or
+    // discarded.
     draw.on("drawstart", () => {
       drawSource.clear();
     });
 
+    const showFilterPolygon = () => {
+      const polygon = filterPolygonRef.current;
+      if (polygon !== null) drawSource.addFeature(new Feature(toOlPolygon(polygon)));
+    };
+
+    draw.on("drawabort", showFilterPolygon);
+
     draw.on("drawend", event => {
+      drawEndedAt = Date.now();
       const drawnFeature = event.feature;
       const currentPoints = pointsRef.current;
       if (!currentPoints) return;
@@ -365,18 +376,24 @@ export const MapComponent: FC<MapComponentProps> = ({
         }
       });
 
-      if (intersectingFeatures.length > 0) {
+      const { displayErrorMessage, setFilterPolygon, t } = callbacksRef.current;
+      const drawnPolygon = drawnFeature.getGeometry();
+      const vertices = drawnPolygon instanceof OlPolygon ? toPolygonVertices(drawnPolygon) : null;
+      if (vertices !== null && !isWithinMapExtent(vertices)) {
+        // The drawing is discarded and the current polygon filter stays.
+        displayErrorMessage(t("msgPolygonOutsideMapExtent"));
+        showFilterPolygon();
+      } else if (vertices === null || intersectingFeatures.length === 0) {
+        displayErrorMessage(t("msgNoBoreholesInSelection"));
+        setFilterPolygon(null);
+      } else {
         currentPoints.clear();
         currentPoints.addFeatures(intersectingFeatures);
-        callbacksRef.current.setFilterPolygon(drawnFeature);
-      } else {
-        callbacksRef.current.displayErrorMessage(callbacksRef.current.t("msgNoBoreholesInSelection"));
-        callbacksRef.current.setFilterPolygon(null);
-        drawSource.clear();
+        drawSource.addFeature(new Feature(toOlPolygon(vertices)));
+        setFilterPolygon(vertices);
       }
 
       callbacksRef.current.setPolygonSelectionEnabled(false);
-      callbacksRef.current.setFeatureIds(intersectingFeatures.map(f => f.get("id") as number));
     });
 
     drawRef.current = draw;
@@ -392,14 +409,6 @@ export const MapComponent: FC<MapComponentProps> = ({
       if (resolution !== undefined) {
         sessionStorage.setItem(SessionKeys.mapResolution, String(resolution));
       }
-
-      // Persist polygon filter state
-      const polygon = filterPolygonRef.current;
-      if (polygon) {
-        setFilterPolygon(polygon);
-      }
-      const ids = featureIdsRef.current;
-      setFeatureIds(ids);
       map.setTarget(undefined);
     };
     // oxlint-disable-next-line react-hooks/exhaustive-deps
@@ -459,27 +468,13 @@ export const MapComponent: FC<MapComponentProps> = ({
     const points = pointsRef.current;
     if (!geoJson || !points) return;
 
-    const allFeatures = new GeoJSON().readFeatures(geoJson);
-    const { filtered, ids } = filterFeaturesByPolygon(allFeatures, filterPolygonRef.current);
-    if (!arraysEqualSorted(ids, featureIdsRef.current)) {
-      callbacksRef.current.setFeatureIds(ids);
-    }
+    // The backend already applied the polygon and all other filters.
     points.clear();
-    points.addFeatures(filtered);
+    points.addFeatures(new GeoJSON().readFeatures(geoJson));
 
     // Refresh click selection and force style recomputation
     selectClickRef.current?.getFeatures().clear();
     points.changed();
-
-    // Restore polygon drawing if a filter polygon exists
-    if (filterPolygonRef.current) {
-      const drawSource = mapRef.current ? getDrawSource(mapRef.current) : null;
-      if (drawSource?.getFeatures().length === 0) {
-        // Clone the feature so it is not tied to a previous map's draw source.
-        const clone = filterPolygonRef.current.clone();
-        drawSource.addFeature(clone);
-      }
-    }
 
     // Fit map to feature extent — but skip on initial mount when a saved
     // center/resolution was restored (matches old componentDidUpdate behaviour
@@ -546,12 +541,26 @@ export const MapComponent: FC<MapComponentProps> = ({
       map.addInteraction(draw);
       drawActiveRef.current = true;
     }
+  }, [polygonSelectionEnabled]);
 
-    // Clear draw source when polygon filter is removed
-    if (!filterPolygon) {
-      getDrawSource(map)?.clear();
+  // ────────────────────── Effect: Filter polygon from the URL ──────────────────────
+
+  // Keyed on the URL value, so the effect runs when the polygon changes, not when it is parsed again.
+  const filterPolygonKey = filterPolygon === null ? null : parseAsPolygon.serialize(filterPolygon);
+
+  useEffect(() => {
+    const drawSource = mapRef.current ? getDrawSource(mapRef.current) : null;
+    if (!drawSource) return;
+
+    drawSource.clear();
+    const vertices = filterPolygonKey === null ? null : parseAsPolygon.parse(filterPolygonKey);
+    if (vertices === null) {
+      // Removing the polygon, with its chip, the reset or the browser history, also ends drawing mode.
+      callbacksRef.current.setPolygonSelectionEnabled(false);
+    } else {
+      drawSource.addFeature(new Feature(toOlPolygon(vertices)));
     }
-  }, [polygonSelectionEnabled, filterPolygon]);
+  }, [filterPolygonKey]);
 
   // ────────────────────── Render ──────────────────────
 

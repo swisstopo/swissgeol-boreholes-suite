@@ -15,6 +15,7 @@ import {
   parseBooleanFilterValue,
   textMultiSelectOptions,
 } from "./filterUtils.ts";
+import { useActiveFilterRequest } from "./useActiveFilterRequest.ts";
 
 interface ListFilterProps {
   inputConfig: FilterInputConfig;
@@ -22,8 +23,9 @@ interface ListFilterProps {
 
 export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
   const { activeFilters, setFilterField } = useBoreholeUrlParams();
+  const activeFilterRequest = useActiveFilterRequest();
   const searchData = inputConfig?.searchData;
-  const { data: stats } = useFilterStats(activeFilters);
+  const { data: stats } = useFilterStats(activeFilterRequest);
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
@@ -53,7 +55,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   item={filterItem}
                   filterValue={(value as string) ?? null}
                   onUpdate={value => updateChange(filterItem.key, value)}
-                  filterRequest={activeFilters}
+                  filterRequest={activeFilterRequest}
                 />
               )}
               {filterItem.type === "Date" && (

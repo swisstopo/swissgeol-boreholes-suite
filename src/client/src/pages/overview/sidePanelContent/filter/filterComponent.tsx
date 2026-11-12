@@ -22,6 +22,7 @@ import { filterForAnonymousMode, getDomainCountsForField } from "./filterUtils.t
 import { ListFilter } from "./listFilter.tsx";
 import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 import { StatusFilter } from "./statusFilter.tsx";
+import { useActiveFilterRequest } from "./useActiveFilterRequest.ts";
 import { WorkgroupFilter } from "./workgroupFilter.tsx";
 
 const StyledAccordion = styled(Accordion)(() => ({
@@ -42,13 +43,13 @@ const StyledAccordionDetails = styled(AccordionDetails)(() => ({
 
 export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMethods }) => {
   const { t } = useTranslation();
-  const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled, setFeatureIds, setFilterPolygon } =
-    useContext(PolygonFilterContext);
+  const { polygonSelectionEnabled, setPolygonSelectionEnabled } = useContext(PolygonFilterContext);
 
-  const { activeFilters, setFilterField, resetFilter } = useBoreholeUrlParams();
+  const { activeFilters, setFilterField, resetFilter, filterPolygon } = useBoreholeUrlParams();
+  const activeFilterRequest = useActiveFilterRequest();
 
   const { data: user } = useCurrentUser();
-  const { data: stats } = useFilterStats(activeFilters);
+  const { data: stats } = useFilterStats(activeFilterRequest);
   const auth = useAuth();
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
@@ -111,8 +112,6 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   };
   const handleFilterReset = () => {
     setPolygonSelectionEnabled(false);
-    setFilterPolygon(null);
-    setFeatureIds([]);
     formMethods.reset();
     resetFilter();
   };

@@ -1,6 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
 import { Map } from "ol";
-import Feature from "ol/Feature";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { get as getProjection } from "ol/proj";
@@ -8,6 +6,7 @@ import TileWMS from "ol/source/TileWMS";
 import VectorSource from "ol/source/Vector";
 import WMTS, { Options as WMTSOptions } from "ol/source/WMTS";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
+import { PolygonVertices } from "../../pages/overview/polygonFilter.ts";
 import { swissExtent } from "../basemapSelector/basemaps";
 
 interface SerializedTileGrid {
@@ -50,12 +49,10 @@ export interface MapComponentProps {
   hover: (ids: number[]) => void;
   layers: Record<string, LayerConfig>;
   selected: (id: number | null) => void;
-  setFeatureIds: (ids: number[]) => void;
-  featureIds: number[];
   polygonSelectionEnabled: boolean;
   setPolygonSelectionEnabled: (enabled: boolean) => void;
-  filterPolygon: Feature | null;
-  setFilterPolygon: Dispatch<SetStateAction<Feature | null>>;
+  filterPolygon: PolygonVertices | null;
+  setFilterPolygon: (vertices: PolygonVertices | null) => void;
   displayErrorMessage: (message: string) => void;
   mapResolution: number;
   mapCenter: [number, number] | null;
@@ -117,19 +114,6 @@ export function addWMSLayerToMap(
   wmsLayer.set("name", identifier);
   overlays.push(wmsLayer);
   map.addLayer(wmsLayer);
-}
-
-export function filterFeaturesByPolygon(
-  features: Feature[],
-  filterPolygon: Feature | null,
-): { filtered: Feature[]; ids: number[] } {
-  if (filterPolygon === null) return { filtered: features, ids: [] };
-  const polygonGeometry = filterPolygon.getGeometry()!;
-  const filtered = features.filter((feature: Feature) =>
-    polygonGeometry.intersectsExtent(feature.getGeometry()!.getExtent()),
-  );
-  const ids = filtered.map((f: Feature) => f.get("id") as number);
-  return { filtered, ids };
 }
 
 export function getDrawSource(map: Map): VectorSource | null {

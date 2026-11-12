@@ -429,6 +429,7 @@
   "msgLithologyEmpty": "Keine Lithologie verfügbar",
   "msgNoBoreholesInSelection": "Es sind keine Bohrungen in der Selektion enthalten",
   "msgNoStratigraphyExtracted": "Die Extraktion wurde abgeschlossen, es konnte aber keine Stratigraphie im Bohrprofil gefunden werden.",
+  "msgPolygonOutsideMapExtent": "Das Polygon muss vollständig im Kartengebiet liegen. Bitte zeichnen Sie es erneut.",
   "msgReenablingUserTip": "Sie können den Benutzer deaktivieren und jederzeit wieder aktivieren",
   "msgReenablingWorkgroupTip": "Sie können die Arbeitsgruppe deaktivieren und jederzeit wieder aktivieren",
   "msgSectionsEmpty": "Keine Sektionen verfügbar",
