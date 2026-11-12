@@ -1105,7 +1105,6 @@ public class BoreholeExportControllerTest
             Locked = null,
             LockedById = null,
             WorkgroupId = 1,
-            IsPublic = true,
             TypeId = 20101003,
             LocationX = 2600000.0,
             PrecisionLocationX = 5,

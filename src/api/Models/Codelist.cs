@@ -79,12 +79,6 @@ public class Codelist : IIdentifyable
     public string? Conf { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the <see cref="Codelist"/> is default.
-    /// </summary>
-    [Column("default")]
-    public bool? IsDefault { get; set; }
-
-    /// <summary>
     /// Gets or sets the Path of this <see cref="Codelist"/> in a tree structure.
     /// </summary>
     [Column("path")]

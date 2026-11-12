@@ -117,7 +117,6 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.CreatedById, updatedBorehole.CreatedById);
         Assert.AreEqual(1, updatedBorehole.UpdatedById); // updatedById should be overwritten by the test user id.
         Assert.AreEqual(newBorehole.WorkgroupId, updatedBorehole.WorkgroupId);
-        Assert.AreEqual(newBorehole.IsPublic, updatedBorehole.IsPublic);
         Assert.AreEqual(newBorehole.TypeId, updatedBorehole.TypeId);
         Assert.AreEqual(newBorehole.LocationX, updatedBorehole.LocationX);
         Assert.AreEqual(newBorehole.PrecisionLocationX, updatedBorehole.PrecisionLocationX);
@@ -719,7 +718,6 @@ public class BoreholeControllerTest
             Locked = null,
             LockedById = null,
             WorkgroupId = 1,
-            IsPublic = true,
             TypeId = 20101003,
             LocationX = 2600000.0,
             PrecisionLocationX = 5,

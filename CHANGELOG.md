@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Changed
+- The overview loads faster on slow connections. API responses are now compressed and no longer indented, which cuts the data downloaded for the map and the table to about 7 percent of its previous size.
+
+## v2.2.107 - 2026-11-11
+
 ### Added
 - Lithological layer descriptions can be analyzed automatically. The lithology dialog offers an "Analyze" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein. It needs a data extraction service that offers the classification endpoint and runs with `BERT_ENABLED=true`, which the Helm chart now sets.
 - Boreholes have two new attributes in the restriction section of the General tab: "Stored in the drill core repository" (yes, no or not specified) and "Source document type" (any of driller's log, borehole profile, report, plan, other, not specified). New and existing boreholes start at "no". Both attributes can be filtered, bulk edited, copied, imported and exported. The CSV columns are `CoreRepositoryStored` and `SourceTypeCodelistIds`, the latter as comma separated codelist ids.
@@ -36,6 +41,10 @@
 - In the lithology dialog, the "entry required" errors on the unconsolidated rock soil type and secondary component dropdowns now disappear as soon as the later component that required them is cleared, and no longer leave the fields marked red after they are filled again.
 - In edit mode, the checkbox in the header of the "Public" column of the attachment and LOG file tables now follows the rows. It could appear checked although no row was public, for example after adding the first photo to a borehole.
 - When saving a LOG run fails, the message now says which run or file it is about and is shown in the user's language, also when a file upload fails for a technical reason or a run number is already taken.
+
+### Removed
+- The unused borehole attribute `IsPublic` is removed from the database, the API and the CSV and JSON exports. Files that still contain it can be imported as before; the value is ignored.
+- The unused `isDefault` attribute of codelist entries is removed from the database and the API.
 
 ## v2.2.57 - 2026-10-08
 

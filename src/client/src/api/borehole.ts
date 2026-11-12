@@ -280,7 +280,6 @@ export interface BoreholeListItem {
   totalDepth: number | null;
   created: NullableDateString;
   updated: NullableDateString;
-  isPublic: boolean | null;
   locked: NullableDateString;
 }
 
