@@ -548,14 +548,19 @@ export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true)
 };
 
 // The map data of all filtered boreholes is large, so it is not refetched just because the
-// browser tab becomes visible again. Changes made in this app invalidate boreholeQueryKey anyway.
+// browser tab becomes visible again or the overview is opened again. Every change that can alter
+// the filtered set must invalidate this key instead. Edits in the detail view do so by locking the
+// borehole, which invalidates boreholeQueryKey; changes made without edit mode, such as workflow
+// status changes, invalidate filterBoreholesMapQueryKey themselves.
 const mapDataStaleTime = 10 * 60 * 1000;
+
+export const filterBoreholesMapQueryKey = [boreholeQueryKey, "filter-map"] as const;
 
 // Shared by the hook and the prefetch after login, so both use the same key and staleTime.
 export const filterBoreholesMapQueryOptions = (filterRequest: FilterRequest) => {
   const criteria = toMapFilterCriteria(filterRequest);
   return queryOptions({
-    queryKey: [boreholeQueryKey, "filter-map", criteria],
+    queryKey: [...filterBoreholesMapQueryKey, criteria],
     queryFn: () => filterBoreholesMap(criteria),
     staleTime: mapDataStaleTime,
   });
