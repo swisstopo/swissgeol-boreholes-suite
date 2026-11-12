@@ -333,7 +333,9 @@ export const MapComponent: FC<MapComponentProps> = ({
 
     // ── Draw interaction (created once, added/removed dynamically) ──
     // No freehand: it adds a vertex per mouse move, and the polygon is stored in the URL.
-    const draw = new Draw({ source: drawSource, type: "Polygon", freehandCondition: never });
+    // No source: Draw would add the drawn feature after drawend, so a rejected polygon would stay on the map.
+    // drawend adds an accepted polygon itself.
+    const draw = new Draw({ type: "Polygon", freehandCondition: never });
 
     draw.on("drawstart", () => {
       drawSource.clear();
@@ -354,7 +356,6 @@ export const MapComponent: FC<MapComponentProps> = ({
       const rejectDrawnPolygon = (messageKey: string) => {
         callbacksRef.current.displayErrorMessage(callbacksRef.current.t(messageKey));
         callbacksRef.current.setFilterPolygon(null);
-        drawSource.clear();
       };
 
       const drawnPolygon = drawnFeature.getGeometry();
@@ -364,6 +365,7 @@ export const MapComponent: FC<MapComponentProps> = ({
       } else if (isWithinMapExtent(vertices)) {
         currentPoints.clear();
         currentPoints.addFeatures(intersectingFeatures);
+        drawSource.addFeature(new Feature(toOlPolygon(vertices)));
         callbacksRef.current.setFilterPolygon(vertices);
       } else {
         rejectDrawnPolygon("msgPolygonOutsideMapExtent");
