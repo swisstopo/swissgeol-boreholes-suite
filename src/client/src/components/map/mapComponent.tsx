@@ -530,7 +530,12 @@ export const MapComponent: FC<MapComponentProps> = ({
 
     drawSource.clear();
     const vertices = filterPolygonKey === null ? null : parseAsPolygon.parse(filterPolygonKey);
-    if (vertices !== null) drawSource.addFeature(new Feature(toOlPolygon(vertices)));
+    if (vertices === null) {
+      // Removing the polygon, with its chip, the reset or the browser history, also ends drawing mode.
+      callbacksRef.current.setPolygonSelectionEnabled(false);
+    } else {
+      drawSource.addFeature(new Feature(toOlPolygon(vertices)));
+    }
   }, [filterPolygonKey]);
 
   // ────────────────────── Render ──────────────────────
