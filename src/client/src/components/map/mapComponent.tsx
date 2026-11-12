@@ -9,6 +9,7 @@ import Feature, { FeatureLike } from "ol/Feature";
 import GeoJSON from "ol/format/GeoJSON";
 import Point from "ol/geom/Point";
 import OlPolygon from "ol/geom/Polygon";
+import { defaults as defaultInteractions } from "ol/interaction";
 import Draw from "ol/interaction/Draw";
 import Select from "ol/interaction/Select";
 import TileLayer from "ol/layer/Tile";
@@ -34,6 +35,9 @@ import { ClickablePopup } from "./clickablePopup";
 import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
 import "./mapProjections";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
+
+// The longest time between the two clicks of a double-click, a little above the 250 ms OpenLayers uses.
+const doubleClickInterval = 500;
 
 export const MapComponent: FC<MapComponentProps> = ({
   geoJson,
@@ -73,6 +77,7 @@ export const MapComponent: FC<MapComponentProps> = ({
   // ── Refs for latest prop values (accessed by OL event handlers registered at mount) ──
   const highlightedRef = useRef(highlighted);
   const polygonSelectionEnabledRef = useRef(polygonSelectionEnabled);
+  const filterPolygonRef = useRef(filterPolygon);
   const callbacksRef = useRef({
     hover,
     selected,
@@ -86,6 +91,7 @@ export const MapComponent: FC<MapComponentProps> = ({
   useEffect(() => {
     highlightedRef.current = highlighted;
     polygonSelectionEnabledRef.current = polygonSelectionEnabled;
+    filterPolygonRef.current = filterPolygon;
     callbacksRef.current = {
       hover,
       selected,
@@ -131,6 +137,8 @@ export const MapComponent: FC<MapComponentProps> = ({
     projection.setExtent(swissExtent);
 
     const map = new Map({
+      // No double-click zoom: a polygon is often finished with a double-click, which would zoom the map.
+      interactions: defaultInteractions({ doubleClickZoom: false }),
       controls: defaultControls({
         attribution: true,
         zoom: false,
@@ -306,9 +314,14 @@ export const MapComponent: FC<MapComponentProps> = ({
       });
     }
 
+    // A polygon is often finished with a double-click, whose first click already ends the drawing. Its second
+    // click must not zoom into a cluster.
+    let drawEndedAt = Number.NEGATIVE_INFINITY;
+    const isClickFinishingDrawing = () => Date.now() - drawEndedAt < doubleClickInterval;
+
     // Zoom to cluster on click
     map.on("click", event => {
-      if (pointsRef.current && !polygonSelectionEnabledRef.current) {
+      if (pointsRef.current && !polygonSelectionEnabledRef.current && !isClickFinishingDrawing()) {
         const clickFeatures = map.getFeaturesAtPixel(event.pixel, {
           layerFilter: layer => layer.get("name") === "clusters",
         });
@@ -337,11 +350,21 @@ export const MapComponent: FC<MapComponentProps> = ({
     // drawend adds an accepted polygon itself.
     const draw = new Draw({ type: "Polygon", freehandCondition: never });
 
+    // The current polygon is hidden while a new one is drawn, and shown again when the drawing is aborted or
+    // discarded.
     draw.on("drawstart", () => {
       drawSource.clear();
     });
 
+    const showFilterPolygon = () => {
+      const polygon = filterPolygonRef.current;
+      if (polygon !== null) drawSource.addFeature(new Feature(toOlPolygon(polygon)));
+    };
+
+    draw.on("drawabort", showFilterPolygon);
+
     draw.on("drawend", event => {
+      drawEndedAt = Date.now();
       const drawnFeature = event.feature;
       const currentPoints = pointsRef.current;
       if (!currentPoints) return;
@@ -353,22 +376,21 @@ export const MapComponent: FC<MapComponentProps> = ({
         }
       });
 
-      const rejectDrawnPolygon = (messageKey: string) => {
-        callbacksRef.current.displayErrorMessage(callbacksRef.current.t(messageKey));
-        callbacksRef.current.setFilterPolygon(null);
-      };
-
+      const { displayErrorMessage, setFilterPolygon, t } = callbacksRef.current;
       const drawnPolygon = drawnFeature.getGeometry();
       const vertices = drawnPolygon instanceof OlPolygon ? toPolygonVertices(drawnPolygon) : null;
-      if (vertices === null || intersectingFeatures.length === 0) {
-        rejectDrawnPolygon("msgNoBoreholesInSelection");
-      } else if (isWithinMapExtent(vertices)) {
+      if (vertices !== null && !isWithinMapExtent(vertices)) {
+        // The drawing is discarded and the current polygon filter stays.
+        displayErrorMessage(t("msgPolygonOutsideMapExtent"));
+        showFilterPolygon();
+      } else if (vertices === null || intersectingFeatures.length === 0) {
+        displayErrorMessage(t("msgNoBoreholesInSelection"));
+        setFilterPolygon(null);
+      } else {
         currentPoints.clear();
         currentPoints.addFeatures(intersectingFeatures);
         drawSource.addFeature(new Feature(toOlPolygon(vertices)));
-        callbacksRef.current.setFilterPolygon(vertices);
-      } else {
-        rejectDrawnPolygon("msgPolygonOutsideMapExtent");
+        setFilterPolygon(vertices);
       }
 
       callbacksRef.current.setPolygonSelectionEnabled(false);
