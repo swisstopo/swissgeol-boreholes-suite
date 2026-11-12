@@ -9,12 +9,14 @@ using BDMS.Uploads;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NetTopologySuite.IO.Converters;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Claims;
@@ -29,9 +31,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new LTreeJsonConverter());
     options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    options.JsonSerializerOptions.WriteIndented = true;
 });
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddResponseCompression();
+
+// Optimal instead of the default Fastest: the overview's filter response, which holds every borehole,
+// came out about a quarter smaller with gzip for little extra CPU time.
+builder.Services.Configure<BrotliCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
+builder.Services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
 
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<UserInfoService>();
@@ -259,6 +267,8 @@ using var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
         context.EnsureSeeded();
     }
 }
+
+app.UseResponseCompression();
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
