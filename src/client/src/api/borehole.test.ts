@@ -124,10 +124,12 @@ describe("useFilterBoreholes", () => {
     vi.mocked(fetchApiV2WithApiError).mockResolvedValue(filterResponse);
     await showLoadedOverview(new QueryClient());
 
-    // Async, because the client resumes paused mutations before it tells the queries about the focus.
     await act(async () => {
       focusManager.setFocused(false);
       focusManager.setFocused(true);
+      // The client resumes paused mutations before it tells the queries about the focus, so a refetch would only
+      // start a few microtasks later.
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
 
     expect(requestsTo("borehole/filter")).toBe(1);
@@ -139,7 +141,10 @@ describe("useFilterBoreholes", () => {
     const firstVisit = await showLoadedOverview(queryClient);
     firstVisit.unmount();
 
-    await queryClient.getMutationCache().build(queryClient, { mutationFn: () => Promise.resolve() }).execute(undefined);
+    await queryClient
+      .getMutationCache()
+      .build(queryClient, { mutationFn: () => Promise.resolve() })
+      .execute(undefined);
     showOverview(queryClient);
 
     await waitFor(() => expect(requestsTo("borehole/filter")).toBe(2));
