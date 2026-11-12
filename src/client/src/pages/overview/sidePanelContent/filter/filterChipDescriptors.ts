@@ -1,4 +1,6 @@
-﻿import type { TFunction } from "i18next";
+﻿import type { FC, SVGProps } from "react";
+import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
+import type { TFunction } from "i18next";
 import type { Codelist, Workgroup } from "../../../../api/generated";
 import { capitalizeFirstLetter } from "../../../../utils";
 import { PolygonVertices } from "../../polygonFilter.ts";
@@ -6,7 +8,9 @@ import { FilterKey } from "../../useBoreholeUrlParams.ts";
 
 type ChipDescriptor = {
   id: string;
+  // The chip text, or its accessible name when an icon is shown instead.
   label: string;
+  icon?: FC<SVGProps<SVGSVGElement>>;
   tooltip?: string;
   testId: string;
   onDelete: () => void;
@@ -274,6 +278,17 @@ function buildTextDescriptor(
   };
 }
 
+// The polygon has no value to show as text, so its chip shows the polygon icon.
+function buildPolygonDescriptor(inputs: ChipDescriptorInputs): ChipDescriptor {
+  return {
+    id: "polygon",
+    label: inputs.t("polygonSelection"),
+    icon: PolygonIcon,
+    testId: "polygon-filter-chip",
+    onDelete: () => inputs.clearField("polygon"),
+  };
+}
+
 export function buildFilterChipDescriptors(inputs: ChipDescriptorInputs): ChipDescriptor[] {
   const result: ChipDescriptor[] = [];
   for (const key of FilterKeyOrder) {
@@ -307,7 +322,7 @@ export function buildFilterChipDescriptors(inputs: ChipDescriptorInputs): ChipDe
         break;
       }
       case "polygon":
-        // FilterChips renders the polygon chip itself, with the polygon icon.
+        result.push(buildPolygonDescriptor(inputs));
         break;
       default:
         // Exhaustiveness — every type in FilterFieldMeta should be handled.

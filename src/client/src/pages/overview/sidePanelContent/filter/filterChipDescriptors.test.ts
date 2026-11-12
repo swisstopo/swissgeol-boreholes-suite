@@ -643,3 +643,24 @@ describe("FILTER_FIELD_META ordering contract", () => {
     expect(descs.map(d => d.id)).toEqual(["originalName", "statusId:10", "totalDepthMin"]);
   });
 });
+
+describe("polygon chip", () => {
+  const polygon: [number, number][] = [
+    [2600000, 1200000],
+    [2610000, 1200000],
+    [2610000, 1210000],
+  ];
+
+  it("renders an icon chip after the other chips", () => {
+    const descriptors = buildFilterChipDescriptors({ ...baseInputs, activeFilters: { polygon, originalName: "X" } });
+    expect(descriptors.map(d => d.id)).toEqual(["originalName", "polygon"]);
+    expect(descriptors[1]).toMatchObject({ label: "polygonSelection", testId: "polygon-filter-chip" });
+    expect(descriptors[1].icon).toBeDefined();
+  });
+
+  it("deleting it clears the polygon", () => {
+    const [chip] = buildFilterChipDescriptors({ ...baseInputs, activeFilters: { polygon } });
+    chip.onDelete();
+    expect(baseInputs.clearField).toHaveBeenCalledWith("polygon");
+  });
+});
