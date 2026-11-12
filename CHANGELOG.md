@@ -19,7 +19,7 @@
 - The dialogs for adding users to a workgroup and workgroups to a user no longer offer users or workgroups that already have a role there. Their role is changed in the table instead.
 - The CSV export of boreholes is no longer limited to 100 boreholes. The JSON exports (JSON and JSON + profile) are now limited to 500 boreholes instead of 100.
 - Messages shown at the top of the page no longer close when clicking elsewhere. They close with their close button or after a few seconds, so a double-click can no longer hide a message right after it appears.
-- The polygon filter is kept in the URL like all other filters, so it survives a page reload and can be shared as a link. Polygons are drawn by clicking; freehand drawing with the Shift key is no longer available.
+- The polygon filter is kept in the URL like all other filters, so it survives a page reload and can be shared as a link. Polygons are drawn by clicking; freehand drawing with the Shift key is no longer available. A polygon reaching outside the map area is not applied; a message asks to draw it again and the previous polygon stays. Double-clicking the map no longer zooms in, so a polygon can be finished with a double-click.
 - The borehole filter API (`POST /api/v2/borehole/filter`, `/filter/stats` and `/suggest`) no longer accepts `ids`. `polygon` takes LV95 (EPSG:2056) coordinates; a geometry that is not a polygon or lies outside Switzerland is rejected with 400 Bad Request.
 
 ### Fixed
