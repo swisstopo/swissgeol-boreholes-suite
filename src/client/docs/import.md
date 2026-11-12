@@ -47,7 +47,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | RestrictionUntil              | Datum          | Nein        | Ablaufdatum der Beschränkung                                                          |
 | NationalInterest              | True/False     | Nein        | Nationales Interesse                                                                  |
 | CoreRepositoryStored          | True/False     | Nein        | Im Bohrkernlager eingelagert (siehe [Im Bohrkernlager eingelagert](#im-bohrkernlager-eingelagert)) |
-| SourceTypeCodelistIds         | IDs (Codeliste)| Nein        | Quelldokumenttyp (siehe [Quelldokumenttyp](#quelldokumenttyp))                         |
+| SourceTypeIds                 | IDs (Codeliste)| Nein        | Quelldokumenttyp (siehe [Quelldokumenttyp](#quelldokumenttyp))                         |
 | LocationX                     | Dezimalzahl    | Ja          | Koordinate Ost in LV95 oder LV03                                                      |
 | LocationY                     | Dezimalzahl    | Ja          | Koordinate Nord in LV95 oder LV03                                                     |
 | LocationPrecisionId           | ID (Codeliste) | Nein        | +/- Koordinaten [m]                                                                   |
@@ -86,7 +86,7 @@ Fehlt die Spalte `CoreRepositoryStored`, wird für alle Bohrungen "Nein" gesetzt
 
 ### Quelldokumenttyp
 
-Die Spalte `SourceTypeCodelistIds` enthält eine oder mehrere IDs der Codeliste `source_type`, mit Komma getrennt, z.B. `100001,100003`. Leerzeichen um die IDs werden ignoriert. Eine leere Zelle oder eine fehlende Spalte bedeutet, dass kein Quelldokumenttyp gesetzt wird. Enthält eine Zeile eine ID, die nicht zur Codeliste `source_type` gehört, wird für diese Zeile ein Validierungsfehler gemeldet.
+Die Spalte `SourceTypeIds` enthält eine oder mehrere IDs der Codeliste `source_type`, mit Komma getrennt, z.B. `100001,100003`. Leerzeichen um die IDs werden ignoriert. Eine leere Zelle oder eine fehlende Spalte bedeutet, dass kein Quelldokumenttyp gesetzt wird. Enthält eine Zeile eine ID, die nicht zur Codeliste `source_type` gehört, wird für diese Zeile ein Validierungsfehler gemeldet.
 
 ## Validierung
 

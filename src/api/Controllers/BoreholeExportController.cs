@@ -225,7 +225,7 @@ public class BoreholeExportController : ControllerBase
         csvWriter.WriteField(nameof(Borehole.RestrictionUntil));
         csvWriter.WriteField(nameof(Borehole.NationalInterest));
         csvWriter.WriteField(nameof(Borehole.CoreRepositoryStored));
-        csvWriter.WriteField(nameof(Borehole.SourceTypeCodelistIds));
+        csvWriter.WriteField(nameof(BoreholeImport.SourceTypeIds));
         csvWriter.WriteField(nameof(Borehole.LocationX));
         csvWriter.WriteField(nameof(Borehole.LocationY));
         csvWriter.WriteField(nameof(Borehole.LocationXLV03));

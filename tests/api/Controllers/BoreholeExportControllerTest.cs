@@ -998,15 +998,15 @@ public class BoreholeExportControllerTest
         var headers = ((IDictionary<string, object>)records[0]).Keys.ToList();
         var nationalInterestIndex = headers.IndexOf(nameof(Borehole.NationalInterest));
         Assert.AreEqual(nameof(Borehole.CoreRepositoryStored), headers[nationalInterestIndex + 1]);
-        Assert.AreEqual(nameof(Borehole.SourceTypeCodelistIds), headers[nationalInterestIndex + 2]);
+        Assert.AreEqual(nameof(BoreholeImport.SourceTypeIds), headers[nationalInterestIndex + 2]);
 
         var first = records.Single(r => r.Id == withTypes.Id.ToString(CultureInfo.InvariantCulture));
         Assert.AreEqual("True", first.CoreRepositoryStored);
-        Assert.AreEqual($"{sourceTypeIds[0]},{sourceTypeIds[2]}", first.SourceTypeCodelistIds);
+        Assert.AreEqual($"{sourceTypeIds[0]},{sourceTypeIds[2]}", first.SourceTypeIds);
 
         var second = records.Single(r => r.Id == withoutTypes.Id.ToString(CultureInfo.InvariantCulture));
         Assert.AreEqual("", second.CoreRepositoryStored);
-        Assert.AreEqual("", second.SourceTypeCodelistIds);
+        Assert.AreEqual("", second.SourceTypeIds);
     }
 
     private static List<dynamic> GetRecordsFromFileContent(byte[] fileContent)
