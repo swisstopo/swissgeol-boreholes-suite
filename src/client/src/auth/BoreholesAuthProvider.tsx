@@ -8,6 +8,7 @@ import {
   boreholeQueryKey,
   fetchFilterStats,
   filterBoreholes,
+  filterBoreholesMapQueryOptions,
   getDefaultFilterRequestFromSession,
   toFilterRequestSubmission,
 } from "../api/borehole.ts";
@@ -33,7 +34,8 @@ const PrefetchBoreholes: FC = () => {
 
   useEffect(() => {
     if (auth.isAuthenticated) {
-      const filterRequestSubmission = toFilterRequestSubmission(getDefaultFilterRequestFromSession());
+      const sessionFilterRequest = getDefaultFilterRequestFromSession();
+      const filterRequestSubmission = toFilterRequestSubmission(sessionFilterRequest);
       // Not awaited: prefetching warms the cache in the background and nothing renders from it yet.
       void queryClient.prefetchQuery({
         queryKey: [boreholeQueryKey, filterRequestSubmission],
@@ -43,6 +45,7 @@ const PrefetchBoreholes: FC = () => {
         queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
         queryFn: () => fetchFilterStats(filterRequestSubmission),
       });
+      void queryClient.prefetchQuery(filterBoreholesMapQueryOptions(sessionFilterRequest));
     }
   }, [auth.isAuthenticated, queryClient]);
 

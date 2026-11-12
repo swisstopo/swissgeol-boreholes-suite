@@ -1,5 +1,5 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
@@ -551,17 +551,22 @@ export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true)
 // browser tab becomes visible again. Changes made in this app invalidate boreholeQueryKey anyway.
 const mapDataStaleTime = 10 * 60 * 1000;
 
-export const useFilterBoreholesMap = (filterRequest: FilterRequest, enabled = true) => {
+// Shared by the hook and the prefetch after login, so both use the same key and staleTime.
+export const filterBoreholesMapQueryOptions = (filterRequest: FilterRequest) => {
   const criteria = toMapFilterCriteria(filterRequest);
-
-  return useQuery({
+  return queryOptions({
     queryKey: [boreholeQueryKey, "filter-map", criteria],
     queryFn: () => filterBoreholesMap(criteria),
-    enabled,
-    placeholderData: keepPreviousData,
     staleTime: mapDataStaleTime,
   });
 };
+
+export const useFilterBoreholesMap = (filterRequest: FilterRequest, enabled = true) =>
+  useQuery({
+    ...filterBoreholesMapQueryOptions(filterRequest),
+    enabled,
+    placeholderData: keepPreviousData,
+  });
 
 export const useFilterStats = (filterRequest: FilterRequest) => {
   const filterRequestSubmission = toFilterRequestSubmission(filterRequest);

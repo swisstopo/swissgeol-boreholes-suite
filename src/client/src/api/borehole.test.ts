@@ -2,7 +2,12 @@
 import { hashKey } from "@tanstack/react-query";
 import { describe, expect, it } from "vitest";
 import { toPolygonGeometry } from "../pages/overview/polygonFilter.ts";
-import { buildBulkEditRequest, FilterRequest, toMapFilterCriteria } from "./borehole.ts";
+import {
+  buildBulkEditRequest,
+  filterBoreholesMapQueryOptions,
+  FilterRequest,
+  toMapFilterCriteria,
+} from "./borehole.ts";
 
 describe("buildBulkEditRequest", () => {
   it("maps changed entries into update + fieldsToUpdate mask", () => {
@@ -54,5 +59,26 @@ describe("toMapFilterCriteria", () => {
     expect(mapKey({ ...filters, totalDepthMin: 20 })).not.toBe(mapKey(filters));
     expect(mapKey({ ...filters, hasPhotos: "false" })).not.toBe(mapKey(filters));
     expect(mapKey({ ...filters, polygon })).not.toBe(mapKey(filters));
+  });
+});
+
+describe("filterBoreholesMapQueryOptions", () => {
+  it("gives the prefetch after login the same key as the map in the overview", () => {
+    const filters: FilterRequest = { typeId: [20101001], hasPhotos: "true" };
+    const sessionFilterRequest: FilterRequest = {
+      ...filters,
+      pageNumber: 2,
+      pageSize: 50,
+      orderBy: "name",
+      direction: "ASC",
+    };
+
+    expect(hashKey(filterBoreholesMapQueryOptions(sessionFilterRequest).queryKey)).toBe(
+      hashKey(filterBoreholesMapQueryOptions(filters).queryKey),
+    );
+  });
+
+  it("keeps the map data fresh for ten minutes", () => {
+    expect(filterBoreholesMapQueryOptions({}).staleTime).toBe(10 * 60 * 1000);
   });
 });
