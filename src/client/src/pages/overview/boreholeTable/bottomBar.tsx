@@ -15,6 +15,7 @@ import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 
 interface BottomBarProps {
   totalCount: number;
+  isLoadingBoreholes: boolean;
   selectionModel: GridRowSelectionModel;
   onBulkEdit: () => void;
   onDeleteMultiple: () => void;
@@ -28,6 +29,7 @@ const BottomBar = ({
   onDeleteMultiple,
   onCopyBorehole,
   totalCount,
+  isLoadingBoreholes,
   setIsExporting,
 }: BottomBarProps) => {
   const { t } = useTranslation();
@@ -102,7 +104,7 @@ const BottomBar = ({
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
       ) : (
-        <BoreholeNumbersPreview boreholeCount={totalCount} />
+        <BoreholeNumbersPreview boreholeCount={totalCount} isLoading={isLoadingBoreholes} />
       )}
       <Box sx={{ flex: 1 }}></Box>
       <Button

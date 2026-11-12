@@ -14,6 +14,7 @@ import { BottomDrawer } from "./bottomDrawer.tsx";
 interface BottomBarContainerProps {
   boreholes: BoreholeListItem[];
   totalCount: number;
+  isLoadingBoreholes: boolean;
   selectableBoreholeIds: number[];
   setHover: Dispatch<SetStateAction<number | null>>;
   onBulkEdit: () => void;
@@ -30,6 +31,7 @@ interface BottomBarContainerProps {
 const BottomBarContainer = ({
   boreholes,
   totalCount,
+  isLoadingBoreholes,
   selectableBoreholeIds,
   onBulkEdit,
   setHover,
@@ -81,6 +83,7 @@ const BottomBarContainer = ({
         onCopyBorehole={() => void onCopyBorehole()}
         onDeleteMultiple={onDeleteMultiple}
         totalCount={totalCount}
+        isLoadingBoreholes={isLoadingBoreholes}
         setIsExporting={setIsExporting}
       />
       <BottomDrawer drawerOpen={bottomDrawerOpen}>
@@ -88,7 +91,7 @@ const BottomBarContainer = ({
           boreholes={boreholes}
           totalCount={totalCount}
           selectableBoreholeIds={selectableBoreholeIds}
-          isLoading={isCopying || isBulkDeleting}
+          isLoading={isLoadingBoreholes || isCopying || isBulkDeleting}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           selectionModel={selectionModel}

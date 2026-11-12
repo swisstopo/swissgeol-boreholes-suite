@@ -128,7 +128,12 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     geoJson: null,
     selectableBoreholeIds: noSelectableBoreholeIds,
   };
-  const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
+  // isPending, not isLoading: the query waits for the restored session before it starts, and the count must not
+  // show 0 meanwhile.
+  const { data: filterResponse = emptyFilterResponse, isPending: isLoadingBoreholes } = useFilterBoreholes(
+    filterRequest,
+    sessionRestored,
+  );
 
   // The selection is cleared only when the selectable boreholes change and not whenever the boreholes
   // change, which also happens on every pagination and order event (server side pagination/ordering).
@@ -192,6 +197,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       <BottomBarContainer
         boreholes={filterResponse.boreholes}
         totalCount={filterResponse.totalCount}
+        isLoadingBoreholes={isLoadingBoreholes}
         selectableBoreholeIds={filterResponse.selectableBoreholeIds}
         onBulkEdit={() => setBulkEditDialogOpen(true)}
         selectionModel={selectionModel}
