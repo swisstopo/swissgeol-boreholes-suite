@@ -1,5 +1,5 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
@@ -111,6 +111,10 @@ const canUserManageBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canmanage?boreholeId=${id}`, "GET");
 
 export const boreholeQueryKey = "boreholes";
+
+// Prefix of every overview query (the filtered boreholes and the filter statistics), so all of them can be
+// marked stale at once, see createQueryClient.
+export const overviewQueryKey = [boreholeQueryKey, "overview"] as const;
 
 export const useBorehole = (id: number) => {
   const getCodelistName = useCodelistDisplayValues();
@@ -407,7 +411,7 @@ interface BoreholeSuggestion {
   count: number;
 }
 
-export const filterBoreholes = async (filterRequest: FilterRequestSubmission): Promise<FilterResponse> => {
+const filterBoreholes = async (filterRequest: FilterRequestSubmission): Promise<FilterResponse> => {
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
@@ -448,7 +452,7 @@ const parseNullableBooleanFilter = (
   return undefined;
 };
 
-export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestSubmission => ({
+const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestSubmission => ({
   ...filterRequest,
   hasGroundwater: parseNullableBooleanFilter(filterRequest.hasGroundwater),
   topBedrockIntersected: parseNullableBooleanFilter(filterRequest.topBedrockIntersected),
@@ -514,16 +518,21 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
   return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
 }
 
-export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) => {
+/**
+ * The boreholes the overview lists, for the hook and for the prefetch after login, so both use the same key.
+ * @param filterRequest The filters, page and sort order of the overview.
+ */
+export const filterBoreholesQueryOptions = (filterRequest: FilterRequest) => {
   const filterRequestSubmission = toFilterRequestSubmission(filterRequest);
 
-  return useQuery({
-    queryKey: [boreholeQueryKey, filterRequestSubmission],
+  return queryOptions({
+    queryKey: [...overviewQueryKey, "filter", filterRequestSubmission],
     queryFn: () => filterBoreholes(filterRequestSubmission),
-    enabled,
-    placeholderData: keepPreviousData,
   });
 };
+
+export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) =>
+  useQuery({ ...filterBoreholesQueryOptions(filterRequest), enabled, placeholderData: keepPreviousData });
 
 /**
  * The counts shown next to the filter options. One request runs many database queries, so the filter drawer
@@ -535,7 +544,7 @@ export const useFilterStats = (filterRequest: FilterRequest, enabled: boolean) =
   const filterRequestSubmission = toFilterRequestSubmission(filterRequest);
 
   return useQuery({
-    queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
+    queryKey: [...overviewQueryKey, "stats", filterRequestSubmission],
     queryFn: () => fetchFilterStats(filterRequestSubmission),
     enabled,
     placeholderData: keepPreviousData,
