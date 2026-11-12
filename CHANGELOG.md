@@ -4,6 +4,8 @@
 
 ### Changed
 - The overview loads faster on slow connections. API responses are now compressed and no longer indented, which cuts the data downloaded for the map and the table to about 7 percent of its previous size.
+- Paging and sorting the borehole table in the overview no longer reload the map.
+- The borehole filter API (`POST /api/v2/borehole/filter`) no longer returns `geoJson`. The map features of the filtered boreholes come from the new `POST /api/v2/borehole/filter/map`, which takes the same filter criteria without paging and ordering.
 
 ## v2.2.107 - 2026-11-11
 
