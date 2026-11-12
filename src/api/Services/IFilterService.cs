@@ -1,4 +1,5 @@
 ﻿using BDMS.Models;
+using NetTopologySuite.Features;
 
 namespace BDMS.Services;
 
@@ -14,6 +15,16 @@ public interface IFilterService
     /// <param name="user">The user making the request.</param>
     /// <returns>A <see cref="FilterResponse"/> containing the filtered and paginated results.</returns>
     Task<FilterResponse> FilterBoreholesAsync(FilterRequest? filterRequest, User user);
+
+    /// <summary>
+    /// Returns the map features of all boreholes the <paramref name="user"/> can see that match the
+    /// <paramref name="filterCriteria"/>. The criteria carry no paging or ordering, so paging and
+    /// sorting the borehole table never change this result.
+    /// </summary>
+    /// <param name="filterCriteria">The filter criteria; may be null to return all boreholes the user can see.</param>
+    /// <param name="user">The user making the request.</param>
+    /// <returns>One point feature per matching borehole with coordinates, ordered by borehole id, with the attributes id, type, name and restriction.</returns>
+    Task<FeatureCollection> GetMapFeaturesAsync(BoreholeFilterCriteria? filterCriteria, User user);
 
     /// <summary>
     /// Computes per-option counts for each multi-option filter

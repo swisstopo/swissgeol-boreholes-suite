@@ -25,7 +25,7 @@ public class ResponseFormatTest
     public async Task FilterResponseIsNotIndented()
     {
         using var client = factory.CreateClient();
-        using var request = CreateFilterRequest();
+        using var request = CreatePostRequest("/api/v2/borehole/filter");
 
         using var response = await client.SendAsync(request);
 
@@ -40,7 +40,7 @@ public class ResponseFormatTest
     public async Task FilterResponseIsCompressedWhenRequested(string encoding)
     {
         using var client = factory.CreateClient();
-        using var request = CreateFilterRequest();
+        using var request = CreatePostRequest("/api/v2/borehole/filter");
         request.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue(encoding));
 
         using var response = await client.SendAsync(request);
@@ -49,9 +49,24 @@ public class ResponseFormatTest
         CollectionAssert.AreEqual(new[] { encoding }, response.Content.Headers.ContentEncoding.ToList());
     }
 
-    private static HttpRequestMessage CreateFilterRequest()
+    [TestMethod]
+    [DataRow("br")]
+    [DataRow("gzip")]
+    public async Task FilterMapResponseIsCompressedWhenRequested(string encoding)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "/api/v2/borehole/filter")
+        using var client = factory.CreateClient();
+        using var request = CreatePostRequest("/api/v2/borehole/filter/map");
+        request.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue(encoding));
+
+        using var response = await client.SendAsync(request);
+
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        CollectionAssert.AreEqual(new[] { encoding }, response.Content.Headers.ContentEncoding.ToList());
+    }
+
+    private static HttpRequestMessage CreatePostRequest(string path)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, path)
         {
             Content = new StringContent("{}", Encoding.UTF8, "application/json"),
         };

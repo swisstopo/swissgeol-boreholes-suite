@@ -1,5 +1,5 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
@@ -352,13 +352,19 @@ interface FilterRequestSubmission extends BaseFilterRequest {
   hasDocuments?: BooleanFilter;
 }
 
+// Fields that only shape the borehole table. The map data must not depend on them,
+// otherwise paging or sorting the table would reload the whole map.
+type TableOnlyFilterField = "pageNumber" | "pageSize" | "orderBy" | "direction";
+
+type MapFilterCriteria = Omit<FilterRequestSubmission, TableOnlyFilterField> &
+  Partial<Record<TableOnlyFilterField, undefined>>;
+
 export interface FilterResponse {
   totalCount: number;
   pageNumber: number;
   pageSize: number;
   totalPages: number;
   boreholes: BoreholeListItem[];
-  geoJson: FeatureCollection | null;
   selectableBoreholeIds: number[];
 }
 
@@ -415,6 +421,10 @@ export const fetchFilterStats = async (filterRequest: FilterRequestSubmission): 
   return await fetchApiV2WithApiError<FilterStatsResponse>("borehole/filter/stats", "POST", filterRequest);
 };
 
+const filterBoreholesMap = async (criteria: MapFilterCriteria): Promise<FeatureCollection> => {
+  return await fetchApiV2WithApiError<FeatureCollection>("borehole/filter/map", "POST", criteria);
+};
+
 const fetchBoreholeSuggestions = (
   field: BoreholeSuggestionField,
   query: string,
@@ -459,6 +469,15 @@ export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterR
   hasProfiles: parseBooleanFilter(filterRequest.hasProfiles),
   hasPhotos: parseBooleanFilter(filterRequest.hasPhotos),
   hasDocuments: parseBooleanFilter(filterRequest.hasDocuments),
+});
+
+// Undefined values are left out of the request body and of the query key.
+export const toMapFilterCriteria = (filterRequest: FilterRequest): MapFilterCriteria => ({
+  ...toFilterRequestSubmission(filterRequest),
+  pageNumber: undefined,
+  pageSize: undefined,
+  orderBy: undefined,
+  direction: undefined,
 });
 
 /**
@@ -527,6 +546,32 @@ export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true)
     placeholderData: keepPreviousData,
   });
 };
+
+// The map data of all filtered boreholes is large, so it is not refetched just because the
+// browser tab becomes visible again or the overview is opened again. Every change that can alter
+// the filtered set must invalidate this key instead. Edits in the detail view do so by locking the
+// borehole, which invalidates boreholeQueryKey; changes made without edit mode, such as workflow
+// status changes, invalidate filterBoreholesMapQueryKey themselves.
+const mapDataStaleTime = 10 * 60 * 1000;
+
+export const filterBoreholesMapQueryKey = [boreholeQueryKey, "filter-map"] as const;
+
+// Shared by the hook and the prefetch after login, so both use the same key and staleTime.
+export const filterBoreholesMapQueryOptions = (filterRequest: FilterRequest) => {
+  const criteria = toMapFilterCriteria(filterRequest);
+  return queryOptions({
+    queryKey: [...filterBoreholesMapQueryKey, criteria],
+    queryFn: () => filterBoreholesMap(criteria),
+    staleTime: mapDataStaleTime,
+  });
+};
+
+export const useFilterBoreholesMap = (filterRequest: FilterRequest, enabled = true) =>
+  useQuery({
+    ...filterBoreholesMapQueryOptions(filterRequest),
+    enabled,
+    placeholderData: keepPreviousData,
+  });
 
 export const useFilterStats = (filterRequest: FilterRequest) => {
   const filterRequestSubmission = toFilterRequestSubmission(filterRequest);

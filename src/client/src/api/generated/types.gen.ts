@@ -426,6 +426,121 @@ export type BoreholeExportRequest = {
   ids: Array<number>;
 };
 
+/**
+ * Represents the criteria that narrow down the boreholes a user can see. It carries no paging or
+ * ordering, so a result built from it depends on the filters only. The map endpoint takes this type;
+ * the table endpoints take BDMS.Models.FilterRequest, which adds paging and ordering.
+ */
+export type BoreholeFilterCriteria = {
+  polygon?: Geometry;
+  /**
+   * Gets or sets the original name filter.
+   */
+  originalName?: string | null;
+  /**
+   * Gets or sets the project name filter.
+   */
+  projectName?: string | null;
+  /**
+   * Gets or sets the alternate name filter.
+   */
+  name?: string | null;
+  /**
+   * Gets or sets the status ID filter.
+   */
+  statusId?: Array<number> | null;
+  /**
+   * Gets or sets the borehole type ID filter.
+   */
+  typeId?: Array<number> | null;
+  /**
+   * Gets or sets the purpose ID filter.
+   */
+  purposeId?: Array<number> | null;
+  /**
+   * Gets or sets the workflow status filter. Matches boreholes whose workflow status is in this set.
+   */
+  workflowStatus?: Array<WorkflowStatus> | null;
+  /**
+   * Gets or sets the workgroup ID filter.
+   */
+  workgroupId?: Array<number> | null;
+  /**
+   * Gets or sets the restriction until date start filter.
+   */
+  restrictionUntilFrom?: string | null;
+  /**
+   * Gets or sets the restriction until date end filter.
+   */
+  restrictionUntilTo?: string | null;
+  /**
+   * Gets or sets the minimum total depth filter.
+   */
+  totalDepthMin?: number | null;
+  /**
+   * Gets or sets the maximum total depth filter.
+   */
+  totalDepthMax?: number | null;
+  /**
+   * Gets or sets the minimum top bedrock fresh depth filter.
+   */
+  topBedrockFreshMdMin?: number | null;
+  /**
+   * Gets or sets the maximum top bedrock fresh depth filter.
+   */
+  topBedrockFreshMdMax?: number | null;
+  /**
+   * Gets or sets the minimum top bedrock weathered depth filter.
+   */
+  topBedrockWeatheredMdMin?: number | null;
+  /**
+   * Gets or sets the maximum top bedrock weathered depth filter.
+   */
+  topBedrockWeatheredMdMax?: number | null;
+  /**
+   * Gets or sets the restriction ID filter.
+   */
+  restrictionId?: Array<number> | null;
+  /**
+   * Gets or sets the canton filter. Boreholes match if their canton is in this set.
+   */
+  canton?: Array<string> | null;
+  /**
+   * Gets or sets the municipality filter. Boreholes match if their municipality is in this set.
+   */
+  municipality?: Array<string> | null;
+  /**
+   * Gets or sets the log tool type codelist IDs filter. Boreholes match if any of their log files
+   * have at least one of these tool type codelist IDs in their BDMS.Models.LogFile.LogFileToolTypeCodes.
+   */
+  logToolTypeId?: Array<number> | null;
+  /**
+   * Gets or sets the source type codelist IDs filter. Boreholes match if they have at least one of these
+   * source types in their BDMS.Models.Borehole.BoreholeSourceTypeCodes.
+   */
+  sourceTypeId?: Array<number> | null;
+  /**
+   * Gets or sets the identifier type (codelist) IDs filter.
+   * Boreholes match if at least one BDMS.Models.BoreholeCodelist row has a
+   * `CodelistId` in this set; combined with BDMS.Models.BoreholeFilterCriteria.IdentifierValue
+   * the predicates apply on the same row (strict semantics).
+   */
+  identifierTypeId?: Array<number> | null;
+  /**
+   * Gets or sets the identifier value substring filter (case-insensitive).
+   */
+  identifierValue?: string | null;
+  nationalInterest?: NullableBooleanFilterValue;
+  coreRepositoryStored?: NullableBooleanFilterValue;
+  topBedrockIntersected?: NullableBooleanFilterValue;
+  hasGroundwater?: NullableBooleanFilterValue;
+  hasGeometry?: BooleanFilterValue;
+  hasLogs?: BooleanFilterValue;
+  hasProfiles?: BooleanFilterValue;
+  hasPhotos?: BooleanFilterValue;
+  hasDocuments?: BooleanFilterValue;
+};
+
 export type BoreholeGeometryElement = {
   /**
    * Gets or sets the Measured Depth (MD) of the data point in meters.
@@ -978,7 +1093,8 @@ export type FieldMeasurementResult = {
 };
 
 /**
- * Represents a request to filter boreholes by various criteria.
+ * Represents a request to filter boreholes by various criteria, with the paging and ordering the
+ * borehole table needs.
  */
 export type FilterRequest = {
   polygon?: Geometry;
@@ -1071,7 +1187,7 @@ export type FilterRequest = {
   /**
    * Gets or sets the identifier type (codelist) IDs filter.
    * Boreholes match if at least one BDMS.Models.BoreholeCodelist row has a
-   * `CodelistId` in this set; combined with BDMS.Models.FilterRequest.IdentifierValue
+   * `CodelistId` in this set; combined with BDMS.Models.BoreholeFilterCriteria.IdentifierValue
    * the predicates apply on the same row (strict semantics).
    */
   identifierTypeId?: Array<number> | null;
@@ -1124,10 +1240,6 @@ export type FilterResponse = {
    * The borehole list items for the current page.
    */
   boreholes?: Array<BoreholeListItem>;
-  /**
-   * The GeoJSON feature collection for map display.
-   */
-  geoJson?: Array<IFeature> | null;
   /**
    * The IDs of all unlocked filtered boreholes.
    */
@@ -3569,6 +3681,121 @@ export type BoreholeWritable = {
 };
 
 /**
+ * Represents the criteria that narrow down the boreholes a user can see. It carries no paging or
+ * ordering, so a result built from it depends on the filters only. The map endpoint takes this type;
+ * the table endpoints take BDMS.Models.FilterRequest, which adds paging and ordering.
+ */
+export type BoreholeFilterCriteriaWritable = {
+  polygon?: GeometryWritable;
+  /**
+   * Gets or sets the original name filter.
+   */
+  originalName?: string | null;
+  /**
+   * Gets or sets the project name filter.
+   */
+  projectName?: string | null;
+  /**
+   * Gets or sets the alternate name filter.
+   */
+  name?: string | null;
+  /**
+   * Gets or sets the status ID filter.
+   */
+  statusId?: Array<number> | null;
+  /**
+   * Gets or sets the borehole type ID filter.
+   */
+  typeId?: Array<number> | null;
+  /**
+   * Gets or sets the purpose ID filter.
+   */
+  purposeId?: Array<number> | null;
+  /**
+   * Gets or sets the workflow status filter. Matches boreholes whose workflow status is in this set.
+   */
+  workflowStatus?: Array<WorkflowStatus> | null;
+  /**
+   * Gets or sets the workgroup ID filter.
+   */
+  workgroupId?: Array<number> | null;
+  /**
+   * Gets or sets the restriction until date start filter.
+   */
+  restrictionUntilFrom?: string | null;
+  /**
+   * Gets or sets the restriction until date end filter.
+   */
+  restrictionUntilTo?: string | null;
+  /**
+   * Gets or sets the minimum total depth filter.
+   */
+  totalDepthMin?: number | null;
+  /**
+   * Gets or sets the maximum total depth filter.
+   */
+  totalDepthMax?: number | null;
+  /**
+   * Gets or sets the minimum top bedrock fresh depth filter.
+   */
+  topBedrockFreshMdMin?: number | null;
+  /**
+   * Gets or sets the maximum top bedrock fresh depth filter.
+   */
+  topBedrockFreshMdMax?: number | null;
+  /**
+   * Gets or sets the minimum top bedrock weathered depth filter.
+   */
+  topBedrockWeatheredMdMin?: number | null;
+  /**
+   * Gets or sets the maximum top bedrock weathered depth filter.
+   */
+  topBedrockWeatheredMdMax?: number | null;
+  /**
+   * Gets or sets the restriction ID filter.
+   */
+  restrictionId?: Array<number> | null;
+  /**
+   * Gets or sets the canton filter. Boreholes match if their canton is in this set.
+   */
+  canton?: Array<string> | null;
+  /**
+   * Gets or sets the municipality filter. Boreholes match if their municipality is in this set.
+   */
+  municipality?: Array<string> | null;
+  /**
+   * Gets or sets the log tool type codelist IDs filter. Boreholes match if any of their log files
+   * have at least one of these tool type codelist IDs in their BDMS.Models.LogFile.LogFileToolTypeCodes.
+   */
+  logToolTypeId?: Array<number> | null;
+  /**
+   * Gets or sets the source type codelist IDs filter. Boreholes match if they have at least one of these
+   * source types in their BDMS.Models.Borehole.BoreholeSourceTypeCodes.
+   */
+  sourceTypeId?: Array<number> | null;
+  /**
+   * Gets or sets the identifier type (codelist) IDs filter.
+   * Boreholes match if at least one BDMS.Models.BoreholeCodelist row has a
+   * `CodelistId` in this set; combined with BDMS.Models.BoreholeFilterCriteria.IdentifierValue
+   * the predicates apply on the same row (strict semantics).
+   */
+  identifierTypeId?: Array<number> | null;
+  /**
+   * Gets or sets the identifier value substring filter (case-insensitive).
+   */
+  identifierValue?: string | null;
+  nationalInterest?: NullableBooleanFilterValue;
+  coreRepositoryStored?: NullableBooleanFilterValue;
+  topBedrockIntersected?: NullableBooleanFilterValue;
+  hasGroundwater?: NullableBooleanFilterValue;
+  hasGeometry?: BooleanFilterValue;
+  hasLogs?: BooleanFilterValue;
+  hasProfiles?: BooleanFilterValue;
+  hasPhotos?: BooleanFilterValue;
+  hasDocuments?: BooleanFilterValue;
+};
+
+/**
  * Represents a Casing entity in the database.
  */
 export type CasingWritable = {
@@ -3956,7 +4183,8 @@ export type FieldMeasurementResultWritable = {
 };
 
 /**
- * Represents a request to filter boreholes by various criteria.
+ * Represents a request to filter boreholes by various criteria, with the paging and ordering the
+ * borehole table needs.
  */
 export type FilterRequestWritable = {
   polygon?: GeometryWritable;
@@ -4049,7 +4277,7 @@ export type FilterRequestWritable = {
   /**
    * Gets or sets the identifier type (codelist) IDs filter.
    * Boreholes match if at least one BDMS.Models.BoreholeCodelist row has a
-   * `CodelistId` in this set; combined with BDMS.Models.FilterRequest.IdentifierValue
+   * `CodelistId` in this set; combined with BDMS.Models.BoreholeFilterCriteria.IdentifierValue
    * the predicates apply on the same row (strict semantics).
    */
   identifierTypeId?: Array<number> | null;
@@ -4076,40 +4304,6 @@ export type FilterRequestWritable = {
   pageSize?: number;
   orderBy?: BoreholeOrderBy;
   direction?: OrderDirection;
-};
-
-/**
- * Represents a paginated response containing filtered boreholes.
- */
-export type FilterResponseWritable = {
-  /**
-   * The total count of filtered boreholes.
-   */
-  totalCount?: number;
-  /**
-   * The current page number.
-   */
-  pageNumber?: number;
-  /**
-   * The size of the page.
-   */
-  pageSize?: number;
-  /**
-   * The total number of pages.
-   */
-  totalPages?: number;
-  /**
-   * The borehole list items for the current page.
-   */
-  boreholes?: Array<BoreholeListItem>;
-  /**
-   * The GeoJSON feature collection for map display.
-   */
-  geoJson?: Array<IFeatureWritable> | null;
-  /**
-   * The IDs of all unlocked filtered boreholes.
-   */
-  selectableBoreholeIds?: Array<number>;
 };
 
 export type GeometryWritable = {
@@ -5845,6 +6039,28 @@ export type PostApiVbyVersionBoreholeFilterResponses = {
 
 export type PostApiVbyVersionBoreholeFilterResponse =
   PostApiVbyVersionBoreholeFilterResponses[keyof PostApiVbyVersionBoreholeFilterResponses];
+
+export type PostApiVbyVersionBoreholeFilterMapData = {
+  /**
+   * The filter criteria; may be null to return all boreholes the caller can see.
+   */
+  body?: BoreholeFilterCriteriaWritable;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/filter/map";
+};
+
+export type PostApiVbyVersionBoreholeFilterMapResponses = {
+  /**
+   * OK
+   */
+  200: Array<IFeature>;
+};
+
+export type PostApiVbyVersionBoreholeFilterMapResponse =
+  PostApiVbyVersionBoreholeFilterMapResponses[keyof PostApiVbyVersionBoreholeFilterMapResponses];
 
 export type PostApiVbyVersionBoreholeFilterStatsData = {
   /**
