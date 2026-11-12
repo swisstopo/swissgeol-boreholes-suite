@@ -64,6 +64,7 @@
   "bitSize": "Bit size [mm]",
   "borehole": "Perforazione",
   "boreholeCount": "Numero di perforazioni",
+  "boreholeCountLoading": "Caricamento del numero di perforazioni",
   "boreholeCountNotLoaded": "non è stato possibile caricarle",
   "boreholeGeometryFormat": "Formato della traiettoria di perforazione",
   "boreholeGeometryImport": "Importazione della traiettoria di perforazione",

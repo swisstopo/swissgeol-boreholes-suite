@@ -9,7 +9,15 @@ import { BoreholeCountState, BoreholeNumbersPreview } from "./boreholeNumbersPre
 // Not awaited: the test harness only needs the resources registered synchronously.
 void i18n.use(initReactI18next).init({
   lng: "en",
-  resources: { en: { translation: { boreholes: "boreholes", boreholeCountNotLoaded: "could not be loaded" } } },
+  resources: {
+    en: {
+      translation: {
+        boreholes: "boreholes",
+        boreholeCountLoading: "Loading the borehole count",
+        boreholeCountNotLoaded: "could not be loaded",
+      },
+    },
+  },
   interpolation: { escapeValue: false },
 });
 
@@ -28,7 +36,7 @@ describe("BoreholeNumbersPreview", () => {
   it("shows a progress indicator instead of a count while the boreholes load", () => {
     renderPreview(0, "loading");
 
-    expect(screen.getByRole("progressbar")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Loading the borehole count" })).toBeInTheDocument();
     expect(screen.queryByText("0")).not.toBeInTheDocument();
   });
 
