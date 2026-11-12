@@ -2413,4 +2413,117 @@ public class FilterServiceTest
 
         CollectionAssert.AreEqual(boreholes.Select(b => b.Id).OrderByDescending(id => id).ToArray(), seen.ToArray());
     }
+
+    [TestMethod]
+    public async Task GetMapFeaturesWithoutCriteriaReturnsAllBoreholesWithCoordinatesForAdmin()
+    {
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        var expectedCount = await context.Boreholes
+            .AsNoTracking()
+            .CountAsync(b => b.LocationX != null && b.LocationY != null);
+        Assert.AreEqual(expectedCount, result.Count);
+        var firstFeature = result.OrderBy(f => f.Attributes["id"]).First();
+        Assert.AreEqual(4, firstFeature.Attributes.Count);
+        Assert.AreEqual(1000000, firstFeature.Attributes["id"]);
+        Assert.AreEqual(null, firstFeature.Attributes["type"]);
+        Assert.AreEqual("Luther Littel", firstFeature.Attributes["name"]);
+        Assert.AreEqual(null, firstFeature.Attributes["restriction"]);
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesReturnsOnlyWorkgroupBoreholesForEditor()
+    {
+        var hiddenBorehole = new Borehole
+        {
+            WorkgroupId = 3,
+            OriginalName = "Hidden map borehole",
+            LocationX = 2_600_000,
+            LocationY = 1_200_000,
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+        };
+        await context.Boreholes.AddAsync(hiddenBorehole);
+        await context.SaveChangesAsync();
+
+        var editorIds = (await filterService.GetMapFeaturesAsync(new BoreholeFilterCriteria(), editorUser))
+            .Select(f => (int)f.Attributes["id"])
+            .ToList();
+        var adminIds = (await filterService.GetMapFeaturesAsync(new BoreholeFilterCriteria(), adminUser))
+            .Select(f => (int)f.Attributes["id"])
+            .ToList();
+
+        var allowedWorkgroupIds = editorUser.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+        var expectedEditorIds = await context.Boreholes
+            .AsNoTracking()
+            .Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value))
+            .Where(b => b.LocationX != null && b.LocationY != null)
+            .Select(b => b.Id)
+            .ToListAsync();
+        CollectionAssert.AreEquivalent(expectedEditorIds, editorIds);
+        CollectionAssert.DoesNotContain(editorIds, hiddenBorehole.Id);
+        CollectionAssert.Contains(adminIds, hiddenBorehole.Id);
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesWithCriteriaReturnsOnlyMatchingBoreholes()
+    {
+        var criteria = new BoreholeFilterCriteria { TotalDepthMin = 100, TotalDepthMax = 500 };
+
+        var result = await filterService.GetMapFeaturesAsync(criteria, adminUser);
+
+        var expectedIds = await context.Boreholes
+            .AsNoTracking()
+            .Where(b => b.TotalDepth >= 100 && b.TotalDepth <= 500)
+            .Where(b => b.LocationX != null && b.LocationY != null)
+            .Select(b => b.Id)
+            .ToListAsync();
+        Assert.IsTrue(expectedIds.Count > 0, "The test data must contain boreholes in the depth range.");
+        CollectionAssert.AreEquivalent(expectedIds, result.Select(f => (int)f.Attributes["id"]).ToList());
+    }
+
+    [TestMethod]
+    public void BoreholeFilterCriteriaReadsPolygonAsLv95()
+    {
+        var criteria = DeserializeFilterCriteriaWithSquare(2600000, 1200000, 10000);
+
+        Assert.IsNotNull(criteria.Polygon);
+        Assert.AreEqual(SpatialReferenceIdentifier.LV95, criteria.Polygon.SRID);
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesWithPolygonFromJsonReturnsOnlyBoreholesInPolygon()
+    {
+        var existingBorehole = await context.Boreholes
+            .AsNoTracking()
+            .FirstAsync(b => b.LocationX != null && b.LocationY != null && b.Geometry != null);
+        var criteria = DeserializeFilterCriteriaWithSquare(existingBorehole.LocationX.Value, existingBorehole.LocationY.Value, 10000);
+        var totalWithCoordinates = await context.Boreholes.CountAsync(b => b.LocationX != null && b.LocationY != null);
+
+        var result = await filterService.GetMapFeaturesAsync(criteria, adminUser);
+
+        Assert.IsTrue(result.Count < totalWithCoordinates, "The test polygon must exclude some boreholes.");
+        var feature = result.Single(f => (int)f.Attributes["id"] == existingBorehole.Id);
+        Assert.IsInstanceOfType(feature.Geometry, typeof(Point));
+        var point = (Point)feature.Geometry;
+        Assert.AreEqual(existingBorehole.LocationX, point.X);
+        Assert.AreEqual(existingBorehole.LocationY, point.Y);
+        Assert.AreEqual(SpatialReferenceIdentifier.LV95, point.SRID);
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesReturnsFeaturesOrderedById()
+    {
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        var ids = result.Select(f => (int)f.Attributes["id"]).ToList();
+        CollectionAssert.AreEqual(ids.OrderBy(id => id).ToList(), ids);
+    }
+
+    // Deserializes like the API does for the map endpoint, see DeserializeFilterRequestWithSquare.
+    private static BoreholeFilterCriteria DeserializeFilterCriteriaWithSquare(double centerX, double centerY, double halfSize)
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web) { Converters = { new GeoJsonConverterFactory() } };
+        return JsonSerializer.Deserialize<BoreholeFilterCriteria>($$"""{"polygon":{{SquareGeoJson(centerX, centerY, halfSize)}}}""", options)
+            ?? throw new InvalidOperationException("The JSON did not contain filter criteria.");
+    }
 }
