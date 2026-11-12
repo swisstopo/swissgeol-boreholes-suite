@@ -398,8 +398,8 @@ public class ImportController : ControllerBase
 
     // CSV rows carry the ids as text, JSON boreholes as numbers; both are validated as tokens.
     private static IEnumerable<string> GetSourceTypeTokens(BoreholeImport borehole) =>
-        borehole.SourceTypeCodelistIdsText != null
-            ? borehole.SourceTypeCodelistIdsText.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        borehole.SourceTypeIds != null
+            ? borehole.SourceTypeIds.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
             : borehole.SourceTypeCodelistIds?.Select(id => id.ToString(CultureInfo.InvariantCulture)) ?? [];
 
     // Runs only after validation passed, so every token parses.
@@ -585,7 +585,7 @@ public class ImportController : ControllerBase
             Map(m => m.RestrictionUntil).Optional();
             Map(m => m.NationalInterest).Optional();
             Map(m => m.CoreRepositoryStored).Optional();
-            Map(m => m.SourceTypeCodelistIdsText).Name(nameof(Borehole.SourceTypeCodelistIds)).Optional();
+            Map(m => m.SourceTypeIds).Optional();
             Map(m => m.Name).Optional();
             Map(m => m.LocationPrecisionId).Optional();
             Map(m => m.ElevationPrecisionId).Optional();

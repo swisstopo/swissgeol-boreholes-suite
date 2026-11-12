@@ -1212,7 +1212,7 @@ public class ImportControllerTest
     {
         SetupHttpClientFactoryMock("600000", "200000", null, null, null);
         var file = GetFormFileByContent(
-            "OriginalName;LocationX;LocationY;CoreRepositoryStored;SourceTypeCodelistIds\nCORESTORE_CSV_EMPTY;2600000;1200000;;",
+            "OriginalName;LocationX;LocationY;CoreRepositoryStored;SourceTypeIds\nCORESTORE_CSV_EMPTY;2600000;1200000;;",
             "corestore_empty.csv");
 
         ActionResultAssert.IsOk((await controller.UploadCsvFileAsync(workgroupId: 1, file)).Result);
@@ -1228,7 +1228,7 @@ public class ImportControllerTest
         var ids = await GetSourceTypeIdsAsync();
         SetupHttpClientFactoryMock("600000", "200000", null, null, null);
         var file = GetFormFileByContent(
-            $"OriginalName;LocationX;LocationY;CoreRepositoryStored;SourceTypeCodelistIds\nCORESTORE_CSV_VALUES;2600000;1200000;true; {ids[0]} , {ids[4]},{ids[0]}",
+            $"OriginalName;LocationX;LocationY;CoreRepositoryStored;SourceTypeIds\nCORESTORE_CSV_VALUES;2600000;1200000;true; {ids[0]} , {ids[4]},{ids[0]}",
             "corestore_values.csv");
 
         ActionResultAssert.IsOk((await controller.UploadCsvFileAsync(workgroupId: 1, file)).Result);
@@ -1244,7 +1244,7 @@ public class ImportControllerTest
         var ids = await GetSourceTypeIdsAsync();
         var wrongSchemaId = await context.Codelists.Where(c => c.Schema == "restriction").Select(c => c.Id).FirstAsync();
         var file = GetFormFileByContent(
-            $"OriginalName;LocationX;LocationY;SourceTypeCodelistIds\nCORESTORE_OK;2600000;1200000;{ids[0]}\nCORESTORE_WRONG;2600000;1200000;{wrongSchemaId}\nCORESTORE_TEXT;2600000;1200000;abc",
+            $"OriginalName;LocationX;LocationY;SourceTypeIds\nCORESTORE_OK;2600000;1200000;{ids[0]}\nCORESTORE_WRONG;2600000;1200000;{wrongSchemaId}\nCORESTORE_TEXT;2600000;1200000;abc",
             "corestore_invalid.csv");
 
         var response = await controller.UploadCsvFileAsync(workgroupId: 1, file);
@@ -1284,7 +1284,7 @@ public class ImportControllerTest
     public async Task UploadJsonIgnoresSourceTypeCsvText()
     {
         var ids = await GetSourceTypeIdsAsync();
-        var json = $$"""[{ "originalName": "CORESTORE_JSON_TEXT", "locationX": 2600000, "locationY": 1200000, "observations": [], "completions": [], "sourceTypeCodelistIds": [{{ids[1]}}], "sourceTypeCodelistIdsText": "{{ids[2]}}" }]""";
+        var json = $$"""[{ "originalName": "CORESTORE_JSON_TEXT", "locationX": 2600000, "locationY": 1200000, "observations": [], "completions": [], "sourceTypeCodelistIds": [{{ids[1]}}], "sourceTypeIds": "{{ids[2]}}" }]""";
 
         ActionResultAssert.IsOk((await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByContent(json, "corestore_text.json"))).Result);
 
