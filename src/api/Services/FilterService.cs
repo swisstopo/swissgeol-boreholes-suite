@@ -26,15 +26,8 @@ public class FilterService : IFilterService
     {
         var lockExpiryTime = DateTime.UtcNow.AddMinutes(-LockTimeoutMinutes);
 
-        // Base query
-        var query = context.Boreholes.AsNoTracking();
-
-        // Apply permission filtering by workgroup
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            query = query.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
-        }
+        // Base query, restricted to the workgroups the user may see
+        var query = QueryVisibleBoreholes(user);
 
         // Default pagination
         var pageSize = MaxPageSize;
@@ -101,20 +94,35 @@ public class FilterService : IFilterService
             pageSize,
             totalPages,
             boreholes,
-            BuildGeoJson(filteredBoreholes),
+            BuildGeoJson(filteredBoreholes.Select(b => new MapBoreholeRow(b.Id, b.Name, b.TypeId, b.RestrictionId, b.LocationX, b.LocationY))),
             allSelectableBoreholeIds);
+    }
+
+    /// <inheritdoc />
+    public async Task<FeatureCollection> GetMapFeaturesAsync(BoreholeFilterCriteria? filterCriteria, User user)
+    {
+        var query = QueryVisibleBoreholes(user);
+        if (filterCriteria != null)
+        {
+            query = ApplyFilters(query, filterCriteria);
+        }
+
+        var boreholes = await query
+            .Select(b => new MapBoreholeRow(b.Id, b.Name, b.TypeId, b.RestrictionId, b.LocationX, b.LocationY))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        // A stable order keeps identical results equal, so the client keeps its cached map data
+        // and the map does not jump after a refetch.
+        boreholes.Sort((a, b) => a.Id.CompareTo(b.Id));
+
+        return BuildGeoJson(boreholes);
     }
 
     /// <inheritdoc />
     public async Task<FilterStatsResponse> GetFilterStatsAsync(FilterRequest? filterRequest, User user)
     {
-        var baseQuery = context.Boreholes.AsNoTracking();
-
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            baseQuery = baseQuery.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
-        }
+        var baseQuery = QueryVisibleBoreholes(user);
 
         var req = filterRequest ?? new FilterRequest();
 
@@ -170,13 +178,7 @@ public class FilterService : IFilterService
         FilterRequest? filterRequest,
         User user)
     {
-        var baseQuery = context.Boreholes.AsNoTracking();
-
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            baseQuery = baseQuery.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
-        }
+        var baseQuery = QueryVisibleBoreholes(user);
 
         if (filterRequest != null)
         {
@@ -226,6 +228,15 @@ public class FilterService : IFilterService
             .ConfigureAwait(false);
 
         return rows.Select(r => new BoreholeSuggestion(r.Value, r.Count)).ToList();
+    }
+
+    private IQueryable<Borehole> QueryVisibleBoreholes(User user)
+    {
+        var query = context.Boreholes.AsNoTracking();
+        if (user.IsAdmin) return query;
+
+        var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+        return query.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
     }
 
     private static async Task<Dictionary<WorkflowStatus, int>> CountByWorkflowStatusAsync(IQueryable<Borehole> query)
@@ -393,92 +404,92 @@ public class FilterService : IFilterService
         HasDocuments = src.HasDocuments,
     };
 
-    private IQueryable<Borehole> ApplyFilters(IQueryable<Borehole> query, FilterRequest filterRequest)
+    private IQueryable<Borehole> ApplyFilters(IQueryable<Borehole> query, BoreholeFilterCriteria filterCriteria)
     {
-        if (filterRequest == null) return query;
+        if (filterCriteria == null) return query;
 
         // Polygon geometry filter
-        if (filterRequest.Polygon != null)
+        if (filterCriteria.Polygon != null)
         {
             query = query.Where(b =>
                 b.Geometry != null &&
-                filterRequest.Polygon.Intersects(b.Geometry));
+                filterCriteria.Polygon.Intersects(b.Geometry));
         }
 
         // Text filters
-        if (!string.IsNullOrWhiteSpace(filterRequest.OriginalName))
+        if (!string.IsNullOrWhiteSpace(filterCriteria.OriginalName))
         {
-            query = query.Where(b => b.OriginalName != null && EF.Functions.ILike(b.OriginalName, $"%{filterRequest.OriginalName}%"));
+            query = query.Where(b => b.OriginalName != null && EF.Functions.ILike(b.OriginalName, $"%{filterCriteria.OriginalName}%"));
         }
 
-        if (!string.IsNullOrWhiteSpace(filterRequest.ProjectName))
+        if (!string.IsNullOrWhiteSpace(filterCriteria.ProjectName))
         {
-            query = query.Where(b => b.ProjectName != null && EF.Functions.ILike(b.ProjectName, $"%{filterRequest.ProjectName}%"));
+            query = query.Where(b => b.ProjectName != null && EF.Functions.ILike(b.ProjectName, $"%{filterCriteria.ProjectName}%"));
         }
 
-        if (!string.IsNullOrWhiteSpace(filterRequest.Name))
+        if (!string.IsNullOrWhiteSpace(filterCriteria.Name))
         {
-            query = query.Where(b => b.Name != null && EF.Functions.ILike(b.Name, $"%{filterRequest.Name}%"));
+            query = query.Where(b => b.Name != null && EF.Functions.ILike(b.Name, $"%{filterCriteria.Name}%"));
         }
 
         // Simple property filters
-        if (filterRequest.StatusId != null && filterRequest.StatusId.Any())
+        if (filterCriteria.StatusId != null && filterCriteria.StatusId.Any())
         {
-            query = query.Where(b => b.StatusId.HasValue && filterRequest.StatusId.Contains(b.StatusId.Value));
+            query = query.Where(b => b.StatusId.HasValue && filterCriteria.StatusId.Contains(b.StatusId.Value));
         }
 
-        if (filterRequest.TypeId != null && filterRequest.TypeId.Any())
+        if (filterCriteria.TypeId != null && filterCriteria.TypeId.Any())
         {
-            query = query.Where(b => b.TypeId.HasValue && filterRequest.TypeId.Contains(b.TypeId.Value));
+            query = query.Where(b => b.TypeId.HasValue && filterCriteria.TypeId.Contains(b.TypeId.Value));
         }
 
-        if (filterRequest.PurposeId != null && filterRequest.PurposeId.Any())
+        if (filterCriteria.PurposeId != null && filterCriteria.PurposeId.Any())
         {
-            query = query.Where(b => b.PurposeId.HasValue && filterRequest.PurposeId.Contains(b.PurposeId.Value));
+            query = query.Where(b => b.PurposeId.HasValue && filterCriteria.PurposeId.Contains(b.PurposeId.Value));
         }
 
-        if (filterRequest.WorkgroupId != null && filterRequest.WorkgroupId.Any())
+        if (filterCriteria.WorkgroupId != null && filterCriteria.WorkgroupId.Any())
         {
-            query = query.Where(b => b.WorkgroupId.HasValue && filterRequest.WorkgroupId.Contains(b.WorkgroupId.Value));
+            query = query.Where(b => b.WorkgroupId.HasValue && filterCriteria.WorkgroupId.Contains(b.WorkgroupId.Value));
         }
 
-        if (filterRequest.RestrictionId != null && filterRequest.RestrictionId.Any())
+        if (filterCriteria.RestrictionId != null && filterCriteria.RestrictionId.Any())
         {
-            query = query.Where(b => b.RestrictionId.HasValue && filterRequest.RestrictionId.Contains(b.RestrictionId.Value));
+            query = query.Where(b => b.RestrictionId.HasValue && filterCriteria.RestrictionId.Contains(b.RestrictionId.Value));
         }
 
-        if (filterRequest.Canton != null && filterRequest.Canton.Any())
+        if (filterCriteria.Canton != null && filterCriteria.Canton.Any())
         {
-            query = query.Where(b => b.Canton != null && filterRequest.Canton.Contains(b.Canton));
+            query = query.Where(b => b.Canton != null && filterCriteria.Canton.Contains(b.Canton));
         }
 
-        if (filterRequest.Municipality != null && filterRequest.Municipality.Any())
+        if (filterCriteria.Municipality != null && filterCriteria.Municipality.Any())
         {
-            query = query.Where(b => b.Municipality != null && filterRequest.Municipality.Contains(b.Municipality));
+            query = query.Where(b => b.Municipality != null && filterCriteria.Municipality.Contains(b.Municipality));
         }
 
         // Nested property filters (requires joining with related tables)
-        if (filterRequest.LogToolTypeId != null && filterRequest.LogToolTypeId.Any())
+        if (filterCriteria.LogToolTypeId != null && filterCriteria.LogToolTypeId.Any())
         {
             query = query.Where(b =>
                 context.LogRuns.Any(lr => lr.BoreholeId == b.Id
                     && context.LogFiles.Any(lf => lf.LogRunId == lr.Id
-                        && lf.LogFileToolTypeCodes!.Any(t => filterRequest.LogToolTypeId.Contains(t.CodelistId)))));
+                        && lf.LogFileToolTypeCodes!.Any(t => filterCriteria.LogToolTypeId.Contains(t.CodelistId)))));
         }
 
-        if (filterRequest.SourceTypeId != null && filterRequest.SourceTypeId.Any())
+        if (filterCriteria.SourceTypeId != null && filterCriteria.SourceTypeId.Any())
         {
-            query = query.Where(b => b.BoreholeSourceTypeCodes!.Any(c => filterRequest.SourceTypeId.Contains(c.CodelistId)));
+            query = query.Where(b => b.BoreholeSourceTypeCodes!.Any(c => filterCriteria.SourceTypeId.Contains(c.CodelistId)));
         }
 
         // Identifier filters — strict same-row semantics: when both type and value
         // are present, both predicates must hold on the *same* BoreholeCodelist row.
-        var hasIdentifierTypes = filterRequest.IdentifierTypeId != null && filterRequest.IdentifierTypeId.Any();
-        var hasIdentifierValue = !string.IsNullOrWhiteSpace(filterRequest.IdentifierValue);
+        var hasIdentifierTypes = filterCriteria.IdentifierTypeId != null && filterCriteria.IdentifierTypeId.Any();
+        var hasIdentifierValue = !string.IsNullOrWhiteSpace(filterCriteria.IdentifierValue);
         if (hasIdentifierTypes || hasIdentifierValue)
         {
-            var typeIds = filterRequest.IdentifierTypeId;
-            var valuePattern = hasIdentifierValue ? $"%{filterRequest.IdentifierValue}%" : null;
+            var typeIds = filterCriteria.IdentifierTypeId;
+            var valuePattern = hasIdentifierValue ? $"%{filterCriteria.IdentifierValue}%" : null;
 
             query = query.Where(b => b.BoreholeCodelists!.Any(c =>
                 (!hasIdentifierTypes || typeIds!.Contains(c.CodelistId)) &&
@@ -486,122 +497,122 @@ public class FilterService : IFilterService
         }
 
         // Workflow status filter
-        if (filterRequest.WorkflowStatus != null && filterRequest.WorkflowStatus.Any())
+        if (filterCriteria.WorkflowStatus != null && filterCriteria.WorkflowStatus.Any())
         {
-            query = query.Where(b => b.Workflow != null && filterRequest.WorkflowStatus.Contains(b.Workflow.Status));
+            query = query.Where(b => b.Workflow != null && filterCriteria.WorkflowStatus.Contains(b.Workflow.Status));
         }
 
         // Date range filters
-        if (filterRequest.RestrictionUntilFrom.HasValue)
+        if (filterCriteria.RestrictionUntilFrom.HasValue)
         {
-            query = query.Where(b => b.RestrictionUntil >= filterRequest.RestrictionUntilFrom.Value);
+            query = query.Where(b => b.RestrictionUntil >= filterCriteria.RestrictionUntilFrom.Value);
         }
 
-        if (filterRequest.RestrictionUntilTo.HasValue)
+        if (filterCriteria.RestrictionUntilTo.HasValue)
         {
-            query = query.Where(b => b.RestrictionUntil <= filterRequest.RestrictionUntilTo.Value);
+            query = query.Where(b => b.RestrictionUntil <= filterCriteria.RestrictionUntilTo.Value);
         }
 
         // Numeric range filters
-        if (filterRequest.TotalDepthMin.HasValue)
+        if (filterCriteria.TotalDepthMin.HasValue)
         {
-            query = query.Where(b => b.TotalDepth >= filterRequest.TotalDepthMin.Value);
+            query = query.Where(b => b.TotalDepth >= filterCriteria.TotalDepthMin.Value);
         }
 
-        if (filterRequest.TotalDepthMax.HasValue)
+        if (filterCriteria.TotalDepthMax.HasValue)
         {
-            query = query.Where(b => b.TotalDepth <= filterRequest.TotalDepthMax.Value);
+            query = query.Where(b => b.TotalDepth <= filterCriteria.TotalDepthMax.Value);
         }
 
-        if (filterRequest.TopBedrockFreshMdMin.HasValue)
+        if (filterCriteria.TopBedrockFreshMdMin.HasValue)
         {
-            query = query.Where(b => b.TopBedrockFreshMd >= filterRequest.TopBedrockFreshMdMin.Value);
+            query = query.Where(b => b.TopBedrockFreshMd >= filterCriteria.TopBedrockFreshMdMin.Value);
         }
 
-        if (filterRequest.TopBedrockFreshMdMax.HasValue)
+        if (filterCriteria.TopBedrockFreshMdMax.HasValue)
         {
-            query = query.Where(b => b.TopBedrockFreshMd <= filterRequest.TopBedrockFreshMdMax.Value);
+            query = query.Where(b => b.TopBedrockFreshMd <= filterCriteria.TopBedrockFreshMdMax.Value);
         }
 
-        if (filterRequest.TopBedrockWeatheredMdMin.HasValue)
+        if (filterCriteria.TopBedrockWeatheredMdMin.HasValue)
         {
-            query = query.Where(b => b.TopBedrockWeatheredMd >= filterRequest.TopBedrockWeatheredMdMin.Value);
+            query = query.Where(b => b.TopBedrockWeatheredMd >= filterCriteria.TopBedrockWeatheredMdMin.Value);
         }
 
-        if (filterRequest.TopBedrockWeatheredMdMax.HasValue)
+        if (filterCriteria.TopBedrockWeatheredMdMax.HasValue)
         {
-            query = query.Where(b => b.TopBedrockWeatheredMd <= filterRequest.TopBedrockWeatheredMdMax.Value);
+            query = query.Where(b => b.TopBedrockWeatheredMd <= filterCriteria.TopBedrockWeatheredMdMax.Value);
         }
 
         // Boolean filters
-        if (filterRequest.NationalInterest != null)
+        if (filterCriteria.NationalInterest != null)
         {
-            if (filterRequest.NationalInterest == NullableBooleanFilterValue.Null)
+            if (filterCriteria.NationalInterest == NullableBooleanFilterValue.Null)
                 query = query.Where(b => b.NationalInterest == null);
             else
-                query = query.Where(b => b.NationalInterest == (filterRequest.NationalInterest == NullableBooleanFilterValue.True));
+                query = query.Where(b => b.NationalInterest == (filterCriteria.NationalInterest == NullableBooleanFilterValue.True));
         }
 
-        if (filterRequest.CoreRepositoryStored != null)
+        if (filterCriteria.CoreRepositoryStored != null)
         {
-            if (filterRequest.CoreRepositoryStored == NullableBooleanFilterValue.Null)
+            if (filterCriteria.CoreRepositoryStored == NullableBooleanFilterValue.Null)
                 query = query.Where(b => b.CoreRepositoryStored == null);
             else
-                query = query.Where(b => b.CoreRepositoryStored == (filterRequest.CoreRepositoryStored == NullableBooleanFilterValue.True));
+                query = query.Where(b => b.CoreRepositoryStored == (filterCriteria.CoreRepositoryStored == NullableBooleanFilterValue.True));
         }
 
-        if (filterRequest.TopBedrockIntersected != null)
+        if (filterCriteria.TopBedrockIntersected != null)
         {
-            if (filterRequest.TopBedrockIntersected == NullableBooleanFilterValue.Null)
+            if (filterCriteria.TopBedrockIntersected == NullableBooleanFilterValue.Null)
                 query = query.Where(b => b.TopBedrockIntersected == null);
             else
-                query = query.Where(b => b.TopBedrockIntersected == (filterRequest.TopBedrockIntersected == NullableBooleanFilterValue.True));
+                query = query.Where(b => b.TopBedrockIntersected == (filterCriteria.TopBedrockIntersected == NullableBooleanFilterValue.True));
         }
 
-        if (filterRequest.HasGroundwater != null)
+        if (filterCriteria.HasGroundwater != null)
         {
-            if (filterRequest.HasGroundwater == NullableBooleanFilterValue.Null)
+            if (filterCriteria.HasGroundwater == NullableBooleanFilterValue.Null)
                 query = query.Where(b => b.HasGroundwater == null);
             else
-                query = query.Where(b => b.HasGroundwater == (filterRequest.HasGroundwater == NullableBooleanFilterValue.True));
+                query = query.Where(b => b.HasGroundwater == (filterCriteria.HasGroundwater == NullableBooleanFilterValue.True));
         }
 
-        if (filterRequest.HasGeometry != null)
+        if (filterCriteria.HasGeometry != null)
         {
-            if (filterRequest.HasGeometry == BooleanFilterValue.True)
+            if (filterCriteria.HasGeometry == BooleanFilterValue.True)
                 query = query.Where(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
             else
                 query = query.Where(b => b.BoreholeGeometry == null || !b.BoreholeGeometry.Any());
         }
 
         // Availability filters (requires joining with related tables)
-        if (filterRequest.HasLogs != null)
+        if (filterCriteria.HasLogs != null)
         {
-            if (filterRequest.HasLogs == BooleanFilterValue.True)
+            if (filterCriteria.HasLogs == BooleanFilterValue.True)
                 query = query.Where(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
             else
                 query = query.Where(b => !context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
         }
 
-        if (filterRequest.HasProfiles != null)
+        if (filterCriteria.HasProfiles != null)
         {
-            if (filterRequest.HasProfiles == BooleanFilterValue.True)
+            if (filterCriteria.HasProfiles == BooleanFilterValue.True)
                 query = query.Where(b => context.Profiles.Any(p => p.BoreholeId == b.Id));
             else
                 query = query.Where(b => !context.Profiles.Any(p => p.BoreholeId == b.Id));
         }
 
-        if (filterRequest.HasPhotos != null)
+        if (filterCriteria.HasPhotos != null)
         {
-            if (filterRequest.HasPhotos == BooleanFilterValue.True)
+            if (filterCriteria.HasPhotos == BooleanFilterValue.True)
                 query = query.Where(b => context.Photos.Any(p => p.BoreholeId == b.Id));
             else
                 query = query.Where(b => !context.Photos.Any(p => p.BoreholeId == b.Id));
         }
 
-        if (filterRequest.HasDocuments != null)
+        if (filterCriteria.HasDocuments != null)
         {
-            if (filterRequest.HasDocuments == BooleanFilterValue.True)
+            if (filterCriteria.HasDocuments == BooleanFilterValue.True)
                 query = query.Where(b => context.Documents.Any(d => d.BoreholeId == b.Id));
             else
                 query = query.Where(b => !context.Documents.Any(d => d.BoreholeId == b.Id));
@@ -643,7 +654,7 @@ public class FilterService : IFilterService
             : query.OrderBy(orderExpression).ThenBy(b => b.Id);
     }
 
-    private static FeatureCollection BuildGeoJson(IEnumerable<FilteredBoreholeRow> boreholes)
+    private static FeatureCollection BuildGeoJson(IEnumerable<MapBoreholeRow> boreholes)
     {
         var featureCollection = new FeatureCollection();
 
@@ -670,4 +681,6 @@ public class FilterService : IFilterService
     }
 
     private sealed record FilteredBoreholeRow(int Id, string? Name, int? TypeId, int? RestrictionId, double? LocationX, double? LocationY, DateTime? Locked);
+
+    private sealed record MapBoreholeRow(int Id, string? Name, int? TypeId, int? RestrictionId, double? LocationX, double? LocationY);
 }
