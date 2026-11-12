@@ -369,7 +369,7 @@ interface FilterRequestSubmission extends BaseFilterRequest {
 // otherwise paging or sorting the table would reload the whole map.
 type TableOnlyFilterField = "pageNumber" | "pageSize" | "orderBy" | "direction";
 
-export type MapFilterCriteria = Omit<FilterRequestSubmission, TableOnlyFilterField> &
+type MapFilterCriteria = Omit<FilterRequestSubmission, TableOnlyFilterField> &
   Partial<Record<TableOnlyFilterField, undefined>>;
 
 export interface FilterResponse {
@@ -434,7 +434,7 @@ const fetchFilterStats = async (filterRequest: FilterRequestSubmission): Promise
   return await fetchApiV2WithApiError<FilterStatsResponse>("borehole/filter/stats", "POST", filterRequest);
 };
 
-export const filterBoreholesMap = async (criteria: MapFilterCriteria): Promise<FeatureCollection> => {
+const filterBoreholesMap = async (criteria: MapFilterCriteria): Promise<FeatureCollection> => {
   return await fetchApiV2WithApiError<FeatureCollection>("borehole/filter/map", "POST", criteria);
 };
 
