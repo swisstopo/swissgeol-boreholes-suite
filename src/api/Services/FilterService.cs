@@ -106,14 +106,14 @@ public class FilterService : IFilterService
             query = ApplyFilters(query, filterCriteria);
         }
 
-        var boreholes = await query
-            .Select(b => new MapBoreholeRow(b.Id, b.Name, b.TypeId, b.RestrictionId, b.LocationX, b.LocationY))
-            .ToListAsync()
-            .ConfigureAwait(false);
-
         // A stable order keeps identical results equal, so the client keeps its cached map data
         // and the map does not jump after a refetch.
-        boreholes.Sort((a, b) => a.Id.CompareTo(b.Id));
+        var boreholes = await query
+            .Where(b => b.LocationX.HasValue && b.LocationY.HasValue)
+            .OrderBy(b => b.Id)
+            .Select(b => new MapBoreholeRow(b.Id, b.Name, b.TypeId, b.RestrictionId, b.LocationX ?? 0, b.LocationY ?? 0))
+            .ToListAsync()
+            .ConfigureAwait(false);
 
         return BuildGeoJson(boreholes);
     }
@@ -659,21 +659,18 @@ public class FilterService : IFilterService
 
         foreach (var borehole in boreholes)
         {
-            if (borehole.LocationX.HasValue && borehole.LocationY.HasValue)
+            var point = new Point(borehole.LocationX, borehole.LocationY) { SRID = SpatialReferenceIdentifier.LV95 };
+            var attributes = new AttributesTable
             {
-                var point = new Point(borehole.LocationX.Value, borehole.LocationY.Value) { SRID = SpatialReferenceIdentifier.LV95 };
-                var attributes = new AttributesTable
-                {
-                    // Include selected attributes needed for map display and popups.
-                    { "id", borehole.Id },
-                    { "type", borehole.TypeId },
-                    { "name", borehole.Name },
-                    { "restriction", borehole.RestrictionId },
-                };
+                // Include selected attributes needed for map display and popups.
+                { "id", borehole.Id },
+                { "type", borehole.TypeId },
+                { "name", borehole.Name },
+                { "restriction", borehole.RestrictionId },
+            };
 
-                var feature = new Feature(point, attributes);
-                featureCollection.Add(feature);
-            }
+            var feature = new Feature(point, attributes);
+            featureCollection.Add(feature);
         }
 
         return featureCollection;
@@ -681,5 +678,5 @@ public class FilterService : IFilterService
 
     private sealed record SelectableBoreholeRow(int Id, DateTime? Locked);
 
-    private sealed record MapBoreholeRow(int Id, string? Name, int? TypeId, int? RestrictionId, double? LocationX, double? LocationY);
+    private sealed record MapBoreholeRow(int Id, string? Name, int? TypeId, int? RestrictionId, double LocationX, double LocationY);
 }
