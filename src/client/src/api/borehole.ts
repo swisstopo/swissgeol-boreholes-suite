@@ -352,6 +352,13 @@ interface FilterRequestSubmission extends BaseFilterRequest {
   hasDocuments?: BooleanFilter;
 }
 
+// Fields that only shape the borehole table. The map data must not depend on them,
+// otherwise paging or sorting the table would reload the whole map.
+type TableOnlyFilterField = "pageNumber" | "pageSize" | "orderBy" | "direction";
+
+export type MapFilterCriteria = Omit<FilterRequestSubmission, TableOnlyFilterField> &
+  Partial<Record<TableOnlyFilterField, undefined>>;
+
 export interface FilterResponse {
   totalCount: number;
   pageNumber: number;
@@ -415,6 +422,10 @@ export const fetchFilterStats = async (filterRequest: FilterRequestSubmission): 
   return await fetchApiV2WithApiError<FilterStatsResponse>("borehole/filter/stats", "POST", filterRequest);
 };
 
+export const filterBoreholesMap = async (criteria: MapFilterCriteria): Promise<FeatureCollection> => {
+  return await fetchApiV2WithApiError<FeatureCollection>("borehole/filter/map", "POST", criteria);
+};
+
 const fetchBoreholeSuggestions = (
   field: BoreholeSuggestionField,
   query: string,
@@ -459,6 +470,15 @@ export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterR
   hasProfiles: parseBooleanFilter(filterRequest.hasProfiles),
   hasPhotos: parseBooleanFilter(filterRequest.hasPhotos),
   hasDocuments: parseBooleanFilter(filterRequest.hasDocuments),
+});
+
+// Undefined values are left out of the request body and of the query key.
+export const toMapFilterCriteria = (filterRequest: FilterRequest): MapFilterCriteria => ({
+  ...toFilterRequestSubmission(filterRequest),
+  pageNumber: undefined,
+  pageSize: undefined,
+  orderBy: undefined,
+  direction: undefined,
 });
 
 /**
@@ -525,6 +545,22 @@ export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true)
     queryFn: () => filterBoreholes(filterRequestSubmission),
     enabled,
     placeholderData: keepPreviousData,
+  });
+};
+
+// The map data of all filtered boreholes is large, so it is not refetched just because the
+// browser tab becomes visible again. Changes made in this app invalidate boreholeQueryKey anyway.
+const mapDataStaleTime = 10 * 60 * 1000;
+
+export const useFilterBoreholesMap = (filterRequest: FilterRequest, enabled = true) => {
+  const criteria = toMapFilterCriteria(filterRequest);
+
+  return useQuery({
+    queryKey: [boreholeQueryKey, "filter-map", criteria],
+    queryFn: () => filterBoreholesMap(criteria),
+    enabled,
+    placeholderData: keepPreviousData,
+    staleTime: mapDataStaleTime,
   });
 };
 
