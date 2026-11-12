@@ -567,17 +567,22 @@ export const filterBoreholesQueryOptions = (filterRequest: FilterRequest) => {
 // browser tab becomes visible again. Changes made in this app invalidate boreholeQueryKey anyway.
 const mapDataStaleTime = 10 * 60 * 1000;
 
-export const useFilterBoreholesMap = (filterRequest: FilterRequest, enabled = true) => {
+// Shared by the hook and the prefetch after login, so both use the same key and staleTime.
+export const filterBoreholesMapQueryOptions = (filterRequest: FilterRequest) => {
   const criteria = toMapFilterCriteria(filterRequest);
-
-  return useQuery({
+  return queryOptions({
     queryKey: [boreholeQueryKey, "filter-map", criteria],
     queryFn: () => filterBoreholesMap(criteria),
-    enabled,
-    placeholderData: keepPreviousData,
     staleTime: mapDataStaleTime,
   });
 };
+
+export const useFilterBoreholesMap = (filterRequest: FilterRequest, enabled = true) =>
+  useQuery({
+    ...filterBoreholesMapQueryOptions(filterRequest),
+    enabled,
+    placeholderData: keepPreviousData,
+  });
 
 
 export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) =>

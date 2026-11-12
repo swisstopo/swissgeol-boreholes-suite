@@ -5,7 +5,7 @@ import { toPolygonGeometry } from "../pages/overview/polygonFilter.ts";
 import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { buildBulkEditRequest, FilterResponse, FilterRequest,  toMapFilterCriteria,  useFilterBoreholes, useFilterStats } from "./borehole.ts";
+import { buildBulkEditRequest, filterBoreholesMapQueryOptions, FilterResponse, FilterRequest,  toMapFilterCriteria,  useFilterBoreholes, useFilterStats } from "./borehole.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { createQueryClient } from "./queryClient.ts";
 
@@ -74,6 +74,27 @@ describe("toMapFilterCriteria", () => {
     expect(mapKey({ ...filters, totalDepthMin: 20 })).not.toBe(mapKey(filters));
     expect(mapKey({ ...filters, hasPhotos: "false" })).not.toBe(mapKey(filters));
     expect(mapKey({ ...filters, polygon })).not.toBe(mapKey(filters));
+  });
+});
+
+describe("filterBoreholesMapQueryOptions", () => {
+  it("gives the prefetch after login the same key as the map in the overview", () => {
+    const filters: FilterRequest = { typeId: [20101001], hasPhotos: "true" };
+    const sessionFilterRequest: FilterRequest = {
+      ...filters,
+      pageNumber: 2,
+      pageSize: 50,
+      orderBy: "name",
+      direction: "ASC",
+    };
+
+    expect(hashKey(filterBoreholesMapQueryOptions(sessionFilterRequest).queryKey)).toBe(
+      hashKey(filterBoreholesMapQueryOptions(filters).queryKey),
+    );
+  });
+
+  it("keeps the map data fresh for ten minutes", () => {
+    expect(filterBoreholesMapQueryOptions({}).staleTime).toBe(10 * 60 * 1000);
   });
 });
 
