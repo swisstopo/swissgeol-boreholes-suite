@@ -1,7 +1,7 @@
 import { AlertColor } from "@mui/material";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
-import { markOverviewStale } from "./borehole.ts";
 import { ApiError } from "./errorClasses.ts";
+import { markOverviewStale } from "./queryKeys.ts";
 import { isAbortError } from "./transferProgress.ts";
 
 /**
