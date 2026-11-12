@@ -11,7 +11,11 @@ export const AlertBanner = () => {
         open={alertContext.alertIsOpen}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         autoHideDuration={alertContext.autoHideDuration}
-        onClose={alertContext.closeAlert}>
+        // A click elsewhere does not close the alert: the click that triggered it, such as the second click
+        // of a double-click, would otherwise close it right away.
+        onClose={(_, reason) => {
+          if (reason !== "clickaway") alertContext.closeAlert();
+        }}>
         <Alert variant={alertContext.variant} severity={alertContext.severity} onClose={alertContext.closeAlert}>
           {alertContext.text}
         </Alert>
