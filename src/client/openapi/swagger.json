@@ -565,6 +565,75 @@
         }
       }
     },
+    "/api/v{version}/borehole/filter/map": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Returns the map features of all boreholes matching the filter criteria. The criteria carry no\r\npaging or ordering, so paging and sorting the borehole table never reload the map data.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The filter criteria; may be null to return all boreholes the caller can see.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeFilterCriteria"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeFilterCriteria"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeFilterCriteria"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IFeature"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IFeature"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IFeature"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v{version}/borehole/filter/stats": {
       "post": {
         "tags": [
@@ -7775,6 +7844,218 @@
         "additionalProperties": false,
         "description": "Selects the boreholes to export. The ids travel in the request body, so a selection of many thousands\r\nof boreholes fits into one request."
       },
+      "BoreholeFilterCriteria": {
+        "type": "object",
+        "properties": {
+          "polygon": {
+            "$ref": "#/components/schemas/Geometry"
+          },
+          "originalName": {
+            "type": "string",
+            "description": "Gets or sets the original name filter.",
+            "nullable": true
+          },
+          "projectName": {
+            "type": "string",
+            "description": "Gets or sets the project name filter.",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "Gets or sets the alternate name filter.",
+            "nullable": true
+          },
+          "statusId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the status ID filter.",
+            "nullable": true
+          },
+          "typeId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the borehole type ID filter.",
+            "nullable": true
+          },
+          "purposeId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the purpose ID filter.",
+            "nullable": true
+          },
+          "workflowStatus": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkflowStatus"
+            },
+            "description": "Gets or sets the workflow status filter. Matches boreholes whose workflow status is in this set.",
+            "nullable": true
+          },
+          "workgroupId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the workgroup ID filter.",
+            "nullable": true
+          },
+          "restrictionUntilFrom": {
+            "type": "string",
+            "description": "Gets or sets the restriction until date start filter.",
+            "format": "date",
+            "nullable": true
+          },
+          "restrictionUntilTo": {
+            "type": "string",
+            "description": "Gets or sets the restriction until date end filter.",
+            "format": "date",
+            "nullable": true
+          },
+          "totalDepthMin": {
+            "type": "number",
+            "description": "Gets or sets the minimum total depth filter.",
+            "format": "double",
+            "nullable": true
+          },
+          "totalDepthMax": {
+            "type": "number",
+            "description": "Gets or sets the maximum total depth filter.",
+            "format": "double",
+            "nullable": true
+          },
+          "topBedrockFreshMdMin": {
+            "type": "number",
+            "description": "Gets or sets the minimum top bedrock fresh depth filter.",
+            "format": "double",
+            "nullable": true
+          },
+          "topBedrockFreshMdMax": {
+            "type": "number",
+            "description": "Gets or sets the maximum top bedrock fresh depth filter.",
+            "format": "double",
+            "nullable": true
+          },
+          "topBedrockWeatheredMdMin": {
+            "type": "number",
+            "description": "Gets or sets the minimum top bedrock weathered depth filter.",
+            "format": "double",
+            "nullable": true
+          },
+          "topBedrockWeatheredMdMax": {
+            "type": "number",
+            "description": "Gets or sets the maximum top bedrock weathered depth filter.",
+            "format": "double",
+            "nullable": true
+          },
+          "restrictionId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the restriction ID filter.",
+            "nullable": true
+          },
+          "canton": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Gets or sets the canton filter. Boreholes match if their canton is in this set.",
+            "nullable": true
+          },
+          "municipality": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Gets or sets the municipality filter. Boreholes match if their municipality is in this set.",
+            "nullable": true
+          },
+          "logToolTypeId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the log tool type codelist IDs filter. Boreholes match if any of their log files\r\nhave at least one of these tool type codelist IDs in their BDMS.Models.LogFile.LogFileToolTypeCodes.",
+            "nullable": true
+          },
+          "sourceTypeId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the source type codelist IDs filter. Boreholes match if they have at least one of these\r\nsource types in their BDMS.Models.Borehole.BoreholeSourceTypeCodes.",
+            "nullable": true
+          },
+          "identifierTypeId": {
+            "maxItems": 100,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "Gets or sets the identifier type (codelist) IDs filter.\r\nBoreholes match if at least one BDMS.Models.BoreholeCodelist row has a\r\n`CodelistId` in this set; combined with BDMS.Models.BoreholeFilterCriteria.IdentifierValue\r\nthe predicates apply on the same row (strict semantics).",
+            "nullable": true
+          },
+          "identifierValue": {
+            "type": "string",
+            "description": "Gets or sets the identifier value substring filter (case-insensitive).",
+            "nullable": true
+          },
+          "nationalInterest": {
+            "$ref": "#/components/schemas/NullableBooleanFilterValue"
+          },
+          "coreRepositoryStored": {
+            "$ref": "#/components/schemas/NullableBooleanFilterValue"
+          },
+          "topBedrockIntersected": {
+            "$ref": "#/components/schemas/NullableBooleanFilterValue"
+          },
+          "hasGroundwater": {
+            "$ref": "#/components/schemas/NullableBooleanFilterValue"
+          },
+          "hasGeometry": {
+            "$ref": "#/components/schemas/BooleanFilterValue"
+          },
+          "hasLogs": {
+            "$ref": "#/components/schemas/BooleanFilterValue"
+          },
+          "hasProfiles": {
+            "$ref": "#/components/schemas/BooleanFilterValue"
+          },
+          "hasPhotos": {
+            "$ref": "#/components/schemas/BooleanFilterValue"
+          },
+          "hasDocuments": {
+            "$ref": "#/components/schemas/BooleanFilterValue"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents the criteria that narrow down the boreholes a user can see. It carries no paging or\r\nordering, so a result built from it depends on the filters only. The map endpoint takes this type;\r\nthe table endpoints take BDMS.Models.FilterRequest, which adds paging and ordering."
+      },
       "BoreholeGeometryElement": {
         "required": [
           "md",
@@ -9127,7 +9408,7 @@
               "type": "integer",
               "format": "int32"
             },
-            "description": "Gets or sets the identifier type (codelist) IDs filter.\r\nBoreholes match if at least one BDMS.Models.BoreholeCodelist row has a\r\n`CodelistId` in this set; combined with BDMS.Models.FilterRequest.IdentifierValue\r\nthe predicates apply on the same row (strict semantics).",
+            "description": "Gets or sets the identifier type (codelist) IDs filter.\r\nBoreholes match if at least one BDMS.Models.BoreholeCodelist row has a\r\n`CodelistId` in this set; combined with BDMS.Models.BoreholeFilterCriteria.IdentifierValue\r\nthe predicates apply on the same row (strict semantics).",
             "nullable": true
           },
           "identifierValue": {
@@ -9184,7 +9465,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "Represents a request to filter boreholes by various criteria."
+        "description": "Represents a request to filter boreholes by various criteria, with the paging and ordering the\r\nborehole table needs."
       },
       "FilterResponse": {
         "type": "object",
@@ -9215,14 +9496,6 @@
               "$ref": "#/components/schemas/BoreholeListItem"
             },
             "description": "The borehole list items for the current page."
-          },
-          "geoJson": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/IFeature"
-            },
-            "description": "The GeoJSON feature collection for map display.",
-            "nullable": true
           },
           "selectableBoreholeIds": {
             "type": "array",
