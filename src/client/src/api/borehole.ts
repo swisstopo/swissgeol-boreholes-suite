@@ -1,5 +1,13 @@
+import { useCallback } from "react";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  QueryClient,
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
@@ -113,14 +121,30 @@ const canUserManageBorehole = async (id: number) =>
 export const boreholeQueryKey = "boreholes";
 
 // Prefix of every overview query (the filtered boreholes and the filter statistics), so all of them can be
-// marked stale at once, see createQueryClient.
-export const overviewQueryKey = [boreholeQueryKey, "overview"] as const;
+// marked stale at once, see markOverviewStale.
+const overviewQueryKey = [boreholeQueryKey, "overview"] as const;
 
 // The overview downloads every filtered borehole, about 1 MB for 38,500 of them even compressed. Its results stay
 // fresh for five minutes, so switching browser tabs, returning from a borehole or paging back shows them without
-// downloading them again. Changes made in this app mark them stale at once (see createQueryClient); changes in
+// downloading them again. Changes made in this app mark them stale at once (see markOverviewStale); changes in
 // other browser tabs or by other users show after at most five minutes.
 const overviewStaleTime = 5 * 60 * 1000;
+
+/**
+ * Marks every overview query stale without downloading it; the overview fetches again when it is shown next.
+ * Every mutation does this on its own (see createQueryClient). Changes that do not run as a mutation and can
+ * alter what the overview lists or filters by, such as uploading a photo or profile, call it themselves.
+ * @param queryClient The app wide query client.
+ */
+export const markOverviewStale = (queryClient: QueryClient) =>
+  queryClient.invalidateQueries({ queryKey: overviewQueryKey, refetchType: "none" });
+
+/** {@link markOverviewStale} for components, stable across renders. */
+export const useMarkOverviewStale = () => {
+  const queryClient = useQueryClient();
+  // Not awaited: with refetchType "none" nothing is downloaded, so there is nothing to wait for.
+  return useCallback(() => void markOverviewStale(queryClient), [queryClient]);
+};
 
 export const useBorehole = (id: number) => {
   const getCodelistName = useCodelistDisplayValues();
