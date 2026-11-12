@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { hashKey } from "@tanstack/react-query";
 import { describe, expect, it } from "vitest";
-import { buildBulkEditRequest, FilterRequest, toMapFilterCriteria } from "./borehole.ts";
 import { toPolygonGeometry } from "../pages/overview/polygonFilter.ts";
+import { buildBulkEditRequest, FilterRequest, toMapFilterCriteria } from "./borehole.ts";
 
 describe("buildBulkEditRequest", () => {
   it("maps changed entries into update + fieldsToUpdate mask", () => {
