@@ -116,6 +116,12 @@ export const boreholeQueryKey = "boreholes";
 // marked stale at once, see createQueryClient.
 export const overviewQueryKey = [boreholeQueryKey, "overview"] as const;
 
+// The overview downloads every filtered borehole, about 1 MB for 38,500 of them even compressed. Its results stay
+// fresh for five minutes, so switching browser tabs, returning from a borehole or paging back shows them without
+// downloading them again. Changes made in this app mark them stale at once (see createQueryClient); changes in
+// other browser tabs or by other users show after at most five minutes.
+const overviewStaleTime = 5 * 60 * 1000;
+
 export const useBorehole = (id: number) => {
   const getCodelistName = useCodelistDisplayValues();
 
@@ -528,6 +534,7 @@ export const filterBoreholesQueryOptions = (filterRequest: FilterRequest) => {
   return queryOptions({
     queryKey: [...overviewQueryKey, "filter", filterRequestSubmission],
     queryFn: () => filterBoreholes(filterRequestSubmission),
+    staleTime: overviewStaleTime,
   });
 };
 
@@ -546,6 +553,7 @@ export const useFilterStats = (filterRequest: FilterRequest, enabled: boolean) =
   return useQuery({
     queryKey: [...overviewQueryKey, "stats", filterRequestSubmission],
     queryFn: () => fetchFilterStats(filterRequestSubmission),
+    staleTime: overviewStaleTime,
     enabled,
     placeholderData: keepPreviousData,
   });
