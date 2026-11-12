@@ -73,13 +73,6 @@ public class FilterServiceTest
         Assert.IsNotNull(editor);
         var allowedWorkgroupIds = editor.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
 
-        // GeoJSON contains all editor-visible boreholes that have geometry (LocationX and LocationY set).
-        var expectedGeoJsonCount = await context.Boreholes
-            .AsNoTracking()
-            .Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value))
-            .CountAsync(b => b.LocationX != null && b.LocationY != null);
-        Assert.AreEqual(expectedGeoJsonCount, result.GeoJson.Count);
-
         foreach (var borehole in result.Boreholes)
         {
             Assert.IsTrue(borehole.WorkgroupId.HasValue);
@@ -399,33 +392,6 @@ public class FilterServiceTest
         {
             Assert.IsNull(borehole.NationalInterest);
         }
-    }
-
-    [TestMethod]
-    public async Task FilterBoreholesReturnsGeoJsonFeatureCollection()
-    {
-        var filterRequest = new FilterRequest
-        {
-            PageNumber = 1,
-            PageSize = 10,
-        };
-
-        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
-
-        Assert.IsNotNull(result);
-        Assert.IsNotNull(result.GeoJson);
-
-        // GeoJSON contains all filtered boreholes with geometry, not just the paginated ones.
-        var expectedGeoJsonCount = await context.Boreholes
-            .AsNoTracking()
-            .CountAsync(b => b.LocationX != null && b.LocationY != null);
-        Assert.AreEqual(expectedGeoJsonCount, result.GeoJson.Count);
-        var firstFeature = result.GeoJson.OrderBy(g => g.Attributes["id"]).First();
-        Assert.AreEqual(4, firstFeature.Attributes.Count);
-        Assert.AreEqual(1000000, firstFeature.Attributes["id"]);
-        Assert.AreEqual(null, firstFeature.Attributes["type"]);
-        Assert.AreEqual("Luther Littel", firstFeature.Attributes["name"]);
-        Assert.AreEqual(null, firstFeature.Attributes["restriction"]);
     }
 
     [TestMethod]
@@ -1296,20 +1262,6 @@ public class FilterServiceTest
         Assert.AreEqual(originalBorehole.Name, filteredBorehole.Name);
         Assert.AreEqual(originalBorehole.PurposeId, filteredBorehole.PurposeId);
         Assert.AreEqual(originalBorehole.StatusId, filteredBorehole.StatusId);
-
-        // Assert GeoJson feature geometry
-        if (originalBorehole.Geometry != null)
-        {
-            Assert.IsNotNull(result.GeoJson);
-            Assert.AreEqual(1, result.GeoJson.Count);
-            var feature = result.GeoJson.First();
-            Assert.IsNotNull(feature.Geometry);
-            Assert.IsTrue(feature.Geometry is Point);
-            var point = (Point)feature.Geometry;
-            Assert.AreEqual(originalBorehole.Geometry.X, point.X);
-            Assert.AreEqual(originalBorehole.Geometry.Y, point.Y);
-            Assert.AreEqual(originalBorehole.Geometry.SRID, point.SRID);
-        }
     }
 
     [TestMethod]
@@ -1593,11 +1545,6 @@ public class FilterServiceTest
         Assert.AreEqual(1, result.PageNumber);
         Assert.AreEqual(100, result.TotalCount);
         Assert.AreEqual(100, result.SelectableBoreholeIds.Count());
-
-        var expectedGeoJsonCount = await context.Boreholes
-            .AsNoTracking()
-            .CountAsync(b => b.LocationX != null && b.LocationY != null);
-        Assert.AreEqual(expectedGeoJsonCount, result.GeoJson.Count());
     }
 
     [TestMethod]
