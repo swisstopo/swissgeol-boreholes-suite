@@ -8,6 +8,7 @@ import {
   FilterRequest,
   FilterResponse,
   useFilterBoreholes,
+  useFilterBoreholesMap,
 } from "../../../api/borehole.ts";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
@@ -124,6 +125,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     selectableBoreholeIds: noSelectableBoreholeIds,
   };
   const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
+  const { data: mapFeatures } = useFilterBoreholesMap(activeFilterRequest, sessionRestored);
 
   // The selection is cleared only when the selectable boreholes change and not whenever the boreholes
   // change, which also happens on every pagination and order event (server side pagination/ordering).
@@ -166,7 +168,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       />
       {sessionRestored && (
         <MapComponent
-          geoJson={filterResponse.geoJson}
+          geoJson={mapFeatures ?? null}
           highlighted={hover ? [hover] : []}
           hover={(ids: number[]) => setRowsToHighlight(ids)}
           layers={overlays}
