@@ -4,6 +4,7 @@ using BDMS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -336,6 +337,21 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     }
 
     /// <summary>
+    /// Returns the map features of all boreholes matching the filter criteria. The criteria carry no
+    /// paging or ordering, so paging and sorting the borehole table never reload the map data.
+    /// </summary>
+    /// <param name="filterCriteria">The filter criteria; may be null to return all boreholes the caller can see.</param>
+    /// <returns>A GeoJSON feature collection with one point per filtered borehole that has coordinates.</returns>
+    [HttpPost("filter/map")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<FeatureCollection>> FilterMapAsync([FromBody] BoreholeFilterCriteria? filterCriteria)
+    {
+        if (ValidateFilterPolygon(filterCriteria) is { } invalidPolygon) return invalidPolygon;
+
+        return await ExecuteAsAuthenticatedUserAsync("loading map features", user => filterService.GetMapFeaturesAsync(filterCriteria, user)).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Computes per-option filter counts under the active filter request,
     /// using filter-exclusion semantics so each dimension's counts predict what
     /// adding that option would yield.
@@ -590,9 +606,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     // come from another coordinate system (WGS84, LV03) and would silently match no borehole.
     private static readonly Envelope Lv95ValidArea = new(2_420_000, 2_900_000, 1_030_000, 1_350_000);
 
-    private ObjectResult? ValidateFilterPolygon(FilterRequest? filterRequest)
+    private ObjectResult? ValidateFilterPolygon(BoreholeFilterCriteria? filterCriteria)
     {
-        var polygon = filterRequest?.Polygon;
+        var polygon = filterCriteria?.Polygon;
         if (polygon is null) return null;
 
         if (polygon is not Polygon)

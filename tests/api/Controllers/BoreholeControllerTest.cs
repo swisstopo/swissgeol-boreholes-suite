@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using static BDMS.Helpers;
 
@@ -1047,16 +1048,21 @@ public class BoreholeControllerTest
         filterServiceMock
             .Setup(x => x.GetSuggestionsAsync(BoreholeSuggestionField.OriginalName, "test", 10, It.IsAny<FilterRequest?>(), It.IsAny<User>()))
             .ReturnsAsync(new List<BoreholeSuggestion>());
+        filterServiceMock
+            .Setup(x => x.GetMapFeaturesAsync(It.IsAny<BoreholeFilterCriteria?>(), It.IsAny<User>()))
+            .ReturnsAsync(new FeatureCollection());
 
         ActionResultAssert.IsOk((await controller.FilterAsync(filterRequest)).Result);
         ActionResultAssert.IsOk((await controller.FilterStatsAsync(filterRequest)).Result);
         ActionResultAssert.IsOk((await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "test", limit: 10, filterRequest)).Result);
+        ActionResultAssert.IsOk((await controller.FilterMapAsync(filterRequest)).Result);
 
         filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.Is<FilterRequest>(r => r.Polygon == polygon), It.IsAny<User>()), Times.Once);
         filterServiceMock.Verify(x => x.GetFilterStatsAsync(It.Is<FilterRequest?>(r => r != null && r.Polygon == polygon), It.IsAny<User>()), Times.Once);
         filterServiceMock.Verify(
             x => x.GetSuggestionsAsync(BoreholeSuggestionField.OriginalName, "test", 10, It.Is<FilterRequest?>(r => r != null && r.Polygon == polygon), It.IsAny<User>()),
             Times.Once);
+        filterServiceMock.Verify(x => x.GetMapFeaturesAsync(It.Is<BoreholeFilterCriteria?>(c => c != null && c.Polygon == polygon), It.IsAny<User>()), Times.Once);
     }
 
     private async Task AssertFilterEndpointsRejectAsync(FilterRequest filterRequest)
@@ -1064,9 +1070,11 @@ public class BoreholeControllerTest
         ActionResultAssert.IsBadRequest((await controller.FilterAsync(filterRequest)).Result);
         ActionResultAssert.IsBadRequest((await controller.FilterStatsAsync(filterRequest)).Result);
         ActionResultAssert.IsBadRequest((await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "test", limit: 10, filterRequest)).Result);
+        ActionResultAssert.IsBadRequest((await controller.FilterMapAsync(filterRequest)).Result);
 
         filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()), Times.Never);
         filterServiceMock.Verify(x => x.GetFilterStatsAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()), Times.Never);
+        filterServiceMock.Verify(x => x.GetMapFeaturesAsync(It.IsAny<BoreholeFilterCriteria?>(), It.IsAny<User>()), Times.Never);
     }
 
     private static Polygon CreateSquare(double centerX, double centerY, double halfSize) =>
@@ -1079,6 +1087,50 @@ public class BoreholeControllerTest
             new Coordinate(centerX - halfSize, centerY - halfSize),
         }))
         { SRID = SpatialReferenceIdentifier.LV95 };
+
+    [TestMethod]
+    public async Task FilterMapAsyncReturnsFeaturesFromService()
+    {
+        var features = new FeatureCollection
+        {
+            new Feature(new Point(2_600_000, 1_200_000), new AttributesTable { { "id", 1 } }),
+        };
+        var criteria = new BoreholeFilterCriteria { TypeId = new[] { 20101001 } };
+        filterServiceMock
+            .Setup(x => x.GetMapFeaturesAsync(criteria, It.Is<User>(u => u.SubjectId == AdminSubjectId)))
+            .ReturnsAsync(features);
+
+        var result = await controller.FilterMapAsync(criteria);
+
+        ActionResultAssert.IsOk(result.Result);
+        var okResult = result.Result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreSame(features, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task FilterMapAsyncWithInvalidUserReturnsUnauthorized()
+    {
+        controller.HttpContext.SetClaimsPrincipal("unknown_subject_id", PolicyNames.Viewer);
+
+        var result = await controller.FilterMapAsync(new BoreholeFilterCriteria());
+
+        ActionResultAssert.IsUnauthorized(result.Result);
+    }
+
+    [TestMethod]
+    public async Task FilterMapAsyncWithExceptionReturnsProblem()
+    {
+        filterServiceMock
+            .Setup(x => x.GetMapFeaturesAsync(It.IsAny<BoreholeFilterCriteria?>(), It.IsAny<User>()))
+            .ThrowsAsync(new InvalidOperationException("Unexpected error"));
+
+        var result = await controller.FilterMapAsync(new BoreholeFilterCriteria());
+
+        var objectResult = result.Result as ObjectResult;
+        Assert.IsNotNull(objectResult);
+        Assert.AreEqual(500, objectResult.StatusCode);
+    }
 
     [TestMethod]
     public async Task FilterBoreholesAsyncWithViewerRoleReturnsOkResult()
