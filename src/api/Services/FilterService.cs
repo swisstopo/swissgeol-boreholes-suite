@@ -44,9 +44,9 @@ public class FilterService : IFilterService
             skip = (filterRequest.PageNumber - 1) * pageSize;
         }
 
-        // One unordered query over the whole filtered set feeds the selectable ids, the map and the total count.
+        // One unordered query over the whole filtered set feeds the selectable ids and the total count.
         var filteredBoreholes = await query
-            .Select(b => new FilteredBoreholeRow(b.Id, b.Name, b.TypeId, b.RestrictionId, b.LocationX, b.LocationY, b.Locked))
+            .Select(b => new SelectableBoreholeRow(b.Id, b.Locked))
             .ToListAsync()
             .ConfigureAwait(false);
         filteredBoreholes.Sort((a, b) => a.Id.CompareTo(b.Id));
@@ -94,7 +94,6 @@ public class FilterService : IFilterService
             pageSize,
             totalPages,
             boreholes,
-            BuildGeoJson(filteredBoreholes.Select(b => new MapBoreholeRow(b.Id, b.Name, b.TypeId, b.RestrictionId, b.LocationX, b.LocationY))),
             allSelectableBoreholeIds);
     }
 
@@ -680,7 +679,7 @@ public class FilterService : IFilterService
         return featureCollection;
     }
 
-    private sealed record FilteredBoreholeRow(int Id, string? Name, int? TypeId, int? RestrictionId, double? LocationX, double? LocationY, DateTime? Locked);
+    private sealed record SelectableBoreholeRow(int Id, DateTime? Locked);
 
     private sealed record MapBoreholeRow(int Id, string? Name, int? TypeId, int? RestrictionId, double? LocationX, double? LocationY);
 }

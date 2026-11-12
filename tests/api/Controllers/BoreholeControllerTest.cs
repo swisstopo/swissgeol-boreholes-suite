@@ -894,7 +894,6 @@ public class BoreholeControllerTest
             10,
             10,
             new List<BoreholeListItem>(),
-            null,
             new List<int>());
 
         filterServiceMock
@@ -982,7 +981,6 @@ public class BoreholeControllerTest
             25,
             2,
             new List<BoreholeListItem>(),
-            null,
             new List<int>());
 
         FilterRequest? capturedRequest = null;
@@ -1041,7 +1039,7 @@ public class BoreholeControllerTest
 
         filterServiceMock
             .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()))
-            .ReturnsAsync(new FilterResponse(0, 1, 10, 0, new List<BoreholeListItem>(), null, new List<int>()));
+            .ReturnsAsync(new FilterResponse(0, 1, 10, 0, new List<BoreholeListItem>(), new List<int>()));
         filterServiceMock
             .Setup(x => x.GetFilterStatsAsync(It.IsAny<FilterRequest?>(), It.IsAny<User>()))
             .ReturnsAsync(new FilterStatsResponse());
@@ -1149,7 +1147,6 @@ public class BoreholeControllerTest
             10,
             1,
             new List<BoreholeListItem>(),
-            null,
             new List<int>());
 
         filterServiceMock

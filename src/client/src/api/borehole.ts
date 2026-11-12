@@ -378,7 +378,6 @@ export interface FilterResponse {
   pageSize: number;
   totalPages: number;
   boreholes: BoreholeListItem[];
-  geoJson: FeatureCollection | null;
   selectableBoreholeIds: number[];
 }
 

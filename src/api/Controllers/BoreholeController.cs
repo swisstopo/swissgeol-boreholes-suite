@@ -326,7 +326,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// Filters boreholes based on the provided criteria.
     /// </summary>
     /// <param name="filterRequest">The filter request with filtering criteria.</param>
-    /// <returns>A paginated response with filtered boreholes, GeoJSON for map display, and all selectable (unlocked) IDs.</returns>
+    /// <returns>A paginated response with filtered boreholes and all selectable (unlocked) IDs. The map data comes from <see cref="FilterMapAsync"/>.</returns>
     [HttpPost("filter")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<FilterResponse>> FilterAsync([FromBody] FilterRequest filterRequest)
