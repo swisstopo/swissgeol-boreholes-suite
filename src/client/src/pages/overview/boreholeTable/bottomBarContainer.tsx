@@ -7,6 +7,7 @@ import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
 import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
+import { BoreholeCountState } from "./boreholeNumbersPreview.tsx";
 import { BoreholeTable } from "./boreholeTable.tsx";
 import BottomBar from "./bottomBar.tsx";
 import { BottomDrawer } from "./bottomDrawer.tsx";
@@ -14,7 +15,7 @@ import { BottomDrawer } from "./bottomDrawer.tsx";
 interface BottomBarContainerProps {
   boreholes: BoreholeListItem[];
   totalCount: number;
-  isLoadingBoreholes: boolean;
+  countState: BoreholeCountState;
   selectableBoreholeIds: number[];
   setHover: Dispatch<SetStateAction<number | null>>;
   onBulkEdit: () => void;
@@ -31,7 +32,7 @@ interface BottomBarContainerProps {
 const BottomBarContainer = ({
   boreholes,
   totalCount,
-  isLoadingBoreholes,
+  countState,
   selectableBoreholeIds,
   onBulkEdit,
   setHover,
@@ -83,7 +84,7 @@ const BottomBarContainer = ({
         onCopyBorehole={() => void onCopyBorehole()}
         onDeleteMultiple={onDeleteMultiple}
         totalCount={totalCount}
-        isLoadingBoreholes={isLoadingBoreholes}
+        countState={countState}
         setIsExporting={setIsExporting}
       />
       <BottomDrawer drawerOpen={bottomDrawerOpen}>
@@ -91,7 +92,7 @@ const BottomBarContainer = ({
           boreholes={boreholes}
           totalCount={totalCount}
           selectableBoreholeIds={selectableBoreholeIds}
-          isLoading={isLoadingBoreholes || isCopying || isBulkDeleting}
+          isLoading={countState === "loading" || isCopying || isBulkDeleting}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           selectionModel={selectionModel}
