@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
 using Npgsql;
+using System.Globalization;
 using System.Text.Json;
 
 namespace BDMS.Services;
@@ -267,7 +268,8 @@ public class FilterServiceTest
     private static string SquareGeoJson(double centerX, double centerY, double halfSize)
     {
         var (minX, minY, maxX, maxY) = (centerX - halfSize, centerY - halfSize, centerX + halfSize, centerY + halfSize);
-        return FormattableString.Invariant(
+        return string.Create(
+            CultureInfo.InvariantCulture,
             $$"""{"type":"Polygon","coordinates":[[[{{minX}},{{minY}}],[{{maxX}},{{minY}}],[{{maxX}},{{maxY}}],[{{minX}},{{maxY}}],[{{minX}},{{minY}}]]]}""");
     }
 
