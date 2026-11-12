@@ -32,5 +32,5 @@ public class BoreholeImport : Borehole
     /// instead of aborting the whole file. Not part of the JSON import.
     /// </summary>
     [JsonIgnore]
-    public string? SourceTypeCodelistIdsText { get; set; }
+    public string? SourceTypeIds { get; set; }
 }
