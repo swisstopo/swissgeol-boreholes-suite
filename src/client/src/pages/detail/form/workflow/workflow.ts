@@ -6,7 +6,12 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { canEditQueryKey, canManageQueryKey } from "../../../../api/borehole.ts";
+import {
+
+  canEditQueryKey,
+  canManageQueryKey,
+  filterBoreholesMapQueryKey,
+} from "../../../../api/borehole.ts";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
 import { WorkflowStatus as GeneratedWorkflowStatus } from "../../../../api/generated";
 import { boreholeQueryKey } from "../../../../api/queryKeys.ts";
@@ -121,6 +126,9 @@ export const useWorkflowMutation = () => {
     mutationFn: (request: WorkflowChangeRequest) => sendWorkflowChangeRequest(request),
     onSuccess: (_, variables) => {
       invalidateBoreholeAndWorkflowQueries(variables.boreholeId);
+      // The workflow status is a filter criterion, and a status change needs no edit mode, whose lock
+      // would invalidate the map data otherwise.
+      void queryClient.invalidateQueries({ queryKey: filterBoreholesMapQueryKey });
     },
   });
 
