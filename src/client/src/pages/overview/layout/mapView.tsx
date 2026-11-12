@@ -8,6 +8,7 @@ import {
   FilterRequest,
   FilterResponse,
   useFilterBoreholes,
+  useFilterBoreholesMap,
 } from "../../../api/borehole.ts";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
@@ -133,6 +134,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   };
   const { data, isPending } = useFilterBoreholes(filterRequest, sessionRestored);
   const filterResponse = data ?? emptyFilterResponse;
+  const { data: mapFeatures } = useFilterBoreholesMap(activeFilterRequest, sessionRestored);
   const countState = getBoreholeCountState(isPending, data !== undefined);
 
   // The selection is cleared only when the selectable boreholes change and not whenever the boreholes
@@ -176,7 +178,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       />
       {sessionRestored && (
         <MapComponent
-          geoJson={filterResponse.geoJson}
+          geoJson={mapFeatures ?? null}
           highlighted={hover ? [hover] : []}
           hover={(ids: number[]) => setRowsToHighlight(ids)}
           layers={overlays}
