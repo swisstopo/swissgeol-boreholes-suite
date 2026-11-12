@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import { Box } from "@mui/material";
-import { useFilterStats } from "../../../../api/borehole.ts";
+import { FilterStatsResponse } from "../../../../api/borehole.ts";
 import { FormContainer } from "../../../../components/form/form.ts";
 import { FilterKey, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
 import { FilterAdaptiveSelect } from "./FilterAdaptiveSelect.tsx";
@@ -18,12 +18,12 @@ import {
 
 interface ListFilterProps {
   inputConfig: FilterInputConfig;
+  stats: FilterStatsResponse | undefined;
 }
 
-export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
+export const ListFilter: FC<ListFilterProps> = ({ inputConfig, stats }) => {
   const { activeFilters, setFilterField } = useBoreholeUrlParams();
   const searchData = inputConfig?.searchData;
-  const { data: stats } = useFilterStats(activeFilters);
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {

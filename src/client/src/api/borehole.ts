@@ -411,7 +411,7 @@ export const filterBoreholes = async (filterRequest: FilterRequestSubmission): P
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
-export const fetchFilterStats = async (filterRequest: FilterRequestSubmission): Promise<FilterStatsResponse> => {
+const fetchFilterStats = async (filterRequest: FilterRequestSubmission): Promise<FilterStatsResponse> => {
   return await fetchApiV2WithApiError<FilterStatsResponse>("borehole/filter/stats", "POST", filterRequest);
 };
 
@@ -525,12 +525,19 @@ export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true)
   });
 };
 
-export const useFilterStats = (filterRequest: FilterRequest) => {
+/**
+ * The counts shown next to the filter options. One request runs many database queries, so the filter drawer
+ * enables it only while it is open.
+ * @param filterRequest The active filters.
+ * @param enabled Whether the statistics may be requested.
+ */
+export const useFilterStats = (filterRequest: FilterRequest, enabled: boolean) => {
   const filterRequestSubmission = toFilterRequestSubmission(filterRequest);
 
   return useQuery({
     queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
     queryFn: () => fetchFilterStats(filterRequestSubmission),
+    enabled,
     placeholderData: keepPreviousData,
   });
 };

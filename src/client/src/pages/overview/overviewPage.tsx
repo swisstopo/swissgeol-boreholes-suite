@@ -38,7 +38,7 @@ export const OverviewPage = () => {
     ),
     filters: (
       <FormProvider {...formMethods}>
-        <FilterComponent toggleDrawer={toggleSideDrawer} formMethods={formMethods} />
+        <FilterComponent toggleDrawer={toggleSideDrawer} formMethods={formMethods} isDrawerOpen={sideDrawerOpen} />
       </FormProvider>
     ),
     newBorehole: <NewBoreholePanel toggleDrawer={toggleSideDrawer} />,
