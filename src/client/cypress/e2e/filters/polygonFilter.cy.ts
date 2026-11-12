@@ -37,7 +37,7 @@ describe("Polygon filter tests", () => {
     goToRouteAndAcceptTerms("/");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000);
-    cy.wait("@borehole_filter");
+    cy.wait("@borehole_filter_map");
     cy.get('[data-cy="show-filter-button"]').click();
 
     assertPolygonFilterInactive();
@@ -85,6 +85,10 @@ describe("Polygon filter tests", () => {
       { method: "POST", pathname: "/api/v2/borehole/filter/stats" },
       aliasRequestsWithPolygon(() => "polygon_filter_stats"),
     );
+    cy.intercept(
+      { method: "POST", pathname: "/api/v2/borehole/filter/map" },
+      aliasRequestsWithPolygon(() => "polygon_filter_map"),
+    );
     // The western half of the seed data, a fixed area unlike a drawn polygon: some but not all of its boreholes
     // have national interest.
     goToRouteAndAcceptTerms("/?polygon=2480000,1070000,2650000,1070000,2650000,1310000,2480000,1310000");
@@ -97,6 +101,12 @@ describe("Polygon filter tests", () => {
         expect(body).not.to.have.property("ids");
       });
     cy.wait("@polygon_filter_stats").its("request.body.polygon.type").should("equal", "Polygon");
+    cy.wait("@polygon_filter_map")
+      .its("request.body")
+      .should((body: { polygon?: { type: string } }) => {
+        expect(body.polygon?.type).to.equal("Polygon");
+        expect(body).not.to.have.property("pageNumber");
+      });
     cy.location("search").should("contain", "polygon=");
     cy.dataCy("boreholes-number-preview").should("have.text", "33");
 
