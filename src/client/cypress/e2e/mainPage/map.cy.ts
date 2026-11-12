@@ -1,4 +1,4 @@
-import { showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
+import { showTableAndWaitForData, sortBy, verifyRowContains } from "../helpers/dataGridHelpers";
 import { loginAsEditor, returnToOverview } from "../helpers/testHelpers";
 import { WindowWithMaps } from "../helpers/window.ts";
 
@@ -64,8 +64,12 @@ describe("Map tests", () => {
       .then(win => mapView(win)?.getCenter())
       .as("center");
 
+    cy.intercept({ method: "POST", pathname: "/api/v2/borehole/filter" }).as("sorted_filter");
+    cy.intercept({ method: "POST", pathname: "/api/v2/borehole/filter/map" }).as("map_after_sort");
+
     sortBy("Name");
-    cy.wait("@borehole_filter");
+    cy.wait("@sorted_filter");
+    verifyRowContains("Zelma Gorczany", 0);
 
     cy.get<number>("@resolution").then(resolution => {
       cy.window().should(win => expect(mapView(win)?.getResolution()).to.equal(resolution));
@@ -73,6 +77,6 @@ describe("Map tests", () => {
     cy.get<number[]>("@center").then(center => {
       cy.window().should(win => expect(mapView(win)?.getCenter()).to.deep.equal(center));
     });
-    cy.get("@borehole_filter_map.all").should("have.length", 1);
+    cy.get("@map_after_sort.all").should("have.length", 0);
   });
 });
