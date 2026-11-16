@@ -1015,10 +1015,6 @@ export type FilterRequest = {
    */
   workgroupId?: Array<number> | null;
   /**
-   * Gets or sets multiple borehole IDs filter.
-   */
-  ids?: Array<number> | null;
-  /**
    * Gets or sets the restriction until date start filter.
    */
   restrictionUntilFrom?: string | null;
@@ -3996,10 +3992,6 @@ export type FilterRequestWritable = {
    * Gets or sets the workgroup ID filter.
    */
   workgroupId?: Array<number> | null;
-  /**
-   * Gets or sets multiple borehole IDs filter.
-   */
-  ids?: Array<number> | null;
   /**
    * Gets or sets the restriction until date start filter.
    */

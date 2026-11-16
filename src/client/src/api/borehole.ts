@@ -4,6 +4,7 @@ import { keepPreviousData, queryOptions, useMutation, useQuery, useQueryClient }
 import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
+import { parseAsPolygon, toPolygonGeometry } from "../pages/overview/polygonFilter.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { downloadPost } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
@@ -318,7 +319,6 @@ interface BaseFilterRequest {
   typeId?: number[] | null;
   purposeId?: number[] | null;
   workgroupId?: number[] | null;
-  ids?: number[] | null;
   restrictionId?: number[] | null;
   canton?: string[] | null;
   municipality?: string[] | null;
@@ -492,6 +492,8 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
 
   const toArray = (n: number | undefined) => (n === undefined ? undefined : [n]);
 
+  const sessionPolygon = parseAsPolygon.parse(get(SessionKeys.polygon) ?? "");
+
   const allFilterParams = {
     pageNumber: (getInt(SessionKeys.page) ?? 0) + 1,
     pageSize: getInt(SessionKeys.pageSize) ?? 100,
@@ -523,6 +525,7 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
     hasPhotos: get(SessionKeys.hasPhotos) as BooleanFilterValue,
     hasDocuments: get(SessionKeys.hasDocuments) as BooleanFilterValue,
     workflowStatus: toArray(getInt(SessionKeys.workflowStatus)),
+    polygon: sessionPolygon === null ? undefined : toPolygonGeometry(sessionPolygon),
   };
   return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
 }
