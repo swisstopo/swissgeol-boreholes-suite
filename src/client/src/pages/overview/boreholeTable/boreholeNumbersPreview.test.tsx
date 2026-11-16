@@ -14,7 +14,7 @@ void i18n.use(initReactI18next).init({
       translation: {
         boreholes: "boreholes",
         boreholeCountLoading: "Loading the borehole count",
-        boreholeCountNotLoaded: "could not be loaded",
+        couldNotBeLoaded: "could not be loaded",
       },
     },
   },
@@ -50,7 +50,7 @@ describe("BoreholeNumbersPreview", () => {
   it("says the count could not be loaded instead of showing 0 when the boreholes failed to load", () => {
     renderPreview(0, "failed");
 
-    expect(screen.getByText("could not be loaded")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("could not be loaded");
     expect(screen.queryByText("0")).not.toBeInTheDocument();
     expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
   });

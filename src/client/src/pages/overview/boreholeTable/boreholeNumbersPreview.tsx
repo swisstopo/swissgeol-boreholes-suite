@@ -25,8 +25,8 @@ export const BoreholeNumbersPreview: FC<BoreholeNumbersPreviewProps> = ({ boreho
         <CircularProgress size={16} sx={{ ml: "0.5em" }} aria-label={t("boreholeCountLoading")} />
       )}
       {countState === "failed" && (
-        <Typography variant="body2" sx={{ ml: "0.5em" }} data-cy="boreholes-number-preview-failed">
-          {t("boreholeCountNotLoaded")}
+        <Typography variant="body2" component="output" sx={{ ml: "0.5em" }} data-cy="boreholes-number-preview-failed">
+          {t("couldNotBeLoaded")}
         </Typography>
       )}
       {countState === "loaded" && (

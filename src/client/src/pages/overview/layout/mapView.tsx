@@ -197,6 +197,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           featureIds={featureIds}
           setFeatureIds={setFeatureIds}
           displayErrorMessage={displayErrorMessage}
+          isLoading={countState === "loading"}
         />
       )}
       <BottomBarContainer

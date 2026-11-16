@@ -160,15 +160,15 @@ export const Table = <T extends GridValidRowModel>({
           "--height": "0px",
           ...quickFilterStyles,
           ...disabledStyles,
-          ...sx,
           ...loadingStyles,
+          ...sx,
         }
       : {
           "--DataGrid-overlayHeight": "44px",
           ...quickFilterStyles,
           ...disabledStyles,
-          ...sx,
           ...loadingStyles,
+          ...sx,
         };
 
   return (

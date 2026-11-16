@@ -291,6 +291,8 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         isRowSelectable={(params: GridRowParams<BoreholeListItem>) => params.row.locked === null}
         rowSelectionModel={selectionModel}
         showQuickFilter={false}
+        // The overlay spans the visible rows, so the spinner sits in the middle of the table, not under its header.
+        sx={{ "& .MuiDataGrid-overlay": { alignItems: "center" } }}
       />
     </Suspense>
   );
