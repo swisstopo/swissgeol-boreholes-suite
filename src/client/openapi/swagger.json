@@ -9024,15 +9024,6 @@
             "description": "Gets or sets the workgroup ID filter.",
             "nullable": true
           },
-          "ids": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Gets or sets multiple borehole IDs filter.",
-            "nullable": true
-          },
           "restrictionUntilFrom": {
             "type": "string",
             "description": "Gets or sets the restriction until date start filter.",

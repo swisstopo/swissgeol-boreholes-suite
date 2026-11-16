@@ -39,5 +39,6 @@ export const SessionKeys = {
   canton: "filter_canton",
   municipality: "filter_municipality",
   logToolTypeId: "filter_logToolTypeId",
+  polygon: "filter_polygon",
   sourceTypeId: "filter_sourceTypeId",
 } as const;

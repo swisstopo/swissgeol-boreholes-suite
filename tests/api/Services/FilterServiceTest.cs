@@ -1,6 +1,10 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO.Converters;
+using Npgsql;
+using System.Globalization;
+using System.Text.Json;
 
 namespace BDMS.Services;
 
@@ -80,29 +84,6 @@ public class FilterServiceTest
         {
             Assert.IsTrue(borehole.WorkgroupId.HasValue);
             Assert.IsTrue(allowedWorkgroupIds.Contains(borehole.WorkgroupId.Value));
-        }
-    }
-
-    [TestMethod]
-    public async Task FilterBoreholesWithIdsFilterReturnsMultipleBoreholes()
-    {
-        var testIds = new List<int> { 1_000_010, 1_000_040, 1_000_070 };
-        var filterRequest = new FilterRequest
-        {
-            Ids = testIds,
-            PageNumber = 1,
-            PageSize = 100,
-        };
-
-        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual(testIds.Count, result.TotalCount);
-        Assert.AreEqual(testIds.Count, result.Boreholes.Count());
-
-        foreach (var borehole in result.Boreholes)
-        {
-            Assert.IsTrue(testIds.Contains(borehole.Id));
         }
     }
 
@@ -218,6 +199,78 @@ public class FilterServiceTest
 
         // Verify that the borehole we used to create the polygon is in the results
         CollectionAssert.Contains(result.Boreholes.Select(b => b.Id).ToList(), existingBorehole.Id, $"Expected borehole with ID {existingBorehole.Id} to be in the filtered results");
+    }
+
+    [TestMethod]
+    public void FilterRequestReadsPolygonAsLv95()
+    {
+        var filterRequest = DeserializeFilterRequestWithSquare(2600000, 1200000, 10000);
+
+        Assert.IsNotNull(filterRequest.Polygon);
+        Assert.AreEqual(SpatialReferenceIdentifier.LV95, filterRequest.Polygon.SRID);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithPolygonFromJsonReturnsMatchingBoreholes()
+    {
+        var existingBorehole = await context.Boreholes
+            .Where(b => b.LocationX != null && b.LocationY != null && b.Geometry != null)
+            .FirstAsync();
+        var filterRequest = DeserializeFilterRequestWithSquare(existingBorehole.LocationX.Value, existingBorehole.LocationY.Value, 10000);
+        filterRequest.PageNumber = 1;
+        filterRequest.PageSize = 100;
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.IsTrue(result.TotalCount > 0);
+        CollectionAssert.Contains(result.Boreholes.Select(b => b.Id).ToList(), existingBorehole.Id);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithWgs84SridPolygonFailsInPostGis()
+    {
+        // Control for FilterRequestReadsPolygonAsLv95: the global converter reads GeoJSON as SRID 4326,
+        // which PostGIS refuses to intersect with the LV95 borehole points.
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web) { Converters = { new GeoJsonConverterFactory() } };
+        var polygon = JsonSerializer.Deserialize<Geometry>(SquareGeoJson(2600000, 1200000, 10000), options);
+        Assert.IsNotNull(polygon);
+        Assert.AreEqual(4326, polygon.SRID);
+
+        await Assert.ThrowsAsync<PostgresException>(
+            () => filterService.FilterBoreholesAsync(new FilterRequest { Polygon = polygon, PageNumber = 1, PageSize = 100 }, adminUser));
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsWithPolygonCountsOnlyBoreholesInPolygon()
+    {
+        var existingBorehole = await context.Boreholes
+            .Where(b => b.LocationX != null && b.LocationY != null && b.Geometry != null)
+            .FirstAsync();
+        var filterRequest = DeserializeFilterRequestWithSquare(existingBorehole.LocationX.Value, existingBorehole.LocationY.Value, 10000);
+        var totalBoreholes = await context.Boreholes.CountAsync();
+
+        var filtered = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+        var stats = await filterService.GetFilterStatsAsync(filterRequest, adminUser);
+
+        Assert.IsTrue(filtered.TotalCount < totalBoreholes, "The test polygon must exclude some boreholes to prove the stats honour it.");
+        Assert.AreEqual(filtered.TotalCount, stats.HasLogs.True + stats.HasLogs.False);
+    }
+
+    // Deserializes like the API does: the global converter as registered in Program.cs, plus whatever
+    // FilterRequest declares on its properties.
+    private static FilterRequest DeserializeFilterRequestWithSquare(double centerX, double centerY, double halfSize)
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web) { Converters = { new GeoJsonConverterFactory() } };
+        return JsonSerializer.Deserialize<FilterRequest>($$"""{"polygon":{{SquareGeoJson(centerX, centerY, halfSize)}}}""", options)
+            ?? throw new InvalidOperationException("The JSON did not contain a filter request.");
+    }
+
+    private static string SquareGeoJson(double centerX, double centerY, double halfSize)
+    {
+        var (minX, minY, maxX, maxY) = (centerX - halfSize, centerY - halfSize, centerX + halfSize, centerY + halfSize);
+        return string.Create(
+            CultureInfo.InvariantCulture,
+            $$"""{"type":"Polygon","coordinates":[[[{{minX}},{{minY}}],[{{maxX}},{{minY}}],[{{maxX}},{{maxY}}],[{{minX}},{{maxY}}],[{{minX}},{{minY}}]]]}""");
     }
 
     [TestMethod]
@@ -1208,9 +1261,11 @@ public class FilterServiceTest
     [TestMethod]
     public async Task FilterBoreholesAssertsAllBoreholeProperties()
     {
+        // The GeoJSON holds every filtered borehole, not only the page, so the filter must match a single one.
+        var originalBorehole = await context.Boreholes.SingleAsync(b => b.Id == 1_000_010);
         var filterRequest = new FilterRequest
         {
-            Ids = new List<int> { 1_000_010 },
+            OriginalName = originalBorehole.OriginalName,
             PageNumber = 1,
             PageSize = 1,
         };
@@ -1222,7 +1277,6 @@ public class FilterServiceTest
         Assert.AreEqual(1, result.Boreholes.Count());
 
         var filteredBorehole = result.Boreholes.First();
-        var originalBorehole = await context.Boreholes.SingleAsync(b => b.Id.Equals(filteredBorehole.Id));
 
         // Assert all Borehole properties
         Assert.AreEqual(originalBorehole.Id, filteredBorehole.Id);
@@ -1492,7 +1546,7 @@ public class FilterServiceTest
     }
 
     [TestMethod]
-    public async Task FilterBoreholesWithIdsFilterRespectsWorkgroupPermissions()
+    public async Task FilterBoreholesRespectsWorkgroupPermissions()
     {
         // Add a new borehole with workgroup that editor doesn't have access to
         var newBorehole = new Borehole
@@ -1506,7 +1560,7 @@ public class FilterServiceTest
 
         var filterRequest = new FilterRequest
         {
-            Ids = new List<int> { newBorehole.Id },
+            Name = newBorehole.Name,
             PageNumber = 1,
             PageSize = 100,
         };

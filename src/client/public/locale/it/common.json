@@ -429,6 +429,7 @@
   "msgLithologyEmpty": "Nessuna litologia disponibile",
   "msgNoBoreholesInSelection": "Non ci sono perforazioni nella selezione",
   "msgNoStratigraphyExtracted": "L'estrazione è stata completata, ma non è stata trovata alcuna stratigrafia nel profilo.",
+  "msgPolygonOutsideMapExtent": "Il poligono deve trovarsi interamente nell'area della mappa. Si prega di disegnarlo di nuovo.",
   "msgReenablingUserTip": "È possibile disattivare l'utente e riattivarlo in qualsiasi momento",
   "msgReenablingWorkgroupTip": "È possibile disattivare il gruppo di lavoro e riattivarlo in qualsiasi momento",
   "msgSectionsEmpty": "Nessuna sezione disponibile",
