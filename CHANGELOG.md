@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.2.115 - 2026-11-16
+
 ### Changed
 - The overview loads faster on slow connections. API responses are now compressed and no longer indented, which cuts the data downloaded for the map and the table to about 7 percent of its previous size.
 
