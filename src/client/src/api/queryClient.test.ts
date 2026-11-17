@@ -29,7 +29,6 @@ const overviewResponse: FilterResponse = {
   pageSize: 100,
   totalPages: 0,
   boreholes: [],
-  geoJson: null,
   selectableBoreholeIds: [],
 };
 

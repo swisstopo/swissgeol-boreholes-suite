@@ -5,13 +5,9 @@ import { CircularProgress } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { User, WebStorageStateStore } from "oidc-client-ts";
 import {
-  boreholeQueryKey,
-  fetchFilterStats,
-  filterBoreholes,
-  filterBoreholesQueryOptions,
   filterBoreholesMapQueryOptions,
+  filterBoreholesQueryOptions,
   getDefaultFilterRequestFromSession,
-  toFilterRequestSubmission,
 } from "../api/borehole.ts";
 import { useSettings } from "../api/useSettings";
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.tsx";
@@ -36,9 +32,8 @@ const PrefetchBoreholes: FC = () => {
   useEffect(() => {
     if (auth.isAuthenticated) {
       const sessionFilterRequest = getDefaultFilterRequestFromSession();
-      const filterRequestSubmission = toFilterRequestSubmission(sessionFilterRequest);
       // Not awaited: prefetching warms the cache in the background and nothing renders from it yet.
-      void queryClient.prefetchQuery(filterBoreholesQueryOptions(getDefaultFilterRequestFromSession()));
+      void queryClient.prefetchQuery(filterBoreholesQueryOptions(sessionFilterRequest));
       void queryClient.prefetchQuery(filterBoreholesMapQueryOptions(sessionFilterRequest));
     }
   }, [auth.isAuthenticated, queryClient]);

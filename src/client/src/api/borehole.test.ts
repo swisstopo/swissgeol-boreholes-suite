@@ -1,11 +1,18 @@
 // @vitest-environment jsdom
 import { createElement, ReactNode } from "react";
-import { hashKey } from "@tanstack/react-query";
-import { toPolygonGeometry } from "../pages/overview/polygonFilter.ts";
-import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { focusManager, hashKey, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { buildBulkEditRequest, filterBoreholesMapQueryOptions, FilterResponse, FilterRequest,  toMapFilterCriteria,  useFilterBoreholes, useFilterStats } from "./borehole.ts";
+import { toPolygonGeometry } from "../pages/overview/polygonFilter.ts";
+import {
+  buildBulkEditRequest,
+  filterBoreholesMapQueryOptions,
+  FilterRequest,
+  FilterResponse,
+  toMapFilterCriteria,
+  useFilterBoreholes,
+  useFilterStats,
+} from "./borehole.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { createQueryClient } from "./queryClient.ts";
 
@@ -141,7 +148,6 @@ describe("useFilterBoreholes", () => {
     pageSize: 100,
     totalPages: 1,
     boreholes: [],
-    geoJson: null,
     selectableBoreholeIds: [],
   };
 
