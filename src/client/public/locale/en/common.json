@@ -43,7 +43,7 @@
   "analysisAcceptAll": "Apply all",
   "analysisAcceptAllConfirm": "Do you really want to apply all automatically extracted values? This cannot be undone.",
   "analysisAcceptAllOnCloseConfirm": "Some automatically extracted values have not been accepted yet. Apply all automatically extracted values? This cannot be undone.",
-  "analysisModeChangeConfirm": "The automatic analysis suggests a mode change (<strike>{{previous}}</strike> → {{next}}). As soon as you accept changes, the mode change becomes final. All data you entered in the previous mode will be lost. This cannot be undone.",
+  "analysisModeChangeConfirm": "The automatic analysis suggests a mode change (<strike>{{previous}}</strike> → {{next}}). As soon as you accept changes, the mode change becomes final. All data you entered in the previous mode will be lost.",
   "analysisNothingNew": "No new values recognized. The fields already match the description.",
   "analysisNothingRecognized": "No classification possible. The text contains no recognizable features.",
   "analysisResetAll": "Reset all",
