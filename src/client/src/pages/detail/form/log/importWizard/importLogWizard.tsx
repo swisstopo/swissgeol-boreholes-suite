@@ -2,7 +2,7 @@ import { FC, useCallback, useContext, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { Step, StepLabel, Stepper } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { boreholeQueryKey } from "../../../../../api/borehole.ts";
+import { boreholeQueryKey } from "../../../../../api/queryKeys.ts";
 import { uploadResumable } from "../../../../../api/resumableUpload.ts";
 import { isAbortError, progressRefreshIntervalMs } from "../../../../../api/transferProgress.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";

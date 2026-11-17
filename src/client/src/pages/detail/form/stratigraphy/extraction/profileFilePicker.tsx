@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CircularProgress, Dialog, DialogProps, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { FileTextIcon } from "lucide-react";
+import { useMarkOverviewStale } from "../../../../../api/borehole.ts";
 import { labelingFileFormat } from "../../../../../api/dataextractionInterfaces.ts";
 import { uploadProfile, useProfiles, useReloadProfiles } from "../../../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
@@ -25,6 +26,7 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
   const { t } = useTranslation();
   const { data: profiles, isLoading: isLoadingFiles } = useProfiles(boreholeId, true);
   const reloadProfiles = useReloadProfiles(boreholeId);
+  const markOverviewStale = useMarkOverviewStale();
 
   const closeDialog = useCallback(() => {
     setOpen(false);
@@ -47,8 +49,9 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
       const fileResponse = await uploadProfile(boreholeId, file);
       selectFile(fileResponse);
       reloadProfiles();
+      markOverviewStale();
     },
-    [boreholeId, reloadProfiles, selectFile],
+    [boreholeId, markOverviewStale, reloadProfiles, selectFile],
   );
 
   const getFilesButtons = () => {

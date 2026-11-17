@@ -11,10 +11,11 @@ import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../..
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
-import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
+import { BoreholeCountState, BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 
 interface BottomBarProps {
   totalCount: number;
+  countState: BoreholeCountState;
   selectionModel: GridRowSelectionModel;
   onBulkEdit: () => void;
   onDeleteMultiple: () => void;
@@ -28,6 +29,7 @@ const BottomBar = ({
   onDeleteMultiple,
   onCopyBorehole,
   totalCount,
+  countState,
   setIsExporting,
 }: BottomBarProps) => {
   const { t } = useTranslation();
@@ -102,7 +104,7 @@ const BottomBar = ({
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
       ) : (
-        <BoreholeNumbersPreview boreholeCount={totalCount} />
+        <BoreholeNumbersPreview boreholeCount={totalCount} countState={countState} />
       )}
       <Box sx={{ flex: 1 }}></Box>
       <Button

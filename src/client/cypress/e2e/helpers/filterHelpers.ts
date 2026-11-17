@@ -47,5 +47,4 @@ export function checkFilterChipExistsAndRemove(filterName: string) {
     cy.get("svg").click();
   });
   cy.dataCy(`filter-chip-${filterName}`).should("not.exist");
-  cy.wait("@borehole_filter");
 }

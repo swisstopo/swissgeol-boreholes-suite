@@ -56,6 +56,7 @@ export interface MapComponentProps {
   displayErrorMessage: (message: string) => void;
   mapResolution: number;
   mapCenter: [number, number] | null;
+  isLoading: boolean;
 }
 
 export const SRS = "EPSG:2056";

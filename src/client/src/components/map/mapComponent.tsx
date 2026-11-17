@@ -1,6 +1,6 @@
 ﻿import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { Map, View } from "ol";
 import { defaults as defaultControls } from "ol/control";
 import { click, never, pointerMove } from "ol/events/condition";
@@ -52,6 +52,7 @@ export const MapComponent: FC<MapComponentProps> = ({
   displayErrorMessage,
   mapResolution,
   mapCenter,
+  isLoading,
 }) => {
   const { t } = useTranslation();
   const { currentBasemapName } = useContext(BasemapContext);
@@ -585,6 +586,21 @@ export const MapComponent: FC<MapComponentProps> = ({
           position: "relative",
         }}
       />
+      {isLoading && (
+        <Box
+          data-cy="map-loading"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            // The map stays usable while the boreholes load.
+            pointerEvents: "none",
+          }}>
+          <CircularProgress aria-label={t("boreholesLoading")} />
+        </Box>
+      )}
       <ClickablePopup features={hoverFeatures ?? undefined} />
       <BasemapSelector marginBottom={"30px"} />
       <MapControls onZoomIn={onZoomIn} onZoomOut={onZoomOut} onFitToExtent={onFitToExtent} onRotate={undefined} />

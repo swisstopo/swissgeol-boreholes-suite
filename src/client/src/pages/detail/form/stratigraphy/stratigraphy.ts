@@ -1,6 +1,5 @@
 import { UseFormReturn } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { ExtractionBoundingBox } from "../../../../api/dataextractionInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import {
@@ -12,6 +11,7 @@ import {
   Stratigraphy,
   User,
 } from "../../../../api/generated";
+import { boreholeQueryKey } from "../../../../api/queryKeys.ts";
 import { NullableDateString } from "../../../../api/unionTypes.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 

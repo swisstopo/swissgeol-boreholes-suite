@@ -20,6 +20,7 @@ export interface SearchData {
 export interface FilterComponentProps {
   toggleDrawer: (open: boolean) => void;
   formMethods: UseFormReturn;
+  isDrawerOpen: boolean;
 }
 
 type FilterSectionName =

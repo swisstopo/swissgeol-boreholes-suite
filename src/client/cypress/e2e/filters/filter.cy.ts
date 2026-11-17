@@ -223,9 +223,7 @@ describe("Search filter tests", () => {
     hasPagination(false);
     cy.dataCy("boreholes-number-preview").should("have.text", "93");
 
-    cy.intercept("POST", "/api/v2/borehole/filter").as("filter_national_interest_cleared");
     checkFilterChipExistsAndRemove("nationalInterest");
-    cy.wait("@filter_national_interest_cleared");
     // 100 seeded + 4 created in this test.
     verifyPaginationText("1–100 of 104");
     cy.dataCy("boreholes-number-preview").should("have.text", "104");

@@ -39,7 +39,6 @@ vi.mock("../log.ts", async () => {
 
 vi.mock("../../../../../api/resumableUpload.ts", () => ({ uploadResumable }));
 
-vi.mock("../../../../../api/borehole.ts", () => ({ boreholeQueryKey: "boreholes" }));
 vi.mock("../../../../../hooks/useRequiredId.ts", () => ({ useRequiredId: () => 1 }));
 vi.mock("../../../../../hooks/useResetTabStatus.ts", () => ({ useResetTabStatus: () => () => {} }));
 

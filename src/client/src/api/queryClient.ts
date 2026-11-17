@@ -1,6 +1,7 @@
 import { AlertColor } from "@mui/material";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { ApiError } from "./errorClasses.ts";
+import { markOverviewStale } from "./queryKeys.ts";
 import { isAbortError } from "./transferProgress.ts";
 
 /**
@@ -56,5 +57,9 @@ export const createQueryClient = ({ showAlert, translate, retryQueries }: QueryC
           showAlert(translate("errorMutationNotSuccessfull"), "error");
         }
       },
+      // Almost any change can alter what the overview lists or filters by: a borehole, its workflow, logs,
+      // attachments or geometry. Marking the overview stale after every mutation keeps it correct without each
+      // mutation naming it. Nothing is downloaded here; the overview fetches again when it is shown next.
+      onSettled: (_data, _error, _variables, _onMutateResult, _mutation, { client }) => markOverviewStale(client),
     }),
   });

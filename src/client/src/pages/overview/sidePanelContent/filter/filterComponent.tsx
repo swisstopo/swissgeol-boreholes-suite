@@ -41,7 +41,7 @@ const StyledAccordionDetails = styled(AccordionDetails)(() => ({
   flexGrow: 1,
 }));
 
-export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMethods }) => {
+export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMethods, isDrawerOpen }) => {
   const { t } = useTranslation();
   const { polygonSelectionEnabled, setPolygonSelectionEnabled } = useContext(PolygonFilterContext);
 
@@ -49,7 +49,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const activeFilterRequest = useActiveFilterRequest();
 
   const { data: user } = useCurrentUser();
-  const { data: stats } = useFilterStats(activeFilterRequest);
+  const { data: stats } = useFilterStats(activeFilterRequest, isDrawerOpen);
   const auth = useAuth();
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
@@ -220,7 +220,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
               )}
               <StyledAccordionDetails>
                 {!!currentFilterInputConfig && filter?.isSelected && (
-                  <ListFilter inputConfig={currentFilterInputConfig} />
+                  <ListFilter inputConfig={currentFilterInputConfig} stats={stats} />
                 )}
               </StyledAccordionDetails>
             </StyledAccordion>
