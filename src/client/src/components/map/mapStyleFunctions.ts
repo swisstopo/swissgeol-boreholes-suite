@@ -52,8 +52,17 @@ export function boreholeStyleFunction(
   return getSymbolStyle(symbol, getHighlight(feature.get("id") as number, highlights));
 }
 
+const clusterStrokeWidth = 8;
+
+const getClusterRadius = (length: number) => 8 + length.toString().length * 2.5;
+
+/**
+ * Half the height of the drawn cluster circle, including its stroke.
+ */
+export const getClusterHalfHeight = (length: number) => getClusterRadius(length) + clusterStrokeWidth / 2;
+
 export function clusterStyleFunction(length: number): Style {
-  const circleSize = 8 + length.toString().length * 2.5;
+  const circleSize = getClusterRadius(length);
   let clusterStyle = clusterStyleCache[circleSize];
   if (!clusterStyle) {
     clusterStyle = new Style({
@@ -61,7 +70,7 @@ export function clusterStyleFunction(length: number): Style {
         radius: circleSize,
         stroke: new Stroke({
           color: theme.palette.map.clusterStroke,
-          width: 8,
+          width: clusterStrokeWidth,
         }),
         fill: new Fill({
           color: theme.palette.map.clusterFill,

@@ -34,23 +34,20 @@ const renderPopover = (rows: BoreholePopoverRow[], pinned: boolean) => {
   return { onHoverRow, onOpenRow };
 };
 
-const chevronsShown = () =>
-  [...document.querySelectorAll(".borehole-popover-chevron")].map(
-    chevron => getComputedStyle(chevron).visibility !== "hidden",
-  );
+const chevronCount = () => document.querySelectorAll(".borehole-popover-chevron").length;
 
 describe("BoreholePopover", () => {
   afterEach(() => {
     cleanup();
   });
 
-  it("previews a single borehole with its name, legend value and a chevron", () => {
+  it("previews a single borehole with its name and legend value, without chevron", () => {
     renderPopover(rowsOf(1), false);
 
     const row = screen.getByRole("listitem");
     expect(within(row).getByText("Borehole 1")).toBeTruthy();
     expect(within(row).getByText("code 20101001")).toBeTruthy();
-    expect(chevronsShown()).toEqual([true]);
+    expect(chevronCount()).toBe(0);
     expect(screen.queryByRole("button")).toBeNull();
   });
 
@@ -58,7 +55,7 @@ describe("BoreholePopover", () => {
     renderPopover(rowsOf(3), false);
 
     expect(screen.getAllByRole("listitem")).toHaveLength(3);
-    expect(chevronsShown()).toEqual([false, false, false]);
+    expect(chevronCount()).toBe(0);
   });
 
   it("previews four boreholes and the number of the others when there are more than five", () => {
@@ -74,7 +71,7 @@ describe("BoreholePopover", () => {
 
     expect(screen.getByRole("region", { name: "mapPopoverBoreholes:7" })).toBeTruthy();
     expect(screen.getAllByRole("button")).toHaveLength(7);
-    expect(chevronsShown().every(shown => shown)).toBe(true);
+    expect(chevronCount()).toBe(7);
   });
 
   it("reports the hovered row and opens the clicked one", () => {

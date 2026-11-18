@@ -1,7 +1,9 @@
 ﻿import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { describe, expect, it } from "vitest";
+import { boreholeSymbolHalfHeight } from "./boreholePopoverPlacement.ts";
 import {
+  BoreholePopoverState,
   getBoreholeHighlights,
   getHoveredBoreholeIds,
   haveSameBoreholes,
@@ -13,17 +15,23 @@ const borehole = (id: number) => new Feature({ geometry: new Point([0, 0]), id }
 const first = borehole(1);
 const second = borehole(2);
 
+const popoverOf = (features: Feature[], pinned: boolean): BoreholePopoverState => ({
+  features,
+  anchor: { coordinates: [[0, 0]], halfHeight: boreholeSymbolHalfHeight },
+  pinned,
+});
+
 describe("getHoveredBoreholeIds", () => {
   it("is empty without popover", () => {
     expect(getHoveredBoreholeIds(null, null)).toEqual([]);
   });
 
   it("is every borehole of the preview", () => {
-    expect(getHoveredBoreholeIds({ features: [first, second], pinned: false }, null)).toEqual([1, 2]);
+    expect(getHoveredBoreholeIds(popoverOf([first, second], false), null)).toEqual([1, 2]);
   });
 
   it("is the borehole of the hovered row of a pinned popover", () => {
-    const pinned = { features: [first, second], pinned: true };
+    const pinned = popoverOf([first, second], true);
 
     expect(getHoveredBoreholeIds(pinned, 2)).toEqual([2]);
     expect(getHoveredBoreholeIds(pinned, null)).toEqual([]);
@@ -32,14 +40,14 @@ describe("getHoveredBoreholeIds", () => {
 
 describe("getBoreholeHighlights", () => {
   it("marks the boreholes of the preview and of the table as hovered", () => {
-    const highlights = getBoreholeHighlights({ features: [first], pinned: false }, null, [5]);
+    const highlights = getBoreholeHighlights(popoverOf([first], false), null, [5]);
 
     expect(highlights.hovered).toEqual(new Set([5, 1]));
     expect(highlights.active).toEqual(new Set());
   });
 
   it("marks the boreholes of a pinned popover as active and the hovered row as hovered", () => {
-    const highlights = getBoreholeHighlights({ features: [first, second], pinned: true }, 2, []);
+    const highlights = getBoreholeHighlights(popoverOf([first, second], true), 2, []);
 
     expect(highlights.hovered).toEqual(new Set([2]));
     expect(highlights.active).toEqual(new Set([1, 2]));

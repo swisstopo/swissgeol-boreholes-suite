@@ -88,10 +88,9 @@ const ellipsisSx = { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "
 
 interface RowContentProps {
   row: BoreholePopoverRow;
-  showChevron: boolean;
 }
 
-const RowContent: FC<RowContentProps> = ({ row, showChevron }) => {
+const RowContent: FC<RowContentProps> = ({ row }) => {
   const getLabel = useLegendLabel();
   return (
     <>
@@ -107,32 +106,35 @@ const RowContent: FC<RowContentProps> = ({ row, showChevron }) => {
           {getLabel(row.legendLabel)}
         </Typography>
       </Box>
-      <Box
-        className={chevronClassName}
-        aria-hidden="true"
-        sx={{
-          display: "flex",
-          flex: "0 0 auto",
-          alignSelf: "center",
-          marginTop: "-4px",
-          marginLeft: 1,
-          color: valueTextColor,
-          visibility: showChevron ? "visible" : "hidden",
-          transition: "color 0.15s, transform 0.15s",
-          animation: `${chevronIn} 0.2s ${easeOut}`,
-          ...noMotionSx,
-          // Overrides the global size and stroke of lucide icons.
-          "& svg": { width: "16px", height: "16px", strokeWidth: 1.5 },
-        }}>
-        <ChevronRight size={16} strokeWidth={1.5} />
-      </Box>
     </>
   );
 };
 
+// Marks a row as a link to the borehole's detail page.
+const RowChevron: FC = () => (
+  <Box
+    className={chevronClassName}
+    aria-hidden="true"
+    sx={{
+      display: "flex",
+      flex: "0 0 auto",
+      alignSelf: "center",
+      marginTop: "-4px",
+      marginLeft: 1,
+      color: valueTextColor,
+      transition: "color 0.15s, transform 0.15s",
+      animation: `${chevronIn} 0.2s ${easeOut}`,
+      ...noMotionSx,
+      // Overrides the global size and stroke of lucide icons.
+      "& svg": { width: "16px", height: "16px", strokeWidth: 1.5 },
+    }}>
+    <ChevronRight size={16} strokeWidth={1.5} />
+  </Box>
+);
+
 /**
- * Lists the boreholes under the pointer on the map. The preview shows a chevron only for a single borehole, which a
- * click opens directly; the pinned popover lists all boreholes as links to their detail page.
+ * Lists the boreholes under the pointer on the map. Only the rows of the pinned popover are links to the detail page
+ * and show a chevron; the preview is not interactive.
  */
 export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHoverRow, onOpenRow }) => {
   const { t } = useTranslation();
@@ -153,7 +155,8 @@ export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHove
                 onFocus={() => onHoverRow(row.id)}
                 onClick={() => onOpenRow(row.id)}
                 data-cy="map-popover-row">
-                <RowContent row={row} showChevron={true} />
+                <RowContent row={row} />
+                <RowChevron />
               </ButtonBase>
             </li>
           ))}
@@ -168,7 +171,7 @@ export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHove
       <Box component="ul" sx={listSx}>
         {visibleRows.map(row => (
           <Box component="li" key={row.id} sx={rowSx}>
-            <RowContent row={row} showChevron={rows.length === 1} />
+            <RowContent row={row} />
           </Box>
         ))}
         {hiddenCount > 0 && (

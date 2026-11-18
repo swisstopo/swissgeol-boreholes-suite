@@ -35,9 +35,21 @@ import { PulseLayer, startHighlightPulse } from "./highlightPulse.ts";
 import { MapLegend } from "./legend/mapLegend.tsx";
 import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
 import "./mapProjections";
-import { boreholeStyleFunction, clusterStyleFunction, drawStyle, noBoreholeHighlights } from "./mapStyleFunctions";
+import {
+  boreholeStyleFunction,
+  clusterStyleFunction,
+  drawStyle,
+  getClusterHalfHeight,
+  noBoreholeHighlights,
+} from "./mapStyleFunctions";
 import { BoreholePopover } from "./popover/boreholePopover.tsx";
-import { getPopoverAnchors, getPopoverPlacement, popoverOffset } from "./popover/boreholePopoverPlacement.ts";
+import {
+  boreholeSymbolHalfHeight,
+  getPopoverAnchorPoints,
+  getPopoverOffset,
+  getPopoverPlacement,
+  PopoverAnchor,
+} from "./popover/boreholePopoverPlacement.ts";
 import { toPopoverRows } from "./popover/boreholePopoverRows.ts";
 import {
   BoreholePopoverState,
@@ -58,24 +70,51 @@ const clusterPulseRingRadius = 20;
 const clusterResolution = 15;
 
 const boreholeLayerName = "points";
+const clusterLayerName = "clusters";
 
-const getBoreholesAtPixel = (map: Map, pixel: Pixel): Feature[] => {
-  const boreholes: Feature[] = [];
+const getFeaturesAtPixel = (map: Map, pixel: Pixel, layerName: string): Feature[] => {
+  const features: Feature[] = [];
   map.forEachFeatureAtPixel(
     pixel,
     feature => {
-      if (feature instanceof Feature) boreholes.push(feature);
+      if (feature instanceof Feature) features.push(feature);
     },
-    { hitTolerance: 3, layerFilter: layer => layer.get("name") === boreholeLayerName },
+    { hitTolerance: 3, layerFilter: layer => layer.get("name") === layerName },
   );
-  return boreholes;
+  return features;
 };
+
+const getBoreholesAtPixel = (map: Map, pixel: Pixel) => getFeaturesAtPixel(map, pixel, boreholeLayerName);
 
 const getCoordinates = (features: readonly Feature[]) =>
   features.flatMap(feature => {
     const geometry = feature.getGeometry();
     return geometry instanceof Point ? [geometry.getCoordinates()] : [];
   });
+
+const getBoreholeAnchor = (boreholes: readonly Feature[]): PopoverAnchor => ({
+  coordinates: getCoordinates(boreholes),
+  halfHeight: boreholeSymbolHalfHeight,
+});
+
+interface PreviewTarget {
+  boreholes: Feature[];
+  anchor: PopoverAnchor;
+}
+
+// The boreholes under the pointer, or the boreholes of the cluster under it, and where their popover is attached.
+const getPreviewTargetAtPixel = (map: Map, pixel: Pixel): PreviewTarget | null => {
+  const boreholes = getBoreholesAtPixel(map, pixel);
+  if (boreholes.length > 0) return { boreholes, anchor: getBoreholeAnchor(boreholes) };
+
+  const [cluster] = getFeaturesAtPixel(map, pixel, clusterLayerName);
+  const members = cluster?.get("features") as Feature[] | undefined;
+  if (!cluster || !members || members.length === 0) return null;
+  return {
+    boreholes: members,
+    anchor: { coordinates: getCoordinates([cluster]), halfHeight: getClusterHalfHeight(members.length) },
+  };
+};
 
 export const MapComponent: FC<MapComponentProps> = ({
   geoJson,
@@ -242,7 +281,7 @@ export const MapComponent: FC<MapComponentProps> = ({
 
     const clusterLayer = new VectorLayer({
       source: clusterSource,
-      properties: { name: "clusters" },
+      properties: { name: clusterLayerName },
       zIndex: featureLayerZIndex,
       style: clusterStyle,
       minResolution: clusterResolution,
@@ -277,28 +316,32 @@ export const MapComponent: FC<MapComponentProps> = ({
 
     // ── Interactions ──
 
-    // Hover: a preview popover lists the boreholes under the pointer. A pinned popover stays until it is closed.
-    const showPreview = (boreholes: Feature[]) => {
+    // Hover: a preview popover lists the boreholes under the pointer, or those of the cluster under it. A pinned
+    // popover stays until it is closed.
+    const showPreview = (target: PreviewTarget | null) => {
       const current = popoverRef.current;
-      if (boreholes.length === 0) {
+      if (target === null) {
         if (current !== null) updatePopover(null);
-      } else if (current === null || !haveSameBoreholes(current.features, boreholes)) {
-        updatePopover({ features: boreholes, pinned: false });
+      } else if (current === null || !haveSameBoreholes(current.features, target.boreholes)) {
+        updatePopover({ features: target.boreholes, anchor: target.anchor, pinned: false });
       }
     };
 
     map.on("pointermove", event => {
       if (event.dragging || drawActiveRef.current || popoverRef.current?.pinned) return;
-      showPreview(getBoreholesAtPixel(map, event.pixel));
+      showPreview(getPreviewTargetAtPixel(map, event.pixel));
     });
 
-    map.getViewport().addEventListener("mouseleave", () => {
-      if (!popoverRef.current?.pinned) showPreview([]);
-    });
+    const hidePreview = () => {
+      if (!popoverRef.current?.pinned) showPreview(null);
+    };
+    map.getViewport().addEventListener("mouseleave", hidePreview);
+    // A preview would no longer be next to its boreholes once the map moves.
+    map.on("movestart", hidePreview);
 
-    // The popover is not shown with the clusters.
-    map.getView().on("change:resolution", () => {
-      if (popoverRef.current !== null && (map.getView().getResolution() ?? 0) >= clusterResolution) {
+    // The pinned popover is not shown with the clusters.
+    map.on("moveend", () => {
+      if (popoverRef.current?.pinned && (map.getView().getResolution() ?? 0) >= clusterResolution) {
         updatePopover(null);
       }
     });
@@ -324,14 +367,14 @@ export const MapComponent: FC<MapComponentProps> = ({
         return;
       }
       if (boreholes.length > 1) {
-        updatePopover({ features: boreholes, pinned: true });
+        updatePopover({ features: boreholes, anchor: getBoreholeAnchor(boreholes), pinned: true });
         return;
       }
       updatePopover(null);
 
       if (pointsRef.current) {
         const clickFeatures = map.getFeaturesAtPixel(event.pixel, {
-          layerFilter: layer => layer.get("name") === "clusters",
+          layerFilter: layer => layer.get("name") === clusterLayerName,
         });
         if (clickFeatures?.length > 0) {
           const clusterMembers = clickFeatures[0].get("features") as Feature[];
@@ -552,26 +595,26 @@ export const MapComponent: FC<MapComponentProps> = ({
     const element = popoverElementRef.current;
     if (!map || !overlay || !element) return;
 
-    const coordinates = popover === null ? [] : getCoordinates(popover.features);
-    if (coordinates.length === 0) {
+    if (popover === null || popover.anchor.coordinates.length === 0) {
       overlay.setPosition(undefined);
       return;
     }
 
     // Positioned above first, so the popover is visible and has its height.
-    const anchors = getPopoverAnchors(coordinates);
+    const anchorPoints = getPopoverAnchorPoints(popover.anchor);
+    const offset = getPopoverOffset(popover.anchor);
     overlay.setPositioning("bottom-center");
-    overlay.setOffset([0, -popoverOffset]);
-    overlay.setPosition(anchors.above);
+    overlay.setOffset([0, -offset]);
+    overlay.setPosition(anchorPoints.above);
 
-    const abovePixel = map.getPixelFromCoordinate(anchors.above);
-    const belowPixel = map.getPixelFromCoordinate(anchors.below);
+    const abovePixel = map.getPixelFromCoordinate(anchorPoints.above);
+    const belowPixel = map.getPixelFromCoordinate(anchorPoints.below);
     const mapHeight = map.getSize()?.[1];
     if (!abovePixel || !belowPixel || mapHeight === undefined) return;
-    if (getPopoverPlacement(abovePixel[1], belowPixel[1], mapHeight, element.offsetHeight) === "below") {
+    if (getPopoverPlacement(abovePixel[1], belowPixel[1], mapHeight, element.offsetHeight, offset) === "below") {
       overlay.setPositioning("top-center");
-      overlay.setOffset([0, popoverOffset]);
-      overlay.setPosition(anchors.below);
+      overlay.setOffset([0, offset]);
+      overlay.setPosition(anchorPoints.below);
     }
   }, [popover]);
 

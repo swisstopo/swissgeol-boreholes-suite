@@ -1,12 +1,14 @@
 ﻿import Feature from "ol/Feature";
 import { BoreholeHighlights } from "../mapStyleFunctions.ts";
+import { PopoverAnchor } from "./boreholePopoverPlacement.ts";
 
 /**
- * The boreholes listed in the map popover. A preview follows the pointer; a pinned popover stays open after a click
- * on several boreholes and lists them as links.
+ * The boreholes listed in the map popover. A preview follows the pointer over boreholes and clusters; a pinned
+ * popover stays open after a click on several boreholes and lists them as links.
  */
 export interface BoreholePopoverState {
   features: readonly Feature[];
+  anchor: PopoverAnchor;
   pinned: boolean;
 }
 
