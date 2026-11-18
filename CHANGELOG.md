@@ -3,14 +3,25 @@
 ## [Unreleased]
 
 ### Changed
+- The overview shows loading indicators on the map, in the table and instead of "Boreholes: 0" while the boreholes load, and says so when they could not be loaded. It loads the filter statistics only while the filter panel is open. It keeps loaded results for five minutes, so switching browser tabs, returning from a borehole or paging back no longer downloads them again. Changes made in the same browser tab show at once, changes from other tabs or other users within five minutes.
+- Messages shown at the top of the page no longer close when clicking elsewhere. They close with their close button or after a few seconds, so a double-click can no longer hide a message right after it appears.
+- The polygon filter is kept in the URL like all other filters, so it survives a page reload and can be shared as a link. Polygons are drawn by clicking; freehand drawing with the Shift key is no longer available. A polygon reaching outside the map area is not applied; a message asks to draw it again and the previous polygon stays. Double-clicking the map no longer zooms in, so a polygon can be finished with a double-click.
+- The borehole filter API (`POST /api/v2/borehole/filter`, `/filter/stats` and `/suggest`) no longer accepts `ids`. `polygon` takes LV95 (EPSG:2056) coordinates; a geometry that is not a polygon or lies outside Switzerland is rejected with 400 Bad Request.
 - Paging and sorting the borehole table in the overview no longer reload the map.
 - The borehole filter API (`POST /api/v2/borehole/filter`) no longer returns `geoJson`. The map features of the filtered boreholes come from the new `POST /api/v2/borehole/filter/map`, which takes the same filter criteria without paging and ordering.
+
+### Fixed
+- Removing a filter while a polygon filter is active shows all boreholes in the polygon again instead of keeping the removed filter's restriction. The counts in the filter panel and the search suggestions now also take the polygon into account.
 
 ## v2.2.115 - 2026-11-16
 
 ### Changed
 - The overview loads faster on slow connections. API responses are now compressed and no longer indented, which cuts the data downloaded for the map and the table to about 7 percent of its previous size.
-- The overview shows loading indicators on the map, in the table and instead of "Boreholes: 0" while the boreholes load, and says so when they could not be loaded. It loads the filter statistics only while the filter panel is open. It keeps loaded results for five minutes, so switching browser tabs, returning from a borehole or paging back no longer downloads them again. Changes made in the same browser tab show at once, changes from other tabs or other users within five minutes.
+- The CSV export of boreholes is no longer limited to 100 boreholes. The JSON exports (JSON and JSON + profile) are now limited to 500 boreholes instead of 100.
+
+### Removed
+- The unused borehole attribute `IsPublic` is removed from the database, the API and the CSV and JSON exports. Files that still contain it can be imported as before; the value is ignored.
+- The unused `isDefault` attribute of codelist entries is removed from the database and the API.
 
 ## v2.2.107 - 2026-11-11
 
@@ -29,13 +40,8 @@
 - Setting workgroup roles through the API with an unknown role now returns 400 Bad Request, and with a user or workgroup that does not exist 404 Not Found, instead of a server error.
 - The role of a user in a workgroup is now shown as a dropdown in the user and workgroup administration and can be changed there directly.
 - The dialogs for adding users to a workgroup and workgroups to a user no longer offer users or workgroups that already have a role there. Their role is changed in the table instead.
-- The CSV export of boreholes is no longer limited to 100 boreholes. The JSON exports (JSON and JSON + profile) are now limited to 500 boreholes instead of 100.
-- Messages shown at the top of the page no longer close when clicking elsewhere. They close with their close button or after a few seconds, so a double-click can no longer hide a message right after it appears.
-- The polygon filter is kept in the URL like all other filters, so it survives a page reload and can be shared as a link. Polygons are drawn by clicking; freehand drawing with the Shift key is no longer available. A polygon reaching outside the map area is not applied; a message asks to draw it again and the previous polygon stays. Double-clicking the map no longer zooms in, so a polygon can be finished with a double-click.
-- The borehole filter API (`POST /api/v2/borehole/filter`, `/filter/stats` and `/suggest`) no longer accepts `ids`. `polygon` takes LV95 (EPSG:2056) coordinates; a geometry that is not a polygon or lies outside Switzerland is rejected with 400 Bad Request.
 
 ### Fixed
-- Removing a filter while a polygon filter is active shows all boreholes in the polygon again instead of keeping the removed filter's restriction. The counts in the filter panel and the search suggestions now also take the polygon into account.
 - Extracting a stratigraphy from a newly uploaded scanned profile now waits until text recognition (OCR) of the profile has finished and shows a note while it runs. Before, the extraction started right away and found no stratigraphy. If text recognition failed, the dialog says so instead of extracting and explains how to repeat it. Closing the dialog also discards the result, so selecting the profile again extracts anew.
 - When extracting a stratigraphy takes longer than the maximum waiting time, the dialog now says so and suggests trying again later or entering the stratigraphy manually, instead of reporting a general error.
 - Text extraction from a newly uploaded scanned profile in the labeling panel now waits until text recognition (OCR) has finished. Until then, and when it failed, the text extraction button explains why instead of reporting that no text was recognized.
@@ -48,10 +54,7 @@
 - In the lithology dialog, the "entry required" errors on the unconsolidated rock soil type and secondary component dropdowns now disappear as soon as the later component that required them is cleared, and no longer leave the fields marked red after they are filled again.
 - In edit mode, the checkbox in the header of the "Public" column of the attachment and LOG file tables now follows the rows. It could appear checked although no row was public, for example after adding the first photo to a borehole.
 - When saving a LOG run fails, the message now says which run or file it is about and is shown in the user's language, also when a file upload fails for a technical reason or a run number is already taken.
-
-### Removed
-- The unused borehole attribute `IsPublic` is removed from the database, the API and the CSV and JSON exports. Files that still contain it can be imported as before; the value is ignored.
-- The unused `isDefault` attribute of codelist entries is removed from the database and the API.
+- The entries in the workflow history now display the correct date.
 
 ## v2.2.57 - 2026-10-08
 
@@ -60,9 +63,6 @@
 - The export overlay now shows how much of the export has been downloaded.
 - Uploads and exports can be cancelled by clicking the overlay or its cancel button. A cancelled export stops the download and the work it triggers on the server; a cancelled upload keeps the files that already reached the server, and the remaining changes stay unsaved so the save can be repeated.
 - Both CSV files of the LOG import are now optional, so LOG files can be imported for LOG runs that already exist. At least one of the two files is still required.
-
-### Fixed
-- The entries in the workflow history now display the correct date.
 
 ### Removed
 - The terms of service editor in the settings. The disclaimer shown on first visit now always uses the texts shipped with the application, and the stored terms and acceptance records are deleted from the database.
@@ -103,10 +103,22 @@
 
 ## v2.1.1736 - 2026-07-08
 
+### Added
+- Scalable and panable lithology view including lens column.
+- Updated `chronostratigraphy` and `lithostratigraphy` table headers and moved add-layer button to the bottom of the table.
+
+### Changed
+- Unified the column header styling of the chronostratigraphy and lithostratigraphy tabs with the lithology tab and collapsed the hierarchy title bar into the same row as the column labels so the header is thinner; the visibility toggle for each hierarchy level (eon, era, …) now sits inside its column and a hidden column collapses to a small eye icon in place.
+- Removed the lithology thumbnail column from the chronostratigraphy and lithostratigraphy tabs; depth scale is now the leftmost data column. The add-layer button moved from the header to a dashed "+" button at the bottom of the table, matching the lithology tab's add affordance.
+- Migrated the user map overlay settings from the legacy v1 API to the v2 API.
+- Migrated borehole bulk editing and bulk deletion from the legacy v1 API to the v2 API, and re-enabled bulk editing of purpose, status and lithology, lithostratigraphy and chronostratigraphy of the top bedrock.
+- Removed the legacy Python (v1) API entirely; all endpoints now run on the .NET v2 API.
+
 ### Fixed
 - Extern-sync no longer creates duplicate boreholes in the target database when a borehole's coordinates were recalculated; the duplicate check now compares the LV03 coordinates correctly.
 - The lithology tab now opens showing the full borehole depth, matching the chronostratigraphy and lithostratigraphy tabs, instead of zooming in on the first layer.
 - Borehole name was not saved when immediately navigating back to the overview.
+- Fixed borehole name changes being lost when returning to the overview directly after saving. 
 
 ## v2.1.1703 - 2026-06-25
 
@@ -114,8 +126,6 @@
 - Added new codelist entry `VSP` to `log_tool_type` schema.
 - The OCR status for attached files is now displayed in the attachments table.
 - Functionality to edit lithological descriptions from the lithology modal.
-- Scalable and panable lithology view including lens column.
-- Updated `chronostratigraphy` and `lithostratigraphy` table headers and moved add-layer button to the bottom of the table.
   
 ### Changed
 - Deleted unused Swiss coordinate reference systems.
@@ -131,18 +141,12 @@
 - Migrated the terms and conditions endpoints from the legacy API to the v2 API.
 - Set stratigraphy name as required and fill in default name for currently empty fields.
 - The current user is now loaded from the v2 API (`/api/v2/user/self`) instead of the legacy v1 API.
-- Unified the column header styling of the chronostratigraphy and lithostratigraphy tabs with the lithology tab and collapsed the hierarchy title bar into the same row as the column labels so the header is thinner; the visibility toggle for each hierarchy level (eon, era, …) now sits inside its column and a hidden column collapses to a small eye icon in place.
-- Removed the lithology thumbnail column from the chronostratigraphy and lithostratigraphy tabs; depth scale is now the leftmost data column. The add-layer button moved from the header to a dashed "+" button at the bottom of the table, matching the lithology tab's add affordance.
-- Migrated the user map overlay settings from the legacy v1 API to the v2 API.
-- Migrated borehole bulk editing and bulk deletion from the legacy v1 API to the v2 API, and re-enabled bulk editing of purpose, status and lithology, lithostratigraphy and chronostratigraphy of the top bedrock.
-- Removed the legacy Python (v1) API entirely; all endpoints now run on the .NET v2 API.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.
 - Long descriptions in the stratigraphy lithology table now wrap to a new line instead of widening the cell.
 - Navigating to inexistent borehole detail view by URL now shows a not found message instead of throwing an error.
 - Prevent navigate to previously deleted stratigraphy.
-- Fixed borehole name changes being lost when returning to the overview directly after saving. 
 
 ## v2.1.1631 - 2026-05-13
 
@@ -164,6 +168,7 @@
 - LOG import dialog now assigns attachments per run number instead of as a flat list.
 - Normalize inconsistent casing in `codelist` text values for "other" / "not specified" across all four language columns.
 - Unified database column names for borehole, terms_accepted, terms, users_roles, roles, workgroups and config.
+- API authentication now uses OIDC access tokens instead of id tokens.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
@@ -188,7 +193,6 @@
 - Openlayers was upgraded to version 10.9.0.
 - The borehole name section and restriction sections were moved from the location page to the general tab of the borehole detail view.
 - The consent banner choice is now remembered for a year, so users no longer have to accept the terms again on every visit.
-- API authentication now uses OIDC access tokens instead of id tokens.
 
 ### Fixed
 - Boreholes could be edited after being published.
@@ -277,12 +281,12 @@
 
 ### Changed
 - Use new codelists for stratigraphy properties in borehole.
+- Renamed codelist schema `texture_mata` to `texture_meta`.
 
 ## v2.1.1346 - 2025-09-23
 
 ### Changed
 - Migrated stratigraphies and layers to new lithology tables.
-- Renamed codelist schema `texture_mata` to `texture_meta`.
 
 ## v2.1.1335 - 2025-09-17
 
@@ -468,6 +472,7 @@
 - Reincluded download link for codelist references in the import panel.
 - Formfield border color now depend on whether borehole editing is enabled or not.
 - Select dropdown arrows are now only displayed if borehole editing is enabled.
+- Add thousand separators to large numbers in borehole overview table.
 
 ### Fixed
 
@@ -494,7 +499,7 @@
 - Years greater than 9999 can no longer be used in date inputs.
 - The application language is now determined by the browser language if it is any of the supported languages.
 - Changed the icon for opening the labeling area.
-- Add thousand separators to large numbers in borehole overview table.
+- Removed import id from csv import.
 
 ### Fixed
 
@@ -532,7 +537,6 @@
 - Removed deduplication check when adding and detaching attachments.
 - When copying a borehole, attachments won't be copied.
 - Removed csv lithology import.
-- Removed import id from csv import.
 
 ### Fixed
 
@@ -615,6 +619,7 @@
 - Added borehole geometry panel.
 - Added secondary header to borehole detail view.
 - Added new codelist entries for `casing_type` and `backfill_material`.
+- Added new basemap selector in maps.
 
 ### Changed
 
@@ -647,7 +652,6 @@
 ### Added
 
 - Added borehole sections panel.
-- Added new basemap selector in maps.
 
 ### Changed
 
@@ -810,6 +814,7 @@
 - Enable all file types as borehole attachments.
 - Improved appearance of import UI.
 - Increased maximum of displayed validation errors during borehole import to 1000.
+- Hide overlapping chronostratigraphy layer depth labels and add depth scale.
 
 ### Fixed
 
@@ -821,6 +826,8 @@
 - Ensure borehole attachments can be managed by any user role.
 - Enable upload of borehole attachments with a size of up to 200 Mb.
 - Show message when borehole import takes longer than 30 seconds.
+- Chronostratigraphy fields were not translated.
+- Lithology layers not sorted by depth in viewer.
 
 ## v2.0.400 - 2023-05-24
 
@@ -834,6 +841,7 @@
 - Added functionality to add, edit and delete field measurement, which belong to the hydrogeology observations of a borehole.
 - Added csv export for current codelist table.
 - Added the fields _qt_location_, _qt_elevation_, _reference_elevation_qt_ and _reference_elevation_type_ to bulk editing.
+- Use .NET API for managing borehole files.
 
 ### Changed
 
@@ -843,7 +851,6 @@
 - Harmonized labels for _from_depth_ and _to_depth_ fields across the application.
 - The duplicate checks for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now allowed.
 - Improve chronostratigraphy edit, change the stratigraphy selection to a simple dropdown.
-- Hide overlapping chronostratigraphy layer depth labels and add depth scale.
 
 ### Fixed
 
@@ -853,8 +860,6 @@
 - The chronostratigraphy edit panel shows progress indicator when no stratigraphies or lithologies exist.
 - Copy and delete buttons not visible when editing lithology.
 - Show stratigraphy with empty name as unknown.
-- Chronostratigraphy fields were not translated.
-- Lithology layers not sorted by depth in viewer.
 
 ## v2.0.298 - 2023-04-18
 
@@ -865,7 +870,7 @@
 - Added online help.
 - Added validation for duplicated boreholes during the cvs import.
 - Added functionality to add, edit and delete wateringresses, which belong to the hydrogeology observations of a borehole.
-- Use .NET API for managing borehole files.
+- Added option to edit workgroup in bulk edit dialog.
 
 ### Changed
 
@@ -893,7 +898,6 @@
 - Added functionality to scroll to newly created lithology layer.
 - Added separate panel to edit chronostratigraphy layers.
 - Added minimal csv-import for boreholes.
-- Added option to edit workgroup in bulk edit dialog.
 
 ### Changed
 
@@ -977,6 +981,7 @@
 - Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
 - Added workgroup filter to viewer.
 - Removed unused table `bdms.geodin_files` from database.
+- Use REST API v2 to display layer in viewer mode.
 
 ### Fixed
 
@@ -991,10 +996,6 @@
 
 - Added db constraints for table `layer_codelist`.
 - Display original_lithology field in viewer and editor mode.
-
-### Changed
-
-- Use REST API v2 to display layer in viewer mode.
 
 ## v2.0.131 - 2023-01-16
 
