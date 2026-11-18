@@ -551,15 +551,34 @@ export const filterBoreholesMapQueryOptions = (filterRequest: FilterRequest) => 
   });
 };
 
-export const useFilterBoreholesMap = (filterRequest: FilterRequest, enabled = true) =>
-  useQuery({
+interface OverviewBoreholes {
+  tableData: FilterResponse | undefined;
+  isTablePending: boolean;
+  mapFeatures: FeatureCollection | undefined;
+  isMapPending: boolean;
+}
+
+/**
+ * The current table page and the map points of the overview, loaded from the same filters. The map leaves out
+ * paging and sorting, so paging or sorting the table never reloads the map. Each part reports its own pending
+ * state, because the map, with every filtered borehole, usually arrives later than a table page.
+ * @param filterRequest The filters, page and sort order of the overview.
+ * @param enabled Whether the overview may load, false until the filters are restored from the session.
+ */
+export const useOverviewBoreholes = (filterRequest: FilterRequest, enabled: boolean): OverviewBoreholes => {
+  const table = useQuery({ ...filterBoreholesQueryOptions(filterRequest), enabled, placeholderData: keepPreviousData });
+  const map = useQuery({
     ...filterBoreholesMapQueryOptions(filterRequest),
     enabled,
     placeholderData: keepPreviousData,
   });
-
-export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) =>
-  useQuery({ ...filterBoreholesQueryOptions(filterRequest), enabled, placeholderData: keepPreviousData });
+  return {
+    tableData: table.data,
+    isTablePending: table.isPending,
+    mapFeatures: map.data,
+    isMapPending: map.isPending,
+  };
+};
 
 /**
  * The counts shown next to the filter options. One request runs many database queries, so the filter drawer
