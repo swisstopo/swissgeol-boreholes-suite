@@ -6,10 +6,10 @@ import {
   exportJsonBoreholes,
   exportJsonWithAttachmentsBorehole,
   FilterRequest,
-  FilterResponse,
   useFilterBoreholes,
   useFilterBoreholesMap,
 } from "../../../api/borehole.ts";
+import { FilterResponse } from "../../../api/generated";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";

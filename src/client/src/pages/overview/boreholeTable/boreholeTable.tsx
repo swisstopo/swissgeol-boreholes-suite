@@ -17,7 +17,7 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import { LockKeyhole } from "lucide-react";
-import { BoreholeListItem } from "../../../api/borehole.ts";
+import { BoreholeListItem } from "../../../api/generated";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
 import { useCodelistLocalizedLabel, useCodelists } from "../../../components/codelist.ts";

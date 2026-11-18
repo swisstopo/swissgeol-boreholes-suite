@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
-import { BoreholeListItem, useBoreholeMutations } from "../../../api/borehole.ts";
+import { useBoreholeMutations } from "../../../api/borehole.ts";
 import { ApiError } from "../../../api/errorClasses.ts";
+import { BoreholeListItem } from "../../../api/generated";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";

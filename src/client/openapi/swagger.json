@@ -8122,7 +8122,24 @@
       },
       "BoreholeListItem": {
         "required": [
-          "id"
+          "created",
+          "elevationZ",
+          "id",
+          "locationX",
+          "locationY",
+          "locked",
+          "name",
+          "nationalInterest",
+          "originalName",
+          "purposeId",
+          "restrictionId",
+          "restrictionUntil",
+          "statusId",
+          "totalDepth",
+          "typeId",
+          "updated",
+          "workgroupId",
+          "workgroupName"
         ],
         "type": "object",
         "properties": {
@@ -9468,6 +9485,14 @@
         "description": "Represents a request to filter boreholes by various criteria, with the paging and ordering the\r\nborehole table needs."
       },
       "FilterResponse": {
+        "required": [
+          "boreholes",
+          "pageNumber",
+          "pageSize",
+          "selectableBoreholeIds",
+          "totalCount",
+          "totalPages"
+        ],
         "type": "object",
         "properties": {
           "totalCount": {

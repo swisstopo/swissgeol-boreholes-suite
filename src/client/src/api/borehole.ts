@@ -8,10 +8,16 @@ import { parseAsPolygon, toPolygonGeometry } from "../pages/overview/polygonFilt
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { downloadPost } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
+import {
+  Borehole,
+  BoreholeBulkUpdate,
+  BoreholeBulkUpdateRequest,
+  BoreholeCodelist,
+  Codelist,
+  FilterResponse,
+} from "./generated";
 import { boreholeQueryKey, markOverviewStale, overviewQueryKey } from "./queryKeys.ts";
 import { TransferOptions } from "./transferProgress.ts";
-import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
 
 export interface BasicIdentifier extends BoreholeCodelist {
@@ -275,27 +281,6 @@ export const useReloadBoreholes = () => {
 };
 
 // ---- Filter interfaces ----
-export interface BoreholeListItem {
-  id: number;
-  originalName: string | null;
-  name: string | null;
-  workgroupId: number | null;
-  workgroupName: string | null;
-  statusId: number | null;
-  typeId: number | null;
-  purposeId: number | null;
-  restrictionId: number | null;
-  restrictionUntil: NullableDateString;
-  nationalInterest: boolean | null;
-  locationX: number | null;
-  locationY: number | null;
-  elevationZ: number | null;
-  totalDepth: number | null;
-  created: NullableDateString;
-  updated: NullableDateString;
-  locked: NullableDateString;
-}
-
 enum NullableBooleanFilter {
   false,
   true,
@@ -371,15 +356,6 @@ type TableOnlyFilterField = "pageNumber" | "pageSize" | "orderBy" | "direction";
 
 type MapFilterCriteria = Omit<FilterRequestSubmission, TableOnlyFilterField> &
   Partial<Record<TableOnlyFilterField, undefined>>;
-
-export interface FilterResponse {
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-  boreholes: BoreholeListItem[];
-  selectableBoreholeIds: number[];
-}
 
 export interface NullableBooleanCounts {
   true: number;

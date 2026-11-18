@@ -1,8 +1,9 @@
 import { QueryClient, QueryObserver } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { filterBoreholesMapQueryOptions, filterBoreholesQueryOptions, FilterResponse } from "./borehole.ts";
+import { filterBoreholesMapQueryOptions, filterBoreholesQueryOptions } from "./borehole.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { FilterResponse } from "./generated";
 import { createQueryClient } from "./queryClient.ts";
 
 vi.mock("./fetchApiV2.ts", () => ({

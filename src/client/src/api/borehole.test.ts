@@ -8,12 +8,12 @@ import {
   buildBulkEditRequest,
   filterBoreholesMapQueryOptions,
   FilterRequest,
-  FilterResponse,
   toMapFilterCriteria,
   useFilterBoreholes,
   useFilterStats,
 } from "./borehole.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { FilterResponse } from "./generated";
 import { createQueryClient } from "./queryClient.ts";
 
 vi.mock("./fetchApiV2.ts", () => ({

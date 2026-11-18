@@ -585,23 +585,23 @@ export type BoreholeJsonExportRequest = {
  */
 export type BoreholeListItem = {
   id: number;
-  originalName?: string | null;
-  name?: string | null;
-  workgroupId?: number | null;
-  workgroupName?: string | null;
-  statusId?: number | null;
-  typeId?: number | null;
-  purposeId?: number | null;
-  restrictionId?: number | null;
-  restrictionUntil?: string | null;
-  nationalInterest?: boolean | null;
-  locationX?: number | null;
-  locationY?: number | null;
-  elevationZ?: number | null;
-  totalDepth?: number | null;
-  created?: string | null;
-  updated?: string | null;
-  locked?: string | null;
+  originalName: string | null;
+  name: string | null;
+  workgroupId: number | null;
+  workgroupName: string | null;
+  statusId: number | null;
+  typeId: number | null;
+  purposeId: number | null;
+  restrictionId: number | null;
+  restrictionUntil: string | null;
+  nationalInterest: boolean | null;
+  locationX: number | null;
+  locationY: number | null;
+  elevationZ: number | null;
+  totalDepth: number | null;
+  created: string | null;
+  updated: string | null;
+  locked: string | null;
 };
 
 /**
@@ -1223,27 +1223,27 @@ export type FilterResponse = {
   /**
    * The total count of filtered boreholes.
    */
-  totalCount?: number;
+  totalCount: number;
   /**
    * The current page number.
    */
-  pageNumber?: number;
+  pageNumber: number;
   /**
    * The size of the page.
    */
-  pageSize?: number;
+  pageSize: number;
   /**
    * The total number of pages.
    */
-  totalPages?: number;
+  totalPages: number;
   /**
    * The borehole list items for the current page.
    */
-  boreholes?: Array<BoreholeListItem>;
+  boreholes: Array<BoreholeListItem>;
   /**
    * The IDs of all unlocked filtered boreholes.
    */
-  selectableBoreholeIds?: Array<number>;
+  selectableBoreholeIds: Array<number>;
 };
 
 /**
