@@ -2,12 +2,14 @@
 
 ## [Unreleased]
 
+### Changed
+- Paging and sorting the borehole table in the overview no longer reload the map.
+- The borehole filter API (`POST /api/v2/borehole/filter`) no longer returns `geoJson`. The map features of the filtered boreholes come from the new `POST /api/v2/borehole/filter/map`, which takes the same filter criteria without paging and ordering.
+
 ## v2.2.115 - 2026-11-16
 
 ### Changed
 - The overview loads faster on slow connections. API responses are now compressed and no longer indented, which cuts the data downloaded for the map and the table to about 7 percent of its previous size.
-- Paging and sorting the borehole table in the overview no longer reload the map.
-- The borehole filter API (`POST /api/v2/borehole/filter`) no longer returns `geoJson`. The map features of the filtered boreholes come from the new `POST /api/v2/borehole/filter/map`, which takes the same filter criteria without paging and ordering.
 - The overview shows loading indicators on the map, in the table and instead of "Boreholes: 0" while the boreholes load, and says so when they could not be loaded. It loads the filter statistics only while the filter panel is open. It keeps loaded results for five minutes, so switching browser tabs, returning from a borehole or paging back no longer downloads them again. Changes made in the same browser tab show at once, changes from other tabs or other users within five minutes.
 
 ## v2.2.107 - 2026-11-11
