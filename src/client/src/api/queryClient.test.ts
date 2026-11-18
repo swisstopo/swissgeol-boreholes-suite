@@ -1,6 +1,6 @@
 import { QueryClient, QueryObserver } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { filterBoreholesQueryOptions, FilterResponse } from "./borehole.ts";
+import { filterBoreholesMapQueryOptions, filterBoreholesQueryOptions, FilterResponse } from "./borehole.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { createQueryClient } from "./queryClient.ts";
@@ -83,6 +83,16 @@ describe("createQueryClient keeps the overview up to date", () => {
     await expect(runMutation(client, () => Promise.reject(new ApiError("Forbidden", 403)))).rejects.toThrow();
 
     expect(client.getQueryState(overviewQuery.queryKey)?.isInvalidated).toBe(true);
+  });
+
+  it("marks the map data stale after a change, such as a workflow status change", async () => {
+    const client = createClient();
+    const mapQueryKey = filterBoreholesMapQueryOptions({ typeId: [20101001] }).queryKey;
+    client.setQueryData(mapQueryKey, { type: "FeatureCollection", features: [] });
+
+    await runMutation(client, () => Promise.resolve());
+
+    expect(client.getQueryState(mapQueryKey)?.isInvalidated).toBe(true);
   });
 
   it("leaves queries outside the overview fresh", async () => {
