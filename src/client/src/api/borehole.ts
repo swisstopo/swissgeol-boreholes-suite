@@ -119,10 +119,11 @@ const canUserEditBorehole = async (id: number) =>
 const canUserManageBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canmanage?boreholeId=${id}`, "GET");
 
-// The overview downloads every filtered borehole, about 1 MB for 38,500 of them even compressed. Its results stay
-// fresh for five minutes, so switching browser tabs, returning from a borehole or paging back shows them without
-// downloading them again. Changes made in this app mark them stale at once (see markOverviewStale); changes in
-// other browser tabs or by other users show after at most five minutes.
+// The overview map downloads every filtered borehole, about 1 MB for 38,500 of them even compressed. The results of
+// every overview query (table, map and filter statistics) stay fresh for five minutes, so switching browser tabs,
+// returning from a borehole or paging back shows them without downloading them again. Changes made in this app mark
+// them stale at once (see markOverviewStale); changes in other browser tabs or by other users show after at most
+// five minutes, in the table and on the map alike.
 const overviewStaleTime = 5 * 60 * 1000;
 
 /** {@link markOverviewStale} for components, stable across renders. */
@@ -539,18 +540,14 @@ export const filterBoreholesQueryOptions = (filterRequest: FilterRequest) => {
   });
 };
 
-// The map data of all filtered boreholes is large, so it is not refetched just because the
-// browser tab becomes visible again or the overview is opened again. Like every overview query it
-// lives under overviewQueryKey, so changes made in this app mark it stale at once (see markOverviewStale).
-const mapDataStaleTime = 10 * 60 * 1000;
-
 // Shared by the hook and the prefetch after login, so both use the same key and staleTime.
+// Like every overview query it lives under overviewQueryKey, so changes made in this app mark it stale at once.
 export const filterBoreholesMapQueryOptions = (filterRequest: FilterRequest) => {
   const criteria = toMapFilterCriteria(filterRequest);
   return queryOptions({
     queryKey: [...overviewQueryKey, "map", criteria],
     queryFn: () => filterBoreholesMap(criteria),
-    staleTime: mapDataStaleTime,
+    staleTime: overviewStaleTime,
   });
 };
 

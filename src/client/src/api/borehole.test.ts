@@ -7,6 +7,7 @@ import { toPolygonGeometry } from "../pages/overview/polygonFilter.ts";
 import {
   buildBulkEditRequest,
   filterBoreholesMapQueryOptions,
+  filterBoreholesQueryOptions,
   FilterRequest,
   toMapFilterCriteria,
   useFilterBoreholes,
@@ -100,8 +101,8 @@ describe("filterBoreholesMapQueryOptions", () => {
     );
   });
 
-  it("keeps the map data fresh for ten minutes", () => {
-    expect(filterBoreholesMapQueryOptions({}).staleTime).toBe(10 * 60 * 1000);
+  it("keeps the map data fresh as long as the table data", () => {
+    expect(filterBoreholesMapQueryOptions({}).staleTime).toBe(filterBoreholesQueryOptions({}).staleTime);
   });
 });
 
