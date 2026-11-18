@@ -8,6 +8,7 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
+import { LegendThemeKey, legendThemeKeys } from "../../components/map/legend/legendThemes.ts";
 import { parseAsPolygon, PolygonVertices } from "./polygonFilter.ts";
 import { SessionKeys } from "./SessionKey.ts";
 import { nullableBooleanFilterKeys } from "./sidePanelContent/filter/filterUtils.ts";
@@ -27,6 +28,11 @@ const mapParsers = {
   mapResolution: parseAsFloat.withDefault(500),
   mapCenterX: parseAsFloat,
   mapCenterY: parseAsFloat,
+};
+
+// Without a value, the legend shows its first available theme.
+const legendParsers = {
+  legend: parseAsStringLiteral(legendThemeKeys),
 };
 
 // Filter fields
@@ -68,7 +74,7 @@ export const filterParsers = {
 
 export type FilterKey = keyof typeof filterParsers;
 
-const allParsers = { ...filterParsers, ...tableParsers, ...mapParsers };
+const allParsers = { ...filterParsers, ...tableParsers, ...mapParsers, ...legendParsers };
 
 export const useBoreholeUrlParamsState = () => {
   const [queryState, setQueryState] = useQueryStates(allParsers);
@@ -84,6 +90,7 @@ export const useBoreholeUrlParamsState = () => {
   // (called on unmount) never close over stale state.
   const filterStateRef = useRef(filterState);
   const tableStateRef = useRef(tableState);
+  const legendRef = useRef(queryState.legend);
 
   // No dependency array: both objects are rebuilt every render, so a dependency list would
   // never skip an update anyway.
@@ -94,6 +101,7 @@ export const useBoreholeUrlParamsState = () => {
     if (globalThis.location.pathname !== overviewPathname) return;
     filterStateRef.current = filterState;
     tableStateRef.current = tableState;
+    legendRef.current = queryState.legend;
   });
 
   // Encodes a filter value into the form `setQueryState` expects, with the special-cases for
@@ -230,6 +238,25 @@ export const useBoreholeUrlParamsState = () => {
     }
   }, [setQueryState]);
 
+  const saveLegendParamInSession = useCallback(() => {
+    if (legendRef.current === null) {
+      sessionStorage.removeItem(SessionKeys.legend);
+    } else {
+      sessionStorage.setItem(SessionKeys.legend, legendRef.current);
+    }
+  }, []);
+
+  // A valid legend theme in the URL takes precedence over the one in the session. The browser URL decides, because
+  // the provider outlives the overview and its state can still hold the theme from before leaving it.
+  const restoreLegendParamFromSession = useCallback(async () => {
+    const urlLegend = new URLSearchParams(globalThis.location.search).get("legend");
+    if (urlLegend !== null && legendParsers.legend.parse(urlLegend) !== null) return;
+    const legend = legendParsers.legend.parse(sessionStorage.getItem(SessionKeys.legend) ?? "");
+    if (legend !== null) {
+      await setQueryState({ legend });
+    }
+  }, [setQueryState]);
+
   const activeFilterCount = Object.values(activeFilters).filter(v => v !== null).length;
 
   return {
@@ -245,6 +272,12 @@ export const useBoreholeUrlParamsState = () => {
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
     restoreMapParamsFromSession,
+    saveLegendParamInSession,
+    restoreLegendParamFromSession,
+    legend: queryState.legend,
+    setLegend: (legend: LegendThemeKey) => {
+      void setQueryState({ legend });
+    },
     activeFilterCount,
     mapResolution: queryState.mapResolution,
     setMapResolution: (v: number) => {

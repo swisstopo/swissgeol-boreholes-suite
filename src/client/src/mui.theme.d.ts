@@ -18,6 +18,14 @@ declare module "@mui/material/Typography" {
 }
 
 declare module "@mui/material/styles" {
+  export type MapSymbolColorName = "purple" | "yellow" | "red" | "orange" | "pink" | "grey" | "lightGrey";
+
+  export interface MapSymbolColor {
+    fill: string;
+    stroke: string;
+    shadow: string;
+  }
+
   export interface AppThemePalette {
     action: {
       disabled: string;
@@ -68,9 +76,9 @@ declare module "@mui/material/styles" {
       selected: string;
     };
     map: {
-      restrictionOpen: string;
-      restrictionClosed: string;
-      restrictionUnknown: string;
+      symbol: Record<MapSymbolColorName, MapSymbolColor>;
+      symbolHalo: string;
+      hover: string;
       selectedFill: string;
       selectedStroke: string;
       selectedOuterStroke: string;

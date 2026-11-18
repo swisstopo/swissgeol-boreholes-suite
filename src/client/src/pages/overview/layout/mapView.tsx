@@ -12,6 +12,7 @@ import { FilterResponse } from "../../../api/generated";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
+import { useLegendTheme } from "../../../components/map/legend/useLegendTheme.ts";
 import { MapComponent } from "../../../components/map/mapComponent";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { BoreholeCountState } from "../boreholeTable/boreholeNumbersPreview.tsx";
@@ -63,8 +64,11 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     saveTableParamsInSession,
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
+    saveLegendParamInSession,
+    restoreLegendParamFromSession,
   } = useBoreholeUrlParams();
   const activeFilterRequest = useActiveFilterRequest();
+  const { legendTheme, switchToNextTheme } = useLegendTheme();
 
   useEffect(() => {
     // Not awaited: the effect returns its cleanup synchronously, the flag follows once the URL holds the restored params.
@@ -72,19 +76,23 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       restoreTableParamsFromSession(),
       restoreFilterParamsFromSession(),
       restoreMapParamsFromSession(),
+      restoreLegendParamFromSession(),
     ]).finally(() => setSessionRestored(true));
 
     return () => {
       // On unmount: persist current state to sessionStorage.
       saveFilterParamsInSession();
       saveTableParamsInSession();
+      saveLegendParamInSession();
     };
   }, [
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
     restoreMapParamsFromSession,
+    restoreLegendParamFromSession,
     saveFilterParamsInSession,
     saveTableParamsInSession,
+    saveLegendParamInSession,
   ]);
 
   const { overlays } = useMapOverlays();
@@ -190,6 +198,8 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           setFilterPolygon={vertices => setFilterField("polygon", vertices)}
           displayErrorMessage={displayErrorMessage}
           isLoading={isMapPending}
+          legendTheme={legendTheme}
+          onSwitchLegendTheme={switchToNextTheme}
         />
       )}
       <BottomBarContainer

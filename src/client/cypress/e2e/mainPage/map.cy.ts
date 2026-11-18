@@ -48,6 +48,26 @@ describe("Map tests", () => {
     });
   });
 
+  it("keeps the legend theme after visiting a borehole", () => {
+    const legendTitle = () => cy.get('[data-cy="map-legend-title"]');
+
+    loginAsEditor();
+    cy.wait("@borehole_filter_map");
+    legendTitle().invoke("text").as("initialTitle");
+
+    cy.get('[data-cy="map-legend-switch"]').click();
+    cy.location("search").should("contain", "legend=restriction");
+    cy.get<string>("@initialTitle").then(initialTitle => legendTitle().should("not.have.text", initialTitle));
+    legendTitle().invoke("text").as("switchedTitle");
+
+    showTableAndWaitForData();
+    cy.get(".MuiDataGrid-row").first().click();
+    cy.location("pathname").should("match", /^\/\d+/);
+
+    returnToOverview();
+    cy.get<string>("@switchedTitle").then(switchedTitle => legendTitle().should("have.text", switchedTitle));
+  });
+
   it("keeps the map view and data when the table is sorted", () => {
     const mapView = (win: Window) => (win as WindowWithMaps).olMap?.getView();
 

@@ -42,6 +42,40 @@ describe("useBoreholeUrlParamsState", () => {
     expect(sessionStorage.getItem(SessionKeys.direction)).toBe("DESC");
   });
 
+  it("persists the legend theme shown on the overview", async () => {
+    const { result } = renderHook(() => useBoreholeUrlParamsState(), { wrapper: Wrapper });
+
+    await act(async () => {
+      await result.current.setQueryState({ legend: "restriction" });
+    });
+    result.current.saveLegendParamInSession();
+
+    expect(sessionStorage.getItem(SessionKeys.legend)).toBe("restriction");
+  });
+
+  it("restores the legend theme from the session when the URL has none", async () => {
+    sessionStorage.setItem(SessionKeys.legend, "restriction");
+    const { result } = renderHook(() => useBoreholeUrlParamsState(), { wrapper: Wrapper });
+
+    await act(async () => {
+      await result.current.restoreLegendParamFromSession();
+    });
+
+    expect(result.current.legend).toBe("restriction");
+  });
+
+  it("keeps the legend theme of the URL instead of the one in the session", async () => {
+    sessionStorage.setItem(SessionKeys.legend, "restriction");
+    globalThis.history.replaceState(null, "", "/?legend=boreholeType");
+    const { result } = renderHook(() => useBoreholeUrlParamsState(), { wrapper: Wrapper });
+
+    await act(async () => {
+      await result.current.restoreLegendParamFromSession();
+    });
+
+    expect(result.current.legend).toBeNull();
+  });
+
   it("persists table state changes made on the overview", async () => {
     const { result } = renderHook(() => useBoreholeUrlParamsState(), { wrapper: Wrapper });
 

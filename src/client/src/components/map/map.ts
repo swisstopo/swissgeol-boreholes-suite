@@ -8,6 +8,7 @@ import WMTS, { Options as WMTSOptions } from "ol/source/WMTS";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 import { PolygonVertices } from "../../pages/overview/polygonFilter.ts";
 import { swissExtent } from "../basemapSelector/basemaps";
+import { LegendTheme } from "./legend/legendThemes.ts";
 
 interface SerializedTileGrid {
   origins_?: number[][];
@@ -57,6 +58,9 @@ export interface MapComponentProps {
   mapResolution: number;
   mapCenter: [number, number] | null;
   isLoading: boolean;
+  legendTheme: LegendTheme;
+  // Undefined when there is only one legend theme to show.
+  onSwitchLegendTheme: (() => void) | undefined;
 }
 
 export const SRS = "EPSG:2056";
