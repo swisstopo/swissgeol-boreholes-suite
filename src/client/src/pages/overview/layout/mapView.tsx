@@ -6,9 +6,9 @@ import {
   exportJsonBoreholes,
   exportJsonWithAttachmentsBorehole,
   FilterRequest,
-  FilterResponse,
-  useFilterBoreholes,
+  useOverviewBoreholes,
 } from "../../../api/borehole.ts";
+import { FilterResponse } from "../../../api/generated";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
@@ -128,12 +128,11 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     pageSize: tableState.pageSize,
     totalPages: 0,
     boreholes: [],
-    geoJson: null,
     selectableBoreholeIds: noSelectableBoreholeIds,
   };
-  const { data, isPending } = useFilterBoreholes(filterRequest, sessionRestored);
-  const filterResponse = data ?? emptyFilterResponse;
-  const countState = getBoreholeCountState(isPending, data !== undefined);
+  const { tableData, isTablePending, mapFeatures, isMapPending } = useOverviewBoreholes(filterRequest, sessionRestored);
+  const filterResponse = tableData ?? emptyFilterResponse;
+  const countState = getBoreholeCountState(isTablePending, tableData !== undefined);
 
   // The selection is cleared only when the selectable boreholes change and not whenever the boreholes
   // change, which also happens on every pagination and order event (server side pagination/ordering).
@@ -176,7 +175,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       />
       {sessionRestored && (
         <MapComponent
-          geoJson={filterResponse.geoJson}
+          geoJson={mapFeatures ?? null}
           highlighted={hover ? [hover] : []}
           hover={(ids: number[]) => setRowsToHighlight(ids)}
           layers={overlays}
@@ -190,7 +189,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           filterPolygon={filterPolygon}
           setFilterPolygon={vertices => setFilterField("polygon", vertices)}
           displayErrorMessage={displayErrorMessage}
-          isLoading={countState === "loading"}
+          isLoading={isMapPending}
         />
       )}
       <BottomBarContainer

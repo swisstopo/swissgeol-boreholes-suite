@@ -1,10 +1,20 @@
 // @vitest-environment jsdom
 import { createElement, ReactNode } from "react";
-import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { focusManager, hashKey, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { buildBulkEditRequest, FilterResponse, useFilterBoreholes, useFilterStats } from "./borehole.ts";
+import { toPolygonGeometry } from "../pages/overview/polygonFilter.ts";
+import {
+  buildBulkEditRequest,
+  filterBoreholesMapQueryOptions,
+  filterBoreholesQueryOptions,
+  FilterRequest,
+  toMapFilterCriteria,
+  useFilterStats,
+  useOverviewBoreholes,
+} from "./borehole.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { FilterResponse } from "./generated";
 import { createQueryClient } from "./queryClient.ts";
 
 vi.mock("./fetchApiV2.ts", () => ({
@@ -46,6 +56,56 @@ describe("buildBulkEditRequest", () => {
   });
 });
 
+describe("toMapFilterCriteria", () => {
+  const filters: FilterRequest = { typeId: [20101001], totalDepthMin: 10, hasPhotos: "true" };
+  const mapKey = (filterRequest: FilterRequest) => hashKey([toMapFilterCriteria(filterRequest)]);
+
+  it("ignores paging and sorting of the borehole table", () => {
+    const withTableFields: FilterRequest = {
+      ...filters,
+      pageNumber: 3,
+      pageSize: 50,
+      orderBy: "name",
+      direction: "DESC",
+    };
+
+    expect(mapKey(withTableFields)).toBe(mapKey(filters));
+  });
+
+  it("changes with every filter criterion, including the polygon", () => {
+    const polygon = toPolygonGeometry([
+      [2600000, 1200000],
+      [2610000, 1200000],
+      [2610000, 1210000],
+    ]);
+
+    expect(mapKey({ ...filters, totalDepthMin: 20 })).not.toBe(mapKey(filters));
+    expect(mapKey({ ...filters, hasPhotos: "false" })).not.toBe(mapKey(filters));
+    expect(mapKey({ ...filters, polygon })).not.toBe(mapKey(filters));
+  });
+});
+
+describe("filterBoreholesMapQueryOptions", () => {
+  it("gives the prefetch after login the same key as the map in the overview", () => {
+    const filters: FilterRequest = { typeId: [20101001], hasPhotos: "true" };
+    const sessionFilterRequest: FilterRequest = {
+      ...filters,
+      pageNumber: 2,
+      pageSize: 50,
+      orderBy: "name",
+      direction: "ASC",
+    };
+
+    expect(hashKey(filterBoreholesMapQueryOptions(sessionFilterRequest).queryKey)).toBe(
+      hashKey(filterBoreholesMapQueryOptions(filters).queryKey),
+    );
+  });
+
+  it("keeps the map data fresh as long as the table data", () => {
+    expect(filterBoreholesMapQueryOptions({}).staleTime).toBe(filterBoreholesQueryOptions({}).staleTime);
+  });
+});
+
 describe("useFilterStats", () => {
   afterEach(() => {
     cleanup();
@@ -82,23 +142,22 @@ describe("useFilterStats", () => {
   });
 });
 
-describe("useFilterBoreholes", () => {
+describe("useOverviewBoreholes", () => {
   const filterResponse: FilterResponse = {
     totalCount: 1,
     pageNumber: 1,
     pageSize: 100,
     totalPages: 1,
     boreholes: [],
-    geoJson: null,
     selectableBoreholeIds: [],
   };
 
   const showOverview = (queryClient: QueryClient) =>
-    renderHook(() => useFilterBoreholes({}), { wrapper: createWrapper(queryClient) });
+    renderHook(() => useOverviewBoreholes({}, true), { wrapper: createWrapper(queryClient) });
 
   const showLoadedOverview = async (queryClient: QueryClient) => {
     const overview = showOverview(queryClient);
-    await waitFor(() => expect(overview.result.current.isSuccess).toBe(true));
+    await waitFor(() => expect(overview.result.current.tableData).toBeDefined());
     return overview;
   };
 
@@ -106,6 +165,36 @@ describe("useFilterBoreholes", () => {
     cleanup();
     focusManager.setFocused(undefined);
     vi.mocked(fetchApiV2WithApiError).mockReset();
+  });
+
+  const withLoadedMap = (queryClient: QueryClient) => {
+    queryClient.setQueryData(filterBoreholesMapQueryOptions({}).queryKey, { type: "FeatureCollection", features: [] });
+    return queryClient;
+  };
+
+  it("keeps the map when the table pages", async () => {
+    vi.mocked(fetchApiV2WithApiError).mockResolvedValue(filterResponse);
+    const overview = renderHook(({ pageNumber }) => useOverviewBoreholes({ pageNumber }, true), {
+      initialProps: { pageNumber: 1 },
+      wrapper: createWrapper(withLoadedMap(new QueryClient())),
+    });
+    await waitFor(() => expect(overview.result.current.tableData).toBeDefined());
+
+    overview.rerender({ pageNumber: 2 });
+
+    await waitFor(() => expect(requestsTo("borehole/filter")).toBe(2));
+    expect(requestsTo("borehole/filter/map")).toBe(0);
+  });
+
+  it("reports the map as pending while only the table page is loaded", () => {
+    vi.mocked(fetchApiV2WithApiError).mockReturnValue(new Promise(() => undefined));
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(filterBoreholesQueryOptions({}).queryKey, filterResponse);
+
+    const overview = showOverview(queryClient);
+
+    expect(overview.result.current.isTablePending).toBe(false);
+    expect(overview.result.current.isMapPending).toBe(true);
   });
 
   it("shows the loaded boreholes again without downloading them", async () => {
@@ -116,7 +205,7 @@ describe("useFilterBoreholes", () => {
 
     const secondVisit = showOverview(queryClient);
 
-    expect(secondVisit.result.current.data).toEqual(filterResponse);
+    expect(secondVisit.result.current.tableData).toEqual(filterResponse);
     expect(requestsTo("borehole/filter")).toBe(1);
   });
 

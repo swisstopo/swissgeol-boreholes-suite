@@ -8,10 +8,16 @@ import { parseAsPolygon, toPolygonGeometry } from "../pages/overview/polygonFilt
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { downloadPost } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
+import {
+  Borehole,
+  BoreholeBulkUpdate,
+  BoreholeBulkUpdateRequest,
+  BoreholeCodelist,
+  Codelist,
+  FilterResponse,
+} from "./generated";
 import { boreholeQueryKey, markOverviewStale, overviewQueryKey } from "./queryKeys.ts";
 import { TransferOptions } from "./transferProgress.ts";
-import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
 
 export interface BasicIdentifier extends BoreholeCodelist {
@@ -113,10 +119,11 @@ const canUserEditBorehole = async (id: number) =>
 const canUserManageBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canmanage?boreholeId=${id}`, "GET");
 
-// The overview downloads every filtered borehole, about 1 MB for 38,500 of them even compressed. Its results stay
-// fresh for five minutes, so switching browser tabs, returning from a borehole or paging back shows them without
-// downloading them again. Changes made in this app mark them stale at once (see markOverviewStale); changes in
-// other browser tabs or by other users show after at most five minutes.
+// The overview map downloads every filtered borehole, about 1 MB for 38,500 of them even compressed. The results of
+// every overview query (table, map and filter statistics) stay fresh for five minutes, so switching browser tabs,
+// returning from a borehole or paging back shows them without downloading them again. Changes made in this app mark
+// them stale at once (see markOverviewStale); changes in other browser tabs or by other users show after at most
+// five minutes, in the table and on the map alike.
 const overviewStaleTime = 5 * 60 * 1000;
 
 /** {@link markOverviewStale} for components, stable across renders. */
@@ -275,27 +282,6 @@ export const useReloadBoreholes = () => {
 };
 
 // ---- Filter interfaces ----
-export interface BoreholeListItem {
-  id: number;
-  originalName: string | null;
-  name: string | null;
-  workgroupId: number | null;
-  workgroupName: string | null;
-  statusId: number | null;
-  typeId: number | null;
-  purposeId: number | null;
-  restrictionId: number | null;
-  restrictionUntil: NullableDateString;
-  nationalInterest: boolean | null;
-  locationX: number | null;
-  locationY: number | null;
-  elevationZ: number | null;
-  totalDepth: number | null;
-  created: NullableDateString;
-  updated: NullableDateString;
-  locked: NullableDateString;
-}
-
 enum NullableBooleanFilter {
   false,
   true,
@@ -365,15 +351,12 @@ interface FilterRequestSubmission extends BaseFilterRequest {
   hasDocuments?: BooleanFilter;
 }
 
-export interface FilterResponse {
-  totalCount: number;
-  pageNumber: number;
-  pageSize: number;
-  totalPages: number;
-  boreholes: BoreholeListItem[];
-  geoJson: FeatureCollection | null;
-  selectableBoreholeIds: number[];
-}
+// Fields that only shape the borehole table. The map data must not depend on them,
+// otherwise paging or sorting the table would reload the whole map.
+type TableOnlyFilterField = "pageNumber" | "pageSize" | "orderBy" | "direction";
+
+type MapFilterCriteria = Omit<FilterRequestSubmission, TableOnlyFilterField> &
+  Partial<Record<TableOnlyFilterField, undefined>>;
 
 export interface NullableBooleanCounts {
   true: number;
@@ -428,6 +411,10 @@ const fetchFilterStats = async (filterRequest: FilterRequestSubmission): Promise
   return await fetchApiV2WithApiError<FilterStatsResponse>("borehole/filter/stats", "POST", filterRequest);
 };
 
+const filterBoreholesMap = async (criteria: MapFilterCriteria): Promise<FeatureCollection> => {
+  return await fetchApiV2WithApiError<FeatureCollection>("borehole/filter/map", "POST", criteria);
+};
+
 const fetchBoreholeSuggestions = (
   field: BoreholeSuggestionField,
   query: string,
@@ -472,6 +459,15 @@ const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestS
   hasProfiles: parseBooleanFilter(filterRequest.hasProfiles),
   hasPhotos: parseBooleanFilter(filterRequest.hasPhotos),
   hasDocuments: parseBooleanFilter(filterRequest.hasDocuments),
+});
+
+// Undefined values are left out of the request body and of the query key.
+export const toMapFilterCriteria = (filterRequest: FilterRequest): MapFilterCriteria => ({
+  ...toFilterRequestSubmission(filterRequest),
+  pageNumber: undefined,
+  pageSize: undefined,
+  orderBy: undefined,
+  direction: undefined,
 });
 
 /**
@@ -544,8 +540,45 @@ export const filterBoreholesQueryOptions = (filterRequest: FilterRequest) => {
   });
 };
 
-export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) =>
-  useQuery({ ...filterBoreholesQueryOptions(filterRequest), enabled, placeholderData: keepPreviousData });
+// Shared by the hook and the prefetch after login, so both use the same key and staleTime.
+// Like every overview query it lives under overviewQueryKey, so changes made in this app mark it stale at once.
+export const filterBoreholesMapQueryOptions = (filterRequest: FilterRequest) => {
+  const criteria = toMapFilterCriteria(filterRequest);
+  return queryOptions({
+    queryKey: [...overviewQueryKey, "map", criteria],
+    queryFn: () => filterBoreholesMap(criteria),
+    staleTime: overviewStaleTime,
+  });
+};
+
+interface OverviewBoreholes {
+  tableData: FilterResponse | undefined;
+  isTablePending: boolean;
+  mapFeatures: FeatureCollection | undefined;
+  isMapPending: boolean;
+}
+
+/**
+ * The current table page and the map points of the overview, loaded from the same filters. The map leaves out
+ * paging and sorting, so paging or sorting the table never reloads the map. Each part reports its own pending
+ * state, because the map, with every filtered borehole, usually arrives later than a table page.
+ * @param filterRequest The filters, page and sort order of the overview.
+ * @param enabled Whether the overview may load, false until the filters are restored from the session.
+ */
+export const useOverviewBoreholes = (filterRequest: FilterRequest, enabled: boolean): OverviewBoreholes => {
+  const table = useQuery({ ...filterBoreholesQueryOptions(filterRequest), enabled, placeholderData: keepPreviousData });
+  const map = useQuery({
+    ...filterBoreholesMapQueryOptions(filterRequest),
+    enabled,
+    placeholderData: keepPreviousData,
+  });
+  return {
+    tableData: table.data,
+    isTablePending: table.isPending,
+    mapFeatures: map.data,
+    isMapPending: map.isPending,
+  };
+};
 
 /**
  * The counts shown next to the filter options. One request runs many database queries, so the filter drawer

@@ -41,6 +41,7 @@ export const interceptApiCalls = () => {
   // Api V2
   cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
   cy.intercept("POST", "/api/v2/borehole/filter/stats").as("borehole_filter_stats");
+  cy.intercept({ method: "POST", pathname: "/api/v2/borehole/filter/map" }).as("borehole_filter_map");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
   cy.intercept("GET", "/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
