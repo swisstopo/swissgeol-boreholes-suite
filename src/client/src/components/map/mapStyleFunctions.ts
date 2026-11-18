@@ -1,32 +1,20 @@
 import Feature, { FeatureLike } from "ol/Feature";
 import { Circle, Fill, Stroke, Style, Text } from "ol/style";
 import { theme } from "../../AppTheme.ts";
-import { LegendSymbol } from "./legend/legendSymbols.ts";
 import { LegendTheme, MapFeatureProperties } from "./legend/legendThemes.ts";
-import { getSymbolStyle } from "./mapSymbolStyle.ts";
+import { getSymbolStyle, SymbolHighlight } from "./mapSymbolStyle.ts";
 
 const clusterStyleCache: Record<number, Style> = {};
 
-const innerSelectedStyle = new Style({
-  image: new Circle({
-    radius: 13,
-    fill: new Fill({ color: theme.palette.map.selectedFill }),
-    stroke: new Stroke({
-      color: theme.palette.map.selectedStroke,
-      width: 1,
-    }),
-  }),
-});
+/**
+ * The boreholes marked on the map. A borehole in both sets is shown as hovered.
+ */
+export interface BoreholeHighlights {
+  hovered: ReadonlySet<number>;
+  active: ReadonlySet<number>;
+}
 
-const outerSelectedStyle = new Style({
-  image: new Circle({
-    radius: 14,
-    stroke: new Stroke({
-      color: theme.palette.map.selectedOuterStroke,
-      width: 1,
-    }),
-  }),
-});
+export const noBoreholeHighlights: BoreholeHighlights = { hovered: new Set(), active: new Set() };
 
 export const drawStyle = new Style({
   fill: new Fill({
@@ -40,32 +28,28 @@ export const drawStyle = new Style({
 
 const toCodelistId = (value: unknown) => (typeof value === "number" ? value : null);
 
-const readMapFeatureProperties = (feature: FeatureLike): MapFeatureProperties => ({
+export const readMapFeatureProperties = (feature: FeatureLike): MapFeatureProperties => ({
   type: toCodelistId(feature.get("type")),
   restriction: toCodelistId(feature.get("restriction")),
 });
 
-const highlightedStylesCache = new Map<LegendSymbol, Style[]>();
-const getHighlightedStyles = (symbol: LegendSymbol) => {
-  let styles = highlightedStylesCache.get(symbol);
-  if (!styles) {
-    styles = [innerSelectedStyle, outerSelectedStyle, getSymbolStyle(symbol)];
-    highlightedStylesCache.set(symbol, styles);
-  }
-  return styles;
+const getHighlight = (id: number, highlights: BoreholeHighlights): SymbolHighlight | null => {
+  if (highlights.hovered.has(id)) return "hover";
+  if (highlights.active.has(id)) return "active";
+  return null;
 };
 
 /**
- * Styles a borehole with the symbol of its value in the active legend theme. Returns cached styles only.
+ * Styles a borehole with the symbol of its value in the active legend theme, outlined when it is highlighted. Returns
+ * cached styles only.
  */
 export function boreholeStyleFunction(
   feature: FeatureLike,
   legendTheme: LegendTheme,
-  highlighted: number[],
-): Style | Style[] {
+  highlights: BoreholeHighlights,
+): Style {
   const { symbol } = legendTheme.classify(readMapFeatureProperties(feature));
-  const isHighlighted = highlighted.includes(feature.get("id") as number);
-  return isHighlighted ? getHighlightedStyles(symbol) : getSymbolStyle(symbol);
+  return getSymbolStyle(symbol, getHighlight(feature.get("id") as number, highlights));
 }
 
 export function clusterStyleFunction(length: number): Style {

@@ -1,9 +1,9 @@
-﻿import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
+﻿import { FC, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import { Map, View } from "ol";
 import { defaults as defaultControls } from "ol/control";
-import { click, never, pointerMove } from "ol/events/condition";
+import { never } from "ol/events/condition";
 import { createEmpty, extend } from "ol/extent";
 import Feature, { FeatureLike } from "ol/Feature";
 import GeoJSON from "ol/format/GeoJSON";
@@ -11,10 +11,10 @@ import Point from "ol/geom/Point";
 import OlPolygon from "ol/geom/Polygon";
 import { defaults as defaultInteractions } from "ol/interaction";
 import Draw from "ol/interaction/Draw";
-import Select from "ol/interaction/Select";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import Overlay from "ol/Overlay";
+import { Pixel } from "ol/pixel";
 import { get as getProjection } from "ol/proj";
 import { Cluster } from "ol/source";
 import VectorSource from "ol/source/Vector";
@@ -31,12 +31,21 @@ import { BasemapContext } from "../basemapSelector/basemapContext";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps";
 import { BasemapSelector } from "../basemapSelector/basemapSelector";
 import MapControls from "../buttons/mapControls";
-import { ClickablePopup } from "./clickablePopup";
 import { PulseLayer, startHighlightPulse } from "./highlightPulse.ts";
 import { MapLegend } from "./legend/mapLegend.tsx";
 import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
 import "./mapProjections";
-import { boreholeStyleFunction, clusterStyleFunction, drawStyle } from "./mapStyleFunctions";
+import { boreholeStyleFunction, clusterStyleFunction, drawStyle, noBoreholeHighlights } from "./mapStyleFunctions";
+import { BoreholePopover } from "./popover/boreholePopover.tsx";
+import { getPopoverAnchors, getPopoverPlacement, popoverOffset } from "./popover/boreholePopoverPlacement.ts";
+import { toPopoverRows } from "./popover/boreholePopoverRows.ts";
+import {
+  BoreholePopoverState,
+  getBoreholeHighlights,
+  getHoveredBoreholeIds,
+  haveSameBoreholes,
+  haveSameHighlights,
+} from "./popover/boreholePopoverState.ts";
 
 // The longest time between the two clicks of a double-click, a little above the 250 ms OpenLayers uses.
 const doubleClickInterval = 500;
@@ -44,6 +53,29 @@ const doubleClickInterval = 500;
 // The highlight rings start just outside the borehole symbols and the cluster circles.
 const pointPulseRingRadius = 14;
 const clusterPulseRingRadius = 20;
+
+// Above this resolution the map shows clusters instead of the borehole symbols.
+const clusterResolution = 15;
+
+const boreholeLayerName = "points";
+
+const getBoreholesAtPixel = (map: Map, pixel: Pixel): Feature[] => {
+  const boreholes: Feature[] = [];
+  map.forEachFeatureAtPixel(
+    pixel,
+    feature => {
+      if (feature instanceof Feature) boreholes.push(feature);
+    },
+    { hitTolerance: 3, layerFilter: layer => layer.get("name") === boreholeLayerName },
+  );
+  return boreholes;
+};
+
+const getCoordinates = (features: readonly Feature[]) =>
+  features.flatMap(feature => {
+    const geometry = feature.getGeometry();
+    return geometry instanceof Point ? [geometry.getCoordinates()] : [];
+  });
 
 export const MapComponent: FC<MapComponentProps> = ({
   geoJson,
@@ -66,27 +98,29 @@ export const MapComponent: FC<MapComponentProps> = ({
   const { currentBasemapName } = useContext(BasemapContext);
 
   // ── UI state (triggers rerenders) ──
-  const [hoverFeatures, setHoverFeatures] = useState<Feature[] | null>(null);
+  const [popover, setPopover] = useState<BoreholePopoverState | null>(null);
+  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
 
   // ── OpenLayers object refs (mutable, imperative, never trigger rerenders) ──
   const mapRef = useRef<Map | null>(null);
   const pointsRef = useRef<VectorSource | null>(null);
   const drawRef = useRef<Draw | null>(null);
-  const popupRef = useRef<Overlay | null>(null);
-  const selectClickRef = useRef<Select | null>(null);
+  const popoverOverlayRef = useRef<Overlay | null>(null);
+  const popoverElementRef = useRef<HTMLDivElement | null>(null);
   const overlaysRef = useRef<TileLayer[]>([]);
   const pulseLayersRef = useRef<PulseLayer[]>([]);
   const stopPulseRef = useRef<(() => void) | null>(null);
 
   // ── Internal mutable state refs (no rerender needed) ──
   const drawActiveRef = useRef(false);
-  const hoveringPopupRef = useRef(false);
   const displayedBasemapRef = useRef<string | null>(null);
   const prevHighlightedRef = useRef<number[]>(highlighted);
   const isInitialGeoJsonRef = useRef(true);
+  // Set together with the popover state, so OL event handlers see a change before React commits it.
+  const popoverRef = useRef<BoreholePopoverState | null>(null);
+  const highlightsRef = useRef(noBoreholeHighlights);
 
   // ── Refs for latest prop values (accessed by OL event handlers registered at mount) ──
-  const highlightedRef = useRef(highlighted);
   const legendThemeRef = useRef(legendTheme);
   const polygonSelectionEnabledRef = useRef(polygonSelectionEnabled);
   const filterPolygonRef = useRef(filterPolygon);
@@ -101,7 +135,6 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   // No dependency array: every commit refreshes all of the above in one place.
   useEffect(() => {
-    highlightedRef.current = highlighted;
     legendThemeRef.current = legendTheme;
     polygonSelectionEnabledRef.current = polygonSelectionEnabled;
     filterPolygonRef.current = filterPolygon;
@@ -138,6 +171,22 @@ export const MapComponent: FC<MapComponentProps> = ({
       padding: [20, 20, 20, 20],
     });
   }, []);
+
+  // ────────────────────── Popover ──────────────────────
+
+  const updatePopover = useCallback((nextPopover: BoreholePopoverState | null) => {
+    popoverRef.current = nextPopover;
+    setPopover(nextPopover);
+    setHoveredRowId(null);
+  }, []);
+
+  const openBorehole = useCallback(
+    (id: number) => {
+      updatePopover(null);
+      callbacksRef.current.selected(id);
+    },
+    [updatePopover],
+  );
 
   // ────────────────────── Effect: Map initialization (mount only) ──────────────────────
   useEffect(() => {
@@ -196,19 +245,19 @@ export const MapComponent: FC<MapComponentProps> = ({
       properties: { name: "clusters" },
       zIndex: featureLayerZIndex,
       style: clusterStyle,
-      minResolution: 15,
+      minResolution: clusterResolution,
     });
     map.addLayer(clusterLayer);
 
     const pointStyle: StyleFunction = (feature: FeatureLike) =>
-      boreholeStyleFunction(feature, legendThemeRef.current, highlightedRef.current);
+      boreholeStyleFunction(feature, legendThemeRef.current, highlightsRef.current);
 
     const pointLayer = new VectorLayer({
-      properties: { name: "points" },
+      properties: { name: boreholeLayerName },
       zIndex: featureLayerZIndex,
       source: points,
       style: pointStyle,
-      maxResolution: 15,
+      maxResolution: clusterResolution,
     });
     map.addLayer(pointLayer);
 
@@ -228,116 +277,59 @@ export const MapComponent: FC<MapComponentProps> = ({
 
     // ── Interactions ──
 
-    // Hover detection
-    const selectPointerMove = new Select({ condition: pointerMove });
-    selectPointerMove.on("select", e => {
-      const pixel = map.getEventPixel(e.mapBrowserEvent.originalEvent);
-
-      if (drawActiveRef.current) return;
-
-      const popupOpen = popupRef.current?.getPosition() !== undefined;
-
-      // Find features under pointer (only when popup not open)
-      let features: Feature[] = [];
-      if (!popupOpen) {
-        const featureSet = new Set<Feature>();
-        map.forEachFeatureAtPixel(
-          pixel,
-          feature => {
-            if (feature.getGeometry()!.getType() !== "Polygon") {
-              featureSet.add(feature as Feature);
-            }
-          },
-          { hitTolerance: 3 },
-        );
-        features = Array.from(featureSet);
+    // Hover: a preview popover lists the boreholes under the pointer. A pinned popover stays until it is closed.
+    const showPreview = (boreholes: Feature[]) => {
+      const current = popoverRef.current;
+      if (boreholes.length === 0) {
+        if (current !== null) updatePopover(null);
+      } else if (current === null || !haveSameBoreholes(current.features, boreholes)) {
+        updatePopover({ features: boreholes, pinned: false });
       }
+    };
 
-      // Grace period for popup interaction
-      if (popupOpen) {
-        setTimeout(() => {
-          if (!hoveringPopupRef.current) {
-            const popup = popupRef.current;
-            if (popup?.getPosition()) {
-              setHoverFeatures(null);
-              hoveringPopupRef.current = false;
-              popup.setPosition(undefined);
-              callbacksRef.current.hover([]);
-            }
-          }
-        }, 500);
-        return;
-      }
+    map.on("pointermove", event => {
+      if (event.dragging || drawActiveRef.current || popoverRef.current?.pinned) return;
+      showPreview(getBoreholesAtPixel(map, event.pixel));
+    });
 
-      // Ignore clusters
-      if (features.length === 1) {
-        const clusterFeatures = features[0].get("features") as Feature[] | undefined;
-        if ((clusterFeatures?.length ?? 0) > 0) return;
-      }
+    map.getViewport().addEventListener("mouseleave", () => {
+      if (!popoverRef.current?.pinned) showPreview([]);
+    });
 
-      // Show popup for non-cluster features
-      if (features.length > 0) {
-        setHoverFeatures(features);
-        const coordinate = (features[0].getGeometry() as Point).getCoordinates();
-        popupRef.current?.setPosition(coordinate);
-        callbacksRef.current.hover(features.map(f => f.get("id") as number));
+    // The popover is not shown with the clusters.
+    map.getView().on("change:resolution", () => {
+      if (popoverRef.current !== null && (map.getView().getResolution() ?? 0) >= clusterResolution) {
+        updatePopover(null);
       }
     });
-    map.addInteraction(selectPointerMove);
 
-    // Click selection
-    const clickStyle: StyleFunction = (feature: FeatureLike) =>
-      boreholeStyleFunction(feature, legendThemeRef.current, highlightedRef.current);
-
-    const selectClick = new Select({
-      condition: click,
-      layers: layer => layer.get("name") === "points",
-      style: clickStyle,
-    });
-    selectClick.on("select", e => {
-      if (e.selected.length > 0) {
-        callbacksRef.current.selected(e.selected[0].get("id") as number);
-      } else {
-        callbacksRef.current.selected(null);
-      }
-    });
-    selectClickRef.current = selectClick;
-    map.addInteraction(selectClick);
-
-    // Popup overlay
-    const popupEl = document.getElementById("popup-overlay");
-    const popup = new Overlay({
-      position: undefined,
-      positioning: "bottom-center",
-      element: popupEl!,
-      stopEvent: false,
-    });
-    popupRef.current = popup;
-    map.addOverlay(popup);
-
-    if (popupEl) {
-      popupEl.addEventListener("mouseenter", () => {
-        hoveringPopupRef.current = true;
-      });
-      popupEl.addEventListener("mouseleave", () => {
-        const p = popupRef.current;
-        if (p?.getPosition() !== undefined) {
-          setHoverFeatures(null);
-          hoveringPopupRef.current = false;
-          p.setPosition(undefined);
-          callbacksRef.current.hover([]);
-        }
-      });
-    }
+    // The overlay stops events, so clicks in the pinned popover do not reach the map.
+    const popoverOverlay = new Overlay({ element: popoverElementRef.current ?? undefined });
+    popoverOverlayRef.current = popoverOverlay;
+    map.addOverlay(popoverOverlay);
 
     // A polygon is often finished with a double-click, whose first click already ends the drawing. Its second
     // click must not zoom into a cluster.
     let drawEndedAt = Number.NEGATIVE_INFINITY;
     const isClickFinishingDrawing = () => Date.now() - drawEndedAt < doubleClickInterval;
 
-    // Zoom to cluster on click
+    // A click on a single borehole opens it, a click on several pins the popover listing them, and a click elsewhere
+    // closes the popover and zooms into a clicked cluster.
     map.on("click", event => {
-      if (pointsRef.current && !polygonSelectionEnabledRef.current && !isClickFinishingDrawing()) {
+      if (polygonSelectionEnabledRef.current || isClickFinishingDrawing()) return;
+
+      const boreholes = getBoreholesAtPixel(map, event.pixel);
+      if (boreholes.length === 1) {
+        openBorehole(boreholes[0].get("id") as number);
+        return;
+      }
+      if (boreholes.length > 1) {
+        updatePopover({ features: boreholes, pinned: true });
+        return;
+      }
+      updatePopover(null);
+
+      if (pointsRef.current) {
         const clickFeatures = map.getFeaturesAtPixel(event.pixel, {
           layerFilter: layer => layer.get("name") === "clusters",
         });
@@ -489,8 +481,8 @@ export const MapComponent: FC<MapComponentProps> = ({
     points.clear();
     points.addFeatures(new GeoJSON().readFeatures(geoJson));
 
-    // Refresh click selection and force style recomputation
-    selectClickRef.current?.getFeatures().clear();
+    // The popover may list boreholes that are gone; force style recomputation.
+    updatePopover(null);
     points.changed();
 
     // Fit map to feature extent — but skip on initial mount when a saved
@@ -516,7 +508,6 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   useEffect(() => {
     const points = pointsRef.current;
-    const popup = popupRef.current;
     if (
       !points ||
       (highlighted.length === prevHighlightedRef.current.length &&
@@ -524,9 +515,6 @@ export const MapComponent: FC<MapComponentProps> = ({
     )
       return;
     prevHighlightedRef.current = highlighted;
-
-    // Clear any existing popup
-    popup?.setPosition(undefined);
 
     if (highlighted.length > 0) {
       const feature = points.getFeatureById(highlighted[0]);
@@ -538,10 +526,69 @@ export const MapComponent: FC<MapComponentProps> = ({
     } else {
       callbacksRef.current.hover([]);
     }
-
-    // Force layer redraw so the style function picks up the new highlighted state.
-    points.changed();
   }, [highlighted]);
+
+  // ────────────────────── Effect: Highlights on the map ──────────────────────
+
+  // Force layer redraw so the style function picks up the new highlighted state.
+  useEffect(() => {
+    const highlights = getBoreholeHighlights(popover, hoveredRowId, highlighted);
+    if (haveSameHighlights(highlightsRef.current, highlights)) return;
+    highlightsRef.current = highlights;
+    pointsRef.current?.changed();
+  }, [popover, hoveredRowId, highlighted]);
+
+  // The table highlights the rows of the boreholes hovered on the map or in the popover.
+  useEffect(() => {
+    callbacksRef.current.hover(getHoveredBoreholeIds(popover, hoveredRowId));
+  }, [popover, hoveredRowId]);
+
+  // ────────────────────── Effect: Popover ──────────────────────
+
+  // Placed after the popover rendered, so its height decides whether it fits above the boreholes.
+  useLayoutEffect(() => {
+    const map = mapRef.current;
+    const overlay = popoverOverlayRef.current;
+    const element = popoverElementRef.current;
+    if (!map || !overlay || !element) return;
+
+    const coordinates = popover === null ? [] : getCoordinates(popover.features);
+    if (coordinates.length === 0) {
+      overlay.setPosition(undefined);
+      return;
+    }
+
+    // Positioned above first, so the popover is visible and has its height.
+    const anchors = getPopoverAnchors(coordinates);
+    overlay.setPositioning("bottom-center");
+    overlay.setOffset([0, -popoverOffset]);
+    overlay.setPosition(anchors.above);
+
+    const abovePixel = map.getPixelFromCoordinate(anchors.above);
+    const belowPixel = map.getPixelFromCoordinate(anchors.below);
+    const mapHeight = map.getSize()?.[1];
+    if (!abovePixel || !belowPixel || mapHeight === undefined) return;
+    if (getPopoverPlacement(abovePixel[1], belowPixel[1], mapHeight, element.offsetHeight) === "below") {
+      overlay.setPositioning("top-center");
+      overlay.setOffset([0, popoverOffset]);
+      overlay.setPosition(anchors.below);
+    }
+  }, [popover]);
+
+  const popoverPinned = popover?.pinned === true;
+  useEffect(() => {
+    if (!popoverPinned) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") updatePopover(null);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [popoverPinned, updatePopover]);
+
+  const popoverRows = useMemo(
+    () => (popover === null ? [] : toPopoverRows(popover.features, legendTheme)),
+    [popover, legendTheme],
+  );
 
   // ────────────────────── Effect: Legend theme ──────────────────────
 
@@ -612,7 +659,7 @@ export const MapComponent: FC<MapComponentProps> = ({
         sx={{
           padding: "0px",
           flex: "1 1 100%",
-          cursor: hoverFeatures === null ? undefined : "pointer",
+          cursor: popover === null || popover.pinned ? undefined : "pointer",
           position: "relative",
         }}
       />
@@ -631,7 +678,19 @@ export const MapComponent: FC<MapComponentProps> = ({
           <CircularProgress aria-label={t("boreholesLoading")} />
         </Box>
       )}
-      <ClickablePopup features={hoverFeatures ?? undefined} />
+      {/* The overlay moves the popover element into the map; the hidden box only holds it until then. */}
+      <Box sx={{ display: "none" }}>
+        <div ref={popoverElementRef}>
+          {popover !== null && (
+            <BoreholePopover
+              rows={popoverRows}
+              pinned={popover.pinned}
+              onHoverRow={setHoveredRowId}
+              onOpenRow={openBorehole}
+            />
+          )}
+        </div>
+      </Box>
       <MapLegend
         legendTheme={legendTheme}
         onSwitchTheme={onSwitchLegendTheme}
