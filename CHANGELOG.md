@@ -12,6 +12,7 @@
 
 ### Fixed
 - Removing a filter while a polygon filter is active shows all boreholes in the polygon again instead of keeping the removed filter's restriction. The counts in the filter panel and the search suggestions now also take the polygon into account.
+- Extracting a stratigraphy again from the same profile now also shows the first page of the first extracted stratigraphy in the preview. Before, the preview stayed on the first page of the profile until the application was reloaded.
 
 ## v2.2.115 - 2026-11-16
 
