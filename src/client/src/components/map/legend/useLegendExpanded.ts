@@ -1,18 +1,11 @@
-import { useState } from "react";
-import { SessionKeys } from "../../../pages/overview/SessionKey.ts";
+import { useBoreholeUrlParams } from "../../../pages/overview/useBoreholeUrlParams.ts";
 
 /**
- * Whether the legend is expanded, kept in the session so it stays the same after visiting a borehole.
- * The legend starts expanded.
+ * Whether the legend is expanded, kept in the URL and in the session like the legend theme, so it stays the same after
+ * visiting a borehole.
  */
 export const useLegendExpanded = () => {
-  const [expanded, setExpanded] = useState(() => sessionStorage.getItem(SessionKeys.legendExpanded) !== "false");
-
-  const toggleExpanded = () => {
-    const next = !expanded;
-    sessionStorage.setItem(SessionKeys.legendExpanded, String(next));
-    setExpanded(next);
-  };
-
-  return { expanded, toggleExpanded };
+  const { legendExpanded, setLegendExpanded } = useBoreholeUrlParams();
+  const toggleExpanded = () => setLegendExpanded(!legendExpanded);
+  return { expanded: legendExpanded, toggleExpanded };
 };

@@ -64,8 +64,8 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     saveTableParamsInSession,
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
-    saveLegendParamInSession,
-    restoreLegendParamFromSession,
+    saveLegendParamsInSession,
+    restoreLegendParamsFromSession,
   } = useBoreholeUrlParams();
   const activeFilterRequest = useActiveFilterRequest();
   const { legendTheme, switchToNextTheme } = useLegendTheme();
@@ -76,23 +76,23 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       restoreTableParamsFromSession(),
       restoreFilterParamsFromSession(),
       restoreMapParamsFromSession(),
-      restoreLegendParamFromSession(),
+      restoreLegendParamsFromSession(),
     ]).finally(() => setSessionRestored(true));
 
     return () => {
       // On unmount: persist current state to sessionStorage.
       saveFilterParamsInSession();
       saveTableParamsInSession();
-      saveLegendParamInSession();
+      saveLegendParamsInSession();
     };
   }, [
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
     restoreMapParamsFromSession,
-    restoreLegendParamFromSession,
+    restoreLegendParamsFromSession,
     saveFilterParamsInSession,
     saveTableParamsInSession,
-    saveLegendParamInSession,
+    saveLegendParamsInSession,
   ]);
 
   const { overlays } = useMapOverlays();

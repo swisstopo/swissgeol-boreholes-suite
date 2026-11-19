@@ -30,10 +30,13 @@ const mapParsers = {
   mapCenterY: parseAsFloat,
 };
 
-// Without a value, the legend shows its first available theme.
+// Without a value, the legend shows its first available theme. The legend starts expanded.
 const legendParsers = {
   legend: parseAsStringLiteral(legendThemeKeys),
+  legendExpanded: parseAsBoolean.withDefault(true),
 };
+
+type LegendKey = keyof typeof legendParsers;
 
 // Filter fields
 export const filterParsers = {
@@ -85,12 +88,13 @@ export const useBoreholeUrlParamsState = () => {
   const tableState = Object.fromEntries(
     (Object.keys(tableParsers) as (keyof typeof tableParsers)[]).map(k => [k, queryState[k]]),
   ) as { [K in keyof typeof tableParsers]: (typeof queryState)[K] };
+  const legendState = { legend: queryState.legend, legendExpanded: queryState.legendExpanded };
 
   // Keep refs always pointing to the latest values so cleanup functions
   // (called on unmount) never close over stale state.
   const filterStateRef = useRef(filterState);
   const tableStateRef = useRef(tableState);
-  const legendRef = useRef(queryState.legend);
+  const legendStateRef = useRef(legendState);
 
   // No dependency array: both objects are rebuilt every render, so a dependency list would
   // never skip an update anyway.
@@ -101,7 +105,7 @@ export const useBoreholeUrlParamsState = () => {
     if (globalThis.location.pathname !== overviewPathname) return;
     filterStateRef.current = filterState;
     tableStateRef.current = tableState;
-    legendRef.current = queryState.legend;
+    legendStateRef.current = legendState;
   });
 
   // Encodes a filter value into the form `setQueryState` expects, with the special-cases for
@@ -238,22 +242,32 @@ export const useBoreholeUrlParamsState = () => {
     }
   }, [setQueryState]);
 
-  const saveLegendParamInSession = useCallback(() => {
-    if (legendRef.current === null) {
-      sessionStorage.removeItem(SessionKeys.legend);
-    } else {
-      sessionStorage.setItem(SessionKeys.legend, legendRef.current);
-    }
+  const saveLegendParamsInSession = useCallback(() => {
+    Object.entries(legendStateRef.current).forEach(([key, value]) => {
+      if (value === null) {
+        sessionStorage.removeItem(SessionKeys[key as LegendKey]);
+      } else {
+        sessionStorage.setItem(SessionKeys[key as LegendKey], String(value));
+      }
+    });
   }, []);
 
-  // A valid legend theme in the URL takes precedence over the one in the session. The browser URL decides, because
-  // the provider outlives the overview and its state can still hold the theme from before leaving it.
-  const restoreLegendParamFromSession = useCallback(async () => {
-    const urlLegend = new URLSearchParams(globalThis.location.search).get("legend");
-    if (urlLegend !== null && legendParsers.legend.parse(urlLegend) !== null) return;
-    const legend = legendParsers.legend.parse(sessionStorage.getItem(SessionKeys.legend) ?? "");
-    if (legend !== null) {
-      await setQueryState({ legend });
+  // A valid legend param in the URL takes precedence over the one in the session. The browser URL decides, because
+  // the provider outlives the overview and its state can still hold the params from before leaving it.
+  const restoreLegendParamsFromSession = useCallback(async () => {
+    const urlParams = new URLSearchParams(globalThis.location.search);
+    const updates: Record<string, unknown> = {};
+    (Object.keys(legendParsers) as LegendKey[]).forEach(key => {
+      const urlValue = urlParams.get(key);
+      if (urlValue !== null && legendParsers[key].parse(urlValue) !== null) return;
+      // Checked before parsing: the boolean parser reads any string, even an empty one, as a value.
+      const sessionValue = sessionStorage.getItem(SessionKeys[key]);
+      if (sessionValue === null) return;
+      const parsed = legendParsers[key].parse(sessionValue);
+      if (parsed !== null) updates[key] = parsed;
+    });
+    if (Object.keys(updates).length > 0) {
+      await setQueryState(updates);
     }
   }, [setQueryState]);
 
@@ -272,11 +286,15 @@ export const useBoreholeUrlParamsState = () => {
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
     restoreMapParamsFromSession,
-    saveLegendParamInSession,
-    restoreLegendParamFromSession,
+    saveLegendParamsInSession,
+    restoreLegendParamsFromSession,
     legend: queryState.legend,
     setLegend: (legend: LegendThemeKey) => {
       void setQueryState({ legend });
+    },
+    legendExpanded: queryState.legendExpanded,
+    setLegendExpanded: (expanded: boolean) => {
+      void setQueryState({ legendExpanded: expanded });
     },
     activeFilterCount,
     mapResolution: queryState.mapResolution,

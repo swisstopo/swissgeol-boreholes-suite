@@ -1,7 +1,9 @@
 // @vitest-environment jsdom
+import { ReactElement } from "react";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { SessionKeys } from "../../../pages/overview/SessionKey.ts";
+import { NuqsTestingAdapter, OnUrlUpdateFunction } from "nuqs/adapters/testing";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { BoreholeUrlParamsProvider } from "../../../pages/overview/boreholeUrlParamsProvider.tsx";
 import { LegendTheme, LegendThemeKey, legendThemes } from "./legendThemes.ts";
 import { MapLegend } from "./mapLegend.tsx";
 
@@ -35,8 +37,17 @@ const themeOf = (key: LegendThemeKey): LegendTheme => {
   return legendTheme;
 };
 
+const renderWithUrlParams = (ui: ReactElement, searchParams = "", onUrlUpdate?: OnUrlUpdateFunction) =>
+  render(
+    <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate} hasMemory>
+      <BoreholeUrlParamsProvider>{ui}</BoreholeUrlParamsProvider>
+    </NuqsTestingAdapter>,
+  );
+
 const renderLegend = (legendTheme: LegendTheme, onSwitchTheme: () => void = vi.fn()) =>
-  render(<MapLegend legendTheme={legendTheme} onSwitchTheme={onSwitchTheme} onHighlightBoreholes={vi.fn()} />);
+  renderWithUrlParams(
+    <MapLegend legendTheme={legendTheme} onSwitchTheme={onSwitchTheme} onHighlightBoreholes={vi.fn()} />,
+  );
 
 const entryLabels = () =>
   within(screen.getByRole("list"))
@@ -44,10 +55,6 @@ const entryLabels = () =>
     .map(item => item.textContent);
 
 describe("MapLegend", () => {
-  beforeEach(() => {
-    sessionStorage.clear();
-  });
-
   afterEach(() => {
     cleanup();
   });
@@ -87,32 +94,39 @@ describe("MapLegend", () => {
   });
 
   it("disables the switch button when there is only one theme", () => {
-    render(
+    renderWithUrlParams(
       <MapLegend legendTheme={themeOf("boreholeType")} onSwitchTheme={undefined} onHighlightBoreholes={vi.fn()} />,
     );
 
     expect(screen.getByRole("button", { name: "switchLegend" }).hasAttribute("disabled")).toBe(true);
   });
 
-  it("collapses and expands, and remembers the state in the session", () => {
-    renderLegend(themeOf("boreholeType"));
+  it("collapses and expands, and keeps the state in the URL", async () => {
+    const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
+    renderWithUrlParams(
+      <MapLegend legendTheme={themeOf("boreholeType")} onSwitchTheme={vi.fn()} onHighlightBoreholes={vi.fn()} />,
+      "",
+      onUrlUpdate,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "collapseLegend" }));
 
-    const expandButton = screen.getByRole("button", { name: "expandLegend" });
+    const expandButton = await screen.findByRole("button", { name: "expandLegend" });
     expect(expandButton.getAttribute("aria-expanded")).toBe("false");
-    expect(sessionStorage.getItem(SessionKeys.legendExpanded)).toBe("false");
+    expect(onUrlUpdate.mock.lastCall?.[0].queryString).toBe("?legendExpanded=false");
 
     fireEvent.click(expandButton);
 
-    expect(screen.getByRole("button", { name: "collapseLegend" }).getAttribute("aria-expanded")).toBe("true");
-    expect(sessionStorage.getItem(SessionKeys.legendExpanded)).toBe("true");
+    const collapseButton = await screen.findByRole("button", { name: "collapseLegend" });
+    expect(collapseButton.getAttribute("aria-expanded")).toBe("true");
+    expect(onUrlUpdate.mock.lastCall?.[0].queryString).toBe("");
   });
 
-  it("starts collapsed when it was collapsed before in this session", () => {
-    sessionStorage.setItem(SessionKeys.legendExpanded, "false");
-
-    renderLegend(themeOf("boreholeType"));
+  it("starts collapsed when the URL says so", () => {
+    renderWithUrlParams(
+      <MapLegend legendTheme={themeOf("boreholeType")} onSwitchTheme={vi.fn()} onHighlightBoreholes={vi.fn()} />,
+      "?legendExpanded=false",
+    );
 
     expect(screen.getByRole("button", { name: "expandLegend" }).getAttribute("aria-expanded")).toBe("false");
   });
