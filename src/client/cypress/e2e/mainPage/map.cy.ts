@@ -53,12 +53,12 @@ describe("Map tests", () => {
 
     loginAsEditor();
     cy.wait("@borehole_filter_map");
-    legendTitle().invoke("text").as("initialTitle");
+    legendTitle().invoke("text").as("initialTitle", { type: "static" });
 
     cy.get('[data-cy="map-legend-switch"]').click();
     cy.location("search").should("contain", "legend=restriction");
     cy.get<string>("@initialTitle").then(initialTitle => legendTitle().should("not.have.text", initialTitle));
-    legendTitle().invoke("text").as("switchedTitle");
+    legendTitle().invoke("text").as("switchedTitle", { type: "static" });
 
     showTableAndWaitForData();
     cy.get(".MuiDataGrid-row").first().click();
