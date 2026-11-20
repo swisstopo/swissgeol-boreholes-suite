@@ -2,7 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+- The overview map has a legend that explains the borehole symbols. It switches between the themes borehole type and restriction, and the map draws the symbols of the chosen theme. The theme and whether the legend is collapsed are kept in the URL and when returning from a borehole. A button in the legend briefly highlights all boreholes on the map. In the anonymous view instance, the legend shows only the borehole type.
+
 ### Changed
+- The overview map no longer colours the boreholes by restriction by default; it shows the borehole type, with new symbols.
+- The borehole table on the overview is only as high as its rows, up to half the window, so the map gets the remaining space.
 - The overview shows loading indicators on the map, in the table and instead of "Boreholes: 0" while the boreholes load, and says so when they could not be loaded. It loads the filter statistics only while the filter panel is open. It keeps loaded results for five minutes, so switching browser tabs, returning from a borehole or paging back no longer downloads them again. Changes made in the same browser tab show at once, changes from other tabs or other users within five minutes.
 - Messages shown at the top of the page no longer close when clicking elsewhere. They close with their close button or after a few seconds, so a double-click can no longer hide a message right after it appears.
 - The polygon filter is kept in the URL like all other filters, so it survives a page reload and can be shared as a link. Polygons are drawn by clicking; freehand drawing with the Shift key is no longer available. A polygon reaching outside the map area is not applied; a message asks to draw it again and the previous polygon stays. Double-clicking the map no longer zooms in, so a polygon can be finished with a double-click.
