@@ -104,6 +104,4 @@ export const legendSymbols = {
   greyDiamond: { ...diamond, ...colors.grey },
   lightGreyDiamond: { ...diamond, ...colors.lightGrey },
   redCross: { ...cross, ...colors.red },
-  // Provisional until the design defines a symbol for "gesperrt bis".
-  orangeCross: { ...cross, ...colors.orange },
 } as const satisfies Record<string, LegendSymbol>;

@@ -80,7 +80,7 @@ const restrictionNotSpecified = notSpecifiedEntry(legendSymbols.lightGreyDiamond
 const restrictionEntries = [
   codelistEntry(restrictionFreeCode, legendSymbols.purpleHexagon, 0),
   codelistEntry(restrictionCode, legendSymbols.redCross, 0),
-  codelistEntry(restrictionUntilCode, legendSymbols.orangeCross, 0),
+  codelistEntry(restrictionUntilCode, legendSymbols.orangeTriangle, 0),
   restrictionNotSpecified,
 ];
 const classifyRestriction = classifyByCodelistId(restrictionEntries, restrictionNotSpecified);

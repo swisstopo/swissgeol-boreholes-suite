@@ -11,11 +11,14 @@ export const BottomDrawer = ({ drawerOpen, children }: { drawerOpen: boolean; ch
         transition: "left 0.3s ease-out",
       }}>
       <Collapse in={drawerOpen} orientation="vertical">
+        {/* A column flex parent lets the data grid take the height of its rows up to the maximum, then scroll. */}
         <Paper
           sx={{
             boxShadow: "none !important",
             padding: 2,
-            height: "50vh",
+            maxHeight: "50vh",
+            display: "flex",
+            flexDirection: "column",
             borderRight: `1px solid ${theme.palette.border.light}`,
             backgroundColor: theme.palette.background.lightgrey,
           }}>

@@ -36,13 +36,16 @@ const fadeInSx = (duration: string) => ({
   "@media (prefers-reduced-motion: reduce)": { animation: "none" },
 });
 
+const legendMargin = 2;
+
+// The legend keeps the same margin to the bottom of the map as to the top, so the list scrolls only when needed.
 const legendSx: SystemStyleObject<Theme> = {
   position: "absolute",
-  top: theme.spacing(2),
-  left: theme.spacing(2),
+  top: theme.spacing(legendMargin),
+  left: theme.spacing(legendMargin),
   zIndex: 500,
   minWidth: "187px",
-  maxHeight: "calc(100% - 100px)",
+  maxHeight: `calc(100% - ${theme.spacing(2 * legendMargin)})`,
   backgroundColor: theme.palette.background.default,
   border: `1px solid ${theme.palette.border.light}`,
   borderRadius: "4px",
