@@ -1,23 +1,15 @@
-import Feature from "ol/Feature";
-import { Circle, Fill, RegularShape, Stroke, Style, Text } from "ol/style";
+import Feature, { FeatureLike } from "ol/Feature";
+import { Circle, Fill, Stroke, Style, Text } from "ol/style";
 import { theme } from "../../AppTheme.ts";
+import { LegendSymbol } from "./legend/legendSymbols.ts";
+import { LegendTheme, MapFeatureProperties } from "./legend/legendThemes.ts";
+import { getSymbolStyle } from "./mapSymbolStyle.ts";
 
-const boreholeStyleCache: Record<number, Circle> = {};
-const virtualBoreholeStyleCache: Record<number, RegularShape> = {};
-const trialpitStyleCache: Record<number, RegularShape> = {};
-const probingStyleCache: Record<number, RegularShape> = {};
-const deepBoreholeStyleCache: Record<number, RegularShape> = {};
-const otherStyleCache: Record<number, RegularShape> = {};
 const clusterStyleCache: Record<number, Style> = {};
-
-const blackStroke = new Stroke({ color: "black", width: 1 });
-const greenFill = new Fill({ color: theme.palette.map.restrictionOpen });
-const redFill = new Fill({ color: theme.palette.map.restrictionClosed });
-const blackFill = new Fill({ color: theme.palette.map.restrictionUnknown });
 
 const innerSelectedStyle = new Style({
   image: new Circle({
-    radius: 10,
+    radius: 13,
     fill: new Fill({ color: theme.palette.map.selectedFill }),
     stroke: new Stroke({
       color: theme.palette.map.selectedStroke,
@@ -28,7 +20,7 @@ const innerSelectedStyle = new Style({
 
 const outerSelectedStyle = new Style({
   image: new Circle({
-    radius: 11,
+    radius: 14,
     stroke: new Stroke({
       color: theme.palette.map.selectedOuterStroke,
       width: 1,
@@ -46,112 +38,34 @@ export const drawStyle = new Style({
   }),
 });
 
-export function styleFunction(feature: Feature, highlighted: number[]): Style[] {
-  const selected = highlighted?.length > 0 && highlighted.includes(feature.get("id") as number);
-  const res = feature.get("restriction") as number;
-  let fill: Fill;
-  if (res === 20111001) {
-    fill = greenFill;
-  } else if ([20111003, 20111002].includes(res)) {
-    fill = redFill;
-  } else {
-    fill = blackFill;
-  }
+const toCodelistId = (value: unknown) => (typeof value === "number" ? value : null);
 
-  let conf: { image: Circle | RegularShape };
-  const type = feature.get("type") as number;
-  if (type === 20101001) {
-    // boreholes
-    let image = boreholeStyleCache[res];
-    if (!image) {
-      image = new Circle({
-        radius: 6,
-        stroke: blackStroke,
-        fill: fill,
-      });
-      boreholeStyleCache[res] = image;
-    }
-    conf = { image };
-  } else if (type === 30000307) {
-    // virtual borehole
-    let image = virtualBoreholeStyleCache[res];
-    if (!image) {
-      image = new RegularShape({
-        fill: fill,
-        stroke: blackStroke,
-        points: 5,
-        radius: 8,
-        radius2: 4,
-        angle: 0,
-      });
-      virtualBoreholeStyleCache[res] = image;
-    }
-    conf = { image };
-  } else if (type === 20101003) {
-    // trial pits
-    let image = trialpitStyleCache[res];
-    if (!image) {
-      image = new RegularShape({
-        fill: fill,
-        stroke: blackStroke,
-        points: 3,
-        radius: 8,
-        angle: 0,
-      });
-      trialpitStyleCache[res] = image;
-    }
-    conf = { image };
-  } else if (type === 20101002) {
-    // dynamic probing
-    let image = probingStyleCache[res];
-    if (!image) {
-      image = new RegularShape({
-        fill: fill,
-        stroke: blackStroke,
-        points: 3,
-        radius: 8,
-        rotation: Math.PI,
-        angle: 0,
-      });
-      probingStyleCache[res] = image;
-    }
-    conf = { image };
-  } else if (type === 20101004) {
-    // other
-    let image = otherStyleCache[res];
-    if (!image) {
-      image = new RegularShape({
-        fill: fill,
-        stroke: blackStroke,
-        points: 6,
-        radius: 7,
-        angle: 0,
-      });
-      otherStyleCache[res] = image;
-    }
-    conf = { image };
-  } else {
-    // Not set
-    let image = deepBoreholeStyleCache[res];
-    if (!image) {
-      image = new RegularShape({
-        fill: fill,
-        stroke: blackStroke,
-        points: 4,
-        radius: 8,
-        rotation: 0.25 * Math.PI,
-        angle: 0,
-      });
-      deepBoreholeStyleCache[res] = image;
-    }
-    conf = { image };
-  }
+const readMapFeatureProperties = (feature: FeatureLike): MapFeatureProperties => ({
+  type: toCodelistId(feature.get("type")),
+  restriction: toCodelistId(feature.get("restriction")),
+});
 
-  if (selected) {
-    return [innerSelectedStyle, outerSelectedStyle, new Style(conf)];
+const highlightedStylesCache = new Map<LegendSymbol, Style[]>();
+const getHighlightedStyles = (symbol: LegendSymbol) => {
+  let styles = highlightedStylesCache.get(symbol);
+  if (!styles) {
+    styles = [innerSelectedStyle, outerSelectedStyle, getSymbolStyle(symbol)];
+    highlightedStylesCache.set(symbol, styles);
   }
+  return styles;
+};
 
-  return [new Style(conf)];
+/**
+ * Styles a borehole with the symbol of its value in the active legend theme. Returns cached styles only.
+ */
+export function boreholeStyleFunction(
+  feature: FeatureLike,
+  legendTheme: LegendTheme,
+  highlighted: number[],
+): Style | Style[] {
+  const { symbol } = legendTheme.classify(readMapFeatureProperties(feature));
+  const isHighlighted = highlighted.includes(feature.get("id") as number);
+  return isHighlighted ? getHighlightedStyles(symbol) : getSymbolStyle(symbol);
 }
 
 export function clusterStyleFunction(length: number): Style {
