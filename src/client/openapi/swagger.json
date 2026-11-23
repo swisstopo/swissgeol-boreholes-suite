@@ -7812,6 +7812,27 @@
         "description": "Join table entity for a BDMS.Models.Codelist attached to a BDMS.Models.Borehole to store multiple borehole ids."
       },
       "BoreholeDataAvailability": {
+        "required": [
+          "hasBackfills",
+          "hasCasings",
+          "hasChronostratigraphy",
+          "hasCompletion",
+          "hasDocuments",
+          "hasFieldMeasurement",
+          "hasGeometry",
+          "hasGroundwaterLevelMeasurement",
+          "hasHydrotest",
+          "hasInstrumentations",
+          "hasLithology",
+          "hasLithostratigraphy",
+          "hasLogRuns",
+          "hasObservation",
+          "hasPhotos",
+          "hasProfiles",
+          "hasSections",
+          "hasStratigraphy",
+          "hasWaterIngress"
+        ],
         "type": "object",
         "properties": {
           "hasSections": {

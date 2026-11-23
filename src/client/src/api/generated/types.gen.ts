@@ -424,79 +424,79 @@ export type BoreholeDataAvailability = {
   /**
    * Gets whether the borehole has a BDMS.Models.Section.
    */
-  hasSections?: boolean;
+  hasSections: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.BoreholeGeometryElement.
    */
-  hasGeometry?: boolean;
+  hasGeometry: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.Stratigraphy.
    */
-  hasStratigraphy?: boolean;
+  hasStratigraphy: boolean;
   /**
    * Gets whether any stratigraphy of the borehole has a BDMS.Models.Lithology.
    */
-  hasLithology?: boolean;
+  hasLithology: boolean;
   /**
    * Gets whether any stratigraphy of the borehole has a BDMS.Models.LithostratigraphyLayer.
    */
-  hasLithostratigraphy?: boolean;
+  hasLithostratigraphy: boolean;
   /**
    * Gets whether any stratigraphy of the borehole has a BDMS.Models.ChronostratigraphyLayer.
    */
-  hasChronostratigraphy?: boolean;
+  hasChronostratigraphy: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.Completion.
    */
-  hasCompletion?: boolean;
+  hasCompletion: boolean;
   /**
    * Gets whether any completion of the borehole has a BDMS.Models.Casing.
    */
-  hasCasings?: boolean;
+  hasCasings: boolean;
   /**
    * Gets whether any completion of the borehole has a BDMS.Models.Backfill.
    */
-  hasBackfills?: boolean;
+  hasBackfills: boolean;
   /**
    * Gets whether any completion of the borehole has an BDMS.Models.Instrumentation.
    */
-  hasInstrumentations?: boolean;
+  hasInstrumentations: boolean;
   /**
    * Gets whether the borehole has an BDMS.Models.Observation of any type.
    */
-  hasObservation?: boolean;
+  hasObservation: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.WaterIngress.
    */
-  hasWaterIngress?: boolean;
+  hasWaterIngress: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.GroundwaterLevelMeasurement.
    */
-  hasGroundwaterLevelMeasurement?: boolean;
+  hasGroundwaterLevelMeasurement: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.Hydrotest.
    */
-  hasHydrotest?: boolean;
+  hasHydrotest: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.FieldMeasurement.
    */
-  hasFieldMeasurement?: boolean;
+  hasFieldMeasurement: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.Profile.
    */
-  hasProfiles?: boolean;
+  hasProfiles: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.Photo.
    */
-  hasPhotos?: boolean;
+  hasPhotos: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.Document.
    */
-  hasDocuments?: boolean;
+  hasDocuments: boolean;
   /**
    * Gets whether the borehole has a BDMS.Models.LogRun.
    */
-  hasLogRuns?: boolean;
+  hasLogRuns: boolean;
 };
 
 /**
