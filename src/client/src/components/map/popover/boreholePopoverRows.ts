@@ -14,7 +14,7 @@ export interface BoreholePopoverRow {
 }
 
 // The preview shows at most this many rows; with more boreholes it shows one row less and the number of the others.
-export const maxPreviewRows = 5;
+const maxPreviewRows = 5;
 
 export const toPopoverRows = (features: readonly FeatureLike[], legendTheme: LegendTheme): BoreholePopoverRow[] =>
   features.map(feature => {

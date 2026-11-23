@@ -1,6 +1,6 @@
 ﻿import { Coordinate } from "ol/coordinate";
 
-export type PopoverPlacement = "above" | "below";
+type PopoverPlacement = "above" | "below";
 
 /**
  * Where the popover is attached: the locations of the listed boreholes or of their cluster, and half the height of
