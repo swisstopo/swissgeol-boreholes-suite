@@ -159,6 +159,7 @@ export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHove
                 sx={buttonRowSx}
                 onMouseEnter={() => onHoverRow(row.id)}
                 onFocus={() => onHoverRow(row.id)}
+                onBlur={() => onHoverRow(null)}
                 onClick={() => onOpenRow(row.id)}
                 data-cy="map-popover-row">
                 <RowContent row={row} />

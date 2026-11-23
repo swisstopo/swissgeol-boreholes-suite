@@ -143,6 +143,7 @@ export const MapComponent: FC<MapComponentProps> = ({
   // ── OpenLayers object refs (mutable, imperative, never trigger rerenders) ──
   const mapRef = useRef<Map | null>(null);
   const pointsRef = useRef<VectorSource | null>(null);
+  const pointLayerRef = useRef<VectorLayer | null>(null);
   const drawRef = useRef<Draw | null>(null);
   const popoverOverlayRef = useRef<Overlay | null>(null);
   const popoverElementRef = useRef<HTMLDivElement | null>(null);
@@ -299,6 +300,7 @@ export const MapComponent: FC<MapComponentProps> = ({
       maxResolution: clusterResolution,
     });
     map.addLayer(pointLayer);
+    pointLayerRef.current = pointLayer;
 
     pulseLayersRef.current = [
       { layer: pointLayer, ringRadius: pointPulseRingRadius },
@@ -373,10 +375,9 @@ export const MapComponent: FC<MapComponentProps> = ({
       updatePopover(null);
 
       if (pointsRef.current) {
-        const clickFeatures = map.getFeaturesAtPixel(event.pixel, {
-          layerFilter: layer => layer.get("name") === clusterLayerName,
-        });
-        if (clickFeatures?.length > 0) {
+        // With the same hit tolerance as the hover, so a cluster that shows its preview also zooms on click.
+        const clickFeatures = getFeaturesAtPixel(map, event.pixel, clusterLayerName);
+        if (clickFeatures.length > 0) {
           const clusterMembers = clickFeatures[0].get("features") as Feature[];
           if (clusterMembers.length > 1) {
             const extent = createEmpty();
@@ -573,12 +574,13 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   // ────────────────────── Effect: Highlights on the map ──────────────────────
 
-  // Force layer redraw so the style function picks up the new highlighted state.
+  // Force layer redraw so the style function picks up the new highlighted state. Only the layer is changed: a change
+  // of the source would make the cluster source cluster all boreholes again.
   useEffect(() => {
     const highlights = getBoreholeHighlights(popover, hoveredRowId, highlighted);
     if (haveSameHighlights(highlightsRef.current, highlights)) return;
     highlightsRef.current = highlights;
-    pointsRef.current?.changed();
+    pointLayerRef.current?.changed();
   }, [popover, hoveredRowId, highlighted]);
 
   // The table highlights the rows of the boreholes hovered on the map or in the popover.
@@ -635,9 +637,9 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   // ────────────────────── Effect: Legend theme ──────────────────────
 
-  // The style function reads the theme from its ref, the source change only triggers the redraw.
+  // The style function reads the theme from its ref, the layer change only triggers the redraw.
   useEffect(() => {
-    pointsRef.current?.changed();
+    pointLayerRef.current?.changed();
   }, [legendTheme]);
 
   const onHighlightBoreholes = useCallback(() => {

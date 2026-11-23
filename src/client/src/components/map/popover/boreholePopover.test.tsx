@@ -101,4 +101,15 @@ describe("BoreholePopover", () => {
     fireEvent.click(secondRow);
     expect(onOpenRow).toHaveBeenCalledWith(2);
   });
+
+  it("reports the focused row and clears it when the focus leaves the row", () => {
+    const { onHoverRow } = renderPopover(rowsOf(2), true);
+    const firstRow = screen.getByRole("button", { name: /Borehole 1/ });
+
+    fireEvent.focus(firstRow);
+    expect(onHoverRow).toHaveBeenLastCalledWith(1);
+
+    fireEvent.blur(firstRow);
+    expect(onHoverRow).toHaveBeenLastCalledWith(null);
+  });
 });
