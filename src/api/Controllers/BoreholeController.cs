@@ -409,12 +409,24 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <summary>
     /// Asynchronously gets the <see cref="Borehole"/> with the specified <paramref name="id"/>.
     /// </summary>
+    /// <remarks>
+    /// Loads only what the detail page reads from the borehole itself. The child data (stratigraphies,
+    /// completions, observations, attachments and so on) is not loaded; <see cref="Borehole.Availability"/>
+    /// tells which kinds exist, and each tab loads its data from its own endpoint.
+    /// </remarks>
     /// <param name="id">The id of borehole to get.</param>
     [HttpGet("{id}")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Borehole>> GetByIdAsync(int id)
     {
-        var borehole = await Context.BoreholesWithIncludes
+        var borehole = await Context.Boreholes
+            .Include(b => b.BoreholeCodelists)
+            .Include(b => b.BoreholeSourceTypeCodes)
+            .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
+            .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
+            .Include(b => b.Workflow).ThenInclude(w => w.Assignee)
+            .Include(b => b.Workgroup)
+            .Include(b => b.UpdatedBy)
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);
@@ -427,6 +439,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), id).ConfigureAwait(false)) return Unauthorized();
 
         borehole.MapSourceTypeCodelistIds();
+        borehole.Availability = await Context.GetBoreholeDataAvailabilityAsync(id, HttpContext.RequestAborted).ConfigureAwait(false);
         return Ok(borehole);
     }
 

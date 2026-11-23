@@ -243,6 +243,42 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task GetByIdReturnsBoreholeWithoutChildDataAndWithAvailability()
+    {
+        // A borehole that has every header part the detail page reads, including a workflow assignee.
+        var id = await context.Workflows
+            .Where(w => w.AssigneeId != null)
+            .Select(w => w.BoreholeId)
+            .Where(boreholeId =>
+                context.Boreholes.Any(b => b.Id == boreholeId && b.UpdatedById != null && b.WorkgroupId != null) &&
+                context.Stratigraphies.Any(s => s.BoreholeId == boreholeId))
+            .FirstAsync();
+
+        var borehole = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
+
+        Assert.IsNull(borehole.Stratigraphies);
+        Assert.IsNull(borehole.Completions);
+        Assert.IsNull(borehole.Sections);
+        Assert.IsNull(borehole.Observations);
+        Assert.IsNull(borehole.Profiles);
+        Assert.IsNull(borehole.Photos);
+        Assert.IsNull(borehole.Documents);
+        Assert.IsNull(borehole.LogRuns);
+        Assert.IsNull(borehole.BoreholeGeometry);
+
+        Assert.IsNotNull(borehole.Workflow);
+        Assert.IsNotNull(borehole.Workflow.ReviewedTabs);
+        Assert.IsNotNull(borehole.Workflow.PublishedTabs);
+        Assert.IsNotNull(borehole.Workflow.Assignee, "The status badges show the assignee.");
+        Assert.AreEqual(0, borehole.Workflow.Changes.Count);
+        Assert.IsNotNull(borehole.Workgroup);
+        Assert.IsNotNull(borehole.UpdatedBy);
+
+        Assert.IsNotNull(borehole.Availability);
+        Assert.IsTrue(borehole.Availability.HasStratigraphy);
+    }
+
+    [TestMethod]
     public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
     {
         boreholePermissionServiceMock
@@ -437,9 +473,7 @@ public class BoreholeControllerTest
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
 
-        var response = await controller.GetByIdAsync((int)copiedBoreholeId).ConfigureAwait(false);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Borehole copiedBorehole = (Borehole)okResult.Value!;
+        var copiedBorehole = GetBorehole((int)copiedBoreholeId);
         Assert.IsNotNull(copiedBorehole);
 
         var copiedHydrotest = copiedBorehole.Observations.OfType<Hydrotest>().First();
@@ -547,9 +581,7 @@ public class BoreholeControllerTest
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
 
-        var response = await controller.GetByIdAsync((int)copiedBoreholeId).ConfigureAwait(false);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Borehole copiedBorehole = (Borehole)okResult.Value!;
+        var copiedBorehole = GetBorehole((int)copiedBoreholeId);
         Assert.IsNotNull(copiedBorehole);
 
         Assert.IsTrue(copiedBorehole.ValidateCasingReferences(), "Invalid casing reference in copied borehole");
