@@ -300,6 +300,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TotalDepthTvd, _ => null)
            .RuleFor(o => o.TopBedrockFreshTvd, _ => null)
            .RuleFor(o => o.TopBedrockWeatheredTvd, _ => null)
+           .RuleFor(o => o.Availability, _ => null)
            .RuleFor(o => o.Observations, _ => new Collection<Observation>())
            .RuleFor(o => o.BoreholeGeometry, _ => new Collection<BoreholeGeometryElement>())
            .RuleFor(o => o.Profiles, _ => new Collection<Profile>())
