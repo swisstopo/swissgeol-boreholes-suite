@@ -251,6 +251,10 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
     enabled: !!file && !!fileInfo && isTextAvailable,
     retry: false, // no retries to reduce load on dataextraction service after failure.
     staleTime: Infinity, // Extraction results dont go stale and a failing refetch on window focus should not override valid data.
+    // A failed extraction has no data and therefore counts as stale whatever the staleTime, so focus or
+    // reconnect would silently start another long extraction. Extracting again is left to the user.
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     gcTime: 0, // Selecting the file again after closing the dialog extracts anew instead of showing a previous result.
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid!, signal);

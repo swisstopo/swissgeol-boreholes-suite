@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { createElement, ReactNode } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook, waitFor } from "@testing-library/react";
+import { focusManager, onlineManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getAuthToken } from "../auth/authTokenStore.ts";
 import {
@@ -83,6 +83,9 @@ describe("useExtractStratigraphies", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
     vi.clearAllMocks();
+    // Hands focus and online state back to the browser events, as the managers are shared singletons.
+    focusManager.setFocused(undefined);
+    onlineManager.setOnline(true);
   });
 
   it("does not retry a failed extraction, even when queries retry by default", async () => {
@@ -129,6 +132,38 @@ describe("useExtractStratigraphies", () => {
     await waitFor(() => expect(second.result.current.isSuccess).toBe(true));
 
     expect(extractionCalls()).toHaveLength(2);
+  });
+
+  it("does not extract again when the window regains focus after a failed extraction", async () => {
+    const { result } = renderHook(() => useExtractStratigraphies(profile, 1, true), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    act(() => {
+      focusManager.setFocused(false);
+      focusManager.setFocused(true);
+    });
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(extractionCalls()).toHaveLength(1);
+  });
+
+  it("does not extract again when the network reconnects after a failed extraction", async () => {
+    const { result } = renderHook(() => useExtractStratigraphies(profile, 1, true), {
+      wrapper: createWrapper(),
+    });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    act(() => {
+      onlineManager.setOnline(false);
+      onlineManager.setOnline(true);
+    });
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(result.current.fetchStatus).toBe("idle");
+    expect(extractionCalls()).toHaveLength(1);
   });
 
   it("keeps the status of a failed extraction, so a gateway timeout can be told apart", async () => {

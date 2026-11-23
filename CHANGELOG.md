@@ -17,6 +17,7 @@
 
 ### Fixed
 - Removing a filter while a polygon filter is active shows all boreholes in the polygon again instead of keeping the removed filter's restriction. The counts in the filter panel and the search suggestions now also take the polygon into account.
+- A failed stratigraphy extraction is no longer started again on its own when returning to the browser tab or when the network connection comes back. Extracting again is up to the user.
 
 ## v2.2.115 - 2026-11-16
 
