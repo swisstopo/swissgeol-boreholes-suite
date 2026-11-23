@@ -110,10 +110,10 @@ public class BoreholeControllerTest
 
         // Update Borehole
         var response = await controller.EditAsync(newBorehole);
-        ActionResultAssert.IsOk(response.Result);
+        ActionResultAssert.IsNoContent(response.Result);
 
         // Assert Updates and unchanged values
-        var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(response.Result);
+        var updatedBorehole = GetBorehole(id);
 
         Assert.AreEqual(newBorehole.CreatedById, updatedBorehole.CreatedById);
         Assert.AreEqual(1, updatedBorehole.UpdatedById); // updatedById should be overwritten by the test user id.
@@ -220,9 +220,9 @@ public class BoreholeControllerTest
         };
 
         var updatedResponse = await updateController.EditAsync(boreholeWithNewIdentifiers);
-        ActionResultAssert.IsOk(updatedResponse.Result);
+        ActionResultAssert.IsNoContent(updatedResponse.Result);
 
-        var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(updatedResponse.Result);
+        var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>((await updateController.GetByIdAsync(testBoreholeId)).Result);
         Assert.AreEqual(3, updatedBorehole.BoreholeCodelists.Count);
         var identifierWithComment = updatedBorehole.BoreholeCodelists.Single(bc => bc.CodelistId == 100000000);
         Assert.AreEqual("Initial registration entry", identifierWithComment.Comment);
@@ -236,9 +236,9 @@ public class BoreholeControllerTest
         };
 
         var deletedIdentifiersResponse = await deleteController.EditAsync(boreholeWithNoMoreIdentifiers);
-        ActionResultAssert.IsOk(deletedIdentifiersResponse.Result);
+        ActionResultAssert.IsNoContent(deletedIdentifiersResponse.Result);
 
-        var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>(deletedIdentifiersResponse.Result);
+        var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>((await deleteController.GetByIdAsync(testBoreholeId)).Result);
         Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeCodelists.Count);
     }
 
@@ -1702,7 +1702,8 @@ public class BoreholeControllerTest
         var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
         borehole.SourceTypeCodelistIds = sourceTypeIds;
         var result = await controller.EditAsync(borehole);
-        return ActionResultAssert.IsOkObjectResult<Borehole>(result.Result);
+        ActionResultAssert.IsNoContent(result.Result);
+        return ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
     }
 
     [TestMethod]
@@ -1803,6 +1804,28 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task EditWithBoreholeFromGetKeepsIdentifiersAndSourceTypes()
+    {
+        var sourceTypeIds = await GetSourceTypeIdsAsync();
+        var id = await CreateDisposableBoreholeAsync();
+        await EditSourceTypesAsync(id, new List<int> { sourceTypeIds[0] });
+        context.BoreholeCodelists.Add(new BoreholeCodelist { BoreholeId = id, CodelistId = 100000006, Value = "Kept identifier" });
+        await context.SaveChangesAsync();
+
+        // Like a real request, the edit must not find the setup entities already tracked.
+        context.ChangeTracker.Clear();
+
+        var read = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
+        read.Remarks = "Saved from the detail page";
+        ActionResultAssert.IsNoContent((await GetTestController(context).EditAsync(read)).Result);
+
+        var saved = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
+        Assert.AreEqual("Saved from the detail page", saved.Remarks);
+        Assert.AreEqual("Kept identifier", saved.BoreholeCodelists.Single().Value);
+        CollectionAssert.AreEqual(new[] { sourceTypeIds[0] }, saved.SourceTypeCodelistIds.ToArray());
+    }
+
+    [TestMethod]
     public async Task EditUpdatesCoreRepositoryStoredIncludingNull()
     {
         var id = await CreateDisposableBoreholeAsync();
@@ -1811,7 +1834,8 @@ public class BoreholeControllerTest
         {
             var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
             borehole.CoreRepositoryStored = value;
-            var updated = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.EditAsync(borehole)).Result);
+            ActionResultAssert.IsNoContent((await controller.EditAsync(borehole)).Result);
+            var updated = ActionResultAssert.IsOkObjectResult<Borehole>((await controller.GetByIdAsync(id)).Result);
             Assert.AreEqual(value, updated.CoreRepositoryStored);
         }
     }

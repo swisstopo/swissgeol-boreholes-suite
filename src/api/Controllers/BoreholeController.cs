@@ -75,6 +75,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async override Task<ActionResult<Borehole>> EditAsync(Borehole entity)
     {
         if (entity == null)
@@ -143,7 +144,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         try
         {
             await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-            return await GetByIdAsync(entity.Id).ConfigureAwait(false);
+            return NoContent();
         }
         catch (Exception ex)
         {
