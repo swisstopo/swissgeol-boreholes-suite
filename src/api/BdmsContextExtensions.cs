@@ -270,7 +270,9 @@ public static class BdmsContextExtensions
            .FinishWith((f, o) => { o.Name = o.OriginalName; });
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
-        context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);
+        var seededBoreholes = boreholeRange.Select(SeededBoreholes).ToList();
+        MoveBoreholesNextToEachOther(seededBoreholes);
+        context.BulkInsert(seededBoreholes, bulkConfig);
 
         // Seed borehole identifiers for rich boreholes
         var boreholeCodelistId = 100_000_000;
@@ -1556,6 +1558,54 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.document', 'id'), {document_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.log_run', 'id'), {logRun_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.log_file', 'id'), {logFile_ids - 1})");
+    }
+
+    /// <summary>
+    /// A seeded borehole placed at an offset in metres from another seeded borehole.
+    /// </summary>
+    private sealed record BoreholeOffset(int BoreholeId, int AnchorId, double OffsetX, double OffsetY);
+
+    /// <summary>
+    /// Seeded boreholes that are moved next to another one, so that the overview map shows overlapping boreholes:
+    /// eight boreholes within a few metres, two of them at the same coordinates, and three boreholes 25 metres apart.
+    /// None of these boreholes is referenced by tests, and all of them have LV95 coordinates before they are moved.
+    /// All of them stay east of 2'650'000, outside the western half of the seed data that tests filter by.
+    /// </summary>
+    private static readonly BoreholeOffset[] BoreholesNextToEachOther =
+    [
+        new(1_000_008, 1_000_047, 0, 0),
+        new(1_000_015, 1_000_047, 4, 0),
+        new(1_000_016, 1_000_047, -4, 3),
+        new(1_000_017, 1_000_047, 2, -5),
+        new(1_000_032, 1_000_047, -3, -4),
+        new(1_000_034, 1_000_047, 6, 4),
+        new(1_000_024, 1_000_047, -6, 1),
+        new(1_000_025, 1_000_081, 25, 0),
+        new(1_000_026, 1_000_081, 0, 25),
+    ];
+
+    /// <summary>
+    /// Moves the <see cref="BoreholesNextToEachOther"/> after they are generated. The faker's randomizer is not used,
+    /// so all other seeded values stay the same.
+    /// </summary>
+    private static void MoveBoreholesNextToEachOther(IReadOnlyList<Borehole> boreholes)
+    {
+        var boreholesById = boreholes.ToDictionary(b => b.Id);
+        foreach (var (boreholeId, anchorId, offsetX, offsetY) in BoreholesNextToEachOther)
+        {
+            var anchor = boreholesById[anchorId];
+            var borehole = boreholesById[boreholeId];
+            if (anchor.LocationX is not { } anchorX || anchor.LocationY is not { } anchorY)
+            {
+                throw new InvalidOperationException($"The seeded borehole {anchorId} has no LV95 coordinates.");
+            }
+
+            var locationX = anchorX + offsetX;
+            var locationY = anchorY + offsetY;
+            borehole.LocationX = locationX;
+            borehole.LocationY = locationY;
+            borehole.Geometry = new Point(locationX, locationY) { SRID = SpatialReferenceIdentifier.LV95 };
+        }
     }
 }
 #pragma warning restore CA1505
