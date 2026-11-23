@@ -20,9 +20,6 @@ interface ExtractionImageContainerProps {
   currentPageNumber: number;
   selectedFile: BoreholeAttachment | undefined;
   activePage: number;
-  setActivePage: (page: number) => void;
-  pageCount?: number;
-  setPageCount: (count: number) => void;
 }
 
 export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
@@ -30,25 +27,11 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
   currentPageNumber,
   selectedFile,
   activePage,
-  setActivePage,
-  pageCount,
-  setPageCount,
 }) => {
   const [mapInstance, setMapInstance] = useState<Map | null>(null);
   const mapRef = useRef<Map>(null);
   const { data: fileInfo } = useFileInfo(selectedFile?.id, activePage);
   const { data: image, isLoading } = useProfileImage(fileInfo?.fileName);
-
-  // Keep page count in sync with file info
-  useEffect(() => {
-    if (!fileInfo) return;
-    setPageCount(fileInfo.count);
-
-    // Reset to page 1 if count changes
-    if (pageCount !== fileInfo.count) {
-      setActivePage(1);
-    }
-  }, [fileInfo, pageCount, setActivePage, setPageCount]);
 
   const getSourceFromLayerName = useCallback((layers: BaseLayer[], layerName: string) => {
     const layer = layers.find(l => l instanceof VectorLayer && l.get("name") === layerName) as

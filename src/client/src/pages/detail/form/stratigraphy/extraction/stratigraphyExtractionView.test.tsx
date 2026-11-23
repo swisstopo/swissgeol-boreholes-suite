@@ -17,6 +17,11 @@ vi.mock("react-i18next", () => ({
 vi.mock("../../../labeling/extractionImageContainer.tsx", () => ({
   ExtractionImageContainer: () => <div />,
 }));
+// The page count from the file info only reaches the page navigation, which is mocked away.
+vi.mock("../../../../../api/dataextraction.ts", async importOriginal => ({
+  ...(await importOriginal<typeof import("../../../../../api/dataextraction.ts")>()),
+  useFileInfo: () => ({ data: undefined }),
+}));
 vi.mock("../../../labeling/pageSelection.tsx", () => ({
   PageSelection: () => <div />,
 }));
