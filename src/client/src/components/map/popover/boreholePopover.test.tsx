@@ -34,7 +34,10 @@ const renderPopover = (rows: BoreholePopoverRow[], pinned: boolean) => {
   return { onHoverRow, onOpenRow };
 };
 
-const chevronCount = () => document.querySelectorAll(".borehole-popover-chevron").length;
+const chevronCount = () =>
+  [...document.querySelectorAll(".borehole-popover-chevron")].filter(
+    chevron => getComputedStyle(chevron).visibility !== "hidden",
+  ).length;
 
 describe("BoreholePopover", () => {
   afterEach(() => {
@@ -72,6 +75,17 @@ describe("BoreholePopover", () => {
     expect(screen.getByRole("region", { name: "mapPopoverBoreholes:7" })).toBeTruthy();
     expect(screen.getAllByRole("button")).toHaveLength(7);
     expect(chevronCount()).toBe(7);
+  });
+
+  it("keeps the popover element when a preview is pinned, so it does not appear again", () => {
+    const rows = rowsOf(3);
+    const props = { rows, onHoverRow: vi.fn(), onOpenRow: vi.fn() };
+    const { container, rerender } = render(<BoreholePopover {...props} pinned={false} />);
+    const preview = container.firstElementChild;
+
+    rerender(<BoreholePopover {...props} pinned={true} />);
+
+    expect(container.firstElementChild).toBe(preview);
   });
 
   it("reports the hovered row and opens the clicked one", () => {

@@ -110,12 +110,18 @@ const RowContent: FC<RowContentProps> = ({ row }) => {
   );
 };
 
-// Marks a row as a link to the borehole's detail page.
-const RowChevron: FC = () => (
+interface RowChevronProps {
+  visible: boolean;
+}
+
+// Marks a row as a link to the borehole's detail page. The preview keeps the hidden chevron's space, so the popover
+// keeps its width when it is pinned.
+const RowChevron: FC<RowChevronProps> = ({ visible }) => (
   <Box
     className={chevronClassName}
     aria-hidden="true"
     sx={{
+      visibility: visible ? "visible" : "hidden",
       display: "flex",
       flex: "0 0 auto",
       alignSelf: "center",
@@ -156,7 +162,7 @@ export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHove
                 onClick={() => onOpenRow(row.id)}
                 data-cy="map-popover-row">
                 <RowContent row={row} />
-                <RowChevron />
+                <RowChevron visible />
               </ButtonBase>
             </li>
           ))}
@@ -166,12 +172,14 @@ export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHove
   }
 
   const { visibleRows, hiddenCount } = getPreviewRows(rows);
+  // The same element as the pinned popover, so pinning does not play the opening animation again.
   return (
-    <Box sx={{ ...popoverSx, pointerEvents: "none" }} data-cy="map-popover-preview">
+    <Box component="section" sx={{ ...popoverSx, pointerEvents: "none" }} data-cy="map-popover-preview">
       <Box component="ul" sx={listSx}>
         {visibleRows.map(row => (
           <Box component="li" key={row.id} sx={rowSx}>
             <RowContent row={row} />
+            <RowChevron visible={false} />
           </Box>
         ))}
         {hiddenCount > 0 && (
