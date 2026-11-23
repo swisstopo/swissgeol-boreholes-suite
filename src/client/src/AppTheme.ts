@@ -213,6 +213,11 @@ export const theme = createTheme({
     body2: {
       fontSize: "14px",
     },
+    caption: {
+      fontSize: "12px",
+      lineHeight: "16px",
+      letterSpacing: "0.048px",
+    },
     fullPageMessage: {
       fontSize: "23px",
       color: themePalette.neutral.contrastText,

@@ -101,13 +101,26 @@ const RowContent: FC<RowContentProps> = ({ row }) => {
         <Typography variant="body2" sx={{ lineHeight: "20px", ...ellipsisSx }}>
           {row.name}
         </Typography>
-        <Typography
-          sx={{ fontSize: "12px", lineHeight: "16px", letterSpacing: "0.048px", color: valueTextColor, ...ellipsisSx }}>
+        <Typography variant="caption" component="p" sx={{ color: valueTextColor, ...ellipsisSx }}>
           {getLabel(row.legendLabel)}
         </Typography>
       </Box>
     </>
   );
+};
+
+const chevronSx = {
+  display: "flex",
+  flex: "0 0 auto",
+  alignSelf: "center",
+  marginTop: "-4px",
+  marginLeft: 1,
+  color: valueTextColor,
+  transition: "color 0.15s, transform 0.15s",
+  animation: `${chevronIn} 0.2s ${easeOut}`,
+  ...noMotionSx,
+  // Overrides the global size and stroke of lucide icons.
+  "& svg": { width: "16px", height: "16px", strokeWidth: 1.5 },
 };
 
 interface RowChevronProps {
@@ -120,20 +133,7 @@ const RowChevron: FC<RowChevronProps> = ({ visible }) => (
   <Box
     className={chevronClassName}
     aria-hidden="true"
-    sx={{
-      visibility: visible ? "visible" : "hidden",
-      display: "flex",
-      flex: "0 0 auto",
-      alignSelf: "center",
-      marginTop: "-4px",
-      marginLeft: 1,
-      color: valueTextColor,
-      transition: "color 0.15s, transform 0.15s",
-      animation: `${chevronIn} 0.2s ${easeOut}`,
-      ...noMotionSx,
-      // Overrides the global size and stroke of lucide icons.
-      "& svg": { width: "16px", height: "16px", strokeWidth: 1.5 },
-    }}>
+    sx={{ ...chevronSx, visibility: visible ? "visible" : "hidden" }}>
     <ChevronRight size={16} strokeWidth={1.5} />
   </Box>
 );
