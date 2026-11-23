@@ -1,7 +1,7 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
-import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
+import { ExtractedStratigraphy, useFileInfo } from "../../../../../api/dataextraction.ts";
 import { OcrStatus } from "../../../../../api/generated";
 import { ocrStatusIsTerminal } from "../../../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
@@ -47,7 +47,10 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   onNameChange,
 }) => {
   const { t } = useTranslation();
-  const [pageCount, setPageCount] = useState<number>();
+  // Every page's info holds the page count of the whole file. The first page's info stays loaded while the active
+  // page changes, so the page navigation keeps its count.
+  const { data: firstPageInfo } = useFileInfo(file.id, 1);
+  const pageCount = firstPageInfo?.count;
   const isTakingLonger = useDelayedFlag(isLoading, extractionTakingLongerThresholdMs);
   const isOcrRunning = !ocrStatusIsTerminal(ocrStatus);
   const hasOcrFailed = ocrStatus === "Error";
@@ -145,9 +148,6 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
           currentPageNumber={activePage}
           selectedFile={file}
           activePage={activePage}
-          setActivePage={setActivePage}
-          pageCount={pageCount}
-          setPageCount={setPageCount}
         />
         <Box p={2} sx={{ zIndex: 500 }}>
           <PageSelection pageCount={pageCount} activePage={activePage} setActivePage={setActivePage} />

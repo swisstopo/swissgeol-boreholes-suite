@@ -32,12 +32,18 @@ import { swissExtent, updateBasemap } from "../basemapSelector/basemaps";
 import { BasemapSelector } from "../basemapSelector/basemapSelector";
 import MapControls from "../buttons/mapControls";
 import { ClickablePopup } from "./clickablePopup";
+import { PulseLayer, startHighlightPulse } from "./highlightPulse.ts";
+import { MapLegend } from "./legend/mapLegend.tsx";
 import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
 import "./mapProjections";
-import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
+import { boreholeStyleFunction, clusterStyleFunction, drawStyle } from "./mapStyleFunctions";
 
 // The longest time between the two clicks of a double-click, a little above the 250 ms OpenLayers uses.
 const doubleClickInterval = 500;
+
+// The highlight rings start just outside the borehole symbols and the cluster circles.
+const pointPulseRingRadius = 14;
+const clusterPulseRingRadius = 20;
 
 export const MapComponent: FC<MapComponentProps> = ({
   geoJson,
@@ -53,6 +59,8 @@ export const MapComponent: FC<MapComponentProps> = ({
   mapResolution,
   mapCenter,
   isLoading,
+  legendTheme,
+  onSwitchLegendTheme,
 }) => {
   const { t } = useTranslation();
   const { currentBasemapName } = useContext(BasemapContext);
@@ -67,6 +75,8 @@ export const MapComponent: FC<MapComponentProps> = ({
   const popupRef = useRef<Overlay | null>(null);
   const selectClickRef = useRef<Select | null>(null);
   const overlaysRef = useRef<TileLayer[]>([]);
+  const pulseLayersRef = useRef<PulseLayer[]>([]);
+  const stopPulseRef = useRef<(() => void) | null>(null);
 
   // ── Internal mutable state refs (no rerender needed) ──
   const drawActiveRef = useRef(false);
@@ -77,6 +87,7 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   // ── Refs for latest prop values (accessed by OL event handlers registered at mount) ──
   const highlightedRef = useRef(highlighted);
+  const legendThemeRef = useRef(legendTheme);
   const polygonSelectionEnabledRef = useRef(polygonSelectionEnabled);
   const filterPolygonRef = useRef(filterPolygon);
   const callbacksRef = useRef({
@@ -91,6 +102,7 @@ export const MapComponent: FC<MapComponentProps> = ({
   // No dependency array: every commit refreshes all of the above in one place.
   useEffect(() => {
     highlightedRef.current = highlighted;
+    legendThemeRef.current = legendTheme;
     polygonSelectionEnabledRef.current = polygonSelectionEnabled;
     filterPolygonRef.current = filterPolygon;
     callbacksRef.current = {
@@ -179,28 +191,31 @@ export const MapComponent: FC<MapComponentProps> = ({
     const clusterStyle: StyleFunction = (feature: FeatureLike) =>
       clusterStyleFunction((feature.get("features") as Feature[]).length);
 
-    map.addLayer(
-      new VectorLayer({
-        source: clusterSource,
-        properties: { name: "clusters" },
-        zIndex: featureLayerZIndex,
-        style: clusterStyle,
-        minResolution: 15,
-      }),
-    );
+    const clusterLayer = new VectorLayer({
+      source: clusterSource,
+      properties: { name: "clusters" },
+      zIndex: featureLayerZIndex,
+      style: clusterStyle,
+      minResolution: 15,
+    });
+    map.addLayer(clusterLayer);
 
     const pointStyle: StyleFunction = (feature: FeatureLike) =>
-      styleFunction(feature as Feature, highlightedRef.current);
+      boreholeStyleFunction(feature, legendThemeRef.current, highlightedRef.current);
 
-    map.addLayer(
-      new VectorLayer({
-        properties: { name: "points" },
-        zIndex: featureLayerZIndex,
-        source: points,
-        style: pointStyle,
-        maxResolution: 15,
-      }),
-    );
+    const pointLayer = new VectorLayer({
+      properties: { name: "points" },
+      zIndex: featureLayerZIndex,
+      source: points,
+      style: pointStyle,
+      maxResolution: 15,
+    });
+    map.addLayer(pointLayer);
+
+    pulseLayersRef.current = [
+      { layer: pointLayer, ringRadius: pointPulseRingRadius },
+      { layer: clusterLayer, ringRadius: clusterPulseRingRadius },
+    ];
 
     const drawSource = new VectorSource();
     map.addLayer(
@@ -272,7 +287,7 @@ export const MapComponent: FC<MapComponentProps> = ({
 
     // Click selection
     const clickStyle: StyleFunction = (feature: FeatureLike) =>
-      styleFunction(feature as Feature, highlightedRef.current);
+      boreholeStyleFunction(feature, legendThemeRef.current, highlightedRef.current);
 
     const selectClick = new Select({
       condition: click,
@@ -410,6 +425,7 @@ export const MapComponent: FC<MapComponentProps> = ({
       if (resolution !== undefined) {
         sessionStorage.setItem(SessionKeys.mapResolution, String(resolution));
       }
+      stopPulseRef.current?.();
       map.setTarget(undefined);
     };
     // oxlint-disable-next-line react-hooks/exhaustive-deps
@@ -527,6 +543,20 @@ export const MapComponent: FC<MapComponentProps> = ({
     points.changed();
   }, [highlighted]);
 
+  // ────────────────────── Effect: Legend theme ──────────────────────
+
+  // The style function reads the theme from its ref, the source change only triggers the redraw.
+  useEffect(() => {
+    pointsRef.current?.changed();
+  }, [legendTheme]);
+
+  const onHighlightBoreholes = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    stopPulseRef.current?.();
+    stopPulseRef.current = startHighlightPulse(map, pulseLayersRef.current);
+  }, []);
+
   // ────────────────────── Effect: Polygon selection toggle ──────────────────────
 
   useEffect(() => {
@@ -602,6 +632,11 @@ export const MapComponent: FC<MapComponentProps> = ({
         </Box>
       )}
       <ClickablePopup features={hoverFeatures ?? undefined} />
+      <MapLegend
+        legendTheme={legendTheme}
+        onSwitchTheme={onSwitchLegendTheme}
+        onHighlightBoreholes={onHighlightBoreholes}
+      />
       <BasemapSelector marginBottom={"30px"} />
       <MapControls onZoomIn={onZoomIn} onZoomOut={onZoomOut} onFitToExtent={onFitToExtent} onRotate={undefined} />
     </Box>

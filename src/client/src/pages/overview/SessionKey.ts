@@ -2,6 +2,8 @@ export const SessionKeys = {
   mapResolution: "mapResolution",
   mapCenterX: "mapCenterX",
   mapCenterY: "mapCenterY",
+  legend: "map_legend",
+  legendExpanded: "map_legendExpanded",
   tableScrollPosition: "table_scrollPosition",
   page: "table_page",
   pageSize: "table_pageSize",

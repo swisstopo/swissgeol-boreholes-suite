@@ -54,9 +54,18 @@ const themePalette: AppThemePalette = {
     selected: "#cb5d53",
   },
   map: {
-    restrictionOpen: "rgb(33, 186, 69)",
-    restrictionClosed: "rgb(220, 0, 24)",
-    restrictionUnknown: "rgb(0, 0, 0)",
+    // Colours of the legend symbols, from the Figma frame "Alle Legenden".
+    symbol: {
+      purple: { fill: "#8E66F1", stroke: "#1E0B5C", shadow: "rgba(142, 102, 241, 0.4)" },
+      yellow: { fill: "#F9CC21", stroke: "#6B4A00", shadow: "rgba(249, 204, 33, 0.4)" },
+      red: { fill: "#F1383E", stroke: "#450A0A", shadow: "rgba(241, 56, 62, 0.4)" },
+      orange: { fill: "#FE8C2C", stroke: "#7C2D12", shadow: "rgba(254, 140, 44, 0.4)" },
+      pink: { fill: "#F45FB0", stroke: "#500724", shadow: "rgba(244, 95, 176, 0.4)" },
+      grey: { fill: "#828E9A", stroke: "#131B22", shadow: "rgba(130, 142, 154, 0.4)" },
+      lightGrey: { fill: "#F0F4F7", stroke: "#131B22", shadow: "rgba(130, 142, 154, 0.4)" },
+    },
+    symbolHalo: "#FFFFFF",
+    hover: "#8B5CF6",
     selectedFill: "rgba(255, 255, 0, 1)",
     selectedStroke: "rgba(0, 0, 0, 0.75)",
     selectedOuterStroke: "rgba(120, 120, 120, 0.5)",
