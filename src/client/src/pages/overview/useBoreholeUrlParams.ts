@@ -243,13 +243,13 @@ export const useBoreholeUrlParamsState = () => {
   }, [setQueryState]);
 
   const saveLegendParamsInSession = useCallback(() => {
-    Object.entries(legendStateRef.current).forEach(([key, value]) => {
-      if (value === null) {
-        sessionStorage.removeItem(SessionKeys[key as LegendKey]);
-      } else {
-        sessionStorage.setItem(SessionKeys[key as LegendKey], String(value));
-      }
-    });
+    const { legend, legendExpanded } = legendStateRef.current;
+    if (legend === null) {
+      sessionStorage.removeItem(SessionKeys.legend);
+    } else {
+      sessionStorage.setItem(SessionKeys.legend, legend);
+    }
+    sessionStorage.setItem(SessionKeys.legendExpanded, String(legendExpanded));
   }, []);
 
   // A valid legend param in the URL takes precedence over the one in the session. The browser URL decides, because
