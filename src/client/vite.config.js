@@ -4,10 +4,11 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import svgr from "vite-plugin-svgr";
 import { defineConfig } from "vitest/config";
 import { devBranchPlugin } from "./vite-plugin-dev-branch.js";
+import { stackPorts } from "./worktree-slot.js";
 
 const proxy = {
   "/api": {
-    target: process.env.VITE_APP_PROXY_HOST_API || "http://127.0.0.1:5000/",
+    target: process.env.VITE_APP_PROXY_HOST_API || `http://127.0.0.1:${stackPorts.api}/`,
     changeOrigin: true,
   },
   "/dataextraction": {
@@ -44,10 +45,11 @@ export default defineConfig({
   },
   server: {
     proxy,
-    port: 3000,
+    port: stackPorts.client,
+    // The OIDC mock only redirects back to the configured client ports, so on any other port the login fails.
+    strictPort: true,
     headers: {
-      "Content-Security-Policy":
-        "default-src 'self'; connect-src 'self' https://*.geo.admin.ch http://localhost:4011; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
+      "Content-Security-Policy": `default-src 'self'; connect-src 'self' https://*.geo.admin.ch http://localhost:${stackPorts.oidc}; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'`,
       "X-FRAME-OPTIONS": "DENY",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -57,7 +59,7 @@ export default defineConfig({
   // Preview shares the dev port so CI's `wait-on: http://localhost:3000` works regardless of which is running.
   preview: {
     proxy,
-    port: 3000,
+    port: stackPorts.client,
   },
   test: {
     include: ["src/**/*.test.{ts,tsx}"],

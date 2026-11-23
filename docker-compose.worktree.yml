@@ -1,0 +1,66 @@
+# Runs the database, api and OIDC mock of one worktree next to the stacks of other worktrees, so that each
+# worktree can run the e2e tests against its own branch at the same time. Run it from a worktree, not from
+# the main checkout, whose project holds the shared services. Pick a slot from 1 to 9 that no other worktree
+# uses (`docker compose ls` lists the running projects); the slot moves every port:
+#
+#   client 3<slot>00, api 5<slot>00, database 5<slot>32, OIDC mock 4<slot>11
+#
+#   BDMS_SLOT=1 docker compose -f docker-compose.yml -f docker-compose.worktree.yml up -d --build --wait
+#   BDMS_SLOT=1 docker compose -f docker-compose.yml -f docker-compose.worktree.yml down
+#
+# `down -v` also drops the database and the api build output of the slot, so the next start compiles and
+# seeds from scratch again.
+#
+# minio, ocr and dataextraction are shared by all slots and run from the main checkout. Every uploaded file
+# gets a unique object name, so the slots do not overwrite each other's files.
+#
+# The api joins the network namespace of the database. Its connection string reaches this slot's database on
+# localhost:5432, and every other localhost port it calls is closed in that namespace, so those connections
+# fall through to the host (localhost also resolves to host-gateway), where the shared services and the OIDC
+# mock of this slot are published.
+services:
+  db:
+    ports: !override
+      - "5${BDMS_SLOT:?Set BDMS_SLOT to a free slot from 1 to 9}32:5432"
+      # The api listens in this container's network namespace, so its port is published here.
+      - "5${BDMS_SLOT}00:5000"
+    extra_hosts:
+      - "localhost:host-gateway"
+
+  api:
+    network_mode: service:db
+    ports: !reset []
+    extra_hosts: !reset []
+    environment:
+      Auth__Authority: http://localhost:4${BDMS_SLOT}11
+      S3__ENDPOINT: http://localhost:9000
+
+  oidc-server:
+    ports: !override
+      - "4${BDMS_SLOT}11:80"
+    environment:
+      # Same as in docker-compose.yml except for the issuer, which has to name the port of this slot.
+      SERVER_OPTIONS_INLINE: |
+        {
+          "IssuerUri": "http://localhost:4${BDMS_SLOT}11",
+          "AccessTokenJwtType": "JWT",
+          "Discovery": {
+            "ShowKeySet": true
+          },
+          "Authentication": {
+            "CookieSameSiteMode": "Lax",
+            "CheckSessionCookieSameSiteMode": "Lax"
+          }
+        }
+
+  # Shared by all slots, or replaced by the dev server the worktree runs on the host.
+  minio:
+    profiles: [shared]
+  ocr:
+    profiles: [shared]
+  dataextraction:
+    profiles: [shared]
+  pgadmin:
+    profiles: [shared]
+  client:
+    profiles: [shared]

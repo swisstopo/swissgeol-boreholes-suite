@@ -3,11 +3,12 @@ import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 import { defineConfig } from "cypress";
 import cypressSplit from "cypress-split";
 import vitePreprocessor from "cypress-vite";
+import { stackPorts } from "./worktree-slot.js";
 
 export default defineConfig({
   projectId: "gv8yue",
   e2e: {
-    baseUrl: "http://localhost:3000",
+    baseUrl: `http://localhost:${stackPorts.client}`,
     video: false,
     viewportWidth: 1920,
     viewportHeight: 1080,
@@ -16,6 +17,9 @@ export default defineConfig({
     env: {
       grepFilterSpecs: true,
       grepOmitFiltered: true,
+    },
+    expose: {
+      oidcOrigin: `http://localhost:${stackPorts.oidc}`,
     },
 
     setupNodeEvents(on, config) {

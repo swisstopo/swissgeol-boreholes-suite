@@ -134,7 +134,7 @@
   "overrides": [
     {
       // Node-side build files. oxlint does not read their /* global process */ comments.
-      "files": ["vite.config.js", "vite-plugin-dev-branch.js"],
+      "files": ["vite.config.js", "vite-plugin-dev-branch.js", "worktree-slot.js"],
       "globals": {
         "process": "readonly"
       }
