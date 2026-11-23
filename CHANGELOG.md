@@ -9,9 +9,11 @@
 - The borehole filter API (`POST /api/v2/borehole/filter`, `/filter/stats` and `/suggest`) no longer accepts `ids`. `polygon` takes LV95 (EPSG:2056) coordinates; a geometry that is not a polygon or lies outside Switzerland is rejected with 400 Bad Request.
 - Paging and sorting the borehole table in the overview no longer reload the map.
 - The borehole filter API (`POST /api/v2/borehole/filter`) no longer returns `geoJson`. The map features of the filtered boreholes come from the new `POST /api/v2/borehole/filter/map`, which takes the same filter criteria without paging and ordering.
+- The borehole API (`GET /api/v2/borehole/{id}`) no longer returns the borehole's child data (stratigraphies, completions, sections, observations, attachments, log runs, borehole geometry and the workflow history). It returns a new `availability` object that tells which kinds of child data exist; each kind is still available from its own endpoint. `PUT /api/v2/borehole` answers 204 No Content instead of returning the borehole.
 
 ### Fixed
 - Removing a filter while a polygon filter is active shows all boreholes in the polygon again instead of keeping the removed filter's restriction. The counts in the filter panel and the search suggestions now also take the polygon into account.
+- Boreholes with many lithology layers no longer make the detail page slow. Starting and stopping editing, saving a form and changing the workflow status no longer reload all of the borehole's data.
 
 ## v2.2.115 - 2026-11-16
 
