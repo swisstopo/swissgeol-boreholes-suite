@@ -66,7 +66,20 @@ public class WorkflowController : ControllerBase
             return Problem(errorMessage);
         }
 
-        var borehole = await context.BoreholesWithIncludes.SingleOrDefaultAsync(b => b.Id == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
+        var workflowNotFoundMessage = $"Workflow for borehole with {workflowChangeRequest.BoreholeId} not found.";
+
+        // Only the workgroup is needed for the publish check, not the borehole's data.
+        var borehole = await context.Boreholes
+            .AsNoTracking()
+            .Where(b => b.Id == workflowChangeRequest.BoreholeId)
+            .Select(b => new { b.WorkgroupId })
+            .SingleOrDefaultAsync()
+            .ConfigureAwait(false);
+        if (borehole is null)
+        {
+            logger?.LogWarning(workflowNotFoundMessage);
+            return NotFound(workflowNotFoundMessage);
+        }
 
         if (workflowChangeRequest.NewStatus == WorkflowStatus.Published && !await boreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, borehole.WorkgroupId, requiredRole.Value).ConfigureAwait(false))
         {
@@ -76,7 +89,6 @@ public class WorkflowController : ControllerBase
         var workflow = await context.WorkflowWithIncludes.SingleOrDefaultAsync(w => w.BoreholeId == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
         if (workflow == null)
         {
-            var workflowNotFoundMessage = $"Workflow for borehole with {workflowChangeRequest.BoreholeId} not found.";
             logger?.LogWarning(workflowNotFoundMessage);
             return NotFound(workflowNotFoundMessage);
         }
