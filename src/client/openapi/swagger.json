@@ -778,6 +778,7 @@
           "Borehole"
         ],
         "summary": "Asynchronously gets the BDMS.Models.Borehole with the specified id.",
+        "description": "Loads only what the detail page reads from the borehole itself. The child data (stratigraphies,\r\ncompletions, observations, attachments and so on) is not loaded; BDMS.Models.Borehole.Availability\r\ntells which kinds exist, and each tab loads its data from its own endpoint.",
         "parameters": [
           {
             "name": "id",
