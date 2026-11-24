@@ -10,8 +10,10 @@ const findScrollParent = (element: HTMLElement): HTMLElement | null => {
 
 /**
  * Tracks which of the equally tall rows inside `rowsRef` are within the viewport of their nearest
- * scrolling ancestor (or the window), widened by `overscanRows`. Re-measures on any scroll and on
- * window resize, at most once per animation frame.
+ * scrolling ancestor (or the window), widened by `overscanRows`. Re-measures on any scroll, on window
+ * resize and when the rows or the scrolling ancestor change size, at most once per animation frame.
+ * The size changes matter because a hidden table (`display: none`) measures as zero, and showing it
+ * again, or resizing a side panel, fires neither a scroll nor a window resize.
  */
 export const useVisibleRowRange = (
   rowsRef: RefObject<HTMLElement | null>,
@@ -49,7 +51,11 @@ export const useVisibleRowRange = (
     // Capture phase, because scroll events do not bubble and any ancestor may be the one scrolling.
     document.addEventListener("scroll", scheduleMeasure, { capture: true, passive: true });
     globalThis.addEventListener("resize", scheduleMeasure);
+    const resizeObserver = new ResizeObserver(scheduleMeasure);
+    resizeObserver.observe(rowsElement);
+    if (scrollParent) resizeObserver.observe(scrollParent);
     return () => {
+      resizeObserver.disconnect();
       cancelAnimationFrame(frame);
       document.removeEventListener("scroll", scheduleMeasure, { capture: true });
       globalThis.removeEventListener("resize", scheduleMeasure);
