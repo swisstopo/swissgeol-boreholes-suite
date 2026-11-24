@@ -1,6 +1,6 @@
 import { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { theme } from "../../../../../../AppTheme.ts";
 import { AddRowButton } from "../../../../../../components/buttons/buttons.tsx";
 import { FaciesDescriptionLabels } from "../../lithology/faciesDescriptionLabels.tsx";
@@ -34,10 +34,20 @@ import {
   StratigraphyTableContent,
   StratigraphyTableHeader,
 } from "../stratigraphyTablePrimitives.tsx";
+import { getColumnWindow, indexLayersByDepthId, layoutColumnCells } from "./rowWindowing.ts";
 import { LithologyTableState } from "./useLithologyTableState.ts";
+import { useVisibleRowRange } from "./useVisibleRowRange.ts";
 
 type LithologyTableColumn = "lithology" | "lithologicalDescription" | "faciesDescription";
 const allColumns: LithologyTableColumn[] = ["lithology", "lithologicalDescription", "faciesDescription"];
+
+// Rows rendered beyond each edge of the viewport. Only rows near the viewport are rendered, because
+// a stratigraphy can have well over a thousand rows; tables of up to about this many rows render whole.
+const overscanRows = 10;
+
+// Stands in for `rows` rows that are not rendered, so the table keeps its full height.
+const renderRowSpacer = (key: string, rows: number) =>
+  rows > 0 && <Box key={key} aria-hidden style={{ height: `${rows * defaultRowHeight}px`, flexShrink: 0 }} />;
 
 interface LithologyTableProps {
   state: LithologyTableState;
@@ -93,13 +103,14 @@ export const LithologyTable: FC<LithologyTableProps> = ({
   };
   const handleItemMouseLeave = () => setHoveredItemDepthIds(new Set());
 
-  const tableRef = useRef<HTMLDivElement>(null);
+  const rowsRef = useRef<HTMLDivElement>(null);
+  const visibleRows = useVisibleRowRange(rowsRef, depths.length, defaultRowHeight, overscanRows);
   const { activeDrag, previewRange, startResizeDrag } = useDescriptionResize({
     depths,
     tmpLithologicalDescriptions,
     tmpFaciesDescriptions,
     resizeDescription,
-    containerRef: tableRef,
+    rowsRef,
   });
 
   const handleLithologyUpdate = (updated: Lithology, hasChanges: boolean) => {
@@ -143,7 +154,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     tmpLithologicalDescriptions,
     tmpFaciesDescriptions,
     onCommit: openDescriptionModalForRange,
-    containerRef: tableRef,
+    rowsRef,
   });
 
   const buildResizeHandles = (
@@ -280,46 +291,40 @@ export const LithologyTable: FC<LithologyTableProps> = ({
           })
         : layers;
 
-    const itemIndexByDepthId = new Map<string, number>();
-    effectiveLayers.forEach((layer, idx) => {
-      for (const id of layer.depthIds ?? []) {
-        itemIndexByDepthId.set(id, idx);
+    const itemIndexByDepthId = indexLayersByDepthId(effectiveLayers);
+    const columnCells = layoutColumnCells(depths, effectiveLayers, itemIndexByDepthId);
+    const { cells, rowsAbove, rowsBelow } = getColumnWindow(columnCells, visibleRows, depths.length);
+
+    const renderedCells = cells.map(cell => {
+      if (cell.type === "gap") {
+        const depth = depths[cell.depthIdx];
+        return renderGapCell(cell.depthIdx, keyPrefix, depth.id, depth.fromDepth, resizableKind);
       }
+      const layer = effectiveLayers[cell.itemIdx];
+      const resizeHandles = resizableKind
+        ? buildResizeHandles(resizableKind, cell.itemIdx, layer, itemIndexByDepthId)
+        : undefined;
+      return renderActionCell({
+        index: cell.itemIdx,
+        keyPrefix,
+        layer,
+        buildContent,
+        onEdit,
+        onDelete,
+        resizeHandles,
+        heightInRows: layer.depthIds?.length ?? 1,
+      });
     });
 
-    const cells: ReactNode[] = [];
-    const renderedItems = new Set<number>();
-    depths.forEach((depth, depthIdx) => {
-      const itemIdx = itemIndexByDepthId.get(depth.id);
-      if (itemIdx === undefined) {
-        cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, resizableKind));
-      } else if (!renderedItems.has(itemIdx)) {
-        const layer = effectiveLayers[itemIdx];
-        const resizeHandles = resizableKind
-          ? buildResizeHandles(resizableKind, itemIdx, layer, itemIndexByDepthId)
-          : undefined;
-        cells.push(
-          renderActionCell({
-            index: itemIdx,
-            keyPrefix,
-            layer,
-            buildContent,
-            onEdit,
-            onDelete,
-            resizeHandles,
-            heightInRows: layer.depthIds?.length ?? 1,
-          }),
-        );
-        renderedItems.add(itemIdx);
-      }
-      // else: item already rendered at an earlier depth and its cell spans through here.
-    });
-
-    return cells;
+    return [
+      renderRowSpacer(`${keyPrefix}-spacer-above`, rowsAbove),
+      ...renderedCells,
+      renderRowSpacer(`${keyPrefix}-spacer-below`, rowsBelow),
+    ];
   };
 
   return (
-    <Stack gap={1.5} ref={tableRef}>
+    <Stack gap={1.5}>
       <Stack>
         <StratigraphyTableHeader>
           <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depthMD")} />
@@ -328,9 +333,11 @@ export const LithologyTable: FC<LithologyTableProps> = ({
           {showFaciesDescription && <StratigraphyTableHeaderCell label={t("faciesDescription")} />}
         </StratigraphyTableHeader>
         {depths?.length > 0 && (
-          <StratigraphyTableContent>
+          <StratigraphyTableContent ref={rowsRef}>
             <StratigraphyTableColumn sx={{ flex: "0 0 128px" }}>
-              {depths.map((depth, index) => {
+              {renderRowSpacer("depth-spacer-above", visibleRows.first)}
+              {depths.slice(visibleRows.first, visibleRows.last + 1).map((depth, visibleIndex) => {
+                const index = visibleRows.first + visibleIndex;
                 const isFirst = index === 0;
                 const isLast = index === depths.length - 1;
                 const isOnly = depths.length === 1;
@@ -378,6 +385,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
                   </DepthColumnCell>
                 );
               })}
+              {renderRowSpacer("depth-spacer-below", depths.length - 1 - visibleRows.last)}
             </StratigraphyTableColumn>
             {showLithology && (
               <StratigraphyTableColumn>

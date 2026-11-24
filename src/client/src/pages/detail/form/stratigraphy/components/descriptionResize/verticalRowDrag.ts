@@ -1,74 +1,46 @@
-import { DepthLayer } from "../../stratigraphy.ts";
-
-/** Cache the depth-row DOM elements within `root`, in depth order (some entries may be null). */
-export const queryDepthRowElements = (root: ParentNode, depths: DepthLayer[]): (HTMLElement | null)[] =>
-  depths.map(d => root.querySelector<HTMLElement>(`[data-cy="depth-${d.fromDepth}-${d.toDepth}"]`));
+import { rowIndexAtClientY } from "../lithologyTable/rowWindowing.ts";
+import { defaultRowHeight } from "../stratigraphyTableConstants.ts";
 
 /**
- * Index of the depth row the cursor is currently within. Walks from `prevIdx` toward the cursor's
- * row (so it only checks the rows in between); a cursor sitting exactly on a border resolves to the
- * row above it. Rects are read fresh on every call, so this keeps working while the page scrolls. At
- * most one of the two loops below runs, since the cursor can only move one way at a time.
+ * Index of the depth row the cursor is within. Computed from the row height rather than from the
+ * row elements, because the table renders only the rows near the viewport. The rows' position is
+ * read fresh on every call, so this keeps working while the page scrolls.
  */
-const snapPointerIdxAtClientY = (depthEls: (HTMLElement | null)[], clientY: number, prevIdx: number): number => {
-  let idx = prevIdx;
-
-  // Move down while the cursor has reached the top border of the row below.
-  while (idx + 1 < depthEls.length) {
-    const rect = depthEls[idx + 1]?.getBoundingClientRect();
-    if (!rect || clientY < rect.top) break;
-    idx++;
-  }
-
-  // Move up while the cursor has reached the bottom border of the row above.
-  while (idx - 1 >= 0) {
-    const rect = depthEls[idx - 1]?.getBoundingClientRect();
-    if (!rect || clientY > rect.bottom) break;
-    idx--;
-  }
-
-  return idx;
-};
+export const depthRowIndexAtClientY = (rowsElement: HTMLElement, clientY: number, rowCount: number): number =>
+  rowIndexAtClientY(clientY, rowsElement.getBoundingClientRect().top, defaultRowHeight, rowCount);
 
 interface RowRangeSelection {
-  pointerIdx: number; // Clamped pointer, re-pinned to the selected run — feed back as prevPointerIdx.
   firstIdx: number;
   lastIdx: number;
 }
 
 /**
  * Resolve the contiguous run of depth rows between a fixed `anchorIdx` and the row the cursor is
- * within (see snapPointerIdxAtClientY). The run extends from the anchor toward the cursor and stops
- * at the first row for which `isBlocked` returns true; `minIdx`/`maxIdx` restrict how far the cursor
- * end may travel. Pass the previous pointer so the snap tracks from it, and feed the returned
- * `pointerIdx` back in on the next call.
+ * within (`pointerIdx`). The run extends from the anchor toward the cursor and stops at the first
+ * row for which `isBlocked` returns true; `minIdx`/`maxIdx` restrict how far the cursor end may travel.
  */
 export const resolveRowRange = (
-  depthEls: (HTMLElement | null)[],
-  clientY: number,
+  pointerIdx: number,
   anchorIdx: number,
-  prevPointerIdx: number,
   isBlocked: (idx: number) => boolean,
   minIdx: number,
   maxIdx: number,
 ): RowRangeSelection => {
-  let pointerIdx = Math.max(minIdx, Math.min(maxIdx, snapPointerIdxAtClientY(depthEls, clientY, prevPointerIdx)));
+  const clampedPointerIdx = Math.max(minIdx, Math.min(maxIdx, pointerIdx));
   let firstIdx = anchorIdx;
   let lastIdx = anchorIdx;
-  if (pointerIdx > anchorIdx) {
-    for (let i = anchorIdx + 1; i <= pointerIdx; i++) {
+  if (clampedPointerIdx > anchorIdx) {
+    for (let i = anchorIdx + 1; i <= clampedPointerIdx; i++) {
       if (isBlocked(i)) break;
       lastIdx = i;
     }
-    pointerIdx = lastIdx; // Re-pin so it can't run away past a blocked row.
-  } else if (pointerIdx < anchorIdx) {
-    for (let i = anchorIdx - 1; i >= pointerIdx; i--) {
+  } else if (clampedPointerIdx < anchorIdx) {
+    for (let i = anchorIdx - 1; i >= clampedPointerIdx; i--) {
       if (isBlocked(i)) break;
       firstIdx = i;
     }
-    pointerIdx = firstIdx;
   }
-  return { pointerIdx, firstIdx, lastIdx };
+  return { firstIdx, lastIdx };
 };
 
 /**
