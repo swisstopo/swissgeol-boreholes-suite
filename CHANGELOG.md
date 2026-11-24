@@ -15,9 +15,12 @@
 - The borehole filter API (`POST /api/v2/borehole/filter`, `/filter/stats` and `/suggest`) no longer accepts `ids`. `polygon` takes LV95 (EPSG:2056) coordinates; a geometry that is not a polygon or lies outside Switzerland is rejected with 400 Bad Request.
 - Paging and sorting the borehole table in the overview no longer reload the map.
 - The borehole filter API (`POST /api/v2/borehole/filter`) no longer returns `geoJson`. The map features of the filtered boreholes come from the new `POST /api/v2/borehole/filter/map`, which takes the same filter criteria without paging and ordering.
+- The description field in the lithological description modal and the facies description modal is now higher.
 
 ### Fixed
 - Removing a filter while a polygon filter is active shows all boreholes in the polygon again instead of keeping the removed filter's restriction. The counts in the filter panel and the search suggestions now also take the polygon into account.
+- Extracting a stratigraphy again from the same profile now also shows the first page of the first extracted stratigraphy in the preview. Before, the preview stayed on the first page of the profile until the application was reloaded.
+- A failed stratigraphy extraction is no longer started again on its own when returning to the browser tab or when the network connection comes back. Extracting again is up to the user.
 
 ## v2.2.115 - 2026-11-16
 

@@ -10,7 +10,7 @@ interface RemarksFormSectionProps {
 export const RemarksFormSection: FC<RemarksFormSectionProps> = ({
   fieldName = "remarks",
   label = "remarks",
-  rows = 3,
+  rows = 6,
 }) => (
   <FormContainer direction={"row"}>
     <FormInput fieldName={fieldName} label={label} multiline={true} rows={rows} />
