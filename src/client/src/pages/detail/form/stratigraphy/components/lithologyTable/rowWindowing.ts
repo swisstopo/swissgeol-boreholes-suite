@@ -10,7 +10,7 @@ export type ColumnCell =
   | { type: "item"; itemIdx: number; firstRow: number; lastRow: number };
 
 /** The cells of a column to render, and how many rows the spacers above and below them stand in for. */
-export interface ColumnWindow {
+interface ColumnWindow {
   cells: ColumnCell[];
   rowsAbove: number;
   rowsBelow: number;
