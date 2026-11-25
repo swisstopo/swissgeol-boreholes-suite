@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
+using System.Globalization;
 using System.Net;
+using System.Net.Http.Json;
 using static BDMS.Helpers;
 
 namespace BDMS.Services;
@@ -92,6 +94,32 @@ public class LocationServiceTest
 
         var locationInfo = await service.IdentifyAsync(2586108, 1220759);
         Assert.AreEqual("Nidau", locationInfo.Municipality);
+    }
+
+    [TestMethod]
+    public async Task IdentifySendsCoordinatesWithDecimalPointInAnyCulture()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+        try
+        {
+            Uri? requestUri = null;
+            var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+            httpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Callback<HttpRequestMessage, CancellationToken>((request, _) => requestUri = request.RequestUri)
+                .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = JsonContent.Create(new { results = Array.Empty<object>() }) });
+            httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient(httpMessageHandler.Object)).Verifiable();
+
+            await service.IdentifyAsync(2646356.69, 1249020.29);
+
+            Assert.Contains("geometry=2646356.69,1249020.29&", requestUri?.AbsoluteUri ?? string.Empty);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 
     [TestMethod]

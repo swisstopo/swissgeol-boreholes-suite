@@ -28,7 +28,7 @@ public sealed class LocationService(ILogger<LocationService> logger, IHttpClient
     {
         using var httpClient = httpClientFactory.CreateClient(nameof(LocationService));
 
-        var point = string.Join(',', east, north);
+        var point = FormattableString.Invariant($"{east},{north}");
         var layers = string.Join(',', CountryLayer, CantonLayer, MunicipalityLayer);
         var requestUri = new Uri(string.Format(CultureInfo.InvariantCulture, ApiUri, point, layers, srid));
 
