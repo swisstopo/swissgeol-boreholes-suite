@@ -79,9 +79,8 @@ declare module "@mui/material/styles" {
       symbol: Record<MapSymbolColorName, MapSymbolColor>;
       symbolHalo: string;
       hover: string;
-      selectedFill: string;
-      selectedStroke: string;
-      selectedOuterStroke: string;
+      active: string;
+      popoverValueText: string;
       drawFill: string;
       drawStroke: string;
       clusterStroke: string;

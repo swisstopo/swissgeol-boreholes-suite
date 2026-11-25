@@ -66,9 +66,8 @@ const themePalette: AppThemePalette = {
     },
     symbolHalo: "#FFFFFF",
     hover: "#8B5CF6",
-    selectedFill: "rgba(255, 255, 0, 1)",
-    selectedStroke: "rgba(0, 0, 0, 0.75)",
-    selectedOuterStroke: "rgba(120, 120, 120, 0.5)",
+    active: "#EC4899",
+    popoverValueText: "#6C7680",
     drawFill: "rgba(255, 255, 255, 0.5)",
     drawStroke: "rgba(0, 153, 255, 1)",
     clusterStroke: "rgba(43, 132, 204, 0.5)",
@@ -213,6 +212,11 @@ export const theme = createTheme({
     },
     body2: {
       fontSize: "14px",
+    },
+    caption: {
+      fontSize: "12px",
+      lineHeight: "16px",
+      letterSpacing: "0.048px",
     },
     fullPageMessage: {
       fontSize: "23px",
