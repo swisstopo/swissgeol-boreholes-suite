@@ -353,6 +353,7 @@ export type Borehole = {
    * Filled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.
    */
   sourceTypeCodelistIds?: Array<number> | null;
+  availability?: BoreholeDataAvailability;
 };
 
 /**
@@ -413,6 +414,89 @@ export type BoreholeCodelist = {
   codelistId: number;
   value?: string;
   comment?: string | null;
+};
+
+/**
+ * Tells which kinds of child data a BDMS.Models.Borehole has, so the detail page can mark its tabs
+ * without loading the child data itself.
+ */
+export type BoreholeDataAvailability = {
+  /**
+   * Gets whether the borehole has a BDMS.Models.Section.
+   */
+  hasSections: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.BoreholeGeometryElement.
+   */
+  hasGeometry: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.Stratigraphy.
+   */
+  hasStratigraphy: boolean;
+  /**
+   * Gets whether any stratigraphy of the borehole has a BDMS.Models.Lithology.
+   */
+  hasLithology: boolean;
+  /**
+   * Gets whether any stratigraphy of the borehole has a BDMS.Models.LithostratigraphyLayer.
+   */
+  hasLithostratigraphy: boolean;
+  /**
+   * Gets whether any stratigraphy of the borehole has a BDMS.Models.ChronostratigraphyLayer.
+   */
+  hasChronostratigraphy: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.Completion.
+   */
+  hasCompletion: boolean;
+  /**
+   * Gets whether any completion of the borehole has a BDMS.Models.Casing.
+   */
+  hasCasings: boolean;
+  /**
+   * Gets whether any completion of the borehole has a BDMS.Models.Backfill.
+   */
+  hasBackfills: boolean;
+  /**
+   * Gets whether any completion of the borehole has an BDMS.Models.Instrumentation.
+   */
+  hasInstrumentations: boolean;
+  /**
+   * Gets whether the borehole has an BDMS.Models.Observation of any type.
+   */
+  hasObservation: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.WaterIngress.
+   */
+  hasWaterIngress: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.GroundwaterLevelMeasurement.
+   */
+  hasGroundwaterLevelMeasurement: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.Hydrotest.
+   */
+  hasHydrotest: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.FieldMeasurement.
+   */
+  hasFieldMeasurement: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.Profile.
+   */
+  hasProfiles: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.Photo.
+   */
+  hasPhotos: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.Document.
+   */
+  hasDocuments: boolean;
+  /**
+   * Gets whether the borehole has a BDMS.Models.LogRun.
+   */
+  hasLogRuns: boolean;
 };
 
 /**
@@ -3678,6 +3762,7 @@ export type BoreholeWritable = {
    * Filled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.
    */
   sourceTypeCodelistIds?: Array<number> | null;
+  availability?: BoreholeDataAvailability;
 };
 
 /**
@@ -5951,9 +6036,9 @@ export type PutApiVbyVersionBoreholeData = {
 
 export type PutApiVbyVersionBoreholeResponses = {
   /**
-   * OK
+   * No Content
    */
-  200: Borehole;
+  204: void;
 };
 
 export type PutApiVbyVersionBoreholeResponse =

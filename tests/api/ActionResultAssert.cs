@@ -35,6 +35,12 @@ internal static class ActionResultAssert
     }
 
     /// <summary>
+    /// Asserts that the <see cref="IActionResult"/> is NoContent (204).
+    /// </summary>
+    internal static void IsNoContent(IActionResult? actionResult)
+        => AssertActionResult(actionResult, StatusCodes.Status204NoContent);
+
+    /// <summary>
     /// Asserts that the <see cref="IActionResult"/> is Accepted (202).
     /// </summary>
     internal static void IsAccepted(IActionResult? actionResult)

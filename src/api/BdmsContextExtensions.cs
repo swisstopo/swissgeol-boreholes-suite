@@ -57,6 +57,46 @@ public static class BdmsContextExtensions
     }
 
     /// <summary>
+    /// Gets which kinds of child data the borehole with the given <paramref name="boreholeId"/> has.
+    /// Runs one query with EXISTS subqueries, so its cost does not grow with the number of child records.
+    /// </summary>
+    /// <param name="context">The database context.</param>
+    /// <param name="boreholeId">The id of an existing borehole.</param>
+    /// <param name="cancellationToken">Stops the query when the request is aborted.</param>
+    public static Task<BoreholeDataAvailability> GetBoreholeDataAvailabilityAsync(this BdmsContext context, int boreholeId, CancellationToken cancellationToken = default)
+    {
+        var stratigraphyIds = context.Stratigraphies.Where(s => s.BoreholeId == boreholeId).Select(s => s.Id);
+        var completionIds = context.Completions.Where(c => c.BoreholeId == boreholeId).Select(c => c.Id);
+        var observationTypes = context.Observations.Where(o => o.BoreholeId == boreholeId).Select(o => o.Type);
+
+        return context.Boreholes
+            .Where(b => b.Id == boreholeId)
+            .Select(_ => new BoreholeDataAvailability
+            {
+                HasSections = context.Sections.Any(s => s.BoreholeId == boreholeId),
+                HasGeometry = context.BoreholeGeometry.Any(g => g.BoreholeId == boreholeId),
+                HasStratigraphy = stratigraphyIds.Any(),
+                HasLithology = context.Lithologies.Any(l => stratigraphyIds.Contains(l.StratigraphyId)),
+                HasLithostratigraphy = context.LithostratigraphyLayers.Any(l => stratigraphyIds.Contains(l.StratigraphyId)),
+                HasChronostratigraphy = context.ChronostratigraphyLayers.Any(l => stratigraphyIds.Contains(l.StratigraphyId)),
+                HasCompletion = completionIds.Any(),
+                HasCasings = context.Casings.Any(c => completionIds.Contains(c.CompletionId)),
+                HasBackfills = context.Backfills.Any(b => completionIds.Contains(b.CompletionId)),
+                HasInstrumentations = context.Instrumentations.Any(i => completionIds.Contains(i.CompletionId)),
+                HasObservation = observationTypes.Any(),
+                HasWaterIngress = observationTypes.Contains(ObservationType.WaterIngress),
+                HasGroundwaterLevelMeasurement = observationTypes.Contains(ObservationType.GroundwaterLevelMeasurement),
+                HasHydrotest = observationTypes.Contains(ObservationType.Hydrotest),
+                HasFieldMeasurement = observationTypes.Contains(ObservationType.FieldMeasurement),
+                HasProfiles = context.Profiles.Any(p => p.BoreholeId == boreholeId),
+                HasPhotos = context.Photos.Any(p => p.BoreholeId == boreholeId),
+                HasDocuments = context.Documents.Any(d => d.BoreholeId == boreholeId),
+                HasLogRuns = context.LogRuns.Any(l => l.BoreholeId == boreholeId),
+            })
+            .SingleAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// Seed test data.
     /// </summary>
     [SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Accepted for test data seeding.")]
@@ -260,6 +300,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TotalDepthTvd, _ => null)
            .RuleFor(o => o.TopBedrockFreshTvd, _ => null)
            .RuleFor(o => o.TopBedrockWeatheredTvd, _ => null)
+           .RuleFor(o => o.Availability, _ => null)
            .RuleFor(o => o.Observations, _ => new Collection<Observation>())
            .RuleFor(o => o.BoreholeGeometry, _ => new Collection<BoreholeGeometryElement>())
            .RuleFor(o => o.Profiles, _ => new Collection<Profile>())

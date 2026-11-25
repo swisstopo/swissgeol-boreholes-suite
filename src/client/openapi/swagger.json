@@ -343,25 +343,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Borehole"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Borehole"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Borehole"
-                }
-              }
-            }
+          "204": {
+            "description": "No Content"
           }
         }
       },
@@ -795,6 +778,7 @@
           "Borehole"
         ],
         "summary": "Asynchronously gets the BDMS.Models.Borehole with the specified id.",
+        "description": "Loads only what the detail page reads from the borehole itself. The child data (stratigraphies,\r\ncompletions, observations, attachments and so on) is not loaded; BDMS.Models.Borehole.Availability\r\ntells which kinds exist, and each tab loads its data from its own endpoint.",
         "parameters": [
           {
             "name": "id",
@@ -7642,6 +7626,9 @@
             },
             "description": "Gets or sets the codelist ids with schema name 'source_type' of the BDMS.Models.Borehole's source documents.\r\nFilled from BDMS.Models.Borehole.BoreholeSourceTypeCodes on read and written to it on create, update, bulk edit and import.",
             "nullable": true
+          },
+          "availability": {
+            "$ref": "#/components/schemas/BoreholeDataAvailability"
           }
         },
         "additionalProperties": false,
@@ -7824,6 +7811,110 @@
         },
         "additionalProperties": false,
         "description": "Join table entity for a BDMS.Models.Codelist attached to a BDMS.Models.Borehole to store multiple borehole ids."
+      },
+      "BoreholeDataAvailability": {
+        "required": [
+          "hasBackfills",
+          "hasCasings",
+          "hasChronostratigraphy",
+          "hasCompletion",
+          "hasDocuments",
+          "hasFieldMeasurement",
+          "hasGeometry",
+          "hasGroundwaterLevelMeasurement",
+          "hasHydrotest",
+          "hasInstrumentations",
+          "hasLithology",
+          "hasLithostratigraphy",
+          "hasLogRuns",
+          "hasObservation",
+          "hasPhotos",
+          "hasProfiles",
+          "hasSections",
+          "hasStratigraphy",
+          "hasWaterIngress"
+        ],
+        "type": "object",
+        "properties": {
+          "hasSections": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.Section."
+          },
+          "hasGeometry": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.BoreholeGeometryElement."
+          },
+          "hasStratigraphy": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.Stratigraphy."
+          },
+          "hasLithology": {
+            "type": "boolean",
+            "description": "Gets whether any stratigraphy of the borehole has a BDMS.Models.Lithology."
+          },
+          "hasLithostratigraphy": {
+            "type": "boolean",
+            "description": "Gets whether any stratigraphy of the borehole has a BDMS.Models.LithostratigraphyLayer."
+          },
+          "hasChronostratigraphy": {
+            "type": "boolean",
+            "description": "Gets whether any stratigraphy of the borehole has a BDMS.Models.ChronostratigraphyLayer."
+          },
+          "hasCompletion": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.Completion."
+          },
+          "hasCasings": {
+            "type": "boolean",
+            "description": "Gets whether any completion of the borehole has a BDMS.Models.Casing."
+          },
+          "hasBackfills": {
+            "type": "boolean",
+            "description": "Gets whether any completion of the borehole has a BDMS.Models.Backfill."
+          },
+          "hasInstrumentations": {
+            "type": "boolean",
+            "description": "Gets whether any completion of the borehole has an BDMS.Models.Instrumentation."
+          },
+          "hasObservation": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has an BDMS.Models.Observation of any type."
+          },
+          "hasWaterIngress": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.WaterIngress."
+          },
+          "hasGroundwaterLevelMeasurement": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.GroundwaterLevelMeasurement."
+          },
+          "hasHydrotest": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.Hydrotest."
+          },
+          "hasFieldMeasurement": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.FieldMeasurement."
+          },
+          "hasProfiles": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.Profile."
+          },
+          "hasPhotos": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.Photo."
+          },
+          "hasDocuments": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.Document."
+          },
+          "hasLogRuns": {
+            "type": "boolean",
+            "description": "Gets whether the borehole has a BDMS.Models.LogRun."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Tells which kinds of child data a BDMS.Models.Borehole has, so the detail page can mark its tabs\r\nwithout loading the child data itself."
       },
       "BoreholeExportRequest": {
         "required": [

@@ -128,6 +128,21 @@ public class WorkflowControllerTest
     }
 
     [TestMethod]
+    public async Task PublishRequestForInexistentBoreholeIdReturnsNotFound()
+    {
+        var request = new WorkflowChangeRequest
+        {
+            BoreholeId = 800097871,
+            NewStatus = WorkflowStatus.Published,
+        };
+
+        var response = await controller.ApplyWorkflowChangeAsync(request).ConfigureAwait(false);
+
+        ActionResultAssert.IsNotFound(response);
+        Assert.AreEqual("Workflow for borehole with 800097871 not found.", (response as NotFoundObjectResult)?.Value);
+    }
+
+    [TestMethod]
     public async Task WorkflowChangeRequestForInexistentUserId()
     {
         var request = new WorkflowChangeRequest
