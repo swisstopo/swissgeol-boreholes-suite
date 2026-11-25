@@ -92,6 +92,27 @@ const cross: SymbolShape = {
   haloWidth: 3,
 };
 
+const square: SymbolShape = {
+  path: "M8 7L22 7A1 1 0 0 1 23 8L23 22A1 1 0 0 1 22 23L8 23A1 1 0 0 1 7 22L7 8A1 1 0 0 1 8 7Z",
+  strokePath: "M8 7L22 7A1 1 0 0 1 23 8L23 22A1 1 0 0 1 22 23L8 23A1 1 0 0 1 7 22L7 8A1 1 0 0 1 8 7Z",
+  strokeWidth: 4,
+  strokeInside: true,
+  haloPath:
+    "M8 5.5L22 5.5A2.5 2.5 0 0 1 24.5 8L24.5 22A2.5 2.5 0 0 1 22 24.5L8 24.5A2.5 2.5 0 0 1 5.5 22L5.5 8A2.5 2.5 0 0 1 8 5.5Z",
+  haloWidth: 3,
+};
+
+// The triangle pointing down, used for the borehole length and the CCS purposes.
+const invertedTriangle: SymbolShape = {
+  path: "M15.8682 22.2306C15.4844 22.9024 14.5157 22.9024 14.1318 22.2306L5.85494 7.74614C5.47399 7.07948 5.95536 6.25 6.72318 6.25L23.2768 6.25C24.0446 6.25 24.526 7.07948 24.1451 7.74614L15.8682 22.2306Z",
+  strokePath: "M6.72363 7.25L23.2764 7.25L15 21.7344L6.72363 7.25Z",
+  strokeWidth: 2,
+  strokeInside: false,
+  haloPath:
+    "M16.7363 22.7266C15.9685 24.0702 14.0315 24.0702 13.2637 22.7266L4.98633 8.24219C4.22467 6.90891 5.18807 5.25 6.72363 5.25L23.2764 5.25C24.8119 5.25 25.7753 6.90891 25.0137 8.24219L16.7363 22.7266Z",
+  haloWidth: 2,
+};
+
 const { symbol: colors } = theme.palette.map;
 
 // Every symbol is one object, so map styles can be cached per symbol.
@@ -104,4 +125,36 @@ export const legendSymbols = {
   greyDiamond: { ...diamond, ...colors.grey },
   lightGreyDiamond: { ...diamond, ...colors.lightGrey },
   redCross: { ...cross, ...colors.red },
+  pinkCross: { ...cross, ...colors.pink },
+  pinkSquare: { ...square, ...colors.pink },
+  yellowRotatedSquare: { ...rotatedSquare, ...colors.yellow },
+  magenta1Square: { ...square, ...colors.magenta1 },
+  magenta2Square: { ...square, ...colors.magenta2 },
+  magenta3Square: { ...square, ...colors.magenta3 },
+  violet1Hexagon: { ...hexagon, ...colors.violet1 },
+  violet2Hexagon: { ...hexagon, ...colors.violet2 },
+  violet3Hexagon: { ...hexagon, ...colors.violet3 },
+  violet4Hexagon: { ...hexagon, ...colors.violet4 },
+  violet5Hexagon: { ...hexagon, ...colors.violet5 },
+  crimson1Pentagon: { ...pentagon, ...colors.crimson1 },
+  crimson2Pentagon: { ...pentagon, ...colors.crimson2 },
+  crimson3Pentagon: { ...pentagon, ...colors.crimson3 },
+  crimson4Pentagon: { ...pentagon, ...colors.crimson4 },
+  amber1InvertedTriangle: { ...invertedTriangle, ...colors.amber1 },
+  amber2InvertedTriangle: { ...invertedTriangle, ...colors.amber2 },
+  amber3InvertedTriangle: { ...invertedTriangle, ...colors.amber3 },
+  brown1RotatedSquare: { ...rotatedSquare, ...colors.brown1 },
+  brown2RotatedSquare: { ...rotatedSquare, ...colors.brown2 },
+  brown3RotatedSquare: { ...rotatedSquare, ...colors.brown3 },
+  brown4RotatedSquare: { ...rotatedSquare, ...colors.brown4 },
+  ochrePlus: { ...plus, ...colors.ochre },
+  brown4Plus: { ...plus, ...colors.brown4 },
+  depth1InvertedTriangle: { ...invertedTriangle, ...colors.depth1 },
+  depth2InvertedTriangle: { ...invertedTriangle, ...colors.depth2 },
+  depth3InvertedTriangle: { ...invertedTriangle, ...colors.depth3 },
+  depth4InvertedTriangle: { ...invertedTriangle, ...colors.depth4 },
+  depth5InvertedTriangle: { ...invertedTriangle, ...colors.depth5 },
+  depth6InvertedTriangle: { ...invertedTriangle, ...colors.depth6 },
+  depth7InvertedTriangle: { ...invertedTriangle, ...colors.depth7 },
+  depth8InvertedTriangle: { ...invertedTriangle, ...colors.depth8 },
 } as const satisfies Record<string, LegendSymbol>;

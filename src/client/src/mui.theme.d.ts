@@ -18,7 +18,42 @@ declare module "@mui/material/Typography" {
 }
 
 declare module "@mui/material/styles" {
-  export type MapSymbolColorName = "purple" | "yellow" | "red" | "orange" | "pink" | "grey" | "lightGrey";
+  export type MapSymbolColorName =
+    | "purple"
+    | "yellow"
+    | "red"
+    | "orange"
+    | "pink"
+    | "grey"
+    | "lightGrey"
+    | "magenta1"
+    | "magenta2"
+    | "magenta3"
+    | "violet1"
+    | "violet2"
+    | "violet3"
+    | "violet4"
+    | "violet5"
+    | "crimson1"
+    | "crimson2"
+    | "crimson3"
+    | "crimson4"
+    | "amber1"
+    | "amber2"
+    | "amber3"
+    | "brown1"
+    | "brown2"
+    | "brown3"
+    | "brown4"
+    | "ochre"
+    | "depth1"
+    | "depth2"
+    | "depth3"
+    | "depth4"
+    | "depth5"
+    | "depth6"
+    | "depth7"
+    | "depth8";
 
   export interface MapSymbolColor {
     fill: string;
