@@ -1,6 +1,7 @@
 import Feature, { FeatureLike } from "ol/Feature";
 import { Circle, Fill, Stroke, Style, Text } from "ol/style";
 import { theme } from "../../AppTheme.ts";
+import { WorkflowStatus } from "../../api/generated";
 import { LegendTheme, MapFeatureProperties } from "./legend/legendThemes.ts";
 import { getSymbolStyle, SymbolHighlight } from "./mapSymbolStyle.ts";
 
@@ -26,11 +27,19 @@ export const drawStyle = new Style({
   }),
 });
 
-const toCodelistId = (value: unknown) => (typeof value === "number" ? value : null);
+const toNumberOrNull = (value: unknown) => (typeof value === "number" ? value : null);
+
+const workflowStatuses: readonly WorkflowStatus[] = ["Draft", "InReview", "Reviewed", "Published"];
+const toWorkflowStatus = (value: unknown): WorkflowStatus | null =>
+  workflowStatuses.find(status => status === value) ?? null;
 
 export const readMapFeatureProperties = (feature: FeatureLike): MapFeatureProperties => ({
-  type: toCodelistId(feature.get("type")),
-  restriction: toCodelistId(feature.get("restriction")),
+  type: toNumberOrNull(feature.get("type")),
+  restriction: toNumberOrNull(feature.get("restriction")),
+  purpose: toNumberOrNull(feature.get("purpose")),
+  totalDepth: toNumberOrNull(feature.get("totalDepth")),
+  workflowStatus: toWorkflowStatus(feature.get("workflowStatus")),
+  hasRequestedChanges: feature.get("hasRequestedChanges") === true,
 });
 
 const getHighlight = (id: number, highlights: BoreholeHighlights): SymbolHighlight | null => {

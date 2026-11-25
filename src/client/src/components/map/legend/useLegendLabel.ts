@@ -8,6 +8,8 @@ import { LegendLabel } from "./legendThemes.ts";
 export const useLegendLabel = () => {
   const { t } = useTranslation();
   const getCodelistDisplayValues = useCodelistDisplayValues();
-  return (label: LegendLabel) =>
-    label.kind === "codelist" ? getCodelistDisplayValues(label.codelistId).text : t(label.key);
+  return (label: LegendLabel) => {
+    if (label.kind === "codelist") return getCodelistDisplayValues(label.codelistId).text;
+    return label.values ? t(label.key, label.values) : t(label.key);
+  };
 };
