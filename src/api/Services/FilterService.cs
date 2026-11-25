@@ -17,9 +17,13 @@ public class FilterService : IFilterService
     private const int LockTimeoutMinutes = 120;
     private readonly BdmsContext context;
 
-    public FilterService(BdmsContext context)
+    // The anonymous view instance does not reveal the workflow of a borehole.
+    private readonly bool includeWorkflow;
+
+    public FilterService(BdmsContext context, IConfiguration configuration)
     {
         this.context = context;
+        includeWorkflow = !configuration.IsAnonymousModeEnabled();
     }
 
     /// <inheritdoc />
@@ -112,11 +116,21 @@ public class FilterService : IFilterService
         var boreholes = await query
             .Where(b => b.LocationX.HasValue && b.LocationY.HasValue)
             .OrderBy(b => b.Id)
-            .Select(b => new MapBoreholeRow(b.Id, b.Name, b.TypeId, b.RestrictionId, b.LocationX ?? 0, b.LocationY ?? 0))
+            .Select(b => new MapBoreholeRow(
+                b.Id,
+                b.Name,
+                b.TypeId,
+                b.RestrictionId,
+                b.PurposeId,
+                b.TotalDepth,
+                b.Workflow == null ? null : b.Workflow.Status,
+                b.Workflow == null ? null : b.Workflow.HasRequestedChanges,
+                b.LocationX ?? 0,
+                b.LocationY ?? 0))
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return BuildGeoJson(boreholes);
+        return BuildGeoJson(boreholes, includeWorkflow);
     }
 
     /// <inheritdoc />
@@ -655,7 +669,7 @@ public class FilterService : IFilterService
             : query.OrderBy(orderExpression).ThenBy(b => b.Id);
     }
 
-    private static FeatureCollection BuildGeoJson(IEnumerable<MapBoreholeRow> boreholes)
+    private static FeatureCollection BuildGeoJson(IEnumerable<MapBoreholeRow> boreholes, bool includeWorkflow)
     {
         var featureCollection = new FeatureCollection();
 
@@ -669,7 +683,14 @@ public class FilterService : IFilterService
                 { "type", borehole.TypeId },
                 { "name", borehole.Name },
                 { "restriction", borehole.RestrictionId },
+                { "purpose", borehole.PurposeId },
+                { "totalDepth", borehole.TotalDepth },
             };
+            if (includeWorkflow)
+            {
+                attributes.Add("workflowStatus", borehole.WorkflowStatus?.ToString());
+                attributes.Add("hasRequestedChanges", borehole.HasRequestedChanges);
+            }
 
             var feature = new Feature(point, attributes);
             featureCollection.Add(feature);
@@ -680,5 +701,15 @@ public class FilterService : IFilterService
 
     private sealed record SelectableBoreholeRow(int Id, DateTime? Locked);
 
-    private sealed record MapBoreholeRow(int Id, string? Name, int? TypeId, int? RestrictionId, double LocationX, double LocationY);
+    private sealed record MapBoreholeRow(
+        int Id,
+        string? Name,
+        int? TypeId,
+        int? RestrictionId,
+        int? PurposeId,
+        double? TotalDepth,
+        WorkflowStatus? WorkflowStatus,
+        bool? HasRequestedChanges,
+        double LocationX,
+        double LocationY);
 }

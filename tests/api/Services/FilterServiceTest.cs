@@ -1,5 +1,6 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
 using Npgsql;
@@ -22,10 +23,20 @@ public class FilterServiceTest
     public async Task TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        filterService = new FilterService(context);
+        filterService = new FilterService(context, CreateConfiguration(anonymousModeEnabled: false));
         adminUser = await context.UsersWithIncludes.AsNoTracking().SingleAsync(u => u.SubjectId == AdminSubjectId);
         editorUser = await context.UsersWithIncludes.AsNoTracking().SingleAsync(u => u.SubjectId == EditorSubjectId);
     }
+
+    private static IConfiguration CreateConfiguration(bool anonymousModeEnabled) => new ConfigurationBuilder()
+        .AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            ["Auth:Authority"] = "http://localhost",
+            ["Auth:Audience"] = "bdms",
+            ["Auth:Scopes"] = "openid",
+            ["Auth:AnonymousModeEnabled"] = anonymousModeEnabled.ToString(),
+        })
+        .Build();
 
     [TestCleanup]
     public async Task TestCleanup() => await context.DisposeAsync();
@@ -2371,11 +2382,21 @@ public class FilterServiceTest
             .CountAsync(b => b.LocationX != null && b.LocationY != null);
         Assert.AreEqual(expectedCount, result.Count);
         var firstFeature = result.OrderBy(f => f.Attributes["id"]).First();
-        Assert.AreEqual(4, firstFeature.Attributes.Count);
+        var firstBorehole = await context.Boreholes
+            .AsNoTracking()
+            .Include(b => b.Workflow)
+            .SingleAsync(b => b.Id == 1000000);
+        CollectionAssert.AreEquivalent(
+            new[] { "id", "type", "name", "restriction", "purpose", "totalDepth", "workflowStatus", "hasRequestedChanges" },
+            firstFeature.Attributes.GetNames());
         Assert.AreEqual(1000000, firstFeature.Attributes["id"]);
         Assert.AreEqual(null, firstFeature.Attributes["type"]);
         Assert.AreEqual("Luther Littel", firstFeature.Attributes["name"]);
         Assert.AreEqual(null, firstFeature.Attributes["restriction"]);
+        Assert.AreEqual(firstBorehole.PurposeId, firstFeature.Attributes["purpose"]);
+        Assert.AreEqual(firstBorehole.TotalDepth, firstFeature.Attributes["totalDepth"]);
+        Assert.AreEqual(firstBorehole.Workflow?.Status.ToString(), firstFeature.Attributes["workflowStatus"]);
+        Assert.AreEqual(firstBorehole.Workflow?.HasRequestedChanges, firstFeature.Attributes["hasRequestedChanges"]);
     }
 
     [TestMethod]
@@ -2464,6 +2485,41 @@ public class FilterServiceTest
 
         var ids = result.Select(f => (int)f.Attributes["id"]).ToList();
         CollectionAssert.AreEqual(ids.OrderBy(id => id).ToList(), ids);
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesReturnsWorkflowOfEachBorehole()
+    {
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        var workflowsById = await context.Boreholes
+            .AsNoTracking()
+            .Where(b => b.LocationX != null && b.LocationY != null)
+            .Select(b => new { b.Id, Status = b.Workflow == null ? (WorkflowStatus?)null : b.Workflow.Status, HasRequestedChanges = b.Workflow == null ? (bool?)null : b.Workflow.HasRequestedChanges })
+            .ToDictionaryAsync(b => b.Id);
+        Assert.IsTrue(workflowsById.Values.Any(w => w.HasRequestedChanges == true), "The test data must contain boreholes with requested changes.");
+        foreach (var feature in result)
+        {
+            var workflow = workflowsById[(int)feature.Attributes["id"]];
+            Assert.AreEqual(workflow.Status?.ToString(), feature.Attributes["workflowStatus"]);
+            Assert.AreEqual(workflow.HasRequestedChanges, feature.Attributes["hasRequestedChanges"]);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesOmitsWorkflowInAnonymousMode()
+    {
+        var anonymousFilterService = new FilterService(context, CreateConfiguration(anonymousModeEnabled: true));
+
+        var result = await anonymousFilterService.GetMapFeaturesAsync(null, adminUser);
+
+        Assert.IsTrue(result.Count > 0, "The test data must contain boreholes with coordinates.");
+        foreach (var feature in result)
+        {
+            CollectionAssert.AreEquivalent(
+                new[] { "id", "type", "name", "restriction", "purpose", "totalDepth" },
+                feature.Attributes.GetNames());
+        }
     }
 
     // Deserializes like the API does for the map endpoint, see DeserializeFilterRequestWithSquare.
