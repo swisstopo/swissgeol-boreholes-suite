@@ -202,7 +202,7 @@ const lengthNotSpecified = notSpecifiedEntry(legendSymbols.lightGreyDiamond, 1);
 const classifyLength = (totalDepth: number | null) => {
   if (totalDepth === null) return lengthNotSpecified;
   const index = lengthIntervals.findIndex(interval => totalDepth < interval.max);
-  return lengthEntries[index];
+  return lengthEntries[index] ?? lengthNotSpecified;
 };
 
 // The themes without an entry here need map attributes the map endpoint does not deliver yet.

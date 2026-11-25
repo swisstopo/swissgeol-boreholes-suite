@@ -166,6 +166,12 @@ describe("workflow theme", () => {
     expect(classify(null)).toBe("Draft");
   });
 
+  it("gives every workflow value a different symbol", () => {
+    const symbols = workflow.entries.map(entry => entry.symbol);
+
+    expect(new Set(symbols).size).toBe(symbols.length);
+  });
+
   it("is hidden in anonymous mode", () => {
     expect(workflow.visibleInAnonymousMode).toBe(false);
   });

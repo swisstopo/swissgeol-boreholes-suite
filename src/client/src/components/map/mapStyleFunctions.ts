@@ -29,9 +29,16 @@ export const drawStyle = new Style({
 
 const toNumberOrNull = (value: unknown) => (typeof value === "number" ? value : null);
 
-const workflowStatuses: readonly WorkflowStatus[] = ["Draft", "InReview", "Reviewed", "Published"];
-const toWorkflowStatus = (value: unknown): WorkflowStatus | null =>
-  workflowStatuses.find(status => status === value) ?? null;
+// Typed as a record so the compiler flags a status missing from the generated union.
+const workflowStatusSet: Record<WorkflowStatus, true> = {
+  Draft: true,
+  InReview: true,
+  Reviewed: true,
+  Published: true,
+};
+const isWorkflowStatus = (value: unknown): value is WorkflowStatus =>
+  typeof value === "string" && Object.hasOwn(workflowStatusSet, value);
+const toWorkflowStatus = (value: unknown): WorkflowStatus | null => (isWorkflowStatus(value) ? value : null);
 
 export const readMapFeatureProperties = (feature: FeatureLike): MapFeatureProperties => ({
   type: toNumberOrNull(feature.get("type")),

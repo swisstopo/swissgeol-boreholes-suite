@@ -90,7 +90,7 @@ describe("MapLegend", () => {
     expect(within(screen.getByRole("list")).getAllByRole("separator")).toHaveLength(7);
   });
 
-  it("shows the length intervals with their bounds", () => {
+  it("shows an entry per length interval and one for not specified", () => {
     renderLegend(themeOf("length"));
 
     expect(entryLabels()).toHaveLength(9);
