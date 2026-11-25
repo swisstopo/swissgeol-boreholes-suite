@@ -54,7 +54,7 @@ const themePalette: AppThemePalette = {
     selected: "#cb5d53",
   },
   map: {
-    // Colours of the legend symbols, from the Figma frame "Alle Legenden", and from its prototype (v-legend=v4) for the purpose, workflow and length themes.
+    // Colours of the legend symbols, from the Figma frame "Alle Legenden.
     symbol: {
       purple: { fill: "#8E66F1", stroke: "#1E0B5C", shadow: "rgba(142, 102, 241, 0.4)" },
       yellow: { fill: "#F9CC21", stroke: "#6B4A00", shadow: "rgba(249, 204, 33, 0.4)" },
