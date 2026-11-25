@@ -84,6 +84,18 @@ describe("MapLegend", () => {
     expect(items[4].nextElementSibling).toBe(separators[0]);
   });
 
+  it("separates the purpose groups with lines", () => {
+    renderLegend(themeOf("purpose"));
+
+    expect(within(screen.getByRole("list")).getAllByRole("separator")).toHaveLength(7);
+  });
+
+  it("shows the length intervals with their bounds", () => {
+    renderLegend(themeOf("length"));
+
+    expect(entryLabels()).toHaveLength(9);
+  });
+
   it("calls the switch handler when the switch button is clicked", () => {
     const onSwitchTheme = vi.fn();
     renderLegend(themeOf("restriction"), onSwitchTheme);

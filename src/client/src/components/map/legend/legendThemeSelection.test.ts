@@ -4,12 +4,18 @@ import { getAvailableLegendThemes, getNextLegendTheme, resolveLegendTheme } from
 const keysOf = (themes: readonly { key: string }[]) => themes.map(legendTheme => legendTheme.key);
 
 describe("getAvailableLegendThemes", () => {
-  it("offers borehole type and restriction when signed in", () => {
-    expect(keysOf(getAvailableLegendThemes(false))).toEqual(["boreholeType", "restriction"]);
+  it("offers all themes with map data when signed in", () => {
+    expect(keysOf(getAvailableLegendThemes(false))).toEqual([
+      "purpose",
+      "boreholeType",
+      "restriction",
+      "workflow",
+      "length",
+    ]);
   });
 
-  it("hides the restriction in anonymous mode", () => {
-    expect(keysOf(getAvailableLegendThemes(true))).toEqual(["boreholeType"]);
+  it("hides the restriction and the workflow in anonymous mode", () => {
+    expect(keysOf(getAvailableLegendThemes(true))).toEqual(["purpose", "boreholeType", "length"]);
   });
 });
 
@@ -18,34 +24,43 @@ describe("resolveLegendTheme", () => {
   const anonymous = getAvailableLegendThemes(true);
 
   it("returns the requested theme when it is available", () => {
-    expect(resolveLegendTheme("restriction", signedIn).key).toBe("restriction");
+    expect(resolveLegendTheme("workflow", signedIn).key).toBe("workflow");
   });
 
   it.each([
     ["no theme", null],
-    ["a theme without map data yet", "purpose" as const],
+    ["a theme without map data yet", "contents" as const],
   ])("falls back to the first available theme for %s", (_, requested) => {
-    expect(resolveLegendTheme(requested, signedIn).key).toBe("boreholeType");
+    expect(resolveLegendTheme(requested, signedIn).key).toBe("purpose");
   });
 
-  it("falls back to the first available theme for a theme hidden in anonymous mode", () => {
-    expect(resolveLegendTheme("restriction", anonymous).key).toBe("boreholeType");
-  });
+  it.each(["restriction", "workflow"] as const)(
+    "falls back to the first available theme for %s in anonymous mode",
+    requested => {
+      expect(resolveLegendTheme(requested, anonymous).key).toBe("purpose");
+    },
+  );
 });
 
 describe("getNextLegendTheme", () => {
   const signedIn = getAvailableLegendThemes(false);
 
   it("cycles through the available themes and wraps around", () => {
-    const second = getNextLegendTheme(signedIn[0], signedIn);
-    const third = getNextLegendTheme(second, signedIn);
+    const keys = [signedIn[0]];
+    for (let step = 0; step < signedIn.length; step++) keys.push(getNextLegendTheme(keys[keys.length - 1], signedIn));
 
-    expect([second.key, third.key]).toEqual(["restriction", "boreholeType"]);
+    expect(keysOf(keys)).toEqual(["purpose", "boreholeType", "restriction", "workflow", "length", "purpose"]);
   });
 
-  it("stays on the only theme in anonymous mode", () => {
+  it("skips the hidden themes in anonymous mode", () => {
     const anonymous = getAvailableLegendThemes(true);
 
-    expect(getNextLegendTheme(anonymous[0], anonymous).key).toBe("boreholeType");
+    expect(getNextLegendTheme(anonymous[1], anonymous).key).toBe("length");
+  });
+
+  it("stays on the only theme of a single-theme list", () => {
+    const [only] = getAvailableLegendThemes(true);
+
+    expect(getNextLegendTheme(only, [only]).key).toBe(only.key);
   });
 });
