@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { restrictionCode, restrictionFreeCode, restrictionUntilCode } from "../../codelist.ts";
 import { WorkflowStatus } from "../../../api/generated";
+import { restrictionCode, restrictionFreeCode, restrictionUntilCode } from "../../codelist.ts";
 import {
   boreholeTypeCodes,
   LegendEntry,

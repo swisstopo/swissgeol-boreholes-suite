@@ -1,5 +1,5 @@
-import { restrictionCode, restrictionFreeCode, restrictionUntilCode } from "../../codelist.ts";
 import { WorkflowStatus } from "../../../api/generated";
+import { restrictionCode, restrictionFreeCode, restrictionUntilCode } from "../../codelist.ts";
 import { LegendSymbol, legendSymbols } from "./legendSymbols.ts";
 
 // Order in which the legend cycles through its themes, also the accepted values of the `legend` URL parameter.

@@ -1,7 +1,7 @@
 import Feature, { FeatureLike } from "ol/Feature";
 import { Circle, Fill, Stroke, Style, Text } from "ol/style";
-import { theme } from "../../AppTheme.ts";
 import { WorkflowStatus } from "../../api/generated";
+import { theme } from "../../AppTheme.ts";
 import { LegendTheme, MapFeatureProperties } from "./legend/legendThemes.ts";
 import { getSymbolStyle, SymbolHighlight } from "./mapSymbolStyle.ts";
 

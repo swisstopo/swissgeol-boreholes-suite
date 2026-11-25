@@ -46,8 +46,10 @@ describe("getNextLegendTheme", () => {
   const signedIn = getAvailableLegendThemes(false);
 
   it("cycles through the available themes and wraps around", () => {
-    const keys = [signedIn[0]];
-    for (let step = 0; step < signedIn.length; step++) keys.push(getNextLegendTheme(keys[keys.length - 1], signedIn));
+    const keys = Array.from({ length: signedIn.length }).reduce<(typeof signedIn)[number][]>(
+      visited => [...visited, getNextLegendTheme(visited[visited.length - 1], signedIn)],
+      [signedIn[0]],
+    );
 
     expect(keysOf(keys)).toEqual(["purpose", "boreholeType", "restriction", "workflow", "length", "purpose"]);
   });
