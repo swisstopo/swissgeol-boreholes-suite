@@ -69,6 +69,32 @@ public class LocationServiceTest
     }
 
     [TestMethod]
+    public async Task IdentifyReturnsMunicipalityOfLatestYear()
+    {
+        SetupMunicipalityHistoryHttpMock(
+            ("Madretsch", 1850),
+            ("Madretsch", 1919),
+            ("Biel (BE)", 1920),
+            ("Biel/Bienne", 2025),
+            ("Biel/Bienne", 2026));
+
+        var locationInfo = await service.IdentifyAsync(2586108, 1220759);
+        Assert.AreEqual("Biel/Bienne", locationInfo.Municipality);
+    }
+
+    [TestMethod]
+    public async Task IdentifyReturnsFirstMunicipalityWhenSeveralShareTheLatestYear()
+    {
+        SetupMunicipalityHistoryHttpMock(
+            ("Nidau", 1850),
+            ("Nidau", 2026),
+            ("Biel/Bienne", 2026));
+
+        var locationInfo = await service.IdentifyAsync(2586108, 1220759);
+        Assert.AreEqual("Nidau", locationInfo.Municipality);
+    }
+
+    [TestMethod]
     public async Task IdentifyLogsErrorOnHttpFailure()
     {
         var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
@@ -95,4 +121,7 @@ public class LocationServiceTest
 
     private void SetupLocationHttpMock(string country, string canton, string municipal) =>
         httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(CreateLocationHttpClient(country, canton, municipal)).Verifiable();
+
+    private void SetupMunicipalityHistoryHttpMock(params (string Name, int Year)[] entries) =>
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(CreateMunicipalityHistoryHttpClient(entries)).Verifiable();
 }
