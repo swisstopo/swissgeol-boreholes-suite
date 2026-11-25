@@ -2498,11 +2498,11 @@ public class FilterServiceTest
             .Select(b => new { b.Id, Status = b.Workflow == null ? (WorkflowStatus?)null : b.Workflow.Status, HasRequestedChanges = b.Workflow == null ? (bool?)null : b.Workflow.HasRequestedChanges })
             .ToDictionaryAsync(b => b.Id);
         Assert.IsTrue(workflowsById.Values.Any(w => w.HasRequestedChanges == true), "The test data must contain boreholes with requested changes.");
-        foreach (var feature in result)
+        foreach (var attributes in result.Select(feature => feature.Attributes))
         {
-            var workflow = workflowsById[(int)feature.Attributes["id"]];
-            Assert.AreEqual(workflow.Status?.ToString(), feature.Attributes["workflowStatus"]);
-            Assert.AreEqual(workflow.HasRequestedChanges, feature.Attributes["hasRequestedChanges"]);
+            var workflow = workflowsById[(int)attributes["id"]];
+            Assert.AreEqual(workflow.Status?.ToString(), attributes["workflowStatus"]);
+            Assert.AreEqual(workflow.HasRequestedChanges, attributes["hasRequestedChanges"]);
         }
     }
 
