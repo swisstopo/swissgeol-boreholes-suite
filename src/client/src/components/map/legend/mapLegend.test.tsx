@@ -59,7 +59,7 @@ describe("MapLegend", () => {
     cleanup();
   });
 
-  it("shows the title and the entries of the active theme", () => {
+  it("shows the title and the capitalized entries of the active theme", () => {
     renderLegend(themeOf("boreholeType"));
 
     expect(screen.getByRole("heading", { name: "boreholeType" })).toBeTruthy();
@@ -69,8 +69,8 @@ describe("MapLegend", () => {
       "Rammsondierung",
       "Baggerschlitz",
       "Aufschluss",
-      "anderer",
-      "np",
+      "Anderer",
+      "Np",
     ]);
   });
 
