@@ -15,7 +15,7 @@ export function useApiErrorAlert(severity: AlertColor = "error") {
         // The key is preferred over the message, because a message is whatever sentence the API
         // happened to send and is not in the language the user reads.
         const key = error.messageKey ?? error.message;
-        if (key) errorMessage = t(key, error.details);
+        if (key) errorMessage = t(key, error.details ?? {});
       }
       showAlert(errorMessage, severity);
     },
