@@ -505,6 +505,13 @@ public class Borehole : IChangeTracking, IIdentifyable
     public ICollection<int>? SourceTypeCodelistIds { get; set; }
 
     /// <summary>
+    /// Gets or sets which kinds of child data the <see cref="Borehole"/> has.
+    /// Only filled when a single borehole is read for the detail page; never stored, exported or imported.
+    /// </summary>
+    [NotMapped]
+    public BoreholeDataAvailability? Availability { get; set; }
+
+    /// <summary>
     /// Gets the <see cref="Codelist"/>s with schema name 'source_type' used by the <see cref="Borehole"/>.
     /// Not serialized, so a request cannot create codelists through it; clients use <see cref="SourceTypeCodelistIds"/>.
     /// </summary>

@@ -10,6 +10,7 @@ export type {
   BoreholeBulkUpdate,
   BoreholeBulkUpdateRequest,
   BoreholeCodelist,
+  BoreholeDataAvailability,
   BoreholeExportRequest,
   BoreholeFilterCriteria,
   BoreholeFilterCriteriaWritable,

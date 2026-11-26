@@ -576,7 +576,10 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   // Force layer redraw so the style function picks up the new highlighted state. Only the layer is changed: a change
   // of the source would make the cluster source cluster all boreholes again.
-  useEffect(() => {
+  // A layout effect, so the redraw is requested in the commit that shows the popover. OpenLayers draws in the next
+  // animation frame, which comes before the browser paints that commit. A passive effect can run after that frame,
+  // so the popover would show one frame before its highlight.
+  useLayoutEffect(() => {
     const highlights = getBoreholeHighlights(popover, hoveredRowId, highlighted);
     if (haveSameHighlights(highlightsRef.current, highlights)) return;
     highlightsRef.current = highlights;

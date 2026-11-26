@@ -18,7 +18,7 @@ export const NavButton: FC<NavButtonProps> = props => {
   const defaultContent = props.icon;
   const hoverContent = (
     <>
-      {props.icon} <Typography>{props.label}</Typography>
+      {props.icon} <Typography sx={{ lineHeight: 1 }}>{props.label}</Typography>
     </>
   );
   return (
@@ -44,7 +44,7 @@ export const NavButton: FC<NavButtonProps> = props => {
           zIndex: 6000,
         },
       }}>
-      <Stack direction="row" justifyContent={"space-between"} spacing={1} sx={{ margin: 0 }}>
+      <Stack direction="row" justifyContent={"space-between"} alignItems="center" spacing={1} sx={{ margin: 0 }}>
         {isHovered ? hoverContent : defaultContent}
       </Stack>
     </IconButton>

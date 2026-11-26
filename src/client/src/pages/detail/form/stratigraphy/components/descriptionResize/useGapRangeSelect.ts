@@ -7,7 +7,7 @@ import {
   FaciesDescription,
   LithologicalDescription,
 } from "../../stratigraphy.ts";
-import { beginVerticalRowDrag, queryDepthRowElements, resolveRowRange, swallowNextClick } from "./verticalRowDrag.ts";
+import { beginVerticalRowDrag, depthRowIndexAtClientY, resolveRowRange, swallowNextClick } from "./verticalRowDrag.ts";
 
 interface GapSelection {
   kind: DescriptionKind;
@@ -19,7 +19,7 @@ interface UseGapRangeSelectArgs {
   tmpLithologicalDescriptions: LithologicalDescription[];
   tmpFaciesDescriptions: FaciesDescription[];
   onCommit: (kind: DescriptionKind, selectedDepthIds: string[]) => void;
-  containerRef: RefObject<HTMLElement | null>;
+  rowsRef: RefObject<HTMLElement | null>; // The element whose top edge is the top of the first depth row.
 }
 
 interface UseGapRangeSelectReturn {
@@ -43,7 +43,7 @@ export const useGapRangeSelect = ({
   tmpLithologicalDescriptions,
   tmpFaciesDescriptions,
   onCommit,
-  containerRef,
+  rowsRef,
 }: UseGapRangeSelectArgs): UseGapRangeSelectReturn => {
   const [activeSelection, setActiveSelection] = useState<GapSelection | null>(null);
   const [previewDepthIds, setPreviewDepthIds] = useState<ReadonlySet<string>>(new Set());
@@ -60,15 +60,14 @@ export const useGapRangeSelect = ({
   const startGapSelect = (event: MouseEvent<HTMLElement>, kind: DescriptionKind, startDepthIdx: number) => {
     if (event.button !== 0) return;
     if (startDepthIdx < 0 || startDepthIdx >= depths.length) return;
+    const rowsElement = rowsRef.current;
+    if (!rowsElement) return;
 
     teardownRef.current?.(); // Defensive — normally already cleaned up.
 
     const anchorIdx = startDepthIdx;
     setActiveSelection({ kind, anchorIdx });
     setPreviewDepthIds(new Set([depths[anchorIdx].id]));
-
-    const root: ParentNode = containerRef.current ?? document;
-    const depthEls = queryDepthRowElements(root, depths);
 
     // Depth rows already owned by an item in this column — the selection must stop before them.
     const columnItems: BaseLayer[] = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
@@ -81,13 +80,10 @@ export const useGapRangeSelect = ({
       return id ? ownedDepthIds.has(id) : false;
     };
 
-    // Row the cursor currently points at. Persisted across mousemoves so the within-cell snap
-    // tracks from it. The selection runs both ways from the anchor across the full column.
-    let pointerIdx = anchorIdx;
-
+    // The selection runs both ways from the anchor across the full column.
     const computeSelectedIdxs = (clientY: number): number[] => {
-      const range = resolveRowRange(depthEls, clientY, anchorIdx, pointerIdx, isOwned, 0, depths.length - 1);
-      pointerIdx = range.pointerIdx;
+      const pointerIdx = depthRowIndexAtClientY(rowsElement, clientY, depths.length);
+      const range = resolveRowRange(pointerIdx, anchorIdx, isOwned, 0, depths.length - 1);
       const idxs: number[] = [];
       for (let i = range.firstIdx; i <= range.lastIdx; i++) idxs.push(i);
       return idxs;

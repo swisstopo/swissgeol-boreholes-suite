@@ -7,7 +7,7 @@ import {
   FaciesDescription,
   LithologicalDescription,
 } from "../../stratigraphy.ts";
-import { beginVerticalRowDrag, queryDepthRowElements, resolveRowRange, swallowNextClick } from "./verticalRowDrag.ts";
+import { beginVerticalRowDrag, depthRowIndexAtClientY, resolveRowRange, swallowNextClick } from "./verticalRowDrag.ts";
 
 export type ResizeSide = "top" | "bottom";
 
@@ -38,7 +38,7 @@ interface UseDescriptionResizeArgs {
     toDepth: number | null,
     targetDepthIds: string[],
   ) => void;
-  containerRef: RefObject<HTMLElement | null>;
+  rowsRef: RefObject<HTMLElement | null>; // The element whose top edge is the top of the first depth row.
 }
 
 interface UseDescriptionResizeReturn {
@@ -56,7 +56,7 @@ interface UseDescriptionResizeReturn {
 /**
  * Owns the in-progress drag-to-resize state for description action cells. `startResizeDrag`
  * installs the drag listeners synchronously via `beginVerticalRowDrag` and:
- *   - snaps the preview to depth-row boundaries via DOM hit-testing,
+ *   - snaps the preview to depth-row boundaries computed from the row height,
  *   - clamps so the resize never crosses a row owned by another description in the same column,
  *   - commits on mouseup, discards on Escape,
  *   - swallows the synthetic post-drag click so the underlying cell doesn't reopen its modal.
@@ -66,7 +66,7 @@ export const useDescriptionResize = ({
   tmpLithologicalDescriptions,
   tmpFaciesDescriptions,
   resizeDescription,
-  containerRef,
+  rowsRef,
 }: UseDescriptionResizeArgs): UseDescriptionResizeReturn => {
   const [activeDrag, setActiveDrag] = useState<ResizeDrag | null>(null);
   const [previewRange, setPreviewRange] = useState<PreviewRange | null>(null);
@@ -92,7 +92,8 @@ export const useDescriptionResize = ({
     if (ids.length === 0) return;
     const firstDepthIdx = depths.findIndex(d => d.id === ids[0]);
     const lastDepthIdx = depths.findIndex(d => d.id === ids.at(-1));
-    if (firstDepthIdx < 0 || lastDepthIdx < 0) return;
+    const rowsElement = rowsRef.current;
+    if (firstDepthIdx < 0 || lastDepthIdx < 0 || !rowsElement) return;
 
     teardownRef.current?.(); // Defensive — normally already cleaned up.
 
@@ -108,9 +109,6 @@ export const useDescriptionResize = ({
     setActiveDrag(drag);
     setPreviewRange({ fromDepth: layer.fromDepth, toDepth: layer.toDepth, depthIds: ids });
 
-    const root: ParentNode = containerRef.current ?? document;
-    const depthEls = queryDepthRowElements(root, depths);
-
     // Same-column items — used by the clamping logic during mousemove.
     const columnItems: BaseLayer[] = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
     const ownedBySibling = (depthIdx: number) => {
@@ -123,15 +121,12 @@ export const useDescriptionResize = ({
     const minIdx = side === "bottom" ? firstDepthIdx : 0;
     const maxIdx = side === "bottom" ? depths.length - 1 : lastDepthIdx;
 
-    // Row the moving edge currently points at (the row the cursor is within). Persisted across
-    // mousemoves so the within-cell snap tracks from it.
-    let pointerIdx = side === "bottom" ? lastDepthIdx : firstDepthIdx;
-
     const spanIds = (first: number, last: number) => depths.slice(first, last + 1).map(d => d.id);
 
     const computePreview = (clientY: number): PreviewRange => {
-      const range = resolveRowRange(depthEls, clientY, anchorIdx, pointerIdx, ownedBySibling, minIdx, maxIdx);
-      pointerIdx = range.pointerIdx;
+      // Row the moving edge points at: the row the cursor is within.
+      const pointerIdx = depthRowIndexAtClientY(rowsElement, clientY, depths.length);
+      const range = resolveRowRange(pointerIdx, anchorIdx, ownedBySibling, minIdx, maxIdx);
       const depthIds = spanIds(range.firstIdx, range.lastIdx);
       // Snap the moving edge to its target row's depth. A null there is the not-yet-defined open
       // layer, so the description stays open-ended on that side; depthIds carries the exact span,

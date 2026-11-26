@@ -78,8 +78,8 @@ const fetchBoreholeById = async (id: number): Promise<Borehole> => {
   return await fetchApiV2WithApiError<Borehole>(`borehole/${id}`, "GET");
 };
 
-const updateBorehole = async (borehole: Borehole): Promise<Borehole> => {
-  return await fetchApiV2WithApiError<Borehole>("borehole", "PUT", borehole);
+const updateBorehole = async (borehole: Borehole): Promise<void> => {
+  await fetchApiV2WithApiError<void>("borehole", "PUT", borehole);
 };
 
 const lockBorehole = async (id: number): Promise<void> => {
