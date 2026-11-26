@@ -32,7 +32,7 @@ import { BasemapSelector } from "../basemapSelector/basemapSelector";
 import MapControls from "../buttons/mapControls";
 import { PulseLayer, startHighlightPulse } from "./highlightPulse.ts";
 import { MapLegend } from "./legend/mapLegend.tsx";
-import { getFeatureBoreholes, groupByLocation } from "./locationBadges.ts";
+import { getFeatureBoreholes, groupByLocation, mergeTouchingBadges } from "./locationBadges.ts";
 import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
 import { getBadgeOuterRadius, loadBadgeFont } from "./mapBadgeStyle.ts";
 import "./mapProjections";
@@ -53,14 +53,18 @@ import {
 // The longest time between the two clicks of a double-click, a little above the 250 ms OpenLayers uses.
 const doubleClickInterval = 500;
 
-// The highlight rings start just outside the borehole symbols and the badges.
-const boreholePulseRingRadius = 14;
-const badgePulseRingGap = 1;
+// How far a borehole symbol reaches from its location, in pixels.
+const boreholeSymbolRadius = 13;
 
-const getPulseRingRadius = (feature: Feature) => {
+// How far the symbol or badge of a feature reaches from its location, in pixels.
+const getDrawnRadius = (feature: Feature) => {
   const boreholes = getFeatureBoreholes(feature);
-  return boreholes.length === 1 ? boreholePulseRingRadius : getBadgeOuterRadius(boreholes.length) + badgePulseRingGap;
+  return boreholes.length === 1 ? boreholeSymbolRadius : getBadgeOuterRadius(boreholes.length);
 };
+
+// The highlight rings start just outside the borehole symbols and the badges.
+const pulseRingGap = 1;
+const getPulseRingRadius = (feature: Feature) => getDrawnRadius(feature) + pulseRingGap;
 
 // Above this resolution the map shows clusters instead of the borehole symbols.
 const clusterResolution = 15;
@@ -89,13 +93,32 @@ const getPreviewAtPixel = (map: Map, pixel: Pixel): BoreholePopoverState | null 
   return cluster ? previewCluster(cluster) : null;
 };
 
-// The map clusters all boreholes; below the cluster resolution it draws them grouped by location. A borehole alone at
-// its location is the same feature in both sources, so both are always replaced together.
-const showBoreholes = (points: VectorSource, locations: VectorSource, boreholes: Feature[]) => {
+// The map clusters all boreholes. Below the cluster resolution it draws their locations, in which the badges take in
+// what they touch at the current resolution (see regroupLocations). A borehole alone at its location is the same
+// feature in the points, the location index and the drawn locations, so they are always replaced together.
+const showBoreholes = (points: VectorSource, locationIndex: VectorSource, boreholes: Feature[]) => {
   points.clear();
   points.addFeatures(boreholes);
-  locations.clear();
-  locations.addFeatures(groupByLocation(boreholes));
+  locationIndex.clear();
+  locationIndex.addFeatures(groupByLocation(boreholes));
+};
+
+// Replaces the features of the source with the given ones. Features that stay are not removed and added again, since
+// regrouping only changes the locations around badges.
+const replaceFeatures = (source: VectorSource, features: readonly Feature[]) => {
+  const currentFeatures = source.getFeatures();
+  const nextFeatureSet = new Set(features);
+  const currentFeatureSet = new Set(currentFeatures);
+  const removedFeatures = currentFeatures.filter(feature => !nextFeatureSet.has(feature));
+  const addedFeatures = features.filter(feature => !currentFeatureSet.has(feature));
+  if (removedFeatures.length > 0) source.removeFeatures(removedFeatures);
+  if (addedFeatures.length > 0) source.addFeatures(addedFeatures);
+};
+
+// At the closest zoom, a badge of boreholes at several locations no longer separates, so its click lists them.
+const isAtClosestZoom = (map: Map) => {
+  const view = map.getView();
+  return (view.getResolution() ?? Number.POSITIVE_INFINITY) <= view.getMinResolution();
 };
 
 export const MapComponent: FC<MapComponentProps> = ({
@@ -125,6 +148,8 @@ export const MapComponent: FC<MapComponentProps> = ({
   // ── OpenLayers object refs (mutable, imperative, never trigger rerenders) ──
   const mapRef = useRef<Map | null>(null);
   const pointsRef = useRef<VectorSource | null>(null);
+  // The locations of the boreholes, as groupByLocation returns them; an index for regroupLocations.
+  const locationIndexRef = useRef<VectorSource | null>(null);
   const locationsRef = useRef<VectorSource | null>(null);
   const pointLayerRef = useRef<VectorLayer | null>(null);
   const clusterLayerRef = useRef<VectorLayer | null>(null);
@@ -144,6 +169,7 @@ export const MapComponent: FC<MapComponentProps> = ({
   const popoverRef = useRef<BoreholePopoverState | null>(null);
   const highlightsRef = useRef(noBoreholeHighlights);
   const hoveredClusterRef = useRef<Feature | null>(null);
+  const groupedResolutionRef = useRef<number | null>(null);
 
   // ── Refs for latest prop values (accessed by OL event handlers registered at mount) ──
   const legendThemeRef = useRef(legendTheme);
@@ -172,6 +198,18 @@ export const MapComponent: FC<MapComponentProps> = ({
       t,
     };
   });
+
+  // ────────────────────── Locations ──────────────────────
+
+  // Lets every badge take in the symbols and badges it touches at the current resolution.
+  const regroupLocations = useCallback(() => {
+    const resolution = mapRef.current?.getView().getResolution();
+    const locationIndex = locationIndexRef.current;
+    const locations = locationsRef.current;
+    if (resolution === undefined || !locationIndex || !locations) return;
+    groupedResolutionRef.current = resolution;
+    replaceFeatures(locations, mergeTouchingBadges(locationIndex, resolution, getDrawnRadius));
+  }, []);
 
   // ────────────────────── Zoom handlers ──────────────────────
 
@@ -257,6 +295,8 @@ export const MapComponent: FC<MapComponentProps> = ({
     // ── Feature layers ──
     const points = new VectorSource();
     pointsRef.current = points;
+    const locationIndex = new VectorSource();
+    locationIndexRef.current = locationIndex;
     const locations = new VectorSource();
     locationsRef.current = locations;
 
@@ -342,6 +382,11 @@ export const MapComponent: FC<MapComponentProps> = ({
       }
     });
 
+    // Badges take in what they touch once the zoom has settled, not in every frame of its animation.
+    map.on("moveend", () => {
+      if (map.getView().getResolution() !== groupedResolutionRef.current) regroupLocations();
+    });
+
     // The overlay stops events, so clicks in the pinned popover do not reach the map.
     const popoverOverlay = new Overlay({ element: popoverElementRef.current ?? undefined });
     popoverOverlayRef.current = popoverOverlay;
@@ -352,8 +397,8 @@ export const MapComponent: FC<MapComponentProps> = ({
     let drawEndedAt = Number.NEGATIVE_INFINITY;
     const isClickFinishingDrawing = () => Date.now() - drawEndedAt < doubleClickInterval;
 
-    // A click on a single borehole opens it, a click on several boreholes or a badge pins the popover listing them,
-    // and a click elsewhere closes the popover and zooms into a clicked cluster.
+    // A click on a single borehole opens it, a click on several boreholes or a badge of one location pins the popover
+    // listing them, and a click on a cluster zooms into it. A click elsewhere closes the popover.
     map.on("click", event => {
       if (polygonSelectionEnabledRef.current || isClickFinishingDrawing()) return;
 
@@ -363,7 +408,7 @@ export const MapComponent: FC<MapComponentProps> = ({
         openBorehole(preview.features[0].get("id") as number);
         return;
       }
-      if (preview !== null && preview.cluster === null) {
+      if (preview !== null && (preview.cluster === null || isAtClosestZoom(map))) {
         updatePopover({ ...preview, pinned: true });
         return;
       }
@@ -422,7 +467,8 @@ export const MapComponent: FC<MapComponentProps> = ({
         displayErrorMessage(t("msgNoBoreholesInSelection"));
         setFilterPolygon(null);
       } else {
-        showBoreholes(currentPoints, locations, intersectingFeatures);
+        showBoreholes(currentPoints, locationIndex, intersectingFeatures);
+        regroupLocations();
         drawSource.addFeature(new Feature(toOlPolygon(vertices)));
         setFilterPolygon(vertices);
       }
@@ -501,11 +547,11 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   useEffect(() => {
     const points = pointsRef.current;
-    const locations = locationsRef.current;
-    if (!geoJson || !points || !locations) return;
+    const locationIndex = locationIndexRef.current;
+    if (!geoJson || !points || !locationIndex) return;
 
     // The backend already applied the polygon and all other filters.
-    showBoreholes(points, locations, new GeoJSON().readFeatures(geoJson));
+    showBoreholes(points, locationIndex, new GeoJSON().readFeatures(geoJson));
 
     // The popover may list boreholes that are gone; force style recomputation.
     updatePopover(null);
@@ -525,6 +571,8 @@ export const MapComponent: FC<MapComponentProps> = ({
         padding: [20, 20, 20, 20],
       });
     }
+    // After the fit, so the badges take in what they touch at the resolution the map shows.
+    regroupLocations();
     // Only re-run when geoJson changes. mapCenter is intentionally read only
     // on first load (via isInitialGeoJsonRef guard). Other deps accessed via refs.
     // oxlint-disable-next-line react-hooks/exhaustive-deps

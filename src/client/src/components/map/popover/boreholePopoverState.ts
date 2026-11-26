@@ -1,6 +1,6 @@
 ﻿import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
-import { getFeatureBoreholes } from "../locationBadges.ts";
+import { getFeatureBoreholes, isClusterBadge } from "../locationBadges.ts";
 import { badgeHalfHeight } from "../mapBadgeStyle.ts";
 import { BoreholeHighlights } from "../mapStyleFunctions.ts";
 import { boreholeSymbolHalfHeight, PopoverAnchor } from "./boreholePopoverPlacement.ts";
@@ -13,7 +13,8 @@ export interface BoreholePopoverState {
   features: readonly Feature[];
   anchor: PopoverAnchor;
   pinned: boolean;
-  // The cluster whose boreholes the preview lists, outlined while it is hovered; null for boreholes and badges.
+  // The cluster whose boreholes the preview lists, or a badge of boreholes at several locations; a click on it zooms in.
+  // Null for boreholes and for badges of one location.
   cluster: Feature | null;
 }
 
@@ -37,10 +38,11 @@ const previewFeatures = (features: readonly Feature[], cluster: Feature | null):
 });
 
 /**
- * The preview of the boreholes and badges under the pointer, listing all boreholes of a badge.
+ * The preview of the boreholes and badges under the pointer, listing all boreholes of a badge. A badge of boreholes at
+ * several locations is recorded like a cluster.
  */
 export const previewLocations = (locations: readonly Feature[]): BoreholePopoverState =>
-  previewFeatures(locations, null);
+  previewFeatures(locations, locations.find(isClusterBadge) ?? null);
 
 /**
  * The preview of a cluster. A cluster with a single borehole is previewed as that borehole, so it records no cluster.

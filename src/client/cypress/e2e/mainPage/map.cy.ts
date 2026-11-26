@@ -6,13 +6,16 @@ import { showTableAndWaitForData, sortBy, verifyRowContains } from "../helpers/d
 import { loginAsEditor, returnToOverview } from "../helpers/testHelpers";
 import { WindowWithMaps } from "../helpers/window.ts";
 
-// The seed data moves borehole 1'000'008 to the coordinates of 1'000'047, so the map draws them as one badge.
+// The seed data moves borehole 1'000'008 to the coordinates of 1'000'047, so the map draws them as one badge, and six
+// more boreholes a few metres around them.
 const badgeBoreholeIds = [1_000_008, 1_000_047];
 
+const getMap = (win: Window) => (win as WindowWithMaps).olMap!;
+
 // The OpenLayers objects come from the application's bundle, so they are not instances of the classes imported here.
-const findBadgeCoordinates = (win: Window) => {
-  const pointLayer = (win as WindowWithMaps).olMap
-    ?.getLayers()
+const findBadge = (win: Window) => {
+  const pointLayer = getMap(win)
+    .getLayers()
     .getArray()
     .find(layer => layer.get("name") === "points") as VectorLayer<VectorSource<Feature>> | undefined;
   const badge = pointLayer
@@ -22,7 +25,20 @@ const findBadgeCoordinates = (win: Window) => {
       const boreholes = feature.get("features") as Feature[] | undefined;
       return boreholes?.some(borehole => badgeBoreholeIds.includes(borehole.get("id") as number));
     });
-  return (badge?.getGeometry() as Point | undefined)?.getCoordinates();
+  if (!badge) return undefined;
+  return {
+    coordinates: (badge.getGeometry() as Point).getCoordinates(),
+    boreholeCount: (badge.get("features") as Feature[]).length,
+  };
+};
+
+const atBadge = (action: (x: number, y: number) => void) => {
+  cy.window().then(win => {
+    const map = getMap(win);
+    map.renderSync();
+    const [x, y] = map.getPixelFromCoordinate(findBadge(win)!.coordinates);
+    action(x, y);
+  });
 };
 
 describe("Map tests", () => {
@@ -123,29 +139,37 @@ describe("Map tests", () => {
     cy.get("@map_after_sort.all").should("have.length", 0);
   });
 
-  it("lists the boreholes of a badge and opens one of them", () => {
+  it("zooms into a badge with nearby boreholes and lists the boreholes at its location", () => {
     loginAsEditor();
     cy.wait("@borehole_filter_map");
 
-    // At the highest zoom level, the boreholes a few metres around the badge do not overlap it.
+    // At 0.5 m per pixel, the badge takes in the six boreholes around it, which it touches.
     cy.window()
-      .should(win => expect(findBadgeCoordinates(win)).to.have.length(2))
+      .should(win => expect(findBadge(win)).to.exist)
       .then(win => {
-        const map = (win as WindowWithMaps).olMap!;
-        const coordinates = findBadgeCoordinates(win)!;
-        map.getView().setCenter(coordinates);
-        map.getView().setResolution(0.1);
-        map.renderSync();
-        return map.getPixelFromCoordinate(coordinates);
-      })
-      .as("badgePixel");
+        const view = getMap(win).getView();
+        view.setCenter(findBadge(win)!.coordinates);
+        view.setResolution(0.5);
+      });
+    cy.window().should(win => expect(findBadge(win)?.boreholeCount).to.equal(8));
 
-    cy.get<number[]>("@badgePixel").then(([x, y]) => {
+    // Its click zooms in like a cluster, up to the closest zoom, where only the boreholes at its location remain.
+    atBadge((x, y) => {
+      cy.get(".ol-viewport").click(x, y);
+    });
+    cy.window().should(win => {
+      const view = getMap(win).getView();
+      expect(view.getAnimating()).to.equal(false);
+      expect(view.getResolution()).to.equal(view.getMinResolution());
+      expect(findBadge(win)?.boreholeCount).to.equal(2);
+    });
+
+    atBadge((x, y) => {
       cy.get(".ol-viewport").trigger("pointermove", x, y);
     });
     cy.dataCy("map-popover-preview").find("li").should("have.length", 2);
 
-    cy.get<number[]>("@badgePixel").then(([x, y]) => {
+    atBadge((x, y) => {
       cy.get(".ol-viewport").click(x, y);
     });
     cy.dataCy("map-popover").find('[data-cy="map-popover-row"]').should("have.length", 2);

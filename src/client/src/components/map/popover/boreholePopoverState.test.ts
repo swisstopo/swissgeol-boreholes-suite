@@ -1,7 +1,8 @@
 ﻿import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
+import VectorSource from "ol/source/Vector";
 import { describe, expect, it } from "vitest";
-import { groupByLocation } from "../locationBadges.ts";
+import { groupByLocation, mergeTouchingBadges } from "../locationBadges.ts";
 import { badgeHalfHeight } from "../mapBadgeStyle.ts";
 import { boreholeSymbolHalfHeight } from "./boreholePopoverPlacement.ts";
 import {
@@ -88,6 +89,16 @@ describe("previewLocations", () => {
       halfHeight: badgeHalfHeight,
     });
     expect(preview.cluster).toBeNull();
+  });
+
+  it("records a badge of boreholes at several locations, which zooms in on click like a cluster", () => {
+    const boreholes = [boreholeAt(1, 0), boreholeAt(2, 0), boreholeAt(3, 5)];
+    const [clusterBadge] = mergeTouchingBadges(new VectorSource({ features: groupByLocation(boreholes) }), 1, () => 19);
+
+    const preview = previewLocations([clusterBadge]);
+
+    expect(preview.features.map(feature => feature.get("id") as number)).toEqual([1, 2, 3]);
+    expect(preview.cluster).toBe(clusterBadge);
   });
 });
 
