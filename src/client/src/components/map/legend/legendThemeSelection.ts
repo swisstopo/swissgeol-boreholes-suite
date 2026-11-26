@@ -5,15 +5,13 @@ import { LegendTheme, LegendThemeKey, legendThemeKeys, legendThemes } from "./le
  * always available.
  */
 export const getAvailableLegendThemes = (anonymousModeEnabled: boolean): readonly LegendTheme[] =>
-  legendThemeKeys.flatMap(key => {
-    const legendTheme = legendThemes[key];
-    if (!legendTheme || (anonymousModeEnabled && !legendTheme.visibleInAnonymousMode)) return [];
-    return [legendTheme];
-  });
+  legendThemeKeys
+    .map(key => legendThemes[key])
+    .filter(legendTheme => !anonymousModeEnabled || legendTheme.visibleInAnonymousMode);
 
 /**
- * Returns the requested theme, or the first available theme when the request is missing, unknown, hidden in
- * anonymous mode or not implemented yet.
+ * Returns the requested theme, or the first available theme when the request is missing, unknown or hidden in
+ * anonymous mode.
  */
 export const resolveLegendTheme = (
   requested: LegendThemeKey | null,

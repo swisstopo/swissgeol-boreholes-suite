@@ -31,11 +31,7 @@ vi.mock("../../codelist.ts", async () => {
   };
 });
 
-const themeOf = (key: LegendThemeKey): LegendTheme => {
-  const legendTheme = legendThemes[key];
-  if (!legendTheme) throw new Error(`The legend theme '${key}' is not implemented.`);
-  return legendTheme;
-};
+const themeOf = (key: LegendThemeKey): LegendTheme => legendThemes[key];
 
 const renderWithUrlParams = (ui: ReactElement, searchParams = "", onUrlUpdate?: OnUrlUpdateFunction) =>
   render(

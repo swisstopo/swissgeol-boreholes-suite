@@ -4,18 +4,19 @@ import { getAvailableLegendThemes, getNextLegendTheme, resolveLegendTheme } from
 const keysOf = (themes: readonly { key: string }[]) => themes.map(legendTheme => legendTheme.key);
 
 describe("getAvailableLegendThemes", () => {
-  it("offers all themes with map data when signed in", () => {
+  it("offers all themes when signed in", () => {
     expect(keysOf(getAvailableLegendThemes(false))).toEqual([
       "purpose",
       "boreholeType",
       "restriction",
       "workflow",
       "length",
+      "contents",
     ]);
   });
 
   it("hides the restriction and the workflow in anonymous mode", () => {
-    expect(keysOf(getAvailableLegendThemes(true))).toEqual(["purpose", "boreholeType", "length"]);
+    expect(keysOf(getAvailableLegendThemes(true))).toEqual(["purpose", "boreholeType", "length", "contents"]);
   });
 });
 
@@ -27,11 +28,8 @@ describe("resolveLegendTheme", () => {
     expect(resolveLegendTheme("workflow", signedIn).key).toBe("workflow");
   });
 
-  it.each([
-    ["no theme", null],
-    ["a theme without map data yet", "contents" as const],
-  ])("falls back to the first available theme for %s", (_, requested) => {
-    expect(resolveLegendTheme(requested, signedIn).key).toBe("purpose");
+  it("falls back to the first available theme when no theme is requested", () => {
+    expect(resolveLegendTheme(null, signedIn).key).toBe("purpose");
   });
 
   it.each(["restriction", "workflow"] as const)(
@@ -51,7 +49,15 @@ describe("getNextLegendTheme", () => {
       [signedIn[0]],
     );
 
-    expect(keysOf(keys)).toEqual(["purpose", "boreholeType", "restriction", "workflow", "length", "purpose"]);
+    expect(keysOf(keys)).toEqual([
+      "purpose",
+      "boreholeType",
+      "restriction",
+      "workflow",
+      "length",
+      "contents",
+      "purpose",
+    ]);
   });
 
   it("skips the hidden themes in anonymous mode", () => {

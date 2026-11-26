@@ -2,17 +2,11 @@
 import Point from "ol/geom/Point";
 import { describe, expect, it } from "vitest";
 import { legendSymbols } from "./legend/legendSymbols.ts";
-import { boreholeTypeCodes, LegendTheme, legendThemes } from "./legend/legendThemes.ts";
+import { boreholeTypeCodes, legendThemes } from "./legend/legendThemes.ts";
 import { boreholeStyleFunction, noBoreholeHighlights, readMapFeatureProperties } from "./mapStyleFunctions.ts";
 import { getSymbolStyle } from "./mapSymbolStyle.ts";
 
-const themeOfBoreholeType = (): LegendTheme => {
-  const legendTheme = legendThemes.boreholeType;
-  if (!legendTheme) throw new Error("The legend theme 'boreholeType' is not implemented.");
-  return legendTheme;
-};
-
-const boreholeType = themeOfBoreholeType();
+const boreholeType = legendThemes.boreholeType;
 
 const boreholeFeature = (id: number) =>
   new Feature({ geometry: new Point([0, 0]), id, type: boreholeTypeCodes.borehole, restriction: null });
@@ -71,6 +65,9 @@ describe("readMapFeatureProperties", () => {
       totalDepth: 12.5,
       workflowStatus: "InReview",
       hasRequestedChanges: true,
+      hasProfiles: true,
+      hasDocuments: false,
+      hasPhotos: true,
     });
 
     expect(readMapFeatureProperties(feature)).toEqual({
@@ -80,11 +77,20 @@ describe("readMapFeatureProperties", () => {
       totalDepth: 12.5,
       workflowStatus: "InReview",
       hasRequestedChanges: true,
+      hasProfiles: true,
+      hasDocuments: false,
+      hasPhotos: true,
     });
   });
 
   it("reads missing and unknown attributes as not specified", () => {
-    const feature = new Feature({ geometry: new Point([0, 0]), id: 1, workflowStatus: "Archived", totalDepth: "12" });
+    const feature = new Feature({
+      geometry: new Point([0, 0]),
+      id: 1,
+      workflowStatus: "Archived",
+      totalDepth: "12",
+      hasProfiles: "true",
+    });
 
     expect(readMapFeatureProperties(feature)).toEqual({
       type: null,
@@ -93,6 +99,9 @@ describe("readMapFeatureProperties", () => {
       totalDepth: null,
       workflowStatus: null,
       hasRequestedChanges: false,
+      hasProfiles: false,
+      hasDocuments: false,
+      hasPhotos: false,
     });
   });
 });
