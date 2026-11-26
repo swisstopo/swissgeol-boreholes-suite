@@ -166,14 +166,9 @@ const segmentGroupSx = (selectedIndex: number): SystemStyleObject<Theme> => ({
   },
 });
 
-const contentSegmentLabelKeys: Record<ContentSegment, string> = {
-  profile: "profile",
-  documents: "documents",
-  photos: "photos",
-};
-
 /**
  * Selects which attachments the contents theme shows. The segment is kept in the URL, where the legend theme reads it.
+ * The segments are named like the translation keys of their labels.
  */
 const ContentSegmentControl: FC = () => {
   const { t } = useTranslation();
@@ -191,7 +186,7 @@ const ContentSegmentControl: FC = () => {
       data-cy="map-legend-content">
       {contentSegments.map(segment => (
         <ToggleButton key={segment} value={segment} data-cy={`map-legend-content-${segment}`}>
-          {t(contentSegmentLabelKeys[segment])}
+          {t(segment)}
         </ToggleButton>
       ))}
     </ToggleButtonGroup>

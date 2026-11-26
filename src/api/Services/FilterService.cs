@@ -682,6 +682,7 @@ public class FilterService : IFilterService
             b.LocationX ?? 0,
             b.LocationY ?? 0);
 
+        // The bool parameters are placeholders: each is replaced by its predicate, applied to the row's borehole.
         var borehole = selectRow.Parameters[0];
         var body = ReplacingExpressionVisitor.Replace(
             [selectRow.Parameters[1], selectRow.Parameters[2], selectRow.Parameters[3]],
