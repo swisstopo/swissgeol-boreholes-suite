@@ -1,6 +1,28 @@
+import type Feature from "ol/Feature";
+import type Point from "ol/geom/Point";
+import type VectorLayer from "ol/layer/Vector";
 import { showTableAndWaitForData, sortBy, verifyRowContains } from "../helpers/dataGridHelpers";
 import { loginAsEditor, returnToOverview } from "../helpers/testHelpers";
 import { WindowWithMaps } from "../helpers/window.ts";
+
+// The seed data moves borehole 1'000'008 to the coordinates of 1'000'047, so the map draws them as one badge.
+const badgeBoreholeIds = [1_000_008, 1_000_047];
+
+// The OpenLayers objects come from the application's bundle, so they are not instances of the classes imported here.
+const findBadgeCoordinates = (win: Window) => {
+  const pointLayer = (win as WindowWithMaps).olMap
+    ?.getLayers()
+    .getArray()
+    .find(layer => layer.get("name") === "points") as VectorLayer | undefined;
+  const badge = pointLayer
+    ?.getSource()
+    ?.getFeatures()
+    .find(feature => {
+      const boreholes = feature.get("features") as Feature[] | undefined;
+      return boreholes?.some(borehole => badgeBoreholeIds.includes(borehole.get("id") as number));
+    });
+  return (badge?.getGeometry() as Point | undefined)?.getCoordinates();
+};
 
 describe("Map tests", () => {
   it("map preserves zoom level and center", () => {
@@ -98,5 +120,36 @@ describe("Map tests", () => {
       cy.window().should(win => expect(mapView(win)?.getCenter()).to.deep.equal(center));
     });
     cy.get("@map_after_sort.all").should("have.length", 0);
+  });
+
+  it("lists the boreholes of a badge and opens one of them", () => {
+    loginAsEditor();
+    cy.wait("@borehole_filter_map");
+
+    // At the highest zoom level, the boreholes a few metres around the badge do not overlap it.
+    cy.window()
+      .should(win => expect(findBadgeCoordinates(win)).to.have.length(2))
+      .then(win => {
+        const map = (win as WindowWithMaps).olMap!;
+        const coordinates = findBadgeCoordinates(win)!;
+        map.getView().setCenter(coordinates);
+        map.getView().setResolution(0.1);
+        map.renderSync();
+        return map.getPixelFromCoordinate(coordinates);
+      })
+      .as("badgePixel");
+
+    cy.get<number[]>("@badgePixel").then(([x, y]) => {
+      cy.get(".ol-viewport").trigger("pointermove", x, y);
+    });
+    cy.dataCy("map-popover-preview").find("li").should("have.length", 2);
+
+    cy.get<number[]>("@badgePixel").then(([x, y]) => {
+      cy.get(".ol-viewport").click(x, y);
+    });
+    cy.dataCy("map-popover").find('[data-cy="map-popover-row"]').should("have.length", 2);
+
+    cy.dataCy("map-popover-row").first().click();
+    cy.location("pathname").should("match", /^\/(1000008|1000047)\b/);
   });
 });
