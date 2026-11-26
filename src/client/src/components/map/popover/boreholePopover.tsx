@@ -138,8 +138,8 @@ const RowChevron: FC<RowChevronProps> = ({ visible }) => (
 );
 
 /**
- * Lists the boreholes under the pointer on the map. Only the rows of the pinned popover are links to the detail page;
- * the preview is not interactive. The pinned popover and the preview of a single borehole show a chevron.
+ * Lists the boreholes under the pointer on the map. Only the rows of the pinned popover are links to the detail page
+ * and show a chevron; the preview is not interactive.
  */
 export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHoverRow, onOpenRow }) => {
   const { t } = useTranslation();
@@ -172,9 +172,6 @@ export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHove
   }
 
   const { visibleRows, hiddenCount } = getPreviewRows(rows);
-  // A click on the map opens a single previewed borehole, so its row shows the chevron of a link although the row
-  // itself is not clickable.
-  const showsChevron = rows.length === 1;
   // The same element as the pinned popover, so pinning does not play the opening animation again.
   return (
     <Box component="section" sx={{ ...popoverSx, pointerEvents: "none" }} data-cy="map-popover-preview">
@@ -182,7 +179,7 @@ export const BoreholePopover: FC<BoreholePopoverProps> = ({ rows, pinned, onHove
         {visibleRows.map(row => (
           <Box component="li" key={row.id} sx={rowSx}>
             <RowContent row={row} />
-            <RowChevron visible={showsChevron} />
+            <RowChevron visible={false} />
           </Box>
         ))}
         {hiddenCount > 0 && (
