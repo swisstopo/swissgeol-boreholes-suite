@@ -237,7 +237,7 @@ const contentsTheme = (
 
 // One theme per segment, all with the key "contents": the selected segment decides which one is active.
 export const contentsLegendThemes: Readonly<Record<ContentSegment, LegendTheme>> = {
-  profile: contentsTheme("hasProfiles", legendSymbols.redHexagon, "hasProfiles", "legendNoProfile"),
+  profile: contentsTheme("hasProfiles", legendSymbols.redHexagon, "hasProfiles", "legendNoProfiles"),
   documents: contentsTheme("hasDocuments", legendSymbols.orangeHexagon, "hasDocuments", "legendNoDocuments"),
   photos: contentsTheme("hasPhotos", legendSymbols.pinkHexagon, "hasPhotos", "legendNoPhotos"),
 };

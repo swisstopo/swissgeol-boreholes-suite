@@ -370,7 +370,7 @@
   "legendLengthBetween": "{{min}}-{{max}} m",
   "legendNoDocuments": "Nessun documento",
   "legendNoPhotos": "Nessuna foto",
-  "legendNoProfile": "Nessun profilo",
+  "legendNoProfiles": "Nessun profilo",
   "license": "Licenza",
   "licenseInformation": "Informazioni sulla licenza",
   "lithologicalDescription": "Descrizione litologica",

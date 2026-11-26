@@ -249,7 +249,7 @@ describe("contents theme", () => {
     const labelKeysOf = (segment: ContentSegment) =>
       contentsLegendThemes[segment].entries.map(entry => (entry.label.kind === "translation" ? entry.label.key : null));
 
-    expect(labelKeysOf("profile")).toEqual(["hasProfiles", "legendNoProfile"]);
+    expect(labelKeysOf("profile")).toEqual(["hasProfiles", "legendNoProfiles"]);
     expect(labelKeysOf("documents")).toEqual(["hasDocuments", "legendNoDocuments"]);
     expect(labelKeysOf("photos")).toEqual(["hasPhotos", "legendNoPhotos"]);
   });
