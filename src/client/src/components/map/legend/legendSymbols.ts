@@ -1,6 +1,6 @@
 import { theme } from "../../../AppTheme.ts";
 
-// All paths are in a 30 x 30 box centred on the borehole location. They come from the design (Figma frame "Alle Legenden" and its prototype).
+// All paths are in a 30 x 30 box centred on the borehole location.
 interface SymbolShape {
   // Filled outline of the symbol.
   path: string;

@@ -2,7 +2,7 @@
 import { theme } from "../../AppTheme.ts";
 import { highlightColors, highlightWidth, SymbolHighlight, zIndexByHighlight } from "./mapSymbolStyle.ts";
 
-// A badge is a pill with the number of its boreholes, drawn as in the prototype (v4). Sizes are CSS pixels.
+// A badge is a pill with the number of its boreholes. Sizes are CSS pixels.
 const badgeFont = "700 14px Inter";
 const pillHeight = 30;
 const minPillWidth = 30;
