@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Added
-- The overview map has a legend that explains the borehole symbols. It switches between the themes drilling purpose, borehole type, restriction, workflow status and borehole length, and the map draws the symbols of the chosen theme. The theme and whether the legend is collapsed are kept in the URL and when returning from a borehole. A button in the legend briefly highlights all boreholes on the map. In the anonymous view instance, the legend shows drilling purpose, borehole type and borehole length.
+- The overview map has a legend that explains the borehole symbols. It switches between the themes drilling purpose, borehole type, restriction, workflow status, borehole length and available contents, and the map draws the symbols of the chosen theme. Available contents shows whether a borehole has profiles, documents or photos, one at a time. The theme, the chosen contents and whether the legend is collapsed are kept in the URL and when returning from a borehole. A button in the legend briefly highlights all boreholes on the map. In the anonymous view instance, the legend shows drilling purpose, borehole type, borehole length and available contents.
 
 ### Changed
 - The overview map no longer colours the boreholes by restriction by default; it shows the drilling purpose, with new symbols.
