@@ -89,7 +89,8 @@ const getPreviewAtPixel = (map: Map, pixel: Pixel): BoreholePopoverState | null 
   return cluster ? previewCluster(cluster) : null;
 };
 
-// The map clusters all boreholes; below the cluster resolution it draws them grouped by location.
+// The map clusters all boreholes; below the cluster resolution it draws them grouped by location. A borehole alone at
+// its location is the same feature in both sources, so both are always replaced together.
 const showBoreholes = (points: VectorSource, locations: VectorSource, boreholes: Feature[]) => {
   points.clear();
   points.addFeatures(boreholes);

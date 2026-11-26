@@ -1,6 +1,7 @@
 import type Feature from "ol/Feature";
 import type Point from "ol/geom/Point";
 import type VectorLayer from "ol/layer/Vector";
+import type VectorSource from "ol/source/Vector";
 import { showTableAndWaitForData, sortBy, verifyRowContains } from "../helpers/dataGridHelpers";
 import { loginAsEditor, returnToOverview } from "../helpers/testHelpers";
 import { WindowWithMaps } from "../helpers/window.ts";
@@ -13,7 +14,7 @@ const findBadgeCoordinates = (win: Window) => {
   const pointLayer = (win as WindowWithMaps).olMap
     ?.getLayers()
     .getArray()
-    .find(layer => layer.get("name") === "points") as VectorLayer | undefined;
+    .find(layer => layer.get("name") === "points") as VectorLayer<VectorSource<Feature>> | undefined;
   const badge = pointLayer
     ?.getSource()
     ?.getFeatures()
