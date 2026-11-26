@@ -42,20 +42,22 @@ describe("useBoreholeUrlParamsState", () => {
     expect(sessionStorage.getItem(SessionKeys.direction)).toBe("DESC");
   });
 
-  it("persists the legend theme and expanded state shown on the overview", async () => {
+  it("persists the legend theme, content segment and expanded state shown on the overview", async () => {
     const { result } = renderHook(() => useBoreholeUrlParamsState(), { wrapper: Wrapper });
 
     await act(async () => {
-      await result.current.setQueryState({ legend: "restriction", legendExpanded: false });
+      await result.current.setQueryState({ legend: "contents", legendContent: "photos", legendExpanded: false });
     });
     result.current.saveLegendParamsInSession();
 
-    expect(sessionStorage.getItem(SessionKeys.legend)).toBe("restriction");
+    expect(sessionStorage.getItem(SessionKeys.legend)).toBe("contents");
+    expect(sessionStorage.getItem(SessionKeys.legendContent)).toBe("photos");
     expect(sessionStorage.getItem(SessionKeys.legendExpanded)).toBe("false");
   });
 
-  it("restores the legend theme and expanded state from the session when the URL has none", async () => {
-    sessionStorage.setItem(SessionKeys.legend, "restriction");
+  it("restores the legend theme, content segment and expanded state from the session when the URL has none", async () => {
+    sessionStorage.setItem(SessionKeys.legend, "contents");
+    sessionStorage.setItem(SessionKeys.legendContent, "documents");
     sessionStorage.setItem(SessionKeys.legendExpanded, "false");
     const { result } = renderHook(() => useBoreholeUrlParamsState(), { wrapper: Wrapper });
 
@@ -63,11 +65,12 @@ describe("useBoreholeUrlParamsState", () => {
       await result.current.restoreLegendParamsFromSession();
     });
 
-    expect(result.current.legend).toBe("restriction");
+    expect(result.current.legend).toBe("contents");
+    expect(result.current.legendContent).toBe("documents");
     expect(result.current.legendExpanded).toBe(false);
   });
 
-  it("keeps the legend expanded when the session holds no state for it", async () => {
+  it("keeps the legend expanded on the profile segment when the session holds no state for it", async () => {
     const { result } = renderHook(() => useBoreholeUrlParamsState(), { wrapper: Wrapper });
 
     await act(async () => {
@@ -75,12 +78,14 @@ describe("useBoreholeUrlParamsState", () => {
     });
 
     expect(result.current.legendExpanded).toBe(true);
+    expect(result.current.legendContent).toBe("profile");
   });
 
   it("keeps the legend params of the URL instead of the ones in the session", async () => {
     sessionStorage.setItem(SessionKeys.legend, "restriction");
+    sessionStorage.setItem(SessionKeys.legendContent, "photos");
     sessionStorage.setItem(SessionKeys.legendExpanded, "true");
-    globalThis.history.replaceState(null, "", "/?legend=boreholeType&legendExpanded=false");
+    globalThis.history.replaceState(null, "", "/?legend=boreholeType&legendContent=documents&legendExpanded=false");
     const { result } = renderHook(() => useBoreholeUrlParamsState(), { wrapper: Wrapper });
 
     await act(async () => {
@@ -88,6 +93,7 @@ describe("useBoreholeUrlParamsState", () => {
     });
 
     expect(result.current.legend).toBeNull();
+    expect(result.current.legendContent).toBe("profile");
     expect(result.current.legendExpanded).toBe(true);
   });
 

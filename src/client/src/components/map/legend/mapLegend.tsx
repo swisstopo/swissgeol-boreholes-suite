@@ -1,12 +1,23 @@
 import { CSSProperties, FC, Fragment } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Divider, IconButton, Stack, Theme, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  Divider,
+  IconButton,
+  Stack,
+  Theme,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { keyframes } from "@mui/material/styles";
 import { SystemStyleObject } from "@mui/system";
 import { ArrowRightLeft, ChevronUp, Lightbulb } from "lucide-react";
 import { theme } from "../../../AppTheme.ts";
+import { useBoreholeUrlParams } from "../../../pages/overview/useBoreholeUrlParams.ts";
 import { LegendSymbolIcon } from "./legendSymbolIcon.tsx";
-import { LegendTheme } from "./legendThemes.ts";
+import { ContentSegment, contentSegments, LegendTheme } from "./legendThemes.ts";
 import { useLegendExpanded } from "./useLegendExpanded.ts";
 import { useLegendLabel } from "./useLegendLabel.ts";
 
@@ -104,9 +115,52 @@ const entryListSx: SystemStyleObject<Theme> = {
 
 const entrySx: SystemStyleObject<Theme> = { alignItems: "center", gap: 0.625, whiteSpace: "nowrap" };
 
+const contentSegmentsSx: SystemStyleObject<Theme> = {
+  flexShrink: 0,
+  padding: theme.spacing(1.25, 1.5, 0.25),
+  ...fadeInSx("0.3s"),
+};
+
+// The theme's toggle buttons on a grey track without shadow, like the active/inactive switch in the settings. The track
+// spans the legend; each button grows from its own width, so longer labels keep their larger button.
+const segmentGroupSx: SystemStyleObject<Theme> = {
+  display: "flex",
+  boxShadow: "none",
+  backgroundColor: theme.palette.background.header,
+};
+
+const segmentSx: SystemStyleObject<Theme> = { flexGrow: 1 };
+
 /**
- * Explains the symbols on the map for the active legend theme, lets the user switch the theme and highlight the
- * boreholes on the map.
+ * Selects which attachments the contents theme shows. The segment is kept in the URL, where the legend theme reads it.
+ * The segments are named like the translation keys of their labels.
+ */
+const ContentSegmentControl: FC = () => {
+  const { t } = useTranslation();
+  const { legendContent, setLegendContent } = useBoreholeUrlParams();
+
+  return (
+    <ToggleButtonGroup
+      exclusive
+      value={legendContent}
+      onChange={(_event, segment: ContentSegment | null) => {
+        if (segment !== null) setLegendContent(segment);
+      }}
+      aria-label={t("availableContents")}
+      sx={segmentGroupSx}
+      data-cy="map-legend-content">
+      {contentSegments.map(segment => (
+        <ToggleButton key={segment} value={segment} sx={segmentSx} data-cy={`map-legend-content-${segment}`}>
+          {t(segment)}
+        </ToggleButton>
+      ))}
+    </ToggleButtonGroup>
+  );
+};
+
+/**
+ * Explains the symbols on the map for the active legend theme, lets the user switch the theme, choose the attachments
+ * of the contents theme and highlight the boreholes on the map.
  */
 export const MapLegend: FC<MapLegendProps> = ({ legendTheme, onSwitchTheme, onHighlightBoreholes }) => {
   const { t } = useTranslation();
@@ -159,6 +213,11 @@ export const MapLegend: FC<MapLegendProps> = ({ legendTheme, onSwitchTheme, onHi
       </Stack>
       <Box inert={!expanded} sx={collapsibleSx(expanded)}>
         <Box sx={collapsibleContentSx}>
+          {legendTheme.key === "contents" && (
+            <Box sx={contentSegmentsSx}>
+              <ContentSegmentControl />
+            </Box>
+          )}
           <Box key={legendTheme.key} component="ul" sx={entryListSx}>
             {legendTheme.entries.map((entry, index) => (
               <Fragment key={entry.key}>

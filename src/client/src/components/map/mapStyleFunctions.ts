@@ -47,6 +47,9 @@ export const readMapFeatureProperties = (feature: FeatureLike): MapFeatureProper
   totalDepth: toNumberOrNull(feature.get("totalDepth")),
   workflowStatus: toWorkflowStatus(feature.get("workflowStatus")),
   hasRequestedChanges: feature.get("hasRequestedChanges") === true,
+  hasProfiles: feature.get("hasProfiles") === true,
+  hasDocuments: feature.get("hasDocuments") === true,
+  hasPhotos: feature.get("hasPhotos") === true,
 });
 
 const getHighlight = (id: number, highlights: BoreholeHighlights): SymbolHighlight | null => {

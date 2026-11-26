@@ -1,24 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { WorkflowStatus } from "../../../api/generated";
 import { restrictionCode, restrictionFreeCode, restrictionUntilCode } from "../../codelist.ts";
+import { legendSymbols } from "./legendSymbols.ts";
 import {
   boreholeTypeCodes,
+  ContentSegment,
+  contentSegments,
+  contentsLegendThemes,
+  defaultContentSegment,
   LegendEntry,
-  LegendTheme,
-  LegendThemeKey,
   legendThemes,
   MapFeatureProperties,
   purposeCodes,
 } from "./legendThemes.ts";
 
-const themeOf = (key: LegendThemeKey): LegendTheme => {
-  const legendTheme = legendThemes[key];
-  if (!legendTheme) throw new Error(`The legend theme '${key}' is not implemented.`);
-  return legendTheme;
-};
-
-const boreholeType = themeOf("boreholeType");
-const restriction = themeOf("restriction");
+const { boreholeType, restriction } = legendThemes;
 
 const codelistIdOf = (entry: LegendEntry) => (entry.label.kind === "codelist" ? entry.label.codelistId : null);
 
@@ -29,6 +25,9 @@ const noProperties: MapFeatureProperties = {
   totalDepth: null,
   workflowStatus: null,
   hasRequestedChanges: false,
+  hasProfiles: false,
+  hasDocuments: false,
+  hasPhotos: false,
 };
 
 describe("borehole type theme", () => {
@@ -105,9 +104,7 @@ describe("restriction theme", () => {
   });
 });
 
-const purpose = themeOf("purpose");
-const workflow = themeOf("workflow");
-const length = themeOf("length");
+const { purpose, workflow, length } = legendThemes;
 
 describe("purpose theme", () => {
   const classify = (purposeId: number | null) => purpose.classify({ ...noProperties, purpose: purposeId });
@@ -215,5 +212,55 @@ describe("length theme", () => {
       { kind: "translation", key: "legendLengthAbove", values: { min: 1000 } },
       { kind: "translation", key: "np" },
     ]);
+  });
+});
+
+const segmentProperties: Record<ContentSegment, "hasProfiles" | "hasDocuments" | "hasPhotos"> = {
+  profile: "hasProfiles",
+  documents: "hasDocuments",
+  photos: "hasPhotos",
+};
+
+describe("contents theme", () => {
+  it.each([
+    ["profile", legendSymbols.redHexagon],
+    ["documents", legendSymbols.orangeHexagon],
+    ["photos", legendSymbols.pinkHexagon],
+  ] as const)("classifies the %s segment by its attachment", (segment, availableSymbol) => {
+    const contents = contentsLegendThemes[segment];
+
+    expect(contents.classify({ ...noProperties, [segmentProperties[segment]]: true }).symbol).toBe(availableSymbol);
+    expect(contents.classify(noProperties).symbol).toBe(legendSymbols.lightGreyDiamond);
+  });
+
+  it.each(contentSegments)("ignores the other attachments in the %s segment", segment => {
+    const onlyOtherAttachments = {
+      ...noProperties,
+      hasProfiles: true,
+      hasDocuments: true,
+      hasPhotos: true,
+      [segmentProperties[segment]]: false,
+    };
+
+    expect(contentsLegendThemes[segment].classify(onlyOtherAttachments).key).toBe("missing");
+  });
+
+  it("labels the entries of each segment", () => {
+    const labelKeysOf = (segment: ContentSegment) =>
+      contentsLegendThemes[segment].entries.map(entry => (entry.label.kind === "translation" ? entry.label.key : null));
+
+    expect(labelKeysOf("profile")).toEqual(["hasProfiles", "legendNoProfiles"]);
+    expect(labelKeysOf("documents")).toEqual(["hasDocuments", "legendNoDocuments"]);
+    expect(labelKeysOf("photos")).toEqual(["hasPhotos", "legendNoPhotos"]);
+  });
+
+  it("is one theme in the cycle, with the default segment, also in anonymous mode", () => {
+    expect(legendThemes.contents).toBe(contentsLegendThemes[defaultContentSegment]);
+    expect(contentSegments.map(segment => contentsLegendThemes[segment].key)).toEqual([
+      "contents",
+      "contents",
+      "contents",
+    ]);
+    expect(legendThemes.contents.visibleInAnonymousMode).toBe(true);
   });
 });

@@ -2387,7 +2387,7 @@ public class FilterServiceTest
             .Include(b => b.Workflow)
             .SingleAsync(b => b.Id == 1000000);
         CollectionAssert.AreEquivalent(
-            new[] { "id", "type", "name", "restriction", "purpose", "totalDepth", "workflowStatus", "hasRequestedChanges" },
+            new[] { "id", "type", "name", "restriction", "purpose", "totalDepth", "hasProfiles", "hasDocuments", "hasPhotos", "workflowStatus", "hasRequestedChanges" },
             firstFeature.Attributes.GetNames());
         Assert.AreEqual(1000000, firstFeature.Attributes["id"]);
         Assert.AreEqual(null, firstFeature.Attributes["type"]);
@@ -2517,9 +2517,88 @@ public class FilterServiceTest
         foreach (var feature in result)
         {
             CollectionAssert.AreEquivalent(
-                new[] { "id", "type", "name", "restriction", "purpose", "totalDepth" },
+                new[] { "id", "type", "name", "restriction", "purpose", "totalDepth", "hasProfiles", "hasDocuments", "hasPhotos" },
                 feature.Attributes.GetNames());
         }
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesFlagsTheAttachmentsOfEachBorehole()
+    {
+        var boreholeWithoutAttachments = await AddMapBoreholeWithoutAttachmentsAsync();
+
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        var attachmentBoreholeIds = new Dictionary<string, HashSet<int>>
+        {
+            ["hasProfiles"] = (await context.Profiles.Select(p => p.BoreholeId).ToListAsync()).ToHashSet(),
+            ["hasDocuments"] = (await context.Documents.Select(d => d.BoreholeId).ToListAsync()).ToHashSet(),
+            ["hasPhotos"] = (await context.Photos.Select(p => p.BoreholeId).ToListAsync()).ToHashSet(),
+        };
+        var featureWithoutAttachments = result.Single(feature => (int)feature.Attributes["id"] == boreholeWithoutAttachments.Id);
+        foreach (var (attribute, boreholeIds) in attachmentBoreholeIds)
+        {
+            Assert.IsTrue(result.Any(feature => (bool)feature.Attributes[attribute]), $"The test data must contain boreholes with {attribute}.");
+            Assert.IsFalse((bool)featureWithoutAttachments.Attributes[attribute], attribute);
+            foreach (var attributes in result.Select(feature => feature.Attributes))
+            {
+                Assert.AreEqual(boreholeIds.Contains((int)attributes["id"]), attributes[attribute], $"{attribute} of borehole {attributes["id"]}");
+            }
+        }
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesFlagsTheBoreholesTheAvailabilityFiltersSelect()
+    {
+        await AddMapBoreholeWithoutAttachmentsAsync();
+
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        var filtersByAttribute = new Dictionary<string, BoreholeFilterCriteria>
+        {
+            ["hasProfiles"] = new() { HasProfiles = BooleanFilterValue.True },
+            ["hasDocuments"] = new() { HasDocuments = BooleanFilterValue.True },
+            ["hasPhotos"] = new() { HasPhotos = BooleanFilterValue.True },
+        };
+        foreach (var (attribute, filter) in filtersByAttribute)
+        {
+            var filteredIds = (await filterService.GetMapFeaturesAsync(filter, adminUser)).Select(feature => (int)feature.Attributes["id"]).ToList();
+            var flaggedIds = result.Where(feature => (bool)feature.Attributes[attribute]).Select(feature => (int)feature.Attributes["id"]).ToList();
+            CollectionAssert.AreEquivalent(filteredIds, flaggedIds, attribute);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesFlagsTheAttachmentsInAnonymousMode()
+    {
+        var anonymousFilterService = new FilterService(context, CreateConfiguration(anonymousModeEnabled: true));
+
+        var anonymousResult = await anonymousFilterService.GetMapFeaturesAsync(null, adminUser);
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        foreach (var attribute in new[] { "hasProfiles", "hasDocuments", "hasPhotos" })
+        {
+            CollectionAssert.AreEqual(
+                result.Select(feature => feature.Attributes[attribute]).ToList(),
+                anonymousResult.Select(feature => feature.Attributes[attribute]).ToList(),
+                attribute);
+        }
+    }
+
+    // Every seeded borehole has a profile, so the tests add a borehole without any attachment.
+    private async Task<Borehole> AddMapBoreholeWithoutAttachmentsAsync()
+    {
+        var borehole = new Borehole
+        {
+            WorkgroupId = 1,
+            OriginalName = "Map borehole without attachments",
+            LocationX = 2_600_000,
+            LocationY = 1_200_000,
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+        };
+        await context.Boreholes.AddAsync(borehole);
+        await context.SaveChangesAsync();
+        return borehole;
     }
 
     // Deserializes like the API does for the map endpoint, see DeserializeFilterRequestWithSquare.

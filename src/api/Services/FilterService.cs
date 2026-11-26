@@ -1,5 +1,6 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using System.Diagnostics.CodeAnalysis;
@@ -25,6 +26,13 @@ public class FilterService : IFilterService
         this.context = context;
         includeWorkflow = !configuration.IsAnonymousModeEnabled();
     }
+
+    // The availability filters, their counts and the map flags share these predicates, so they always agree.
+    private Expression<Func<Borehole, bool>> HasAnyProfile => b => context.Profiles.Any(p => p.BoreholeId == b.Id);
+
+    private Expression<Func<Borehole, bool>> HasAnyDocument => b => context.Documents.Any(d => d.BoreholeId == b.Id);
+
+    private Expression<Func<Borehole, bool>> HasAnyPhoto => b => context.Photos.Any(p => p.BoreholeId == b.Id);
 
     /// <inheritdoc />
     public async Task<FilterResponse> FilterBoreholesAsync(FilterRequest? filterRequest, User user)
@@ -116,17 +124,7 @@ public class FilterService : IFilterService
         var boreholes = await query
             .Where(b => b.LocationX.HasValue && b.LocationY.HasValue)
             .OrderBy(b => b.Id)
-            .Select(b => new MapBoreholeRow(
-                b.Id,
-                b.Name,
-                b.TypeId,
-                b.RestrictionId,
-                b.PurposeId,
-                b.TotalDepth,
-                b.Workflow == null ? null : b.Workflow.Status,
-                b.Workflow == null ? null : b.Workflow.HasRequestedChanges,
-                b.LocationX ?? 0,
-                b.LocationY ?? 0))
+            .Select(SelectMapBoreholeRow())
             .ToListAsync()
             .ConfigureAwait(false);
 
@@ -168,15 +166,9 @@ public class FilterService : IFilterService
             HasLogs = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasLogs = null),
                 b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id)).ConfigureAwait(false),
-            HasProfiles = await CountByBooleanAsync(
-                QueryExcluding(r => r.HasProfiles = null),
-                b => context.Profiles.Any(bf => bf.BoreholeId == b.Id)).ConfigureAwait(false),
-            HasPhotos = await CountByBooleanAsync(
-                QueryExcluding(r => r.HasPhotos = null),
-                b => context.Photos.Any(p => p.BoreholeId == b.Id)).ConfigureAwait(false),
-            HasDocuments = await CountByBooleanAsync(
-                QueryExcluding(r => r.HasDocuments = null),
-                b => context.Documents.Any(d => d.BoreholeId == b.Id)).ConfigureAwait(false),
+            HasProfiles = await CountByBooleanAsync(QueryExcluding(r => r.HasProfiles = null), HasAnyProfile).ConfigureAwait(false),
+            HasPhotos = await CountByBooleanAsync(QueryExcluding(r => r.HasPhotos = null), HasAnyPhoto).ConfigureAwait(false),
+            HasDocuments = await CountByBooleanAsync(QueryExcluding(r => r.HasDocuments = null), HasAnyDocument).ConfigureAwait(false),
             Canton = await CountByStringAsync(QueryExcluding(r => r.Canton = null), b => b.Canton).ConfigureAwait(false),
             Municipality = await CountByStringAsync(QueryExcluding(r => r.Municipality = null), b => b.Municipality).ConfigureAwait(false),
             LogToolTypeId = await CountByLogToolTypeAsync(QueryExcluding(r => r.LogToolTypeId = null)).ConfigureAwait(false),
@@ -601,9 +593,9 @@ public class FilterService : IFilterService
     {
         // Availability filters (requires joining with related tables)
         query = WhereHasData(query, filterCriteria.HasLogs, b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
-        query = WhereHasData(query, filterCriteria.HasProfiles, b => context.Profiles.Any(p => p.BoreholeId == b.Id));
-        query = WhereHasData(query, filterCriteria.HasPhotos, b => context.Photos.Any(p => p.BoreholeId == b.Id));
-        return WhereHasData(query, filterCriteria.HasDocuments, b => context.Documents.Any(d => d.BoreholeId == b.Id));
+        query = WhereHasData(query, filterCriteria.HasProfiles, HasAnyProfile);
+        query = WhereHasData(query, filterCriteria.HasPhotos, HasAnyPhoto);
+        return WhereHasData(query, filterCriteria.HasDocuments, HasAnyDocument);
     }
 
     private static bool HasAny<T>([NotNullWhen(true)] IEnumerable<T>? values) => values != null && values.Any();
@@ -669,6 +661,39 @@ public class FilterService : IFilterService
             : query.OrderBy(orderExpression).ThenBy(b => b.Id);
     }
 
+    /// <summary>
+    /// Selects the map row of a borehole. The attachment flags apply the availability predicates, which EF
+    /// translates to <c>EXISTS</c> subqueries, so the map flags exactly the boreholes the filters select.
+    /// </summary>
+    private Expression<Func<Borehole, MapBoreholeRow>> SelectMapBoreholeRow()
+    {
+        Expression<Func<Borehole, bool, bool, bool, MapBoreholeRow>> selectRow = (b, hasProfiles, hasDocuments, hasPhotos) => new MapBoreholeRow(
+            b.Id,
+            b.Name,
+            b.TypeId,
+            b.RestrictionId,
+            b.PurposeId,
+            b.TotalDepth,
+            b.Workflow == null ? null : b.Workflow.Status,
+            b.Workflow == null ? null : b.Workflow.HasRequestedChanges,
+            hasProfiles,
+            hasDocuments,
+            hasPhotos,
+            b.LocationX ?? 0,
+            b.LocationY ?? 0);
+
+        // The bool parameters are placeholders: each is replaced by its predicate, applied to the row's borehole.
+        var borehole = selectRow.Parameters[0];
+        var body = ReplacingExpressionVisitor.Replace(
+            [selectRow.Parameters[1], selectRow.Parameters[2], selectRow.Parameters[3]],
+            [ApplyTo(HasAnyProfile, borehole), ApplyTo(HasAnyDocument, borehole), ApplyTo(HasAnyPhoto, borehole)],
+            selectRow.Body);
+        return Expression.Lambda<Func<Borehole, MapBoreholeRow>>(body, borehole);
+    }
+
+    private static Expression ApplyTo(Expression<Func<Borehole, bool>> predicate, ParameterExpression borehole) =>
+        ReplacingExpressionVisitor.Replace(predicate.Parameters[0], borehole, predicate.Body);
+
     private static FeatureCollection BuildGeoJson(IEnumerable<MapBoreholeRow> boreholes, bool includeWorkflow)
     {
         var featureCollection = new FeatureCollection();
@@ -685,6 +710,9 @@ public class FilterService : IFilterService
                 { "restriction", borehole.RestrictionId },
                 { "purpose", borehole.PurposeId },
                 { "totalDepth", borehole.TotalDepth },
+                { "hasProfiles", borehole.HasProfiles },
+                { "hasDocuments", borehole.HasDocuments },
+                { "hasPhotos", borehole.HasPhotos },
             };
             if (includeWorkflow)
             {
@@ -710,6 +738,9 @@ public class FilterService : IFilterService
         double? TotalDepth,
         WorkflowStatus? WorkflowStatus,
         bool? HasRequestedChanges,
+        bool HasProfiles,
+        bool HasDocuments,
+        bool HasPhotos,
         double LocationX,
         double LocationY);
 }

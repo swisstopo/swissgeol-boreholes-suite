@@ -7,6 +7,14 @@ export const legendThemeKeys = ["purpose", "boreholeType", "restriction", "workf
 
 export type LegendThemeKey = (typeof legendThemeKeys)[number];
 
+// The attachments the contents theme shows one at a time, also the accepted values of the `legendContent` URL
+// parameter.
+export const contentSegments = ["profile", "documents", "photos"] as const;
+
+export type ContentSegment = (typeof contentSegments)[number];
+
+export const defaultContentSegment: ContentSegment = "profile";
+
 export type LegendLabel =
   | { kind: "codelist"; codelistId: number }
   | { kind: "translation"; key: string; values?: Readonly<Record<string, number>> };
@@ -27,6 +35,9 @@ export interface MapFeatureProperties {
   totalDepth: number | null;
   workflowStatus: WorkflowStatus | null;
   hasRequestedChanges: boolean;
+  hasProfiles: boolean;
+  hasDocuments: boolean;
+  hasPhotos: boolean;
 }
 
 export interface LegendTheme {
@@ -205,8 +216,34 @@ const classifyLength = (totalDepth: number | null) => {
   return lengthEntries[index] ?? lengthNotSpecified;
 };
 
-// The themes without an entry here need map attributes the map endpoint does not deliver yet.
-export const legendThemes: { readonly [K in LegendThemeKey]?: LegendTheme } = {
+type AttachmentProperty = "hasProfiles" | "hasDocuments" | "hasPhotos";
+
+const contentsTheme = (
+  property: AttachmentProperty,
+  availableSymbol: LegendSymbol,
+  availableLabelKey: string,
+  missingLabelKey: string,
+): LegendTheme => {
+  const available = translationEntry("available", availableLabelKey, availableSymbol, 0);
+  const missing = translationEntry("missing", missingLabelKey, legendSymbols.lightGreyDiamond, 0);
+  return {
+    key: "contents",
+    titleKey: "availableContents",
+    visibleInAnonymousMode: true,
+    entries: [available, missing],
+    classify: properties => (properties[property] ? available : missing),
+  };
+};
+
+// One theme per segment, all with the key "contents": the selected segment decides which one is active.
+export const contentsLegendThemes: Readonly<Record<ContentSegment, LegendTheme>> = {
+  profile: contentsTheme("hasProfiles", legendSymbols.redHexagon, "hasProfiles", "legendNoProfiles"),
+  documents: contentsTheme("hasDocuments", legendSymbols.orangeHexagon, "hasDocuments", "legendNoDocuments"),
+  photos: contentsTheme("hasPhotos", legendSymbols.pinkHexagon, "hasPhotos", "legendNoPhotos"),
+};
+
+// The contents theme stands here with its default segment, resolveLegendTheme picks the selected one.
+export const legendThemes: Readonly<Record<LegendThemeKey, LegendTheme>> = {
   purpose: {
     key: "purpose",
     titleKey: "purpose",
@@ -242,4 +279,5 @@ export const legendThemes: { readonly [K in LegendThemeKey]?: LegendTheme } = {
     entries: [...lengthEntries, lengthNotSpecified],
     classify: ({ totalDepth }) => classifyLength(totalDepth),
   },
+  contents: contentsLegendThemes[defaultContentSegment],
 };

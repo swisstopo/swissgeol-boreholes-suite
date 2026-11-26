@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { NuqsTestingAdapter, OnUrlUpdateFunction } from "nuqs/adapters/testing";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BoreholeUrlParamsProvider } from "../../../pages/overview/boreholeUrlParamsProvider.tsx";
-import { LegendTheme, LegendThemeKey, legendThemes } from "./legendThemes.ts";
+import { contentsLegendThemes, LegendTheme, LegendThemeKey, legendThemes } from "./legendThemes.ts";
 import { MapLegend } from "./mapLegend.tsx";
 
 vi.mock("react-i18next", () => ({
@@ -31,11 +31,7 @@ vi.mock("../../codelist.ts", async () => {
   };
 });
 
-const themeOf = (key: LegendThemeKey): LegendTheme => {
-  const legendTheme = legendThemes[key];
-  if (!legendTheme) throw new Error(`The legend theme '${key}' is not implemented.`);
-  return legendTheme;
-};
+const themeOf = (key: LegendThemeKey): LegendTheme => legendThemes[key];
 
 const renderWithUrlParams = (ui: ReactElement, searchParams = "", onUrlUpdate?: OnUrlUpdateFunction) =>
   render(
@@ -141,5 +137,49 @@ describe("MapLegend", () => {
     );
 
     expect(screen.getByRole("button", { name: "expandLegend" }).getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("shows the content segments for the contents theme only", () => {
+    renderLegend(themeOf("contents"));
+
+    const segments = within(screen.getByRole("group", { name: "availableContents" })).getAllByRole("button");
+    expect(segments.map(segment => segment.textContent)).toEqual(["profile", "documents", "photos"]);
+    expect(segments.map(segment => segment.getAttribute("aria-pressed"))).toEqual(["true", "false", "false"]);
+
+    cleanup();
+    renderLegend(themeOf("boreholeType"));
+
+    expect(screen.queryByRole("group", { name: "availableContents" })).toBeNull();
+  });
+
+  it("selects a segment and keeps it in the URL", async () => {
+    const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
+    renderWithUrlParams(
+      <MapLegend legendTheme={themeOf("contents")} onSwitchTheme={vi.fn()} onHighlightBoreholes={vi.fn()} />,
+      "",
+      onUrlUpdate,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "documents" }));
+
+    await vi.waitFor(() => {
+      expect(onUrlUpdate.mock.lastCall?.[0].queryString).toBe("?legendContent=documents");
+    });
+    expect(screen.getByRole("button", { name: "documents" }).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("starts with the segment from the URL", () => {
+    renderWithUrlParams(
+      <MapLegend legendTheme={contentsLegendThemes.photos} onSwitchTheme={vi.fn()} onHighlightBoreholes={vi.fn()} />,
+      "?legendContent=photos",
+    );
+
+    expect(screen.getByRole("button", { name: "photos" }).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("shows the two entries of the selected segment", () => {
+    renderLegend(contentsLegendThemes.documents);
+
+    expect(entryLabels()).toEqual(["HasDocuments", "LegendNoDocuments"]);
   });
 });
