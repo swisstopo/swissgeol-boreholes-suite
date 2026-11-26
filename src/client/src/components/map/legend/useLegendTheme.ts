@@ -9,9 +9,9 @@ import { getAvailableLegendThemes, getNextLegendTheme, resolveLegendTheme } from
  */
 export const useLegendTheme = () => {
   const { anonymousModeEnabled } = useAuth();
-  const { legend, setLegend } = useBoreholeUrlParams();
+  const { legend, setLegend, legendContent } = useBoreholeUrlParams();
   const availableThemes = useMemo(() => getAvailableLegendThemes(anonymousModeEnabled), [anonymousModeEnabled]);
-  const legendTheme = resolveLegendTheme(legend, availableThemes);
+  const legendTheme = resolveLegendTheme(legend, availableThemes, legendContent);
 
   const switchToNextTheme =
     availableThemes.length > 1 ? () => setLegend(getNextLegendTheme(legendTheme, availableThemes).key) : undefined;

@@ -116,6 +116,8 @@ declare module "@mui/material/styles" {
       hover: string;
       active: string;
       popoverValueText: string;
+      legendSegmentText: string;
+      legendSegmentShadow: string;
       drawFill: string;
       drawStroke: string;
       clusterStroke: string;
