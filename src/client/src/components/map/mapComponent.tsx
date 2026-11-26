@@ -7,7 +7,6 @@ import { never } from "ol/events/condition";
 import { createEmpty, extend } from "ol/extent";
 import Feature, { FeatureLike } from "ol/Feature";
 import GeoJSON from "ol/format/GeoJSON";
-import Point from "ol/geom/Point";
 import OlPolygon from "ol/geom/Polygon";
 import { defaults as defaultInteractions } from "ol/interaction";
 import Draw from "ol/interaction/Draw";
@@ -35,17 +34,11 @@ import { PulseLayer, startHighlightPulse } from "./highlightPulse.ts";
 import { MapLegend } from "./legend/mapLegend.tsx";
 import { getFeatureBoreholes, groupByLocation } from "./locationBadges.ts";
 import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
-import { badgeHalfHeight, getBadgeOuterRadius, loadBadgeFont } from "./mapBadgeStyle.ts";
+import { getBadgeOuterRadius, loadBadgeFont } from "./mapBadgeStyle.ts";
 import "./mapProjections";
 import { clusterStyleFunction, drawStyle, locationStyleFunction, noBoreholeHighlights } from "./mapStyleFunctions";
 import { BoreholePopover } from "./popover/boreholePopover.tsx";
-import {
-  boreholeSymbolHalfHeight,
-  getPopoverAnchorPoints,
-  getPopoverOffset,
-  getPopoverPlacement,
-  PopoverAnchor,
-} from "./popover/boreholePopoverPlacement.ts";
+import { getPopoverAnchorPoints, getPopoverOffset, getPopoverPlacement } from "./popover/boreholePopoverPlacement.ts";
 import { toPopoverRows } from "./popover/boreholePopoverRows.ts";
 import {
   BoreholePopoverState,
@@ -53,6 +46,8 @@ import {
   getHoveredBoreholeIds,
   haveSameBoreholes,
   haveSameHighlights,
+  previewCluster,
+  previewLocations,
 } from "./popover/boreholePopoverState.ts";
 
 // The longest time between the two clicks of a double-click, a little above the 250 ms OpenLayers uses.
@@ -85,49 +80,14 @@ const getFeaturesAtPixel = (map: Map, pixel: Pixel, layerName: string): Feature[
   return features;
 };
 
-const getCoordinates = (features: readonly Feature[]) =>
-  features.flatMap(feature => {
-    const geometry = feature.getGeometry();
-    return geometry instanceof Point ? [geometry.getCoordinates()] : [];
-  });
-
-// Features that stand for several boreholes are drawn as badges, which are higher than the symbols.
-const getHalfHeight = (features: readonly Feature[]) =>
-  features.some(feature => getFeatureBoreholes(feature).length > 1) ? badgeHalfHeight : boreholeSymbolHalfHeight;
-
-interface PreviewTarget {
-  boreholes: Feature[];
-  anchor: PopoverAnchor;
-  // The cluster of several boreholes under the pointer, which zooms in on click.
-  cluster: Feature | null;
-}
-
-// The boreholes under the pointer, with all boreholes of a badge under it, and where their popover is attached.
-const getBoreholeTargetAtPixel = (map: Map, pixel: Pixel): PreviewTarget | null => {
+// The preview of the boreholes and badges under the pointer, or of the cluster under it.
+const getPreviewAtPixel = (map: Map, pixel: Pixel): BoreholePopoverState | null => {
   const locations = getFeaturesAtPixel(map, pixel, boreholeLayerName);
-  if (locations.length === 0) return null;
-  return {
-    boreholes: locations.flatMap(location => getFeatureBoreholes(location)),
-    anchor: { coordinates: getCoordinates(locations), halfHeight: getHalfHeight(locations) },
-    cluster: null,
-  };
-};
+  if (locations.length > 0) return previewLocations(locations);
 
-// The boreholes of the cluster under the pointer. A cluster with a single borehole is handled as that borehole.
-const getClusterTargetAtPixel = (map: Map, pixel: Pixel): PreviewTarget | null => {
   const [cluster] = getFeaturesAtPixel(map, pixel, clusterLayerName);
-  if (!cluster) return null;
-  const boreholes = getFeatureBoreholes(cluster);
-  return {
-    boreholes,
-    anchor: { coordinates: getCoordinates([cluster]), halfHeight: getHalfHeight([cluster]) },
-    cluster: boreholes.length > 1 ? cluster : null,
-  };
+  return cluster ? previewCluster(cluster) : null;
 };
-
-// The boreholes under the pointer, or the boreholes of the cluster under it, and where their popover is attached.
-const getPreviewTargetAtPixel = (map: Map, pixel: Pixel): PreviewTarget | null =>
-  getBoreholeTargetAtPixel(map, pixel) ?? getClusterTargetAtPixel(map, pixel);
 
 // The map clusters all boreholes; below the cluster resolution it draws them grouped by location.
 const showBoreholes = (points: VectorSource, locations: VectorSource, boreholes: Feature[]) => {
@@ -353,18 +313,18 @@ export const MapComponent: FC<MapComponentProps> = ({
 
     // Hover: a preview popover lists the boreholes under the pointer, or those of the cluster under it. A pinned
     // popover stays until it is closed.
-    const showPreview = (target: PreviewTarget | null) => {
+    const showPreview = (preview: BoreholePopoverState | null) => {
       const current = popoverRef.current;
-      if (target === null) {
+      if (preview === null) {
         if (current !== null) updatePopover(null);
-      } else if (current === null || !haveSameBoreholes(current.features, target.boreholes)) {
-        updatePopover({ features: target.boreholes, anchor: target.anchor, pinned: false, cluster: target.cluster });
+      } else if (current === null || !haveSameBoreholes(current.features, preview.features)) {
+        updatePopover(preview);
       }
     };
 
     map.on("pointermove", event => {
       if (event.dragging || drawActiveRef.current || popoverRef.current?.pinned) return;
-      showPreview(getPreviewTargetAtPixel(map, event.pixel));
+      showPreview(getPreviewAtPixel(map, event.pixel));
     });
 
     const hidePreview = () => {
@@ -397,23 +357,22 @@ export const MapComponent: FC<MapComponentProps> = ({
       if (polygonSelectionEnabledRef.current || isClickFinishingDrawing()) return;
 
       // With the same hit tolerance as the hover, so a cluster that shows its preview also zooms on click.
-      const target = getPreviewTargetAtPixel(map, event.pixel);
-      if (target?.boreholes.length === 1) {
-        openBorehole(target.boreholes[0].get("id") as number);
+      const preview = getPreviewAtPixel(map, event.pixel);
+      if (preview?.features.length === 1) {
+        openBorehole(preview.features[0].get("id") as number);
         return;
       }
-      if (target !== null && target.cluster === null) {
-        updatePopover({ features: target.boreholes, anchor: target.anchor, pinned: true, cluster: null });
+      if (preview !== null && preview.cluster === null) {
+        updatePopover({ ...preview, pinned: true });
         return;
       }
       updatePopover(null);
 
-      if (target !== null) {
+      if (preview !== null) {
         const extent = createEmpty();
-        target.boreholes.forEach(feature => {
-          if (feature.getGeometry()) {
-            extend(extent, feature.getGeometry()!.getExtent());
-          }
+        preview.features.forEach(feature => {
+          const geometry = feature.getGeometry();
+          if (geometry) extend(extent, geometry.getExtent());
         });
         map.getView().fit(extent, { duration: 500, padding: [50, 50, 50, 50] });
       }

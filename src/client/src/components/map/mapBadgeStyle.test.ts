@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+﻿import { describe, expect, it } from "vitest";
 import { legendSymbols } from "./legend/legendSymbols.ts";
 import { getBadgeStyle } from "./mapBadgeStyle.ts";
 import { getSymbolStyle } from "./mapSymbolStyle.ts";

@@ -1,6 +1,9 @@
 ﻿import Feature from "ol/Feature";
+import Point from "ol/geom/Point";
+import { getFeatureBoreholes } from "../locationBadges.ts";
+import { badgeHalfHeight } from "../mapBadgeStyle.ts";
 import { BoreholeHighlights } from "../mapStyleFunctions.ts";
-import { PopoverAnchor } from "./boreholePopoverPlacement.ts";
+import { boreholeSymbolHalfHeight, PopoverAnchor } from "./boreholePopoverPlacement.ts";
 
 /**
  * The boreholes listed in the map popover. A preview follows the pointer over boreholes, badges and clusters; a pinned
@@ -15,6 +18,35 @@ export interface BoreholePopoverState {
 }
 
 const idOf = (feature: Feature) => feature.get("id") as number;
+
+const getCoordinates = (features: readonly Feature[]) =>
+  features.flatMap(feature => {
+    const geometry = feature.getGeometry();
+    return geometry instanceof Point ? [geometry.getCoordinates()] : [];
+  });
+
+// Features that stand for several boreholes are drawn as badges, which are higher than the symbols.
+const getAnchorHalfHeight = (features: readonly Feature[]) =>
+  features.some(feature => getFeatureBoreholes(feature).length > 1) ? badgeHalfHeight : boreholeSymbolHalfHeight;
+
+const previewFeatures = (features: readonly Feature[], cluster: Feature | null): BoreholePopoverState => ({
+  features: features.flatMap(feature => getFeatureBoreholes(feature)),
+  anchor: { coordinates: getCoordinates(features), halfHeight: getAnchorHalfHeight(features) },
+  pinned: false,
+  cluster,
+});
+
+/**
+ * The preview of the boreholes and badges under the pointer, listing all boreholes of a badge.
+ */
+export const previewLocations = (locations: readonly Feature[]): BoreholePopoverState =>
+  previewFeatures(locations, null);
+
+/**
+ * The preview of a cluster. A cluster with a single borehole is previewed as that borehole, so it records no cluster.
+ */
+export const previewCluster = (cluster: Feature): BoreholePopoverState =>
+  previewFeatures([cluster], getFeatureBoreholes(cluster).length > 1 ? cluster : null);
 
 export const haveSameBoreholes = (features: readonly Feature[], otherFeatures: readonly Feature[]) =>
   features.length === otherFeatures.length && features.every((feature, index) => feature === otherFeatures[index]);

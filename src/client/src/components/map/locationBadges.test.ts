@@ -1,4 +1,4 @@
-import Feature from "ol/Feature";
+﻿import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { describe, expect, it } from "vitest";
 import { getFeatureBoreholes, groupByLocation } from "./locationBadges.ts";

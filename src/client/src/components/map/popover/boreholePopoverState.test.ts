@@ -1,6 +1,8 @@
 ﻿import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { describe, expect, it } from "vitest";
+import { groupByLocation } from "../locationBadges.ts";
+import { badgeHalfHeight } from "../mapBadgeStyle.ts";
 import { boreholeSymbolHalfHeight } from "./boreholePopoverPlacement.ts";
 import {
   BoreholePopoverState,
@@ -8,6 +10,8 @@ import {
   getHoveredBoreholeIds,
   haveSameBoreholes,
   haveSameHighlights,
+  previewCluster,
+  previewLocations,
 } from "./boreholePopoverState.ts";
 
 const borehole = (id: number) => new Feature({ geometry: new Point([0, 0]), id });
@@ -52,6 +56,62 @@ describe("getBoreholeHighlights", () => {
 
     expect(highlights.hovered).toEqual(new Set([2]));
     expect(highlights.active).toEqual(new Set([1, 2]));
+  });
+});
+
+describe("previewLocations", () => {
+  const boreholeAt = (id: number, x: number) => new Feature({ geometry: new Point([x, 0]), id });
+
+  it("previews a borehole alone at its location, attached clear of its symbol", () => {
+    const borehole = boreholeAt(1, 0);
+
+    expect(previewLocations([borehole])).toEqual({
+      features: [borehole],
+      anchor: { coordinates: [[0, 0]], halfHeight: boreholeSymbolHalfHeight },
+      pinned: false,
+      cluster: null,
+    });
+  });
+
+  it("previews all boreholes of a badge and a borehole next to it, attached clear of the badge", () => {
+    const [badge] = groupByLocation([boreholeAt(1, 0), boreholeAt(2, 0)]);
+    const nextToBadge = boreholeAt(3, 5);
+
+    const preview = previewLocations([badge, nextToBadge]);
+
+    expect(preview.features.map(feature => feature.get("id") as number)).toEqual([1, 2, 3]);
+    expect(preview.anchor).toEqual({
+      coordinates: [
+        [0, 0],
+        [5, 0],
+      ],
+      halfHeight: badgeHalfHeight,
+    });
+    expect(preview.cluster).toBeNull();
+  });
+});
+
+describe("previewCluster", () => {
+  const clusterOf = (...features: Feature[]) => new Feature({ geometry: new Point([7, 7]), features });
+
+  it("previews the boreholes of a cluster, records the cluster and is attached clear of its badge", () => {
+    const cluster = clusterOf(first, second);
+
+    expect(previewCluster(cluster)).toEqual({
+      features: [first, second],
+      anchor: { coordinates: [[7, 7]], halfHeight: badgeHalfHeight },
+      pinned: false,
+      cluster,
+    });
+  });
+
+  it("previews a cluster with a single borehole as that borehole", () => {
+    expect(previewCluster(clusterOf(first))).toEqual({
+      features: [first],
+      anchor: { coordinates: [[7, 7]], halfHeight: boreholeSymbolHalfHeight },
+      pinned: false,
+      cluster: null,
+    });
   });
 });
 

@@ -1,4 +1,4 @@
-import { Style } from "ol/style";
+﻿import { Style } from "ol/style";
 import { theme } from "../../AppTheme.ts";
 import { highlightColors, highlightWidth, SymbolHighlight, zIndexByHighlight } from "./mapSymbolStyle.ts";
 

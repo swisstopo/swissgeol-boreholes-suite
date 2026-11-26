@@ -1,4 +1,4 @@
-import Feature, { FeatureLike } from "ol/Feature";
+﻿import Feature, { FeatureLike } from "ol/Feature";
 import Point from "ol/geom/Point";
 import { getUid } from "ol/util";
 
