@@ -11,6 +11,8 @@ namespace BDMS.Services;
 [TestClass]
 public class LocationServiceTest
 {
+    private const string BielBienne = "Biel/Bienne";
+
     private BdmsContext context;
     private LocationService service;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
@@ -77,11 +79,11 @@ public class LocationServiceTest
             ("Madretsch", 1850),
             ("Madretsch", 1919),
             ("Biel (BE)", 1920),
-            ("Biel/Bienne", 2025),
-            ("Biel/Bienne", 2026));
+            (BielBienne, 2025),
+            (BielBienne, 2026));
 
         var locationInfo = await service.IdentifyAsync(2586108, 1220759);
-        Assert.AreEqual("Biel/Bienne", locationInfo.Municipality);
+        Assert.AreEqual(BielBienne, locationInfo.Municipality);
     }
 
     [TestMethod]
@@ -90,7 +92,7 @@ public class LocationServiceTest
         SetupMunicipalityHistoryHttpMock(
             ("Nidau", 1850),
             ("Nidau", 2026),
-            ("Biel/Bienne", 2026));
+            (BielBienne, 2026));
 
         var locationInfo = await service.IdentifyAsync(2586108, 1220759);
         Assert.AreEqual("Nidau", locationInfo.Municipality);
