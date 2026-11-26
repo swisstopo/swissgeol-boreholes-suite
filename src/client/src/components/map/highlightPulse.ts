@@ -21,8 +21,8 @@ const reducedMotionOpacity = 0.8;
 
 export interface PulseLayer {
   layer: VectorLayer<VectorSource<Feature>, Feature>;
-  // Radius of the ring before it grows, large enough to surround the layer's symbols.
-  ringRadius: number;
+  // Radius of the ring around a feature before it grows, large enough to surround its symbol or badge.
+  getRingRadius: (feature: Feature) => number;
 }
 
 const prefersReducedMotion = () => globalThis.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -35,8 +35,8 @@ const createRingStyle = (radius: number, opacity: number) => {
 };
 
 /**
- * Lets a ring pulse twice around every feature visible in the given layers, to show where the boreholes are. Leaves
- * the map unchanged afterwards. Returns a function that stops the pulse early.
+ * Lets a ring pulse twice around every feature visible in the given layers, to show where the boreholes and badges
+ * are. Leaves the map unchanged afterwards. Returns a function that stops the pulse early.
  */
 export const startHighlightPulse = (map: Map, pulseLayers: readonly PulseLayer[]): (() => void) => {
   const reducedMotion = prefersReducedMotion();
@@ -50,7 +50,7 @@ export const startHighlightPulse = (map: Map, pulseLayers: readonly PulseLayer[]
     map.render();
   };
 
-  const drawRings = (event: RenderEvent, { layer, ringRadius }: PulseLayer) => {
+  const drawRings = (event: RenderEvent, { layer, getRingRadius }: PulseLayer) => {
     const elapsed = performance.now() - startedAt;
     if (elapsed >= duration) {
       stop();
@@ -62,11 +62,20 @@ export const startHighlightPulse = (map: Map, pulseLayers: readonly PulseLayer[]
     const opacity = reducedMotion ? reducedMotionOpacity : 0.9 * (1 - progress) ** 1.2;
 
     const vectorContext = getVectorContext(event);
-    vectorContext.setStyle(createRingStyle(ringRadius + easedProgress * ringGrowth, opacity));
     const visibleExtent = map.getView().calculateExtent(map.getSize());
+    // One style per ring radius, shared by all features of that size in this frame.
+    const ringStyles = new globalThis.Map<number, Style>();
     for (const feature of layer.getSource()?.getFeaturesInExtent(visibleExtent) ?? []) {
       const geometry = feature.getGeometry();
-      if (geometry) vectorContext.drawGeometry(geometry);
+      if (!geometry) continue;
+      const ringRadius = getRingRadius(feature);
+      let ringStyle = ringStyles.get(ringRadius);
+      if (!ringStyle) {
+        ringStyle = createRingStyle(ringRadius + easedProgress * ringGrowth, opacity);
+        ringStyles.set(ringRadius, ringStyle);
+      }
+      vectorContext.setStyle(ringStyle);
+      vectorContext.drawGeometry(geometry);
     }
     map.render();
   };

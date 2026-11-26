@@ -54,7 +54,7 @@ const themePalette: AppThemePalette = {
     selected: "#cb5d53",
   },
   map: {
-    // Colours of the legend symbols, from the Figma frame "Alle Legenden".
+    // Colours of the legend symbols.
     symbol: {
       purple: { fill: "#8E66F1", stroke: "#1E0B5C", shadow: "rgba(142, 102, 241, 0.4)" },
       yellow: { fill: "#F9CC21", stroke: "#6B4A00", shadow: "rgba(249, 204, 33, 0.4)" },
@@ -98,9 +98,13 @@ const themePalette: AppThemePalette = {
     popoverValueText: "#6C7680",
     drawFill: "rgba(255, 255, 255, 0.5)",
     drawStroke: "rgba(0, 153, 255, 1)",
-    clusterStroke: "rgba(43, 132, 204, 0.5)",
-    clusterFill: "rgba(43, 132, 204, 1)",
-    clusterText: "rgba(255, 255, 255, 1)",
+    // Badges of clusters and of boreholes at the same location.
+    badge: {
+      fill: "#337083",
+      border: "rgba(20, 175, 184, 0.7)",
+      shadow: "rgba(20, 175, 184, 0.4)",
+      text: "#FFFFFF",
+    },
     detailSelectedFill: "rgba(255, 0, 0, 0.8)",
     detailUnselectedFill: "rgba(0, 255, 0, 1)",
   },

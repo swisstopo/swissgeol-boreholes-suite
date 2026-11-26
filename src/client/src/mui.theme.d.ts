@@ -118,9 +118,12 @@ declare module "@mui/material/styles" {
       popoverValueText: string;
       drawFill: string;
       drawStroke: string;
-      clusterStroke: string;
-      clusterFill: string;
-      clusterText: string;
+      badge: {
+        fill: string;
+        border: string;
+        shadow: string;
+        text: string;
+      };
       detailSelectedFill: string;
       detailUnselectedFill: string;
     };

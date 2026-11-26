@@ -3,7 +3,15 @@ import Point from "ol/geom/Point";
 import { describe, expect, it } from "vitest";
 import { legendSymbols } from "./legend/legendSymbols.ts";
 import { boreholeTypeCodes, LegendTheme, legendThemes } from "./legend/legendThemes.ts";
-import { boreholeStyleFunction, noBoreholeHighlights, readMapFeatureProperties } from "./mapStyleFunctions.ts";
+import { groupByLocation } from "./locationBadges.ts";
+import { getBadgeStyle } from "./mapBadgeStyle.ts";
+import {
+  boreholeStyleFunction,
+  clusterStyleFunction,
+  locationStyleFunction,
+  noBoreholeHighlights,
+  readMapFeatureProperties,
+} from "./mapStyleFunctions.ts";
 import { getSymbolStyle } from "./mapSymbolStyle.ts";
 
 const themeOfBoreholeType = (): LegendTheme => {
@@ -57,6 +65,71 @@ describe("boreholeStyleFunction", () => {
 
     expect(zIndexOf("hover")).toBeGreaterThan(zIndexOf("active"));
     expect(zIndexOf("active")).toBeGreaterThan(zIndexOf(null));
+  });
+});
+
+// The borehole features all lie at [0, 0], so they form one badge.
+const badgeOf = (...ids: number[]) => groupByLocation(ids.map(id => boreholeFeature(id)))[0];
+
+describe("locationStyleFunction", () => {
+  it("draws a borehole alone at its location with its symbol", () => {
+    const style = locationStyleFunction(boreholeFeature(1), boreholeType, noBoreholeHighlights);
+
+    expect(style).toBe(getSymbolStyle(legendSymbols.purpleHexagon, null));
+  });
+
+  it("draws boreholes at the same location as a badge with their number", () => {
+    const style = locationStyleFunction(badgeOf(1, 2), boreholeType, noBoreholeHighlights);
+
+    expect(style).toBe(getBadgeStyle(2, null));
+  });
+
+  it("outlines a badge in the active colour when one of its boreholes is active", () => {
+    const style = locationStyleFunction(badgeOf(1, 2), boreholeType, {
+      hovered: new Set([7]),
+      active: new Set([2]),
+    });
+
+    expect(style).toBe(getBadgeStyle(2, "active"));
+  });
+
+  it("outlines a badge in the hover colour when one of its boreholes is hovered and another is active", () => {
+    const style = locationStyleFunction(badgeOf(1, 2), boreholeType, {
+      hovered: new Set([2]),
+      active: new Set([1]),
+    });
+
+    expect(style).toBe(getBadgeStyle(2, "hover"));
+  });
+});
+
+describe("clusterStyleFunction", () => {
+  const clusterOf = (...ids: number[]) =>
+    new Feature({ geometry: new Point([0, 0]), features: ids.map(id => boreholeFeature(id)) });
+
+  it("draws a cluster as a badge with the number of its boreholes", () => {
+    const style = clusterStyleFunction(clusterOf(1, 2, 3), boreholeType, noBoreholeHighlights, null);
+
+    expect(style).toBe(getBadgeStyle(3, null));
+  });
+
+  it("outlines a cluster only while it is hovered itself, not when its boreholes are hovered elsewhere", () => {
+    const cluster = clusterOf(1, 2, 3);
+    const tableHovered = { hovered: new Set([1]), active: new Set<number>() };
+
+    expect(clusterStyleFunction(cluster, boreholeType, noBoreholeHighlights, cluster)).toBe(getBadgeStyle(3, "hover"));
+    expect(clusterStyleFunction(cluster, boreholeType, tableHovered, clusterOf(4, 5))).toBe(getBadgeStyle(3, null));
+  });
+
+  it("draws a cluster with a single borehole with the borehole's symbol and highlight", () => {
+    const tableHovered = { hovered: new Set([1]), active: new Set<number>() };
+
+    expect(clusterStyleFunction(clusterOf(1), boreholeType, noBoreholeHighlights, null)).toBe(
+      getSymbolStyle(legendSymbols.purpleHexagon, null),
+    );
+    expect(clusterStyleFunction(clusterOf(1), boreholeType, tableHovered, null)).toBe(
+      getSymbolStyle(legendSymbols.purpleHexagon, "hover"),
+    );
   });
 });
 
