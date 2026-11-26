@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getAvailableLegendThemes, getNextLegendTheme, resolveLegendTheme } from "./legendThemeSelection.ts";
 import { contentSegments, contentsLegendThemes } from "./legendThemes.ts";
+import { getAvailableLegendThemes, getNextLegendTheme, resolveLegendTheme } from "./legendThemeSelection.ts";
 
 const keysOf = (themes: readonly { key: string }[]) => themes.map(legendTheme => legendTheme.key);
 
