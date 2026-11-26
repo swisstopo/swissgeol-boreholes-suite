@@ -342,7 +342,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// paging or ordering, so paging and sorting the borehole table never reload the map data.
     /// </summary>
     /// <param name="filterCriteria">The filter criteria; may be null to return all boreholes the caller can see.</param>
-    /// <returns>A GeoJSON feature collection with one point per filtered borehole that has coordinates.</returns>
+    /// <returns>A GeoJSON feature collection with one point per filtered borehole that has coordinates. Each feature carries the attributes id, type, name, restriction, purpose and totalDepth, plus workflowStatus and hasRequestedChanges unless the anonymous mode is enabled.</returns>
     [HttpPost("filter/map")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<FeatureCollection>> FilterMapAsync([FromBody] BoreholeFilterCriteria? filterCriteria)

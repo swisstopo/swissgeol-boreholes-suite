@@ -59,7 +59,7 @@ describe("MapLegend", () => {
     cleanup();
   });
 
-  it("shows the title and the entries of the active theme", () => {
+  it("shows the title and the capitalized entries of the active theme", () => {
     renderLegend(themeOf("boreholeType"));
 
     expect(screen.getByRole("heading", { name: "boreholeType" })).toBeTruthy();
@@ -69,8 +69,8 @@ describe("MapLegend", () => {
       "Rammsondierung",
       "Baggerschlitz",
       "Aufschluss",
-      "anderer",
-      "np",
+      "Anderer",
+      "Np",
     ]);
   });
 
@@ -82,6 +82,18 @@ describe("MapLegend", () => {
 
     expect(separators).toHaveLength(1);
     expect(items[4].nextElementSibling).toBe(separators[0]);
+  });
+
+  it("separates the purpose groups with lines", () => {
+    renderLegend(themeOf("purpose"));
+
+    expect(within(screen.getByRole("list")).getAllByRole("separator")).toHaveLength(7);
+  });
+
+  it("shows an entry per length interval and one for not specified", () => {
+    renderLegend(themeOf("length"));
+
+    expect(entryLabels()).toHaveLength(9);
   });
 
   it("calls the switch handler when the switch button is clicked", () => {

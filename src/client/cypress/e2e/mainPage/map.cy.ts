@@ -56,7 +56,7 @@ describe("Map tests", () => {
     legendTitle().invoke("text").as("initialTitle", { type: "static" });
 
     cy.get('[data-cy="map-legend-switch"]').click();
-    cy.location("search").should("contain", "legend=restriction");
+    cy.location("search").should("contain", "legend=boreholeType");
     cy.get<string>("@initialTitle").then(initialTitle => legendTitle().should("not.have.text", initialTitle));
     legendTitle().invoke("text").as("switchedTitle", { type: "static" });
 

@@ -23,7 +23,7 @@ public interface IFilterService
     /// </summary>
     /// <param name="filterCriteria">The filter criteria; may be null to return all boreholes the user can see.</param>
     /// <param name="user">The user making the request.</param>
-    /// <returns>One point feature per matching borehole with coordinates, ordered by borehole id, with the attributes id, type, name and restriction.</returns>
+    /// <returns>One point feature per matching borehole with coordinates, ordered by borehole id, with the attributes id, type, name, restriction, purpose and totalDepth, plus workflowStatus and hasRequestedChanges unless the anonymous mode is enabled.</returns>
     Task<FeatureCollection> GetMapFeaturesAsync(BoreholeFilterCriteria? filterCriteria, User user);
 
     /// <summary>

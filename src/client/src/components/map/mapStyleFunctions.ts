@@ -1,5 +1,6 @@
 import Feature, { FeatureLike } from "ol/Feature";
 import { Circle, Fill, Stroke, Style, Text } from "ol/style";
+import { WorkflowStatus } from "../../api/generated";
 import { theme } from "../../AppTheme.ts";
 import { LegendTheme, MapFeatureProperties } from "./legend/legendThemes.ts";
 import { getSymbolStyle, SymbolHighlight } from "./mapSymbolStyle.ts";
@@ -26,11 +27,26 @@ export const drawStyle = new Style({
   }),
 });
 
-const toCodelistId = (value: unknown) => (typeof value === "number" ? value : null);
+const toNumberOrNull = (value: unknown) => (typeof value === "number" ? value : null);
+
+// Typed as a record so the compiler flags a status missing from the generated union.
+const workflowStatusSet: Record<WorkflowStatus, true> = {
+  Draft: true,
+  InReview: true,
+  Reviewed: true,
+  Published: true,
+};
+const isWorkflowStatus = (value: unknown): value is WorkflowStatus =>
+  typeof value === "string" && Object.hasOwn(workflowStatusSet, value);
+const toWorkflowStatus = (value: unknown): WorkflowStatus | null => (isWorkflowStatus(value) ? value : null);
 
 export const readMapFeatureProperties = (feature: FeatureLike): MapFeatureProperties => ({
-  type: toCodelistId(feature.get("type")),
-  restriction: toCodelistId(feature.get("restriction")),
+  type: toNumberOrNull(feature.get("type")),
+  restriction: toNumberOrNull(feature.get("restriction")),
+  purpose: toNumberOrNull(feature.get("purpose")),
+  totalDepth: toNumberOrNull(feature.get("totalDepth")),
+  workflowStatus: toWorkflowStatus(feature.get("workflowStatus")),
+  hasRequestedChanges: feature.get("hasRequestedChanges") === true,
 });
 
 const getHighlight = (id: number, highlights: BoreholeHighlights): SymbolHighlight | null => {

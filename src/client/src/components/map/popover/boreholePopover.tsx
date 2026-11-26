@@ -80,7 +80,6 @@ const buttonRowSx = {
   "&:hover, &:focus-visible": { backgroundColor: theme.palette.background.grey, outline: "none" },
   [`&:hover .${chevronClassName}, &:focus-visible .${chevronClassName}`]: {
     color: theme.palette.neutral.contrastText,
-    transform: "translateX(2px)",
   },
 };
 

@@ -44,12 +44,12 @@ describe("BoreholePopover", () => {
     cleanup();
   });
 
-  it("previews a single borehole with its name and legend value, without chevron", () => {
+  it("previews a single borehole with its name and capitalized legend value, without chevron", () => {
     renderPopover(rowsOf(1), false);
 
     const row = screen.getByRole("listitem");
     expect(within(row).getByText("Borehole 1")).toBeTruthy();
-    expect(within(row).getByText("code 20101001")).toBeTruthy();
+    expect(within(row).getByText("Code 20101001")).toBeTruthy();
     expect(chevronCount()).toBe(0);
     expect(screen.queryByRole("button")).toBeNull();
   });

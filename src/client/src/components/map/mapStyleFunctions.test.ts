@@ -3,7 +3,7 @@ import Point from "ol/geom/Point";
 import { describe, expect, it } from "vitest";
 import { legendSymbols } from "./legend/legendSymbols.ts";
 import { boreholeTypeCodes, LegendTheme, legendThemes } from "./legend/legendThemes.ts";
-import { boreholeStyleFunction, noBoreholeHighlights } from "./mapStyleFunctions.ts";
+import { boreholeStyleFunction, noBoreholeHighlights, readMapFeatureProperties } from "./mapStyleFunctions.ts";
 import { getSymbolStyle } from "./mapSymbolStyle.ts";
 
 const themeOfBoreholeType = (): LegendTheme => {
@@ -57,5 +57,42 @@ describe("boreholeStyleFunction", () => {
 
     expect(zIndexOf("hover")).toBeGreaterThan(zIndexOf("active"));
     expect(zIndexOf("active")).toBeGreaterThan(zIndexOf(null));
+  });
+});
+
+describe("readMapFeatureProperties", () => {
+  it("reads the legend attributes of a map feature", () => {
+    const feature = new Feature({
+      geometry: new Point([0, 0]),
+      id: 1,
+      type: 20101001,
+      restriction: 20111001,
+      purpose: 22103001,
+      totalDepth: 12.5,
+      workflowStatus: "InReview",
+      hasRequestedChanges: true,
+    });
+
+    expect(readMapFeatureProperties(feature)).toEqual({
+      type: 20101001,
+      restriction: 20111001,
+      purpose: 22103001,
+      totalDepth: 12.5,
+      workflowStatus: "InReview",
+      hasRequestedChanges: true,
+    });
+  });
+
+  it("reads missing and unknown attributes as not specified", () => {
+    const feature = new Feature({ geometry: new Point([0, 0]), id: 1, workflowStatus: "Archived", totalDepth: "12" });
+
+    expect(readMapFeatureProperties(feature)).toEqual({
+      type: null,
+      restriction: null,
+      purpose: null,
+      totalDepth: null,
+      workflowStatus: null,
+      hasRequestedChanges: false,
+    });
   });
 });
