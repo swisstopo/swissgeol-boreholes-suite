@@ -18,6 +18,7 @@
 - The borehole API (`GET /api/v2/borehole/{id}`) no longer returns the borehole's child data (stratigraphies, completions, sections, observations, attachments, log runs, borehole geometry and the workflow history). It returns a new `availability` object that tells which kinds of child data exist; each kind is still available from its own endpoint. `PUT /api/v2/borehole` answers 204 No Content instead of returning the borehole.
 
 ### Fixed
+- Boreholes get the municipality they lie in today. Before, they got the municipality as of 1850, for example "Madretsch" instead of "Biel/Bienne". To correct existing boreholes, run the maintenance task "Migrate Locations" with "only missing" switched off after the update.
 - Removing a filter while a polygon filter is active shows all boreholes in the polygon again instead of keeping the removed filter's restriction. The counts in the filter panel and the search suggestions now also take the polygon into account.
 - Boreholes with many lithology layers no longer make the detail page slow. Starting and stopping editing, saving a form and changing the workflow status no longer reload all of the borehole's data.
 - The description field in the lithological description modal and the facies description modal is now higher.

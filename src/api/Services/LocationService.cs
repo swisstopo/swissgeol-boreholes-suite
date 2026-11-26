@@ -28,7 +28,7 @@ public sealed class LocationService(ILogger<LocationService> logger, IHttpClient
     {
         using var httpClient = httpClientFactory.CreateClient(nameof(LocationService));
 
-        var point = string.Join(',', east, north);
+        var point = string.Create(CultureInfo.InvariantCulture, $"{east},{north}");
         var layers = string.Join(',', CountryLayer, CantonLayer, MunicipalityLayer);
         var requestUri = new Uri(string.Format(CultureInfo.InvariantCulture, ApiUri, point, layers, srid));
 
@@ -56,15 +56,16 @@ public sealed class LocationService(ILogger<LocationService> logger, IHttpClient
     {
         try
         {
-            var layer = document.RootElement
+            var attributesPerEntry = document.RootElement
                 .GetProperty("results")
                 .EnumerateArray()
-                .FirstOrDefault(layer => layerName.Equals(layer.GetProperty("layerBodId").GetString(), StringComparison.Ordinal));
+                .Where(entry => layerName.Equals(entry.GetProperty("layerBodId").GetString(), StringComparison.Ordinal))
+                .Select(entry => entry.GetProperty("attributes"))
+                .ToList();
 
-            if (layer.Equals(default(JsonElement)))
-                return null;
-
-            return layer.GetProperty("attributes").GetProperty(attributeName).GetString();
+            return SelectCurrentAttributes(attributesPerEntry) is { } attributes
+                ? attributes.GetProperty(attributeName).GetString()
+                : null;
         }
         catch (KeyNotFoundException ex)
         {
@@ -72,4 +73,21 @@ public sealed class LocationService(ILogger<LocationService> logger, IHttpClient
             return null;
         }
     }
+
+    /// <summary>
+    /// Selects the attributes describing the layer today. Layers with a history, such as the municipalities,
+    /// return one entry per year (<c>jahr</c>) from 1850 on, oldest first; the latest year is today's.
+    /// Layers without a history return a single entry without a year.
+    /// </summary>
+    private static JsonElement? SelectCurrentAttributes(List<JsonElement> attributesPerEntry)
+    {
+        var withYear = attributesPerEntry.Where(attributes => GetYear(attributes) is not null).ToList();
+        if (withYear.Count > 0)
+            return withYear.MaxBy(GetYear);
+
+        return attributesPerEntry.Count > 0 ? attributesPerEntry[0] : null;
+    }
+
+    private static int? GetYear(JsonElement attributes) =>
+        attributes.TryGetProperty("jahr", out var year) && year.ValueKind == JsonValueKind.Number && year.TryGetInt32(out var value) ? value : null;
 }

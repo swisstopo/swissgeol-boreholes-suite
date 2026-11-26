@@ -234,8 +234,6 @@ internal static class Helpers
     /// </summary>
     internal static HttpClient CreateLocationHttpClient(string? country, string? canton, string? municipality)
     {
-        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
         var results = new List<object>();
         if (country != null)
         {
@@ -252,12 +250,36 @@ internal static class Helpers
             results.Add(new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = municipality } });
         }
 
+        return new HttpClient(CreateIdentifyHttpMessageHandler(results).Object);
+    }
+
+    /// <summary>
+    /// Creates an <see cref="HttpClient"/> answering the swisstopo identify API with one municipality
+    /// entry per given year, the way the API reports the history of a municipality.
+    /// </summary>
+    internal static HttpClient CreateMunicipalityHistoryHttpClient(params (string Name, int Year)[] entries)
+    {
+        var results = entries
+            .Select(entry => (object)new
+            {
+                layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill",
+                attributes = new { gemname = entry.Name, jahr = entry.Year },
+            })
+            .ToList();
+
+        return new HttpClient(CreateIdentifyHttpMessageHandler(results).Object);
+    }
+
+    private static Mock<HttpMessageHandler> CreateIdentifyHttpMessageHandler(List<object> results)
+    {
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
         httpMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
                 ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("api3.geo.admin.ch")),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = JsonContent.Create(new { results }) });
-        return new HttpClient(httpMessageHandler.Object);
+        return httpMessageHandler;
     }
 }

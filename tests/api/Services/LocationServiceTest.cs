@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
+using System.Globalization;
 using System.Net;
+using System.Net.Http.Json;
 using static BDMS.Helpers;
 
 namespace BDMS.Services;
@@ -9,6 +11,8 @@ namespace BDMS.Services;
 [TestClass]
 public class LocationServiceTest
 {
+    private const string BielBienne = "Biel/Bienne";
+
     private BdmsContext context;
     private LocationService service;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
@@ -69,6 +73,58 @@ public class LocationServiceTest
     }
 
     [TestMethod]
+    public async Task IdentifyReturnsMunicipalityOfLatestYear()
+    {
+        SetupMunicipalityHistoryHttpMock(
+            ("Madretsch", 1850),
+            ("Madretsch", 1919),
+            ("Biel (BE)", 1920),
+            (BielBienne, 2025),
+            (BielBienne, 2026));
+
+        var locationInfo = await service.IdentifyAsync(2586108, 1220759);
+        Assert.AreEqual(BielBienne, locationInfo.Municipality);
+    }
+
+    [TestMethod]
+    public async Task IdentifyReturnsFirstMunicipalityWhenSeveralShareTheLatestYear()
+    {
+        SetupMunicipalityHistoryHttpMock(
+            ("Nidau", 1850),
+            ("Nidau", 2026),
+            (BielBienne, 2026));
+
+        var locationInfo = await service.IdentifyAsync(2586108, 1220759);
+        Assert.AreEqual("Nidau", locationInfo.Municipality);
+    }
+
+    [TestMethod]
+    public async Task IdentifySendsCoordinatesWithDecimalPointInAnyCulture()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+        try
+        {
+            Uri? requestUri = null;
+            var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+            httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+            httpMessageHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .Callback<HttpRequestMessage, CancellationToken>((request, _) => requestUri = request.RequestUri)
+                .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = JsonContent.Create(new { results = Array.Empty<object>() }) });
+            httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient(httpMessageHandler.Object)).Verifiable();
+
+            await service.IdentifyAsync(2646356.69, 1249020.29);
+
+            Assert.Contains("geometry=2646356.69,1249020.29&", requestUri?.AbsoluteUri ?? string.Empty);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+    }
+
+    [TestMethod]
     public async Task IdentifyLogsErrorOnHttpFailure()
     {
         var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
@@ -95,4 +151,7 @@ public class LocationServiceTest
 
     private void SetupLocationHttpMock(string country, string canton, string municipal) =>
         httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(CreateLocationHttpClient(country, canton, municipal)).Verifiable();
+
+    private void SetupMunicipalityHistoryHttpMock(params (string Name, int Year)[] entries) =>
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(CreateMunicipalityHistoryHttpClient(entries)).Verifiable();
 }
