@@ -2387,7 +2387,7 @@ public class FilterServiceTest
             .Include(b => b.Workflow)
             .SingleAsync(b => b.Id == 1000000);
         CollectionAssert.AreEquivalent(
-            new[] { "id", "type", "name", "restriction", "purpose", "totalDepth", "workflowStatus", "hasRequestedChanges" },
+            new[] { "id", "type", "name", "restriction", "purpose", "totalDepth", "hasProfiles", "hasDocuments", "hasPhotos", "workflowStatus", "hasRequestedChanges" },
             firstFeature.Attributes.GetNames());
         Assert.AreEqual(1000000, firstFeature.Attributes["id"]);
         Assert.AreEqual(null, firstFeature.Attributes["type"]);
@@ -2517,8 +2517,66 @@ public class FilterServiceTest
         foreach (var feature in result)
         {
             CollectionAssert.AreEquivalent(
-                new[] { "id", "type", "name", "restriction", "purpose", "totalDepth" },
+                new[] { "id", "type", "name", "restriction", "purpose", "totalDepth", "hasProfiles", "hasDocuments", "hasPhotos" },
                 feature.Attributes.GetNames());
+        }
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesFlagsTheAttachmentsOfEachBorehole()
+    {
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        var attachmentBoreholeIds = new Dictionary<string, HashSet<int>>
+        {
+            ["hasProfiles"] = (await context.Profiles.Select(p => p.BoreholeId).ToListAsync()).ToHashSet(),
+            ["hasDocuments"] = (await context.Documents.Select(d => d.BoreholeId).ToListAsync()).ToHashSet(),
+            ["hasPhotos"] = (await context.Photos.Select(p => p.BoreholeId).ToListAsync()).ToHashSet(),
+        };
+        foreach (var (attribute, boreholeIds) in attachmentBoreholeIds)
+        {
+            var flaggedCount = result.Count(feature => (bool)feature.Attributes[attribute]);
+            Assert.IsTrue(flaggedCount > 0 && flaggedCount < result.Count, $"The test data must contain boreholes with and without {attribute}.");
+            foreach (var attributes in result.Select(feature => feature.Attributes))
+            {
+                Assert.AreEqual(boreholeIds.Contains((int)attributes["id"]), attributes[attribute], $"{attribute} of borehole {attributes["id"]}");
+            }
+        }
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesFlagsTheBoreholesTheAvailabilityFiltersSelect()
+    {
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        var filtersByAttribute = new Dictionary<string, BoreholeFilterCriteria>
+        {
+            ["hasProfiles"] = new() { HasProfiles = BooleanFilterValue.True },
+            ["hasDocuments"] = new() { HasDocuments = BooleanFilterValue.True },
+            ["hasPhotos"] = new() { HasPhotos = BooleanFilterValue.True },
+        };
+        foreach (var (attribute, filter) in filtersByAttribute)
+        {
+            var filteredIds = (await filterService.GetMapFeaturesAsync(filter, adminUser)).Select(feature => (int)feature.Attributes["id"]).ToList();
+            var flaggedIds = result.Where(feature => (bool)feature.Attributes[attribute]).Select(feature => (int)feature.Attributes["id"]).ToList();
+            CollectionAssert.AreEquivalent(filteredIds, flaggedIds, attribute);
+        }
+    }
+
+    [TestMethod]
+    public async Task GetMapFeaturesFlagsTheAttachmentsInAnonymousMode()
+    {
+        var anonymousFilterService = new FilterService(context, CreateConfiguration(anonymousModeEnabled: true));
+
+        var anonymousResult = await anonymousFilterService.GetMapFeaturesAsync(null, adminUser);
+        var result = await filterService.GetMapFeaturesAsync(null, adminUser);
+
+        foreach (var attribute in new[] { "hasProfiles", "hasDocuments", "hasPhotos" })
+        {
+            CollectionAssert.AreEqual(
+                result.Select(feature => feature.Attributes[attribute]).ToList(),
+                anonymousResult.Select(feature => feature.Attributes[attribute]).ToList(),
+                attribute);
         }
     }
 
