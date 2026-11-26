@@ -19,6 +19,7 @@ const popoverOf = (features: Feature[], pinned: boolean): BoreholePopoverState =
   features,
   anchor: { coordinates: [[0, 0]], halfHeight: boreholeSymbolHalfHeight },
   pinned,
+  cluster: null,
 });
 
 describe("getHoveredBoreholeIds", () => {

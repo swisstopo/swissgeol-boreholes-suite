@@ -20,14 +20,14 @@ const shadowBlur = 6;
 const shadowScale = 0.875;
 
 // The outline is stroked below the symbol, so only its outer half shows as a ring that follows the symbol's shape.
-const highlightWidth = 12;
-const highlightColors: Record<SymbolHighlight, string> = {
+export const highlightWidth = 12;
+export const highlightColors: Record<SymbolHighlight, string> = {
   hover: theme.palette.map.hover,
   active: theme.palette.map.active,
 };
 
 // Highlighted symbols are drawn above the others, the hovered ones above all.
-const zIndexByHighlight: Record<SymbolHighlight | "none", number> = {
+export const zIndexByHighlight: Record<SymbolHighlight | "none", number> = {
   none: 0,
   active: 1,
   hover: 2,

@@ -98,9 +98,13 @@ const themePalette: AppThemePalette = {
     popoverValueText: "#6C7680",
     drawFill: "rgba(255, 255, 255, 0.5)",
     drawStroke: "rgba(0, 153, 255, 1)",
-    clusterStroke: "rgba(43, 132, 204, 0.5)",
-    clusterFill: "rgba(43, 132, 204, 1)",
-    clusterText: "rgba(255, 255, 255, 1)",
+    // Badges of clusters and of boreholes at the same location, from the prototype (v4).
+    badge: {
+      fill: "#337083",
+      border: "rgba(20, 175, 184, 0.7)",
+      shadow: "rgba(20, 175, 184, 0.4)",
+      text: "#FFFFFF",
+    },
     detailSelectedFill: "rgba(255, 0, 0, 0.8)",
     detailUnselectedFill: "rgba(0, 255, 0, 1)",
   },

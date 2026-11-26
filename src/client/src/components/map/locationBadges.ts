@@ -6,12 +6,12 @@ import { getUid } from "ol/util";
 const badgeBoreholesKey = "features";
 
 /**
- * The boreholes a badge on the map stands for: those at its location, or those of a cluster. Null for a single
- * borehole.
+ * The boreholes a feature on the map stands for: a borehole itself, the boreholes at the location of a badge, or those
+ * of a cluster. A feature that stands for one borehole is drawn as that borehole, one for several as a badge.
  */
-export const getBadgeBoreholes = (feature: FeatureLike): Feature[] | null => {
+export const getFeatureBoreholes = <T extends FeatureLike>(feature: T): (T | Feature)[] => {
   const boreholes: unknown = feature.get(badgeBoreholesKey);
-  return Array.isArray(boreholes) ? (boreholes as Feature[]) : null;
+  return Array.isArray(boreholes) ? (boreholes as Feature[]) : [feature];
 };
 
 // A borehole without a point location is never grouped.

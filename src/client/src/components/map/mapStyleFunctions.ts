@@ -1,11 +1,11 @@
 import Feature, { FeatureLike } from "ol/Feature";
-import { Circle, Fill, Stroke, Style, Text } from "ol/style";
+import { Circle, Fill, Stroke, Style } from "ol/style";
 import { WorkflowStatus } from "../../api/generated";
 import { theme } from "../../AppTheme.ts";
 import { LegendTheme, MapFeatureProperties } from "./legend/legendThemes.ts";
+import { getFeatureBoreholes } from "./locationBadges.ts";
+import { getBadgeStyle } from "./mapBadgeStyle.ts";
 import { getSymbolStyle, SymbolHighlight } from "./mapSymbolStyle.ts";
-
-const clusterStyleCache: Record<number, Style> = {};
 
 /**
  * The boreholes marked on the map. A borehole in both sets is shown as hovered.
@@ -68,44 +68,46 @@ export function boreholeStyleFunction(
   return getSymbolStyle(symbol, getHighlight(feature.get("id") as number, highlights));
 }
 
-const clusterStrokeWidth = 8;
+const idOf = (feature: FeatureLike) => feature.get("id") as number;
 
-const getClusterRadius = (length: number) => 8 + length.toString().length * 2.5;
+// A badge takes the strongest highlight of its boreholes.
+const getBadgeHighlight = (
+  boreholes: readonly FeatureLike[],
+  highlights: BoreholeHighlights,
+): SymbolHighlight | null => {
+  if (boreholes.some(borehole => highlights.hovered.has(idOf(borehole)))) return "hover";
+  if (boreholes.some(borehole => highlights.active.has(idOf(borehole)))) return "active";
+  return null;
+};
 
 /**
- * Half the height of the drawn cluster circle, including its stroke.
+ * Styles a feature of the point layer: a borehole with its symbol, or a badge of the boreholes at one location with
+ * their number. A badge takes the strongest highlight of its boreholes. Returns cached styles only.
  */
-export const getClusterHalfHeight = (length: number) => getClusterRadius(length) + clusterStrokeWidth / 2;
+export function locationStyleFunction(
+  feature: FeatureLike,
+  legendTheme: LegendTheme,
+  highlights: BoreholeHighlights,
+): Style {
+  const boreholes = getFeatureBoreholes(feature);
+  if (boreholes.length === 1) return boreholeStyleFunction(boreholes[0], legendTheme, highlights);
+  return getBadgeStyle(boreholes.length, getBadgeHighlight(boreholes, highlights));
+}
 
-export function clusterStyleFunction(length: number): Style {
-  const circleSize = getClusterRadius(length);
-  let clusterStyle = clusterStyleCache[circleSize];
-  if (!clusterStyle) {
-    clusterStyle = new Style({
-      image: new Circle({
-        radius: circleSize,
-        stroke: new Stroke({
-          color: theme.palette.map.clusterStroke,
-          width: clusterStrokeWidth,
-        }),
-        fill: new Fill({
-          color: theme.palette.map.clusterFill,
-        }),
-      }),
-      text: new Text({
-        text: length.toString(),
-        scale: 1.5,
-        fill: new Fill({
-          color: theme.palette.map.clusterText,
-        }),
-      }),
-    });
-    clusterStyleCache[circleSize] = clusterStyle;
-  }
-
-  clusterStyle.getText()!.setText(length.toString());
-
-  return clusterStyle;
+/**
+ * Styles a cluster as a badge with the number of its boreholes. It is outlined only while it is hovered itself, not
+ * when its boreholes are highlighted elsewhere. A cluster with a single borehole is drawn as that borehole, so a symbol
+ * always stands for one borehole and a badge for several. Returns cached styles only.
+ */
+export function clusterStyleFunction(
+  cluster: FeatureLike,
+  legendTheme: LegendTheme,
+  highlights: BoreholeHighlights,
+  hoveredCluster: FeatureLike | null,
+): Style {
+  const boreholes = getFeatureBoreholes(cluster);
+  if (boreholes.length === 1) return boreholeStyleFunction(boreholes[0], legendTheme, highlights);
+  return getBadgeStyle(boreholes.length, cluster === hoveredCluster ? "hover" : null);
 }
 
 export function detailMapStyleFunction(feature: Feature, highlighted: number[]): Style[] {

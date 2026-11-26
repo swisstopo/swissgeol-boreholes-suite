@@ -33,15 +33,11 @@ import { BasemapSelector } from "../basemapSelector/basemapSelector";
 import MapControls from "../buttons/mapControls";
 import { PulseLayer, startHighlightPulse } from "./highlightPulse.ts";
 import { MapLegend } from "./legend/mapLegend.tsx";
+import { getFeatureBoreholes, groupByLocation } from "./locationBadges.ts";
 import { addWMSLayerToMap, addWMTSLayerToMap, getDrawSource, MapComponentProps, SRS } from "./map.ts";
+import { badgeHalfHeight, getBadgeOuterRadius, loadBadgeFont } from "./mapBadgeStyle.ts";
 import "./mapProjections";
-import {
-  boreholeStyleFunction,
-  clusterStyleFunction,
-  drawStyle,
-  getClusterHalfHeight,
-  noBoreholeHighlights,
-} from "./mapStyleFunctions";
+import { clusterStyleFunction, drawStyle, locationStyleFunction, noBoreholeHighlights } from "./mapStyleFunctions";
 import { BoreholePopover } from "./popover/boreholePopover.tsx";
 import {
   boreholeSymbolHalfHeight,
@@ -62,9 +58,14 @@ import {
 // The longest time between the two clicks of a double-click, a little above the 250 ms OpenLayers uses.
 const doubleClickInterval = 500;
 
-// The highlight rings start just outside the borehole symbols and the cluster circles.
-const pointPulseRingRadius = 14;
-const clusterPulseRingRadius = 20;
+// The highlight rings start just outside the borehole symbols and the badges.
+const boreholePulseRingRadius = 14;
+const badgePulseRingGap = 1;
+
+const getPulseRingRadius = (feature: Feature) => {
+  const boreholes = getFeatureBoreholes(feature);
+  return boreholes.length === 1 ? boreholePulseRingRadius : getBadgeOuterRadius(boreholes.length) + badgePulseRingGap;
+};
 
 // Above this resolution the map shows clusters instead of the borehole symbols.
 const clusterResolution = 15;
@@ -84,36 +85,56 @@ const getFeaturesAtPixel = (map: Map, pixel: Pixel, layerName: string): Feature[
   return features;
 };
 
-const getBoreholesAtPixel = (map: Map, pixel: Pixel) => getFeaturesAtPixel(map, pixel, boreholeLayerName);
-
 const getCoordinates = (features: readonly Feature[]) =>
   features.flatMap(feature => {
     const geometry = feature.getGeometry();
     return geometry instanceof Point ? [geometry.getCoordinates()] : [];
   });
 
-const getBoreholeAnchor = (boreholes: readonly Feature[]): PopoverAnchor => ({
-  coordinates: getCoordinates(boreholes),
-  halfHeight: boreholeSymbolHalfHeight,
-});
+// Features that stand for several boreholes are drawn as badges, which are higher than the symbols.
+const getHalfHeight = (features: readonly Feature[]) =>
+  features.some(feature => getFeatureBoreholes(feature).length > 1) ? badgeHalfHeight : boreholeSymbolHalfHeight;
 
 interface PreviewTarget {
   boreholes: Feature[];
   anchor: PopoverAnchor;
+  // The cluster of several boreholes under the pointer, which zooms in on click.
+  cluster: Feature | null;
 }
 
-// The boreholes under the pointer, or the boreholes of the cluster under it, and where their popover is attached.
-const getPreviewTargetAtPixel = (map: Map, pixel: Pixel): PreviewTarget | null => {
-  const boreholes = getBoreholesAtPixel(map, pixel);
-  if (boreholes.length > 0) return { boreholes, anchor: getBoreholeAnchor(boreholes) };
-
-  const [cluster] = getFeaturesAtPixel(map, pixel, clusterLayerName);
-  const members = cluster?.get("features") as Feature[] | undefined;
-  if (!cluster || !members || members.length === 0) return null;
+// The boreholes under the pointer, with all boreholes of a badge under it, and where their popover is attached.
+const getBoreholeTargetAtPixel = (map: Map, pixel: Pixel): PreviewTarget | null => {
+  const locations = getFeaturesAtPixel(map, pixel, boreholeLayerName);
+  if (locations.length === 0) return null;
   return {
-    boreholes: members,
-    anchor: { coordinates: getCoordinates([cluster]), halfHeight: getClusterHalfHeight(members.length) },
+    boreholes: locations.flatMap(location => getFeatureBoreholes(location)),
+    anchor: { coordinates: getCoordinates(locations), halfHeight: getHalfHeight(locations) },
+    cluster: null,
   };
+};
+
+// The boreholes of the cluster under the pointer. A cluster with a single borehole is handled as that borehole.
+const getClusterTargetAtPixel = (map: Map, pixel: Pixel): PreviewTarget | null => {
+  const [cluster] = getFeaturesAtPixel(map, pixel, clusterLayerName);
+  if (!cluster) return null;
+  const boreholes = getFeatureBoreholes(cluster);
+  return {
+    boreholes,
+    anchor: { coordinates: getCoordinates([cluster]), halfHeight: getHalfHeight([cluster]) },
+    cluster: boreholes.length > 1 ? cluster : null,
+  };
+};
+
+// The boreholes under the pointer, or the boreholes of the cluster under it, and where their popover is attached.
+const getPreviewTargetAtPixel = (map: Map, pixel: Pixel): PreviewTarget | null =>
+  getBoreholeTargetAtPixel(map, pixel) ?? getClusterTargetAtPixel(map, pixel);
+
+// The map clusters all boreholes; below the cluster resolution it draws them grouped by location.
+const showBoreholes = (points: VectorSource, locations: VectorSource, boreholes: Feature[]) => {
+  points.clear();
+  points.addFeatures(boreholes);
+  locations.clear();
+  locations.addFeatures(groupByLocation(boreholes));
 };
 
 export const MapComponent: FC<MapComponentProps> = ({
@@ -143,7 +164,9 @@ export const MapComponent: FC<MapComponentProps> = ({
   // ── OpenLayers object refs (mutable, imperative, never trigger rerenders) ──
   const mapRef = useRef<Map | null>(null);
   const pointsRef = useRef<VectorSource | null>(null);
+  const locationsRef = useRef<VectorSource | null>(null);
   const pointLayerRef = useRef<VectorLayer | null>(null);
+  const clusterLayerRef = useRef<VectorLayer | null>(null);
   const drawRef = useRef<Draw | null>(null);
   const popoverOverlayRef = useRef<Overlay | null>(null);
   const popoverElementRef = useRef<HTMLDivElement | null>(null);
@@ -159,6 +182,7 @@ export const MapComponent: FC<MapComponentProps> = ({
   // Set together with the popover state, so OL event handlers see a change before React commits it.
   const popoverRef = useRef<BoreholePopoverState | null>(null);
   const highlightsRef = useRef(noBoreholeHighlights);
+  const hoveredClusterRef = useRef<Feature | null>(null);
 
   // ── Refs for latest prop values (accessed by OL event handlers registered at mount) ──
   const legendThemeRef = useRef(legendTheme);
@@ -272,13 +296,15 @@ export const MapComponent: FC<MapComponentProps> = ({
     // ── Feature layers ──
     const points = new VectorSource();
     pointsRef.current = points;
+    const locations = new VectorSource();
+    locationsRef.current = locations;
 
     const clusterSource = new Cluster({ distance: 40, source: points });
     // Use z-index to ensure points/clusters are always on top of WMS/WMTS overlay layers
     const featureLayerZIndex = 1000;
 
     const clusterStyle: StyleFunction = (feature: FeatureLike) =>
-      clusterStyleFunction((feature.get("features") as Feature[]).length);
+      clusterStyleFunction(feature, legendThemeRef.current, highlightsRef.current, hoveredClusterRef.current);
 
     const clusterLayer = new VectorLayer({
       source: clusterSource,
@@ -288,14 +314,15 @@ export const MapComponent: FC<MapComponentProps> = ({
       minResolution: clusterResolution,
     });
     map.addLayer(clusterLayer);
+    clusterLayerRef.current = clusterLayer;
 
     const pointStyle: StyleFunction = (feature: FeatureLike) =>
-      boreholeStyleFunction(feature, legendThemeRef.current, highlightsRef.current);
+      locationStyleFunction(feature, legendThemeRef.current, highlightsRef.current);
 
     const pointLayer = new VectorLayer({
       properties: { name: boreholeLayerName },
       zIndex: featureLayerZIndex,
-      source: points,
+      source: locations,
       style: pointStyle,
       maxResolution: clusterResolution,
     });
@@ -303,9 +330,15 @@ export const MapComponent: FC<MapComponentProps> = ({
     pointLayerRef.current = pointLayer;
 
     pulseLayersRef.current = [
-      { layer: pointLayer, ringRadius: pointPulseRingRadius },
-      { layer: clusterLayer, ringRadius: clusterPulseRingRadius },
+      { layer: pointLayer, getRingRadius: getPulseRingRadius },
+      { layer: clusterLayer, getRingRadius: getPulseRingRadius },
     ];
+
+    // Badges drawn before the font of their numbers loaded use a fallback font.
+    void loadBadgeFont().then(() => {
+      pointLayer.changed();
+      clusterLayer.changed();
+    });
 
     const drawSource = new VectorSource();
     map.addLayer(
@@ -325,7 +358,7 @@ export const MapComponent: FC<MapComponentProps> = ({
       if (target === null) {
         if (current !== null) updatePopover(null);
       } else if (current === null || !haveSameBoreholes(current.features, target.boreholes)) {
-        updatePopover({ features: target.boreholes, anchor: target.anchor, pinned: false });
+        updatePopover({ features: target.boreholes, anchor: target.anchor, pinned: false, cluster: target.cluster });
       }
     };
 
@@ -358,41 +391,31 @@ export const MapComponent: FC<MapComponentProps> = ({
     let drawEndedAt = Number.NEGATIVE_INFINITY;
     const isClickFinishingDrawing = () => Date.now() - drawEndedAt < doubleClickInterval;
 
-    // A click on a single borehole opens it, a click on several pins the popover listing them, and a click elsewhere
-    // closes the popover and zooms into a clicked cluster.
+    // A click on a single borehole opens it, a click on several boreholes or a badge pins the popover listing them,
+    // and a click elsewhere closes the popover and zooms into a clicked cluster.
     map.on("click", event => {
       if (polygonSelectionEnabledRef.current || isClickFinishingDrawing()) return;
 
-      const boreholes = getBoreholesAtPixel(map, event.pixel);
-      if (boreholes.length === 1) {
-        openBorehole(boreholes[0].get("id") as number);
+      // With the same hit tolerance as the hover, so a cluster that shows its preview also zooms on click.
+      const target = getPreviewTargetAtPixel(map, event.pixel);
+      if (target?.boreholes.length === 1) {
+        openBorehole(target.boreholes[0].get("id") as number);
         return;
       }
-      if (boreholes.length > 1) {
-        updatePopover({ features: boreholes, anchor: getBoreholeAnchor(boreholes), pinned: true });
+      if (target !== null && target.cluster === null) {
+        updatePopover({ features: target.boreholes, anchor: target.anchor, pinned: true, cluster: null });
         return;
       }
       updatePopover(null);
 
-      if (pointsRef.current) {
-        // With the same hit tolerance as the hover, so a cluster that shows its preview also zooms on click.
-        const clickFeatures = getFeaturesAtPixel(map, event.pixel, clusterLayerName);
-        if (clickFeatures.length > 0) {
-          const clusterMembers = clickFeatures[0].get("features") as Feature[];
-          if (clusterMembers.length > 1) {
-            const extent = createEmpty();
-            clusterMembers.forEach(feature => {
-              if (feature.getGeometry()) {
-                extend(extent, feature.getGeometry()!.getExtent());
-              }
-            });
-            map.getView().fit(extent, { duration: 500, padding: [50, 50, 50, 50] });
-          } else {
-            const coordinates = (clusterMembers[0].getGeometry() as Point).getCoordinates();
-            map.getView().setCenter(coordinates);
-            map.getView().setResolution(10);
+      if (target !== null) {
+        const extent = createEmpty();
+        target.boreholes.forEach(feature => {
+          if (feature.getGeometry()) {
+            extend(extent, feature.getGeometry()!.getExtent());
           }
-        }
+        });
+        map.getView().fit(extent, { duration: 500, padding: [50, 50, 50, 50] });
       }
     });
 
@@ -439,8 +462,7 @@ export const MapComponent: FC<MapComponentProps> = ({
         displayErrorMessage(t("msgNoBoreholesInSelection"));
         setFilterPolygon(null);
       } else {
-        currentPoints.clear();
-        currentPoints.addFeatures(intersectingFeatures);
+        showBoreholes(currentPoints, locations, intersectingFeatures);
         drawSource.addFeature(new Feature(toOlPolygon(vertices)));
         setFilterPolygon(vertices);
       }
@@ -519,11 +541,11 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   useEffect(() => {
     const points = pointsRef.current;
-    if (!geoJson || !points) return;
+    const locations = locationsRef.current;
+    if (!geoJson || !points || !locations) return;
 
     // The backend already applied the polygon and all other filters.
-    points.clear();
-    points.addFeatures(new GeoJSON().readFeatures(geoJson));
+    showBoreholes(points, locations, new GeoJSON().readFeatures(geoJson));
 
     // The popover may list boreholes that are gone; force style recomputation.
     updatePopover(null);
@@ -584,7 +606,17 @@ export const MapComponent: FC<MapComponentProps> = ({
     if (haveSameHighlights(highlightsRef.current, highlights)) return;
     highlightsRef.current = highlights;
     pointLayerRef.current?.changed();
+    // A cluster with a single borehole is drawn as that borehole.
+    clusterLayerRef.current?.changed();
   }, [popover, hoveredRowId, highlighted]);
+
+  // The hovered cluster is outlined like hovered boreholes. Only the layer is changed, as above.
+  useLayoutEffect(() => {
+    const hoveredCluster = popover?.cluster ?? null;
+    if (hoveredClusterRef.current === hoveredCluster) return;
+    hoveredClusterRef.current = hoveredCluster;
+    clusterLayerRef.current?.changed();
+  }, [popover]);
 
   // The table highlights the rows of the boreholes hovered on the map or in the popover.
   useEffect(() => {
@@ -640,9 +672,11 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   // ────────────────────── Effect: Legend theme ──────────────────────
 
-  // The style function reads the theme from its ref, the layer change only triggers the redraw.
+  // The style functions read the theme from its ref, the layer changes only trigger the redraw. Clusters with a single
+  // borehole show its symbol.
   useEffect(() => {
     pointLayerRef.current?.changed();
+    clusterLayerRef.current?.changed();
   }, [legendTheme]);
 
   const onHighlightBoreholes = useCallback(() => {

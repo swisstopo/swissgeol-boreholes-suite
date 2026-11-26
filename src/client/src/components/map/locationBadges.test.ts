@@ -1,11 +1,11 @@
 import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { describe, expect, it } from "vitest";
-import { getBadgeBoreholes, groupByLocation } from "./locationBadges.ts";
+import { getFeatureBoreholes, groupByLocation } from "./locationBadges.ts";
 
 const boreholeAt = (id: number, x: number, y: number) => new Feature({ geometry: new Point([x, y]), id });
 
-const idsOf = (features: readonly Feature[] | null) => features?.map(feature => feature.get("id") as number);
+const idsOf = (features: readonly Feature[]) => features.map(feature => feature.get("id") as number);
 
 const coordinatesOf = (feature: Feature) => {
   const geometry = feature.getGeometry();
@@ -29,7 +29,7 @@ describe("groupByLocation", () => {
     const locations = groupByLocation([first, second]);
 
     expect(locations).toHaveLength(1);
-    expect(getBadgeBoreholes(locations[0])).toEqual([first, second]);
+    expect(getFeatureBoreholes(locations[0])).toEqual([first, second]);
     expect(coordinatesOf(locations[0])).toEqual([2600000.5, 1200000.25]);
   });
 
@@ -56,23 +56,21 @@ describe("groupByLocation", () => {
 
     const locations = groupByLocation(boreholes);
 
-    expect(locations.map(location => idsOf(getBadgeBoreholes(location)) ?? location.get("id"))).toEqual([
-      [1, 3],
-      2,
-      [4, 5, 6],
-    ]);
+    expect(locations.map(location => idsOf(getFeatureBoreholes(location)))).toEqual([[1, 3], [2], [4, 5, 6]]);
   });
 });
 
-describe("getBadgeBoreholes", () => {
-  it("is null for a borehole", () => {
-    expect(getBadgeBoreholes(boreholeAt(1, 0, 0))).toBeNull();
+describe("getFeatureBoreholes", () => {
+  it("is the borehole itself for a borehole", () => {
+    const borehole = boreholeAt(1, 0, 0);
+
+    expect(getFeatureBoreholes(borehole)).toEqual([borehole]);
   });
 
   it("reads the boreholes of a cluster", () => {
     const boreholes = [boreholeAt(1, 0, 0), boreholeAt(2, 5, 5)];
     const cluster = new Feature({ geometry: new Point([2, 2]), features: boreholes });
 
-    expect(getBadgeBoreholes(cluster)).toBe(boreholes);
+    expect(getFeatureBoreholes(cluster)).toBe(boreholes);
   });
 });
