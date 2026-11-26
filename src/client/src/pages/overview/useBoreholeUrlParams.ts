@@ -8,7 +8,13 @@ import {
   parseAsStringLiteral,
   useQueryStates,
 } from "nuqs";
-import { LegendThemeKey, legendThemeKeys } from "../../components/map/legend/legendThemes.ts";
+import {
+  ContentSegment,
+  contentSegments,
+  defaultContentSegment,
+  LegendThemeKey,
+  legendThemeKeys,
+} from "../../components/map/legend/legendThemes.ts";
 import { parseAsPolygon, PolygonVertices } from "./polygonFilter.ts";
 import { SessionKeys } from "./SessionKey.ts";
 import { nullableBooleanFilterKeys } from "./sidePanelContent/filter/filterUtils.ts";
@@ -30,9 +36,11 @@ const mapParsers = {
   mapCenterY: parseAsFloat,
 };
 
-// Without a value, the legend shows its first available theme. The legend starts expanded.
+// Without a value, the legend shows its first available theme and the contents theme its first segment. The legend
+// starts expanded.
 const legendParsers = {
   legend: parseAsStringLiteral(legendThemeKeys),
+  legendContent: parseAsStringLiteral(contentSegments).withDefault(defaultContentSegment),
   legendExpanded: parseAsBoolean.withDefault(true),
 };
 
@@ -88,7 +96,11 @@ export const useBoreholeUrlParamsState = () => {
   const tableState = Object.fromEntries(
     (Object.keys(tableParsers) as (keyof typeof tableParsers)[]).map(k => [k, queryState[k]]),
   ) as { [K in keyof typeof tableParsers]: (typeof queryState)[K] };
-  const legendState = { legend: queryState.legend, legendExpanded: queryState.legendExpanded };
+  const legendState = {
+    legend: queryState.legend,
+    legendContent: queryState.legendContent,
+    legendExpanded: queryState.legendExpanded,
+  };
 
   // Keep refs always pointing to the latest values so cleanup functions
   // (called on unmount) never close over stale state.
@@ -243,12 +255,13 @@ export const useBoreholeUrlParamsState = () => {
   }, [setQueryState]);
 
   const saveLegendParamsInSession = useCallback(() => {
-    const { legend, legendExpanded } = legendStateRef.current;
+    const { legend, legendContent, legendExpanded } = legendStateRef.current;
     if (legend === null) {
       sessionStorage.removeItem(SessionKeys.legend);
     } else {
       sessionStorage.setItem(SessionKeys.legend, legend);
     }
+    sessionStorage.setItem(SessionKeys.legendContent, legendContent);
     sessionStorage.setItem(SessionKeys.legendExpanded, String(legendExpanded));
   }, []);
 
@@ -291,6 +304,10 @@ export const useBoreholeUrlParamsState = () => {
     legend: queryState.legend,
     setLegend: (legend: LegendThemeKey) => {
       void setQueryState({ legend });
+    },
+    legendContent: queryState.legendContent,
+    setLegendContent: (legendContent: ContentSegment) => {
+      void setQueryState({ legendContent });
     },
     legendExpanded: queryState.legendExpanded,
     setLegendExpanded: (expanded: boolean) => {
