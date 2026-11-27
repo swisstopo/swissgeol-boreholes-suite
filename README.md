@@ -35,6 +35,76 @@ Mit `docker-compose up` kann eine funktionierende Infrastruktur hochgefahren wer
 
 [^1]: Authentifizierung via `Authorization` Header mit Bearer-Token (`identity_token`) von OIDC Server. Login-Konfigurationen können in [config/oidc-mock-users.json](./config/oidc-mock-users.json) getätigt werden.
 
+### Mehrere Worktrees parallel (Slots)
+
+Mit [Git-Worktrees](https://git-scm.com/docs/git-worktree) lassen sich mehrere Branches gleichzeitig ausgecheckt halten, zum Beispiel um einen Pull Request zu prüfen, während die eigene Arbeit weiterläuft, oder um mehrere Agent-Sitzungen (z.B. Claude Code) an verschiedenen Branches arbeiten zu lassen. Damit jeder Worktree die Applikation auch mit seinem eigenen Stand starten und testen kann, startet er Datenbank, API und OIDC-Mock in einem eigenen _Slot_.
+
+**Warum Slots nötig sind**
+
+Der normale Stack aus `docker-compose.yml` belegt feste Ports (Client 3000, API 5000, Datenbank 5432, OIDC-Mock 4011). Daraus ergeben sich drei Probleme, sobald mehr als ein Checkout die Applikation starten will:
+
+- Ein zweiter Stack startet nicht, weil die Ports bereits belegt sind.
+- Ein Worktree, der nur seinen Client startet und den laufenden Stack des Hauptcheckouts mitbenutzt, testet gegen die API, die Migrationen und die Seed-Daten eines anderen Branches. Fehler und erfolgreiche Tests sagen dann nichts über den eigenen Branch aus.
+- Der OIDC-Mock leitet nach dem Login nur an registrierte Adressen zurück. Ein Client auf einem beliebigen anderen Port kann sich nicht anmelden.
+
+Ein Slot von 1 bis 9 verschiebt deshalb alle Ports und gibt dem Worktree eine eigene Datenbank. Die Client-Ports aller Slots sind im OIDC-Mock registriert ([config/oidc-mock-clients.json](./config/oidc-mock-clients.json)).
+
+**Was ein Slot startet**
+
+| Dienst    | Port        | Beispiel Slot 1 | Läuft aus                                  |
+| :-------- | :---------- | :-------------- | :----------------------------------------- |
+| Client    | `3<slot>00` | `3100`          | dem Worktree, mit `npm run start` auf dem Host |
+| API       | `5<slot>00` | `5100`          | dem Worktree, als Container (`src/api` wird gemountet, Änderungen werden neu geladen) |
+| Datenbank | `5<slot>32` | `5132`          | dem Worktree, als Container mit eigenem Volume |
+| OIDC-Mock | `4<slot>11` | `4111`          | dem Worktree, als Container                |
+
+`minio`, `ocr` und `dataextraction` teilen sich alle Slots und laufen aus dem Hauptcheckout. Hochgeladene Dateien erhalten eindeutige Objektnamen, die Slots überschreiben sich also nicht gegenseitig. `pgadmin` und der Client-Container werden in einem Slot nicht gestartet. Die Konfiguration liegt in [docker-compose.worktree.yml](./docker-compose.worktree.yml), die Ports für Vite und Cypress berechnet [src/client/worktree-slot.js](./src/client/worktree-slot.js).
+
+Ohne `BDMS_SLOT` ändert sich nichts: Der Hauptcheckout, das Visual Studio Launch Profile und die CI verwenden weiterhin die Standard-Ports.
+
+**Verwendung**
+
+Alle Slot-Befehle werden im Root des Worktrees ausgeführt, nie im Hauptcheckout. Docker Compose benennt das Projekt nach dem Ordner. Im Hauptcheckout würde der Slot-Stack deshalb den normalen Stack ersetzen.
+
+1. Einmalig die geteilten Dienste im Hauptcheckout starten: `docker compose up -d minio ocr dataextraction`.
+2. Einen freien Slot wählen. `docker compose ls` zeigt, welche Worktrees einen Stack laufen haben, `docker ps` die belegten Ports. Meldet Docker "port is already allocated", den nächsten Slot nehmen.
+3. Im Worktree Datenbank, API und OIDC-Mock starten. Der Befehl ist fertig, wenn er mit Exit-Code 0 endet. Der erste Start kompiliert die API und befüllt die Datenbank, das dauert bis zu etwa 10 Minuten, spätere Starts etwa eine Minute.
+4. In einem zweiten Terminal, mit demselben `BDMS_SLOT`, den Client starten. Die Applikation ist danach unter `http://localhost:3<slot>00` erreichbar (Login wie oben, `admin` / `swissforages`). Ist der Port belegt, bricht Vite ab, statt auf einen anderen Port auszuweichen, auf dem der Login nicht funktionieren würde.
+5. Cypress Tests mit demselben `BDMS_SLOT` starten. Sie verwenden automatisch den Client und den OIDC-Mock des Slots.
+6. Zum Schluss den Client beenden und den Stack herunterfahren.
+
+PowerShell:
+
+```powershell
+$env:BDMS_SLOT = "1"
+docker compose -f docker-compose.yml -f docker-compose.worktree.yml up -d --build --wait
+# In einem zweiten Terminal, ebenfalls mit $env:BDMS_SLOT = "1"
+npm --prefix src/client run start
+# Im ersten Terminal
+npm --prefix src/client run test -- --spec cypress/e2e/detailPage/attachments.cy.ts
+docker compose -f docker-compose.yml -f docker-compose.worktree.yml down
+```
+
+Bash:
+
+```bash
+export BDMS_SLOT=1
+docker compose -f docker-compose.yml -f docker-compose.worktree.yml up -d --build --wait
+# In einem zweiten Terminal, ebenfalls mit export BDMS_SLOT=1
+npm --prefix src/client run start
+# Im ersten Terminal
+npm --prefix src/client run test -- --spec cypress/e2e/detailPage/attachments.cy.ts
+docker compose -f docker-compose.yml -f docker-compose.worktree.yml down
+```
+
+`down` behält Datenbank und Build-Ausgabe der API, der nächste Start ist schnell. `down -v` löscht beide, der nächste Start kompiliert und befüllt wieder von Grund auf. Das ist nötig, wenn die Datenbank des Slots einen veralteten Stand hat, etwa nach einem Wechsel auf einen Branch mit anderen Migrationen oder Seed-Daten.
+
+**Empfehlungen**
+
+- Ein Slot pro Worktree, und den Slot für die Lebensdauer des Worktrees beibehalten. So bleibt die Datenbank des Slots erhalten und Starts bleiben schnell.
+- Den Stack herunterfahren, wenn der Worktree nicht mehr gebraucht wird. Jeder Slot braucht eine eigene Datenbank und einen eigenen API-Container, das kostet Arbeitsspeicher.
+- Vor dem Entfernen eines Worktrees `down -v` ausführen, sonst bleibt das Datenbank-Volume des Slots in Docker zurück.
+
 ## Vitest Unit Tests
 
 Die client seitigen Unit Tests werden mit [Vitest](https://vitest.dev/) ausgeführt. Testdateien folgen dem Muster `*.test.ts` / `*.test.tsx`.
@@ -51,6 +121,8 @@ Um einen einzelnen Test auszuführen, kann `npx vitest run <Pfad/zur/Testdatei>`
 ## Cypress Tests
 
 Die Cypress Tests können mit `npm run cy` oder `npm run test` gestartet werden. Sie werden zudem automatisch in der CI/CD Pipeline ausgeführt. Das Projekt ist mit [Cypress Cloud](https://cloud.cypress.io/) konfiguriert, wodurch unter anderem die parallele Ausführung der End-to-End (E2E) Tests ermöglicht wird. Testergebnisse und Aufzeichnungen sind ebenfalls direkt in [Cypress Cloud](https://currents.dev/) einsehbar, was die Identifikation und Behebung möglicher Fehler und Probleme erleichtert. Um die detaillierten Testergebnisse einzusehen und die E2E-Tests des Projekts zu debuggen, kann die [Cypress Dashboard-Seite](https://cloud.cypress.io/projects/gv8yue/runs) besucht werden.
+
+Um Cypress Tests in einem Git-Worktree gegen dessen eigenen Branch laufen zu lassen, während ein anderer Worktree oder der Hauptcheckout ebenfalls läuft, siehe [Mehrere Worktrees parallel (Slots)](#mehrere-worktrees-parallel-slots).
 
 ## Authentifizierung & Architektur
 

@@ -233,15 +233,25 @@ export const mockLocationIntercept = (
 };
 
 /**
+ * The OIDC mock of the stack under test, which moves with the worktree slot (see worktree-slot.js).
+ */
+const getOidcOrigin = (): string => {
+  const oidcOrigin: unknown = Cypress.expose("oidcOrigin");
+  if (typeof oidcOrigin !== "string") throw new Error("cypress.config.ts does not expose the oidcOrigin.");
+  return oidcOrigin;
+};
+
+/**
  * Login into the application with the user for the development environment.
  */
 export const login = (user: string) => {
   cy.session(
     ["login", user],
     () => {
-      cy.intercept("http://localhost:4011/connect/token").as("token");
+      const oidcOrigin = getOidcOrigin();
+      cy.intercept(`${oidcOrigin}/connect/token`).as("token");
       cy.visit("/");
-      cy.origin("http://localhost:4011", { args: { user } }, ({ user }) => {
+      cy.origin(oidcOrigin, { args: { user } }, ({ user }) => {
         cy.get("#Username").type(user);
         cy.get("#Password").type("swissforages");
         cy.contains("button", "Login").click({ force: true });

@@ -12,10 +12,28 @@
   ],
   "AllowAccessTokensViaBrowser": true,
   "RedirectUris": [
-      "http://localhost:3000"
+      "http://localhost:3000",
+      "http://localhost:3100",
+      "http://localhost:3200",
+      "http://localhost:3300",
+      "http://localhost:3400",
+      "http://localhost:3500",
+      "http://localhost:3600",
+      "http://localhost:3700",
+      "http://localhost:3800",
+      "http://localhost:3900"
   ],
   "PostLogoutRedirectUris" : [
-      "http://localhost:3000"
+      "http://localhost:3000",
+      "http://localhost:3100",
+      "http://localhost:3200",
+      "http://localhost:3300",
+      "http://localhost:3400",
+      "http://localhost:3500",
+      "http://localhost:3600",
+      "http://localhost:3700",
+      "http://localhost:3800",
+      "http://localhost:3900"
   ],
   "AllowedScopes": [
       "openid",
